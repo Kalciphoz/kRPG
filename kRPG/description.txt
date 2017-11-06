@@ -1,0 +1,1 @@
+This mod aims to overhaul Terraria by adding RPG elements, and includes a leveling system, an item upgrade system, an elemental damage system, procedurally generated weapons, and much more. For more detailed information, see the wiki at krpgmod.wikidot.com

@@ -1,0 +1,9 @@
+displayName = Kalciphoz's RPG Mod
+version = 1.0
+author = Kalciphoz
+hideCode = false
+hideResources = false
+includeSource = true
+buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*
+includePDB = true
+weakReferences = TerrariaOverhaul
