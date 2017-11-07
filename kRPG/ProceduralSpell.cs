@@ -38,8 +38,18 @@ namespace kRPG
         {
             try
             {
+                bool full = true;
+                for (int i = 0; i < glyphs.Length; i += 1)
+                    if (glyphs[i].type == 0)
+                        full = false;
+
+                if (remaining > 0)
+                    remaining -= 1;
+
                 Rectangle bounds = new Rectangle((int)position.X, (int)position.Y, GFX.skillSlot.Width, GFX.skillSlot.Height);
                 PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+
+                if (spriteBatch == null || character == null) return;
 
                 if (bounds.Contains(new Point(Main.mouseX, Main.mouseY)))
                 {
@@ -73,17 +83,9 @@ namespace kRPG
                 }
                 else
                     spriteBatch.Draw(GFX.skillSlot, position, Color.White);
-
-                bool full = true;
-                for (int i = 0; i < glyphs.Length; i += 1)
-                    if (glyphs[i].type == 0)
-                        full = false;
-
+                
                 if (full && remaining == 0) spriteBatch.Draw(GFX.gothicLetter[key], position, Color.White);
                 else if (full || character.spellcraftingGUI.guiActive) spriteBatch.Draw(GFX.gothicLetter[key], position, new Color(143, 143, 151));
-
-                if (remaining > 0)
-                    remaining -= 1;
             }
             catch (Exception e)
             {

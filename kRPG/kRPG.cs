@@ -229,13 +229,20 @@ namespace kRPG
 
         public override void PostDrawInterface(SpriteBatch spriteBatch)
         {
-            if (Main.netMode == 2) return;
-            foreach (BaseGUI gui in BaseGUI.gui_elements)
+            if (Main.netMode == 2 || Main.gameMenu) return;
+            try
             {
-                if (gui.PreDraw())
+                foreach (BaseGUI gui in BaseGUI.gui_elements)
                 {
-                    gui.Draw(spriteBatch, Main.LocalPlayer);
+                    if (gui.PreDraw())
+                    {
+                        gui.Draw(spriteBatch, Main.LocalPlayer);
+                    }
                 }
+            }
+            catch (SystemException e)
+            {
+                ErrorLogger.Log(e.ToString());
             }
         }
     }
