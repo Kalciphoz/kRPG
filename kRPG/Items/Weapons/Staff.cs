@@ -74,7 +74,7 @@ namespace kRPG.Items.Weapons
 
             carved = new Staff("Carved", 14, 1, 28, 4f, "Carved ", 10f);
             branch = new Staff("Branch", 14, 1, 33, 3f, "Rustic ", 6f, true);
-            ivy = new Staff("Ivy", 13, 1, 19, 2f, "Ivy ", 6f, false, 2.5f, -1, 3);
+            ivy = new Staff("Ivy", 13, 1, 18, 2f, "Ivy ", 6f, false, 2.5f, -1, 3);
             arcane = new Staff("Arcane", 16, 2, 24, 5f, "Arcane ", 11f, true, 1.1f, 5);
             gilded = new Staff("Gilded", 17, 2, 38, 6f, "Scholarly ", 7f, true, 0.9f);
             hellstone = new Staff("Hellstone", 16, 2, 26, 5f, "Molten ", 9f, true);

@@ -948,7 +948,7 @@ namespace kRPG.Items
                         string eleName = elementNames[element].Substring(9);
                         TooltipLine line = new TooltipLine(mod, "Element" + element.ToString(), eleDamage.ToString() + eleName + "damage");
                         line.overrideColor = new Color(Int32.Parse(color.Substring(0, 3)), Int32.Parse(color.Substring(3, 3)), Int32.Parse(color.Substring(6, 3)));
-                        tooltips.Insert(1, line);
+                        tooltips.Insert(tooltips.FindIndex(tooltip => tooltip.Name == "Damage"), line);
                     }
                 }
                 for (int i = 0; i < prefixTooltips.Count; i += 1)

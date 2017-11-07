@@ -47,9 +47,9 @@ namespace kRPG.Items.Weapons.RangedDrops
             item.SetNameOverride(name);
             item.rare = (int)Math.Min(Math.Floor(dps / 15.0), 9);
             item.useTime = UseTime();
-            item.damage = (int)Math.Round(dps * DPSModifier() * (float)item.useTime / 60f + enemyDef - 3);
+            item.damage = (int)Math.Round(dps * DPSModifier() * (float)item.useTime / 60f + enemyDef - 6);
             if (item.damage < 1) item.damage = 1;
-            item.useTime = (int)Math.Round(((float)item.damage - enemyDef + 3) * 60f / (dps * DPSModifier()));
+            item.useTime = (int)Math.Round(((float)item.damage - enemyDef + 6) * 60f / (dps * DPSModifier()));
             item.useAnimation = item.useTime * Iterations() - 1;
             item.value = (int)(dps * 315);
         }
@@ -169,6 +169,11 @@ namespace kRPG.Items.Weapons.RangedDrops
                 packet.Write(item.enemyDef);
             }
             return ammo;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int)Math.Round(dps / 2f)));
         }
     }
 

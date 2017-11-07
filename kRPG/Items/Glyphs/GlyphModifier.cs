@@ -186,7 +186,7 @@ namespace kRPG.Items.Glyphs
                 Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, mod.ProjectileType<Explosion>(), spell.projectile.damage, 0f, spell.projectile.owner)];
                 proj.minion = true;
             });
-            vanish = new GlyphModifier(5, "Vanish", glyph => glyph is Star, () => Main.rand.Next(3) == 0, 1f, 1.1f);
+            vanish = new GlyphModifier(5, "Vanish", glyph => glyph is Star, () => Main.rand.Next(3) == 0, 0.95f, 1.1f);
             crosschains = new GlyphModifier(6, "", glyph => glyph is Cross, () => Main.rand.Next(3) == 0).DefineGroup(delegate
             {
                 switch(Main.rand.Next(2))
@@ -276,7 +276,7 @@ namespace kRPG.Items.Glyphs
                     spriteBatch.Draw(GFX.thornChain, chainpos - Main.screenPosition, null, spell.lighted ? Color.White : color, relativePos.ToRotation() - (float)API.Tau / 4f, new Vector2(10f, 16f), 1f, SpriteEffects.None, 0.1f);
                 }
             });
-            pierce = new GlyphModifier(10, "Pierces two additional enemies", glyph => glyph is Moon, () => Main.rand.Next(3) == 0, 0.8f, 1.05f).SetInit(delegate (ProceduralSpellProj spell)
+            pierce = new GlyphModifier(10, "Pierces two additional enemies", glyph => glyph is Moon, () => Main.rand.Next(3) == 0, 0.8f, 1.1f).SetInit(delegate (ProceduralSpellProj spell)
             {
                 if (spell.projectile.penetrate > 0) spell.projectile.penetrate += 2;
             });

@@ -84,12 +84,12 @@ namespace kRPG
                 else
                     spriteBatch.Draw(GFX.skillSlot, position, Color.White);
                 
-                if (full && remaining == 0) spriteBatch.Draw(GFX.gothicLetter[key], position, Color.White);
+                if (full && remaining == 0 && character.mana >= ManaCost(character)) spriteBatch.Draw(GFX.gothicLetter[key], position, Color.White);
                 else if (full || character.spellcraftingGUI.guiActive) spriteBatch.Draw(GFX.gothicLetter[key], position, new Color(143, 143, 151));
             }
             catch (Exception e)
             {
-                Main.NewText(e.ToString());
+                ErrorLogger.Log(e.ToString());
             }
         }
 

@@ -300,12 +300,12 @@ namespace kRPG.Items.Glyphs
 
         public override float BaseDamageModifier()
         {
-            return 0.75f;
+            return 0.7f;
         }
 
         public override float BaseManaModifier()
         {
-            return 1.25f;
+            return 1.4f;
         }
     }
 
@@ -494,6 +494,11 @@ namespace kRPG.Items.Glyphs
         }
 
         public override float BaseManaModifier()
+        {
+            return 0.9f;
+        }
+
+        public override float BaseDamageModifier()
         {
             return 0.9f;
         }

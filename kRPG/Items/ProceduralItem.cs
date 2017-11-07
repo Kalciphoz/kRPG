@@ -21,6 +21,8 @@ namespace kRPG.Items
     public class ProceduralItem : ModItem
     {
         public Texture2D texture;
+        public float dps;
+        public int enemyDef;
 
         public virtual void Initialize() { }
 
@@ -61,6 +63,11 @@ namespace kRPG.Items
             Draw(spriteBatch, position, drawColor, 0f, s);
             return false;
         }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int)Math.Round(dps / 2)));
+        }
     }
 
     public class ProceduralStaff : ProceduralItem
@@ -68,8 +75,6 @@ namespace kRPG.Items
         public Staff staff;
         public StaffGem gem;
         public StaffOrnament ornament;
-        public float dps = 0f;
-        public int enemyDef = 0;
 
         /*public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -182,7 +187,7 @@ namespace kRPG.Items
                 item.autoReuse = true;
                 item.value = (int)(dps * 315);
                 item.crit = staff.critBonus + gem.critBonus + ornament.critBonus;
-                item.mana = (int)Math.Round((item.damage * ornament.mana * staff.mana * gem.mana) / 6);
+                item.mana = (int)Math.Round((item.damage * ornament.mana * staff.mana * gem.mana) / 5);
                 eleDamage = new Dictionary<ELEMENT, float>();
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 {
@@ -340,6 +345,11 @@ namespace kRPG.Items
         {
             return texture;
         }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int)Math.Round(dps / 2.4f)));
+        }
     }
 
     public class ProceduralSword : ProceduralItem
@@ -347,8 +357,6 @@ namespace kRPG.Items
         public SwordHilt hilt;
         public SwordBlade blade;
         public SwordAccent accent;
-        public float dps = 0f;
-        public int enemyDef = 0;
         public bool spear = false;
         public bool lighted = false;
 
@@ -561,7 +569,7 @@ namespace kRPG.Items
                 noHitbox = true;
                 return;
             }
-            if (player.direction < 0)
+            /*if (player.direction < 0)
             {
                 Vector2 hbRelativePos = hitbox.TopLeft() - player.position;
                 hbRelativePos.X *= texture.Width / 48f;
@@ -570,7 +578,7 @@ namespace kRPG.Items
                 hitbox.Y = (int)(hbRelativePos.Y + player.position.Y);
             }
             hitbox.Width += (int)((float)hitbox.Width * texture.Width / 48f) - hitbox.Width;
-            hitbox.Height += (int)((float)hitbox.Height * texture.Height / 48f) - hitbox.Height;
+            hitbox.Height += (int)((float)hitbox.Height * texture.Height / 48f) - hitbox.Height;*/
             noHitbox = false;
         }
 

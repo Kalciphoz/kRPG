@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using Terraria;
 using System.IO;
+using Terraria.ModLoader;
 
 namespace kRPG
 {
@@ -59,40 +60,64 @@ namespace kRPG
 
         public static void Initialize()
         {
-            configPath = string.Concat(new object[] {
-                Main.SavePath,
-                Path.DirectorySeparatorChar,
-                configName,
-            });
-            configLocal = new Config();
-            Load();
+            try
+            {
+                configPath = string.Concat(new object[] {
+                    Main.SavePath,
+                    Path.DirectorySeparatorChar,
+                    configName,
+                });
+                configLocal = new Config();
+                Load();
+            }
+            catch (SystemException e)
+            {
+                ErrorLogger.Log(e.ToString());
+            }
         }
         public static void Load()
         {
-            Directory.CreateDirectory(Main.SavePath);
+            try
+            {
+                Directory.CreateDirectory(Main.SavePath);
 
-            _configLocal = new Config();
-            LoadConfig(configPath, ref _configLocal);
-            Save();
+                _configLocal = new Config();
+                LoadConfig(configPath, ref _configLocal);
+                Save();
+            }
+            catch (SystemException e)
+            {
+                ErrorLogger.Log(e.ToString());
+            }
         }
         private static void LoadConfig<T>(string path, ref T config) where T : class
         {
-            if (File.Exists(path))
+            try
             {
-                try
+                if (File.Exists(path))
                 {
                     using (StreamReader reader = new StreamReader(path))
                     {
                         config = JsonConvert.DeserializeObject<T>(reader.ReadToEnd());
                     }
                 }
-                catch { }
+            }
+            catch (SystemException e)
+            {
+                ErrorLogger.Log(e.ToString());
             }
         }
         public static void Save()
         {
-            Directory.CreateDirectory(Main.SavePath);
-            File.WriteAllText(configPath, JsonConvert.SerializeObject(configLocal, Formatting.Indented).Replace("  ", "\t"));
+            try
+            {
+                Directory.CreateDirectory(Main.SavePath);
+                File.WriteAllText(configPath, JsonConvert.SerializeObject(configLocal, Formatting.Indented).Replace("  ", "\t"));
+            }
+            catch (SystemException e)
+            {
+                ErrorLogger.Log(e.ToString());
+            }
         }
         
         public class ClientConfig

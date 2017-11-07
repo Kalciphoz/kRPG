@@ -13,7 +13,7 @@ using kRPG.Items.Weapons.RangedDrops;
 namespace kRPG
 {
     public enum STAT : byte { RESILIENCE, QUICKNESS, POTENCY, WITS };
-    public enum ELEMENT : byte { SHADOW, LIGHTNING, COLD, FIRE };
+    public enum ELEMENT : byte { FIRE, COLD, LIGHTNING, SHADOW };
     public enum RITUAL : byte { DEMON_PACT, WARRIOR_OATH, ELAN_VITAL, STONE_ASPECT, ELDRITCH_FURY, MIND_FORTRESS, BLOOD_DRINKING };
 
     public enum Message : byte { AddXP, CastSpell, SwordInit, StaffInit, BowInit, SyncHit, SyncCritHit };

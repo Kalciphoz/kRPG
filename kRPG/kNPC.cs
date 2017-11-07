@@ -124,7 +124,7 @@ namespace kRPG
         public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
         {
             if (projectile.modProjectile is ProceduralSpellProj)
-                invincibilityTime[projectile.whoAmI] = 18;
+                invincibilityTime[projectile.whoAmI] = 24;
         }
 
         public override bool StrikeNPC(NPC npc, ref double damage, int defense, ref float knockback, int hitDirection, ref bool crit)
@@ -280,9 +280,9 @@ namespace kRPG
 
             else if (Main.rand.Next(14) < (character.level < 5 ? 3 : (character.level < 10 ? 2 : 1)))
             {
-                if (Main.rand.Next(5) == 0) Item.NewItem(npc.position, RangedWeapon.NewRangedWeapon(mod, npc.position, level, character.level, dps * 0.9f, assumedDef), Main.rand.Next(30, 90));
+                if (Main.rand.Next(5) == 0) Item.NewItem(npc.position, RangedWeapon.NewRangedWeapon(mod, npc.position, level, character.level, dps, assumedDef), Main.rand.Next(30, 90));
                 else if (Main.rand.Next(9) < 5) ProceduralSword.GenerateSword(mod, npc.position, GetTheme(player), dps, assumedDef);
-                else ProceduralStaff.GenerateStaff(mod, npc.position, GetStaffTheme(player), dps * 1.1f, assumedDef);
+                else ProceduralStaff.GenerateStaff(mod, npc.position, GetStaffTheme(player), dps * 1.2f, assumedDef);
             }
 
             else if (Main.rand.Next(35) == 0)
