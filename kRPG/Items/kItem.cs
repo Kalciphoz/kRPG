@@ -205,7 +205,7 @@ namespace kRPG.Items
                 reforgedps = staff.dps;
                 reforgedef = staff.enemyDef;
             }
-            else if (item.type == mod.ItemType<RangedWeapon>())
+            else if (item.modItem is RangedWeapon)
             {
                 RangedWeapon weapon = (RangedWeapon)item.modItem;
                 reforgedps = weapon.dps;
@@ -238,7 +238,7 @@ namespace kRPG.Items
                 staff.enemyDef = reforgedef;
                 staff.Initialize();
             }
-            else if (item.type == mod.ItemType<RangedWeapon>())
+            else if (item.modItem is RangedWeapon)
             {
                 RangedWeapon weapon = (RangedWeapon)item.modItem;
                 weapon.dps = reforgedps;
