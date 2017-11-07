@@ -524,6 +524,14 @@ namespace kRPG
             if (item.damage > 0 && (item.melee || !item.noMelee || item.modItem is ProceduralSword))
                 lastSelectedWeapon = item;
 
+            if (item.modItem is ProceduralSword)
+                if (Main.itemTexture[item.type] != ((ProceduralSword)item.modItem).texture)
+                    Main.itemTexture[item.type] = ((ProceduralSword)item.modItem).texture;
+
+            if (item.modItem is ProceduralStaff)
+                if (Main.itemTexture[mod.ItemType<ProceduralStaff>()] != ((ProceduralStaff)item.modItem).texture)
+                    Main.itemTexture[mod.ItemType<ProceduralStaff>()] = ((ProceduralStaff)item.modItem).texture;
+
             for (int i = 0; i < 40; i += 1)
                 inventories[activeInvPage][i] = player.inventory[i + 10];
             if (Main.netMode != 2) inventoryGUI.guiActive = Main.playerInventory;

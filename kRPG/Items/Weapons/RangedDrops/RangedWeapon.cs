@@ -206,6 +206,7 @@ namespace kRPG.Items.Weapons.RangedDrops
             item.shootSpeed = 7f;
             item.damage = 1;
             item.useTime = 30;
+            item.scale = 0.8f;
             item.useAnimation = 30;
             item.UseSound = SoundID.Item11;
         }

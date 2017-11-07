@@ -280,7 +280,7 @@ namespace kRPG
 
             else if (Main.rand.Next(14) < (character.level < 5 ? 3 : (character.level < 10 ? 2 : 1)))
             {
-                if (Main.rand.Next(5) == 0) Item.NewItem(npc.position, RangedWeapon.NewRangedWeapon(mod, npc.position, level, character.level, dps * 0.9f, assumedDef), Main.rand.Next(20, 61));
+                if (Main.rand.Next(5) == 0) Item.NewItem(npc.position, RangedWeapon.NewRangedWeapon(mod, npc.position, level, character.level, dps * 0.9f, assumedDef), Main.rand.Next(30, 90));
                 else if (Main.rand.Next(9) < 5) ProceduralSword.GenerateSword(mod, npc.position, GetTheme(player), dps, assumedDef);
                 else ProceduralStaff.GenerateStaff(mod, npc.position, GetStaffTheme(player), dps * 1.1f, assumedDef);
             }
