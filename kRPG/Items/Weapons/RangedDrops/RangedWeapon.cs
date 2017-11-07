@@ -44,7 +44,6 @@ namespace kRPG.Items.Weapons.RangedDrops
 
         public virtual void SetStats()
         {
-            SetDefaults();
             item.SetNameOverride(name);
             item.rare = (int)Math.Min(Math.Floor(dps / 15.0), 9);
             item.useTime = UseTime();
@@ -55,7 +54,7 @@ namespace kRPG.Items.Weapons.RangedDrops
             item.value = (int)(dps * 315);
         }
 
-        public override ModItem Clone()
+        public override ModItem Clone(Item item)
         {
             RangedWeapon copy = (RangedWeapon)base.Clone(item);
             copy.dps = dps;

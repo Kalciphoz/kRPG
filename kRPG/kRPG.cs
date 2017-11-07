@@ -52,6 +52,7 @@ namespace kRPG
             { Message.SyncHit, new List<DataTag>(){ DataTag.playerId, DataTag.amount_single } },
             { Message.SyncCritHit, new List<DataTag>(){ DataTag.playerId, DataTag.amount_single } }
         };
+        public Texture2D[] invslot = new Texture2D[16];
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
@@ -164,6 +165,22 @@ namespace kRPG
             if (Main.netMode != 2)
             {
                 GFX.LoadGFX(this);
+                invslot[0] = Main.inventoryBackTexture;
+                invslot[1] = Main.inventoryBack2Texture;
+                invslot[2] = Main.inventoryBack3Texture;
+                invslot[3] = Main.inventoryBack4Texture;
+                invslot[4] = Main.inventoryBack5Texture;
+                invslot[5] = Main.inventoryBack6Texture;
+                invslot[6] = Main.inventoryBack7Texture;
+                invslot[7] = Main.inventoryBack8Texture;
+                invslot[8] = Main.inventoryBack9Texture;
+                invslot[9] = Main.inventoryBack10Texture;
+                invslot[10] = Main.inventoryBack11Texture;
+                invslot[11] = Main.inventoryBack12Texture;
+                invslot[12] = Main.inventoryBack13Texture;
+                invslot[13] = Main.inventoryBack14Texture;
+                invslot[14] = Main.inventoryBack15Texture;
+                invslot[15] = Main.inventoryBack16Texture;
                 Main.inventoryBackTexture = GFX.itemSlot;
                 Main.inventoryBack2Texture = GFX.itemSlot;
                 Main.inventoryBack3Texture = GFX.itemSlot;
@@ -188,6 +205,26 @@ namespace kRPG
             StaffGem.Initialize();
             StaffOrnament.Initialize();
             GlyphModifier.Initialize(this);
+        }
+
+        public override void Unload()
+        {
+            Main.inventoryBackTexture = invslot[0];
+            Main.inventoryBack2Texture = invslot[1];
+            Main.inventoryBack3Texture = invslot[2];
+            Main.inventoryBack4Texture = invslot[3];
+            Main.inventoryBack5Texture = invslot[4];
+            Main.inventoryBack6Texture = invslot[5];
+            Main.inventoryBack7Texture = invslot[6];
+            Main.inventoryBack8Texture = invslot[7];
+            Main.inventoryBack9Texture = invslot[8];
+            Main.inventoryBack10Texture = invslot[9];
+            Main.inventoryBack11Texture = invslot[10];
+            Main.inventoryBack12Texture = invslot[11];
+            Main.inventoryBack13Texture = invslot[12];
+            Main.inventoryBack14Texture = invslot[13];
+            Main.inventoryBack15Texture = invslot[14];
+            Main.inventoryBack16Texture = invslot[15];
         }
 
         public override void PostDrawInterface(SpriteBatch spriteBatch)

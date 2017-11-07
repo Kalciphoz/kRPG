@@ -277,7 +277,7 @@ namespace kRPG.Items
                 upgradeLevel = (byte)(RandomizeUpgradeLevel(item, randomize) + (randomize ? (item.modItem is RangedWeapon ? 2 : 0) : 3));
                 kPrefix = (byte)(rand.Next(29) + 1);
             }
-
+            
             else if (item.defense > 0)
             {
                 kPrefix = (byte)(rand.Next(19) + 1);
@@ -962,9 +962,6 @@ namespace kRPG.Items
 
         public void ApplyUpgradeLevel(Item item)
         {
-            bool staffflag = item.type == mod.ItemType<ProceduralStaff>();
-            bool swordflag = item.type == mod.ItemType<ProceduralSword>();
-            
             double animationDPS = 60 * item.damage / item.useAnimation;
             double usetimeDPS = 60 * item.damage / item.useTime;
             double dpsModifier = 1.0;

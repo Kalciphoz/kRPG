@@ -1,5 +1,5 @@
 displayName = Kalciphoz's RPG Mod
-version = 1.0
+version = 1.0.1
 author = Kalciphoz
 hideCode = false
 hideResources = false

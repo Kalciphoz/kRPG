@@ -222,5 +222,64 @@ namespace kRPG
 
             sfx_levelUp = mod.GetSound(LEVELUPSOUND);
         }
+
+        public static void UnloadGFX()
+        {
+            button_confirm = null;
+            button_upgrade = null;
+            button_cancel = null;
+            button_close = null;
+            button_stats = null;
+            button_page1 = null;
+            button_page2 = null;
+            button_page3 = null;
+            button_stats_pressed = null;
+            button_page1_pressed = null;
+            button_page2_pressed = null;
+            button_page3_pressed = null;
+            button_crown = null;
+            button_crown_pressed = null;
+
+            deerskull = null;
+            flames = null;
+            flames_converted = null;
+            deerskull_eyes = null;
+            anvil = null;
+            characterFrame = null;
+            statusBars = null;
+            bubbles = null;
+            bubbles_lava = null;
+            statusBars_BG = null;
+            gothicNumeral = null;
+            gothicLetter = null;
+            unspentPoints = null;
+            itemSlot = null;
+            favouritedSlot = null;
+            selectedSlot = null;
+            skillSlot = null;
+            selectedSkillSlot = null;
+            spellGui = null;
+            inventoryFrame = null;
+            inventory_separator = null;
+            inventory_life = null;
+            inventory_mana = null;
+            inventory_xp = null;
+            inventory_barCovers = null;
+            inventory_points = null;
+            inventory_panel = null;
+
+            projectile_fireball = null;
+            projectile_frostbolt = null;
+            projectile_boulder = null;
+            projectile_shadowbolt = null;
+            projectile_thunderbolt = null;
+            heart = null;
+            star = null;
+            thornChain = null;
+
+            levelUp = null;
+
+            sfx_levelUp = null;
+        }
     }
 }
