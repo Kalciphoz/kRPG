@@ -338,7 +338,7 @@ namespace kRPG
         public void LevelUP()
         {
             this.level += 1;
-            if (!Main.gameMenu) GFX.sfx_levelUp.Play(0.7f * Main.soundVolume, 0f, 0f);
+            if (!Main.gameMenu) GFX.sfx_levelUp.Play(0.5f * Main.soundVolume, 0f, 0f);
             if (Main.netMode == 1)
             {
                 ModPacket packet = mod.GetPacket();
@@ -633,6 +633,11 @@ namespace kRPG
             //    inventories[activeInvPage][i] = player.inventory[i + 10];
 
             //API.FindRecipes();
+        }
+
+        public override void PreUpdateBuffs()
+        {
+            
         }
 
         public void OpenInventoryPage(int page)

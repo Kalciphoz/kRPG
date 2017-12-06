@@ -125,7 +125,7 @@ namespace kRPG.GUI
                         }
 
                         guiActive = false;
-                        GFX.sfx_levelUp.Play(0.3f*Main.soundVolume, -0.6f, -0.2f);
+                        GFX.sfx_levelUp.Play(0.2f*Main.soundVolume, -0.6f, -0.2f);
                         return;
                     }
                     catch (SystemException e)
