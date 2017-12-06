@@ -47,7 +47,7 @@ namespace kRPG
             return button;
         }
 
-        public InterfaceButton AddButton(Func<Rectangle> position, Action<Player> pressAction, Action<SpriteBatch> hoverAction)
+        public InterfaceButton AddButton(Func<Rectangle> position, Action<Player> pressAction, Action<Player, SpriteBatch> hoverAction)
         {
             InterfaceButton button = new InterfaceButton(position, pressAction, hoverAction);
             buttons.Add(button);

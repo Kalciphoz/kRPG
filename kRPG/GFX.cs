@@ -60,6 +60,7 @@ namespace kRPG
         private const string BUTTON_PAGE3_PRESSED = GUI_DIRECTORY + "Button_Page3_Pressed";
         private const string BUTTON_CROWN = GUI_DIRECTORY + "Button_Crown";
         private const string BUTTON_CROWN_PRESSED = GUI_DIRECTORY + "Button_Crown_Pressed";
+        private const string GUARDIAN_CROWN = GUI_DIRECTORY + "GuardianCrown";
 
         private const string PROJECTILES_DIRECTORY = "GFX/Projectiles/";
         private const string PROJECTILE_FIREBALL = PROJECTILES_DIRECTORY + "Fireball";
@@ -117,6 +118,7 @@ namespace kRPG
         public static Texture2D button_page3_pressed;
         public static Texture2D button_crown;
         public static Texture2D button_crown_pressed;
+        public static Texture2D guardianCrown;
 
         public static Texture2D projectile_fireball;
         public static Texture2D projectile_frostbolt;
@@ -170,6 +172,7 @@ namespace kRPG
             button_page3_pressed = mod.GetTexture(BUTTON_PAGE3_PRESSED);
             button_crown = mod.GetTexture(BUTTON_CROWN);
             button_crown_pressed = mod.GetTexture(BUTTON_CROWN_PRESSED);
+            guardianCrown = mod.GetTexture(GUARDIAN_CROWN);
 
             deerskull = mod.GetTexture(DEERSKULL);
             flames[STAT.RESILIENCE] = mod.GetTexture(FLAMES_RED);
@@ -241,17 +244,23 @@ namespace kRPG
             button_crown_pressed = null;
 
             deerskull = null;
-            flames = null;
+            flames[STAT.RESILIENCE] = null;
+            flames[STAT.QUICKNESS] = null;
+            flames[STAT.POTENCY] = null;
             flames_converted = null;
-            deerskull_eyes = null;
+            deerskull_eyes[STAT.RESILIENCE] = null;
+            deerskull_eyes[STAT.QUICKNESS] = null;
+            deerskull_eyes[STAT.POTENCY] = null;
             anvil = null;
             characterFrame = null;
             statusBars = null;
             bubbles = null;
             bubbles_lava = null;
             statusBars_BG = null;
-            gothicNumeral = null;
-            gothicLetter = null;
+            for (int i = 0; i < 10; i++)
+                gothicNumeral[i] = null;
+            for (Keys k = Keys.A; k <= Keys.Z; k += 1)
+                gothicLetter[k] = null;
             unspentPoints = null;
             itemSlot = null;
             favouritedSlot = null;

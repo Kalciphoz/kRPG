@@ -17,6 +17,7 @@ using Terraria.Localization;
 using Terraria.UI.Chat;
 using Terraria.Map;
 using Terraria.GameContent.UI.States;
+using kRPG.Items;
 
 namespace kRPG.GUI
 {
@@ -26,40 +27,52 @@ namespace kRPG.GUI
         {
             get
             {
-                return new Vector2(40f, 8f);
+                return new Vector2(40f, 8f) * scale;
             }
+        }
+
+        private float scale
+        {
+            get
+            {
+                return Math.Min(1f, Main.screenWidth / 3840f + 0.4f);
+            }
+        }
+
+        public override bool PreDraw()
+        {
+            return Main.playerInventory;
         }
 
         public InventoryGUI(PlayerCharacter character, Mod mod) : base()
         {
-            AddButton(delegate () { return new Rectangle((int)origin.X + 142, (int)origin.Y + 102, GFX.button_stats.Width, GFX.button_stats.Height); }, delegate (Player player)
+            AddButton(delegate () { return new Rectangle((int)(origin.X + 142f * scale), (int)(origin.Y + 102f * scale), (int)(GFX.button_stats.Width * scale), (int)(GFX.button_stats.Height * scale)); }, delegate (Player player)
             {
                 Main.PlaySound(SoundID.MenuTick);
-                character.statPage = true;
+                character.statPage = !character.statPage;
             });
-            AddButton(delegate () { return new Rectangle((int)origin.X + 174, (int)origin.Y + 102, GFX.button_page1.Width, GFX.button_page1.Height); }, delegate (Player player)
+            AddButton(delegate () { return new Rectangle((int)(origin.X + 174f * scale), (int)(origin.Y + 102f * scale), (int)(GFX.button_page1.Width * scale), (int)(GFX.button_page1.Height * scale)); }, delegate (Player player)
             {
                 Main.PlaySound(SoundID.MenuTick);
                 character.OpenInventoryPage(0);
             });
-            AddButton(delegate () { return new Rectangle((int)origin.X + 206, (int)origin.Y + 102, GFX.button_page2.Width, GFX.button_page3.Height); }, delegate (Player player)
+            AddButton(delegate () { return new Rectangle((int)(origin.X + 206f * scale), (int)(origin.Y + 102f * scale), (int)(GFX.button_page2.Width * scale), (int)(GFX.button_page2.Height * scale)); }, delegate (Player player)
             {
                 Main.PlaySound(SoundID.MenuTick);
                 character.OpenInventoryPage(1);
             });
-            AddButton(delegate() { return new Rectangle((int)origin.X + 238, (int)origin.Y + 102, GFX.button_page3.Width, GFX.button_page3.Height); }, delegate (Player player)
+            AddButton(delegate() { return new Rectangle((int)(origin.X + 238f * scale), (int)(origin.Y + 102f * scale), (int)(GFX.button_page3.Width * scale), (int)(GFX.button_page3.Height * scale)); }, delegate (Player player)
             {
                 Main.PlaySound(SoundID.MenuTick);
                 character.OpenInventoryPage(2);
             });
-            AddButton(delegate () { return new Rectangle((int)points_origin.X, (int)points_origin.Y, GFX.inventory_points.Width, GFX.inventory_points.Height); }, delegate (Player player)
+            AddButton(delegate () { return new Rectangle((int)points_origin.X, (int)points_origin.Y, (int)(GFX.inventory_points.Width * scale), (int)(GFX.inventory_points.Height * scale)); }, delegate (Player player)
             {
                 character.CloseGUIs();
                 Main.PlaySound(SoundID.MenuTick);
                 character.levelGUI.guiActive = player.GetModPlayer<PlayerCharacter>(mod).UnspentPoints();
-            }, delegate (SpriteBatch spriteBatch)
+            }, delegate (Player player, SpriteBatch spriteBatch)
             {
-                Main.LocalPlayer.mouseInterface = true;
                 string s = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>(mod).UnspentPoints() ? "Click here to allocate stat points" : "You have no unspent stat points";
                 //spriteBatch.DrawString(Main.fontMouseText, s, new Vector2(Main.mouseX - 16f, Main.mouseY + 20f), Color.White);
                 Main.instance.MouseText(s);
@@ -69,38 +82,56 @@ namespace kRPG.GUI
         {
             get
             {
-                return origin + new Vector2(538f, 76f);
+                return origin + new Vector2(538f, 76f) * scale;
             }
         }
         private const int bar_length = 192;
-        private const int bar_x = 314;
+        private float bar_x
+        {
+            get
+            {
+                return 314f * scale;
+            }
+        }
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+
+            for (int i = 0; i < 40; i += 1)
+                character.inventories[character.activeInvPage][i] = player.inventory[i + 10];
+
+            API.FindRecipes();
+
             Vanilla(!character.statPage);
             if (character.statPage) DrawStatPage(spriteBatch, character);
-            spriteBatch.Draw(GFX.inventoryFrame, new Vector2((int)origin.X, (int)origin.Y), Color.White);
-            if (!character.statPage) spriteBatch.Draw(GFX.inventory_separator, new Vector2((int)origin.X + 56, (int)origin.Y + 354), Color.White);
+            spriteBatch.Draw(GFX.inventoryFrame, new Vector2((int)origin.X, (int)origin.Y), Color.White, scale);
+            if (!character.statPage) spriteBatch.Draw(GFX.inventory_separator, new Vector2(origin.X + 56 * scale, origin.Y + 354 * scale), Color.White, scale);
             DrawHotbar(spriteBatch);
-            spriteBatch.Draw(character.statPage ? GFX.button_stats_pressed : GFX.button_stats, origin + new Vector2(142f, 102f), Color.White);
-            spriteBatch.Draw(character.activeInvPage == 0 && !character.statPage ? GFX.button_page1_pressed : GFX.button_page1, new Vector2(origin.X + 174f, origin.Y + 102f), Color.White);
-            spriteBatch.Draw(character.activeInvPage == 1 && !character.statPage ? GFX.button_page2_pressed : GFX.button_page2, new Vector2(origin.X + 206f, origin.Y + 102f), Color.White);
-            spriteBatch.Draw(character.activeInvPage == 2 && !character.statPage ? GFX.button_page3_pressed : GFX.button_page3, new Vector2(origin.X + 238f, origin.Y + 102f), Color.White);
-            StatusBar.DrawNumerals(spriteBatch, player.GetModPlayer<PlayerCharacter>().level, 1f);
+            spriteBatch.Draw(character.statPage ? GFX.button_stats_pressed : GFX.button_stats, origin + new Vector2(142f, 102f) * scale, Color.White, scale);
+            spriteBatch.Draw(character.activeInvPage == 0 && !character.statPage ? GFX.button_page1_pressed : GFX.button_page1, origin + new Vector2(174f, 102f) * scale, Color.White, scale);
+            spriteBatch.Draw(character.activeInvPage == 1 && !character.statPage ? GFX.button_page2_pressed : GFX.button_page2, origin + new Vector2(206f, 102f) * scale, Color.White, scale);
+            spriteBatch.Draw(character.activeInvPage == 2 && !character.statPage ? GFX.button_page3_pressed : GFX.button_page3, origin + new Vector2(238f, 102f) * scale, Color.White, scale);
+            StatusBar.DrawNumerals(spriteBatch, player.GetModPlayer<PlayerCharacter>().level, scale);
 
             int currentLifeLength = (int)Math.Round((decimal)player.statLife / (decimal)player.statLifeMax2 * bar_length);
-            spriteBatch.Draw(GFX.inventory_life, origin + new Vector2(bar_x, 70), new Rectangle(0, 0, currentLifeLength, 20), Color.White);
+            spriteBatch.Draw(GFX.inventory_life, origin + new Vector2(bar_x, 70 * scale), new Rectangle(0, 0, currentLifeLength, 20), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
             int currentManaLength = (int)Math.Round((decimal)character.mana / (decimal)player.statManaMax2 * bar_length);
-            spriteBatch.Draw(GFX.inventory_mana, origin + new Vector2(bar_x, 98), new Rectangle(0, 0, currentManaLength, 16), Color.White);
+            spriteBatch.Draw(GFX.inventory_mana, origin + new Vector2(bar_x, 98 * scale), new Rectangle(0, 0, currentManaLength, 16), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
             int currentXPLength = (int)Math.Round((decimal)bar_length * (decimal)character.xp / (decimal)character.ExperienceToLevel());
-            spriteBatch.Draw(GFX.inventory_xp, origin + new Vector2(bar_x, 126), new Rectangle(0, 0, currentXPLength, 8), Color.White);
-            spriteBatch.Draw(GFX.inventory_barCovers, origin + new Vector2(302, 68), Color.White);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife.ToString() + " / " + player.statLifeMax2.ToString(), origin + new Vector2(bar_x + 16f, 72f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.mana.ToString() + " / " + player.statManaMax2.ToString(), origin + new Vector2(bar_x + 16f, 100f), Color.White, 0.6f);
+            spriteBatch.Draw(GFX.inventory_xp, origin + new Vector2(bar_x, 126 * scale), new Rectangle(0, 0, currentXPLength, 8), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(GFX.inventory_barCovers, origin + new Vector2(302, 68) * scale, Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife.ToString() + " / " + player.statLifeMax2.ToString(), origin + new Vector2(bar_x + 16f * scale, 72f * scale), Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.mana.ToString() + " / " + player.statManaMax2.ToString(), origin + new Vector2(bar_x + 16f * scale, 100f * scale), Color.White, 0.6f * scale);
 
             if (character.UnspentPoints())
-                spriteBatch.Draw(GFX.inventory_points, points_origin, null, Color.White);
+                spriteBatch.Draw(GFX.inventory_points, points_origin, Color.White, scale);
+
+            Mod mod = ModLoader.GetMod("kRPG");
+            spriteBatch.Draw(Main.itemTexture[mod.ItemType<PermanenceCrown>()], origin + new Vector2(600f, 68f) * scale, Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.permanence.ToString(), origin + new Vector2(640f, 72f) * scale, Color.White, scale * 1.2f);
+            spriteBatch.Draw(Main.itemTexture[mod.ItemType<BlacksmithCrown>()], origin + new Vector2(600f, 108f) * scale, Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.transcendence.ToString(), origin + new Vector2(640f, 112f) * scale, Color.White, scale * 1.2f);
 
             StatusBar.DrawBuffs();
         }
@@ -115,67 +146,67 @@ namespace kRPG.GUI
 
         private void DrawStatPage(SpriteBatch spriteBatch, PlayerCharacter character)
         {
-            Vector2 panel_origin = origin + new Vector2(56, 146);
-            spriteBatch.Draw(GFX.inventory_panel, panel_origin, Color.White);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, (character.ExperienceToLevel() - character.xp).ToString() + " XP to level", panel_origin + new Vector2(24f, 24f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Resilience:", panel_origin + new Vector2(24f, 42f), new Color(223, 0, 0), 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.RESILIENCE).ToString(), panel_origin + new Vector2(128f, 42f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Quickness:", panel_origin + new Vector2(24f, 60f), new Color(0, 191, 31), 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.QUICKNESS).ToString(), panel_origin + new Vector2(128f, 60f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Potency:", panel_origin + new Vector2(24f, 78f), new Color(27, 65, 255), 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.POTENCY).ToString(), panel_origin + new Vector2(128f, 78f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Wits:", panel_origin + new Vector2(24f, 96f), new Color(239, 223, 31), 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.WITS).ToString(), panel_origin + new Vector2(128f, 96f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Damage:", panel_origin + new Vector2(24f, 114f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(character.damageMultiplier * 100f).ToString() + "%", panel_origin + new Vector2(128f, 114f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Melee speed:", panel_origin + new Vector2(24f, 132f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(1f / character.player.meleeSpeed * 100f).ToString() + "%", panel_origin + new Vector2(128f, 132f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Crit chance:", panel_origin + new Vector2(24f, 150f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "+" + character.critBoost.ToString() + "%", panel_origin + new Vector2(120f, 150f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Crit multiplier:", panel_origin + new Vector2(24f, 168f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round((character.damageMultiplier + character.critMultiplier) * 200f).ToString() + "%", panel_origin + new Vector2(128f, 168f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Defense:", panel_origin + new Vector2(24f, 184f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.player.statDefense.ToString(), panel_origin + new Vector2(128f, 184f), Color.White, 0.8f);
+            Vector2 panel_origin = origin + new Vector2(56, 146) * scale;
+            spriteBatch.Draw(GFX.inventory_panel, panel_origin, Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, (character.ExperienceToLevel() - character.xp).ToString() + " XP to level", panel_origin + new Vector2(24f, 24f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Resilience:", panel_origin + new Vector2(24f, 42f) * scale, new Color(223, 0, 0), 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.RESILIENCE).ToString(), panel_origin + new Vector2(128f, 42f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Quickness:", panel_origin + new Vector2(24f, 60f) * scale, new Color(0, 191, 31), 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.QUICKNESS).ToString(), panel_origin + new Vector2(128f, 60f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Potency:", panel_origin + new Vector2(24f, 78f) * scale, new Color(27, 65, 255), 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.POTENCY).ToString(), panel_origin + new Vector2(128f, 78f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Wits:", panel_origin + new Vector2(24f, 96f) * scale, new Color(239, 223, 31), 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.WITS).ToString(), panel_origin + new Vector2(128f, 96f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Damage:", panel_origin + new Vector2(24f, 114f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(character.damageMultiplier * 100f).ToString() + "%", panel_origin + new Vector2(128f, 114f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Melee speed:", panel_origin + new Vector2(24f, 132f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(1f / character.player.meleeSpeed * 100f).ToString() + "%", panel_origin + new Vector2(128f, 132f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Crit chance:", panel_origin + new Vector2(24f, 150f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "+" + character.critBoost.ToString() + "%", panel_origin + new Vector2(120f, 150f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Crit multiplier:", panel_origin + new Vector2(24f, 168f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round((character.damageMultiplier + character.critMultiplier) * 200f).ToString() + "%", panel_origin + new Vector2(128f, 168f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Defense:", panel_origin + new Vector2(24f, 184f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.player.statDefense.ToString(), panel_origin + new Vector2(128f, 184f) * scale, Color.White, 0.8f * scale);
             
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Fire resistance:", panel_origin + new Vector2(184f, 42f), new Color(255, 63, 0), 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.FIRE].ToString(), panel_origin + new Vector2(288f, 42f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Cold resistance:", panel_origin + new Vector2(184f, 60f), new Color(63, 127, 255), 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.COLD].ToString(), panel_origin + new Vector2(288f, 60f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Light. resist.:", panel_origin + new Vector2(184f, 78f), new Color(255, 239, 0), 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.LIGHTNING].ToString(), panel_origin + new Vector2(288f, 78f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Shadow resist.:", panel_origin + new Vector2(184f, 96f), new Color(95, 0, 191), 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.SHADOW].ToString(), panel_origin + new Vector2(288f, 96f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Evasion:", panel_origin + new Vector2(184f, 114f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.evasion.ToString(), panel_origin + new Vector2(288f, 114f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Dodge chance:", panel_origin + new Vector2(184f, 132f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round((80f - (80 * 25) / (25 + character.evasion))).ToString() + "%", panel_origin + new Vector2(288f, 132f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Crit avoidance:", panel_origin + new Vector2(184f, 150f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round((90f - (90 * 38) / (38 + character.evasion + character.TotalStats(STAT.WITS)*2))).ToString() + "%", panel_origin + new Vector2(288f, 150f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Accuracy:", panel_origin + new Vector2(184f, 168f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.accuracy.ToString(), panel_origin + new Vector2(288f, 168f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Hit chance:", panel_origin + new Vector2(184f, 186f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(character.hitChance * 100).ToString() + "%", panel_origin + new Vector2(288f, 186f), Color.White, 0.8f);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Fire resistance:", panel_origin + new Vector2(184f, 42f) * scale, new Color(255, 63, 0), 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.FIRE].ToString(), panel_origin + new Vector2(288f, 42f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Cold resistance:", panel_origin + new Vector2(184f, 60f) * scale, new Color(63, 127, 255), 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.COLD].ToString(), panel_origin + new Vector2(288f, 60f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Light. resist.:", panel_origin + new Vector2(184f, 78f) * scale, new Color(255, 239, 0), 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.LIGHTNING].ToString(), panel_origin + new Vector2(288f, 78f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Shadow resist.:", panel_origin + new Vector2(184f, 96f) * scale, new Color(95, 0, 191), 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.SHADOW].ToString(), panel_origin + new Vector2(288f, 96f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Evasion:", panel_origin + new Vector2(184f, 114f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.evasion.ToString(), panel_origin + new Vector2(288f, 114f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Dodge chance:", panel_origin + new Vector2(184f, 132f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round((80f - (80 * 25) / (25 + character.evasion))).ToString() + "%", panel_origin + new Vector2(288f, 132f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Crit avoidance:", panel_origin + new Vector2(184f, 150f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round((90f - (90 * 38) / (38 + character.evasion + character.TotalStats(STAT.WITS)*2))).ToString() + "%", panel_origin + new Vector2(288f, 150f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Accuracy:", panel_origin + new Vector2(184f, 168f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.accuracy.ToString(), panel_origin + new Vector2(288f, 168f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Hit chance:", panel_origin + new Vector2(184f, 186f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(character.hitChance * 100).ToString() + "%", panel_origin + new Vector2(288f, 186f) * scale, Color.White, 0.8f * scale);
             
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Life regen:", panel_origin + new Vector2(344f, 42f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, (Math.Round(character.lifeRegen * 10) / 10).ToString(), panel_origin + new Vector2(448f, 42f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Mana regen:", panel_origin + new Vector2(344f, 60f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, (Math.Round(character.manaRegen*10)/10).ToString(), panel_origin + new Vector2(448f, 60f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Movespeed:", panel_origin + new Vector2(344f, 78f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(character.player.moveSpeed*100).ToString() + "%", panel_origin + new Vector2(448f, 78f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Jump boost:", panel_origin + new Vector2(344f, 96f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.player.jumpSpeedBoost.ToString(), panel_origin + new Vector2(448f, 96f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Life leech:", panel_origin + new Vector2(344f, 114f), Color.White, 0.8f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, (character.lifeLeech * 100).ToString() + "%", panel_origin + new Vector2(448f, 114f), Color.White, 0.8f);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Life regen:", panel_origin + new Vector2(344f, 42f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, (Math.Round(character.lifeRegen * 10) / 10).ToString(), panel_origin + new Vector2(448f, 42f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Mana regen:", panel_origin + new Vector2(344f, 60f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, (Math.Round(character.manaRegen*10)/10).ToString(), panel_origin + new Vector2(448f, 60f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Movespeed:", panel_origin + new Vector2(344f, 78f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(character.player.moveSpeed*100).ToString() + "%", panel_origin + new Vector2(448f, 78f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Jump boost:", panel_origin + new Vector2(344f, 96f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.player.jumpSpeedBoost.ToString(), panel_origin + new Vector2(448f, 96f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Life leech:", panel_origin + new Vector2(344f, 114f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, (character.lifeLeech * 100).ToString() + "%", panel_origin + new Vector2(448f, 114f) * scale, Color.White, 0.8f * scale);
         }
 
         private void DrawHotbar(SpriteBatch spriteBatch)
         {
             float oldinvscale = Main.inventoryScale;
-            Main.inventoryScale = 1f;
+            Main.inventoryScale = scale;
             for (int i = 0; i < 10; i++)
             {
-                int x2 = (int)((int)origin.X + 54 + (float)(i * 52));
-                int y2 = (int)origin.Y + 364;
+                float x2 = origin.X + 54 * scale + (float)(i * 52 * scale);
+                float y2 = origin.Y + 364 * scale;
                 if (Main.mouseX >= x2 && (float)Main.mouseX <= (float)x2 + (float)Main.inventoryBackTexture.Width * Main.inventoryScale && Main.mouseY >= y2 && (float)Main.mouseY <= (float)y2 + (float)Main.inventoryBackTexture.Height * Main.inventoryScale && !PlayerInput.IgnoreMouseInterface)
                 {
                     Main.player[Main.myPlayer].mouseInterface = true;
@@ -189,7 +220,7 @@ namespace kRPG.GUI
                         if (Main.mouseLeftRelease && Main.mouseLeft)
                         {
                             ItemSlot.LeftClick(Main.player[Main.myPlayer].inventory, 0, i);
-                            Recipe.FindRecipes();
+                            API.FindRecipes();
                         }
                         else
                         {
@@ -206,13 +237,13 @@ namespace kRPG.GUI
         private void DrawInventory(SpriteBatch spriteBatch)
         {
             float oldinvscale = Main.inventoryScale;
-            Main.inventoryScale = 1f;
+            Main.inventoryScale = scale;
             for (int i = 0; i < 10; i++)
             {
                 for (int j = 1; j < 5; j++)
                 {
-                    int x2 = (int)((int)origin.X + 54  + (float)(i * 52));
-                    int y2 = (int)((int)origin.Y + 94 + (float)(j * 52));
+                    float x2 = origin.X + 54 * scale + (float)(i * 52 * scale);
+                    float y2 = origin.Y + 94 * scale + (float)(j * 52 * scale);
                     int id = i + j * 10;
                     if (Main.mouseX >= x2 && (float)Main.mouseX <= (float)x2 + (float)Main.inventoryBackTexture.Width * Main.inventoryScale && Main.mouseY >= y2 && (float)Main.mouseY <= (float)y2 + (float)Main.inventoryBackTexture.Height * Main.inventoryScale && !PlayerInput.IgnoreMouseInterface)
                     {
@@ -227,7 +258,7 @@ namespace kRPG.GUI
                             if (Main.mouseLeftRelease && Main.mouseLeft)
                             {
                                 ItemSlot.LeftClick(Main.player[Main.myPlayer].inventory, 0, id);
-                                Recipe.FindRecipes();
+                                API.FindRecipes();
                             }
                             else
                             {
@@ -240,7 +271,7 @@ namespace kRPG.GUI
                 }
             }
             Main.inventoryScale = oldinvscale;
-            Main.instance.invBottom = 436;
+            Main.instance.invBottom = (int)(436 * scale);
         }
 
         private void Vanilla(bool drawInv)
@@ -255,7 +286,7 @@ namespace kRPG.GUI
                 }
 
                 Main.inventoryScale = 0.85f;
-                int num = 640;
+                int num = 40 + (int)(600 * scale);
                 int num2 = 314;
                 new Color(150, 150, 150, 150);
                 if (Main.mouseX >= num && (float)Main.mouseX <= (float)num + (float)Main.inventoryBackTexture.Width * Main.inventoryScale && Main.mouseY >= num2 && (float)Main.mouseY <= (float)num2 + (float)Main.inventoryBackTexture.Height * Main.inventoryScale && !PlayerInput.IgnoreMouseInterface)
@@ -264,7 +295,7 @@ namespace kRPG.GUI
                     if (Main.mouseLeftRelease && Main.mouseLeft)
                     {
                         ItemSlot.LeftClick(ref Main.player[Main.myPlayer].trashItem, 6);
-                        Recipe.FindRecipes();
+                        API.FindRecipes();
                     }
                     ItemSlot.MouseHover(ref Main.player[Main.myPlayer].trashItem, 6);
                 }
@@ -657,7 +688,7 @@ namespace kRPG.GUI
                             Main.spriteBatch.Draw(texture, new Vector2((float)num38, (float)num39), new Rectangle?(new Rectangle(0, 0, Main.inventoryBackTexture.Width, Main.inventoryBackTexture.Height)), white2, 0f, default(Vector2), Main.inventoryScale, SpriteEffects.None, 0f);
                             white = Color.White;
                             int num40 = num35;
-                            float scale = 1f;
+                            float s = 1f;
                             float num41;
                             if (Main.npcHeadTexture[num40].Width > Main.npcHeadTexture[num40].Height)
                             {
@@ -669,9 +700,9 @@ namespace kRPG.GUI
                             }
                             if (num41 > 36f)
                             {
-                                scale = 36f / num41;
+                                s = 36f / num41;
                             }
-                            Main.spriteBatch.Draw(Main.npcHeadTexture[num40], new Vector2((float)num38 + 26f * Main.inventoryScale, (float)num39 + 26f * Main.inventoryScale), new Rectangle?(new Rectangle(0, 0, Main.npcHeadTexture[num40].Width, Main.npcHeadTexture[num40].Height)), white, 0f, new Vector2((float)(Main.npcHeadTexture[num40].Width / 2), (float)(Main.npcHeadTexture[num40].Height / 2)), scale, SpriteEffects.None, 0f);
+                            Main.spriteBatch.Draw(Main.npcHeadTexture[num40], new Vector2((float)num38 + 26f * Main.inventoryScale, (float)num39 + 26f * Main.inventoryScale), new Rectangle?(new Rectangle(0, 0, Main.npcHeadTexture[num40].Width, Main.npcHeadTexture[num40].Height)), white, 0f, new Vector2((float)(Main.npcHeadTexture[num40].Width / 2), (float)(Main.npcHeadTexture[num40].Height / 2)), s, SpriteEffects.None, 0f);
                             num32++;
                         }
                         UILinkPointNavigator.Shortcuts.NPCS_IconsTotal = num32;
@@ -940,7 +971,7 @@ namespace kRPG.GUI
                     {
                         Main.InReforgeMenu = false;
                         Main.player[Main.myPlayer].dropItemCheck();
-                        Recipe.FindRecipes();
+                        API.FindRecipes();
                     }
                     else
                     {
@@ -1096,7 +1127,7 @@ namespace kRPG.GUI
                             if (Main.mouseLeftRelease && Main.mouseLeft)
                             {
                                 ItemSlot.LeftClick(ref Main.reforgeItem, 5);
-                                Recipe.FindRecipes();
+                                API.FindRecipes();
                             }
                             else
                             {
@@ -1113,7 +1144,7 @@ namespace kRPG.GUI
                     {
                         Main.InGuideCraftMenu = false;
                         Main.player[Main.myPlayer].dropItemCheck();
-                        Recipe.FindRecipes();
+                        API.FindRecipes();
                     }
                     else
                     {
@@ -1181,7 +1212,7 @@ namespace kRPG.GUI
                             if (Main.mouseLeftRelease && Main.mouseLeft)
                             {
                                 ItemSlot.LeftClick(ref Main.guideItem, 7);
-                                Recipe.FindRecipes();
+                                API.FindRecipes();
                             }
                             else
                             {
@@ -1269,7 +1300,7 @@ namespace kRPG.GUI
                                     {
                                         if (Main.mouseLeftRelease && Main.mouseLeft)
                                         {
-                                            Main.CraftItem(Main.recipe[Main.availableRecipe[num80]]);
+                                            API.CraftItem(Main.recipe[Main.availableRecipe[num80]]);
                                         }
                                         else if (Main.stackSplit <= 1 && Main.mouseRight && (Main.mouseItem.stack < Main.mouseItem.maxStack || Main.mouseItem.type == 0))
                                         {
@@ -1281,7 +1312,7 @@ namespace kRPG.GUI
                                             {
                                                 Main.stackSplit = Main.stackDelay;
                                             }
-                                            Main.CraftItem(Main.recipe[Main.availableRecipe[num80]]);
+                                            API.CraftItem(Main.recipe[Main.availableRecipe[num80]]);
                                         }
                                     }
                                 }
@@ -1592,11 +1623,11 @@ namespace kRPG.GUI
                 Vector2 vector2 = Main.fontMouseText.MeasureString("Coins");
                 Vector2 vector3 = Main.fontMouseText.MeasureString(Lang.inter[26].Value);
                 float num109 = vector2.X / vector3.X;
-                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[26].Value, new Vector2(639, 140f + (vector2.Y - vector2.Y * num109) / 2f), new Color((int)Main.mouseTextColor, (int)Main.mouseTextColor, (int)Main.mouseTextColor, (int)Main.mouseTextColor), 0f, default(Vector2), 0.75f * num109, SpriteEffects.None, 0f);
+                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[26].Value, new Vector2(39 + (int)(600 * scale), 140f + (vector2.Y - vector2.Y * num109) / 2f), new Color((int)Main.mouseTextColor, (int)Main.mouseTextColor, (int)Main.mouseTextColor, (int)Main.mouseTextColor), 0f, default(Vector2), 0.75f * num109, SpriteEffects.None, 0f);
                 Main.inventoryScale = 0.6f;
                 for (int num110 = 0; num110 < 4; num110++)
                 {
-                    int num111 = 640;//497;
+                    int num111 = 40 + (int)(600 * scale);
                     int num112 = (int)(140f + (float)(num110 * 56) * Main.inventoryScale + 20f);
                     int slot = num110 + 50;
                     new Color(100, 100, 100, 100);
@@ -1607,7 +1638,7 @@ namespace kRPG.GUI
                         if (Main.mouseLeftRelease && Main.mouseLeft)
                         {
                             ItemSlot.LeftClick(Main.player[Main.myPlayer].inventory, 1, slot);
-                            Recipe.FindRecipes();
+                            API.FindRecipes();
                         }
                         else
                         {
@@ -1620,11 +1651,11 @@ namespace kRPG.GUI
                 Vector2 vector4 = Main.fontMouseText.MeasureString("Ammo");
                 Vector2 vector5 = Main.fontMouseText.MeasureString(Lang.inter[27].Value);
                 float num113 = vector4.X / vector5.X;
-                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[27].Value, new Vector2(676f, 140f + (vector4.Y - vector4.Y * num113) / 2f), new Color((int)Main.mouseTextColor, (int)Main.mouseTextColor, (int)Main.mouseTextColor, (int)Main.mouseTextColor), 0f, default(Vector2), 0.75f * num113, SpriteEffects.None, 0f);
+                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[27].Value, new Vector2(76 + (int)(600 * scale), 140f + (vector4.Y - vector4.Y * num113) / 2f), new Color((int)Main.mouseTextColor, (int)Main.mouseTextColor, (int)Main.mouseTextColor, (int)Main.mouseTextColor), 0f, default(Vector2), 0.75f * num113, SpriteEffects.None, 0f);
                 Main.inventoryScale = 0.6f;
                 for (int num114 = 0; num114 < 4; num114++)
                 {
-                    int num115 = 678; //534;
+                    int num115 = 78 + (int)(600 * scale);
                     int num116 = (int)(140f + (float)(num114 * 56) * Main.inventoryScale + 20f); //was 85
                     int slot2 = 54 + num114;
                     new Color(100, 100, 100, 100);
@@ -1635,7 +1666,7 @@ namespace kRPG.GUI
                         if (Main.mouseLeftRelease && Main.mouseLeft)
                         {
                             ItemSlot.LeftClick(Main.player[Main.myPlayer].inventory, 2, slot2);
-                            Recipe.FindRecipes();
+                            API.FindRecipes();
                         }
                         else
                         {
@@ -1686,7 +1717,7 @@ namespace kRPG.GUI
                 if (Main.player[Main.myPlayer].chest > -1 && !Main.tileContainer[(int)Main.tile[Main.player[Main.myPlayer].chestX, Main.player[Main.myPlayer].chestY].type])
                 {
                     Main.player[Main.myPlayer].chest = -1;
-                    Recipe.FindRecipes();
+                    API.FindRecipes();
                 }
                 int offsetDown = 0;
                 if (!PlayerInput.UsingGamepad)
@@ -1699,7 +1730,7 @@ namespace kRPG.GUI
                 {
                     int num121 = 0;
                     int num122 = 498;
-                    int num123 = 448;
+                    int num123 = (int)Math.Round(414f * scale) + 34;
                     int width = Main.chestStackTexture[num121].Width;
                     int height = Main.chestStackTexture[num121].Height;
                     UILinkPointNavigator.SetPosition(301, new Vector2((float)num122 + (float)width * 0.75f, (float)num123 + (float)height * 0.75f));
@@ -1715,7 +1746,7 @@ namespace kRPG.GUI
                         {
                             Main.mouseLeftRelease = false;
                             Main.player[Main.myPlayer].QuickStackAllChests();
-                            Recipe.FindRecipes();
+                            API.FindRecipes();
                         }
                         Main.player[Main.myPlayer].mouseInterface = true;
                     }
@@ -1734,7 +1765,7 @@ namespace kRPG.GUI
                 {
                     int num124 = 0;
                     int num125 = 534;
-                    int num126 = 448;
+                    int num126 = (int)Math.Round(414f * scale) + 34;
                     int num127 = 30;
                     int num128 = 30;
                     UILinkPointNavigator.SetPosition(302, new Vector2((float)num125 + (float)num127 * 0.75f, (float)num126 + (float)num128 * 0.75f));
@@ -1748,7 +1779,7 @@ namespace kRPG.GUI
                         {
                             Main.mouseLeftRelease = false;
                             ItemSorting.SortInventory();
-                            Recipe.FindRecipes();
+                            API.FindRecipes();
                         }
                     }
                     if (flag10 != (bool)inventorySortMouseOver.GetValue(null))

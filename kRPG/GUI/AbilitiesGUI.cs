@@ -20,7 +20,15 @@ namespace kRPG.GUI
         {
             get
             {
-                return new Vector2(Main.screenWidth - GFX.skillSlot.Width * 8, Main.screenHeight - GFX.skillSlot.Height - 12f);
+                return new Vector2(Main.screenWidth - GFX.skillSlot.Width * 8 * scale, Main.screenHeight - GFX.skillSlot.Height * scale - 12);
+            }
+        }
+
+        private float scale
+        {
+            get
+            {
+                return Math.Min(1f, Main.screenWidth / 1920f);
             }
         }
 
@@ -36,7 +44,7 @@ namespace kRPG.GUI
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
             for (int i = 0; i < character.abilities.Length; i += 1)
             {
-                character.abilities[i].Draw(spriteBatch, GuiPosition + new Vector2(i * (GFX.skillSlot.Width + 8f), 0), player);
+                character.abilities[i].Draw(spriteBatch, GuiPosition + new Vector2(i * (GFX.skillSlot.Width + 8f) * scale, 0), player, scale);
             }
         }
     }

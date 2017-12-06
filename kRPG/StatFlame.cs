@@ -46,15 +46,14 @@ namespace kRPG
             this.counter = (int)id * 8;
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, float scale)
         {
             if (counter > (8 * animationTime - 1)) counter = 0;
             frameNumber = (int)(Math.Floor((double)counter / (double)animationTime));
-            spriteBatch.Draw(character.rituals[RITUAL.DEMON_PACT] && id == STAT.RESILIENCE ? GFX.flames_converted : texture, position(), new Rectangle(0, frameNumber*68, 56, 68), Color.White);
+            spriteBatch.Draw(character.rituals[RITUAL.DEMON_PACT] && id == STAT.RESILIENCE ? GFX.flames_converted : texture, position(), new Rectangle(0, frameNumber * 68, 56, 68), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
             string text = (allocated + character.baseStats[id]).ToString();
-            float scale = 1f;
-            float width = Main.fontItemStack.MeasureString(text).X * scale;
-            spriteBatch.DrawStringWithShadow(Main.fontItemStack, text, position() + new Vector2(28f - width / 2f, 36f), allocated > 0 ? Color.Lime : Color.White, scale);
+            float width = Main.fontItemStack.MeasureString(text).X;
+            spriteBatch.DrawStringWithShadow(Main.fontItemStack, text, position() + new Vector2(28f - width / 2f, 36f) * scale, allocated > 0 ? Color.Lime : Color.White, scale);
             counter++;
         }
 
@@ -84,7 +83,7 @@ namespace kRPG
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "<Click to allocate>", new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 176f), Color.White);
                 else
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "<Allocated " + allocated.ToString() + ">", new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 176f), Color.White);
-                
+
                 int total = 0;
                 foreach (STAT stat in levelGUI.allocated.Keys)
                     total += levelGUI.allocated[stat];

@@ -24,6 +24,12 @@ namespace kRPG.Items
         public float dps;
         public int enemyDef;
 
+        public override bool CanPickup(Player player)
+        {
+            if (Main.netMode == 0) return true;
+            else return item.value > 100;
+        }
+
         public virtual void Initialize() { }
 
         public virtual void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale) { }
@@ -32,7 +38,6 @@ namespace kRPG.Items
         {
             item.width = 48;
             item.height = 48;
-            item.value = 3000;
             item.scale = 1f;
             item.noMelee = true;
         }
@@ -115,7 +120,6 @@ namespace kRPG.Items
             item.useAnimation = 1;
             item.useStyle = 5;
             item.knockBack = 5f;
-            item.value = 3000;
             item.UseSound = SoundID.Item43;
             item.scale = 1f;
             item.noMelee = true;
@@ -129,8 +133,11 @@ namespace kRPG.Items
             DisplayName.SetDefault("Procedurally Generated Staff; Please Ignore");
         }
 
-        /*public override void NetSend(BinaryWriter writer)
+        public override void NetSend(BinaryWriter writer)
         {
+            bool proceed = gem != null;
+            writer.Write(proceed);
+            if (!proceed) return;
             writer.Write(gem.type);
             writer.Write(staff.type);
             writer.Write(ornament.type);
@@ -140,13 +147,14 @@ namespace kRPG.Items
 
         public override void NetRecieve(BinaryReader reader)
         {
+            if (!reader.ReadBoolean()) return;
             gem = StaffGem.gems[reader.ReadInt32()];
             staff = Staff.staves[reader.ReadInt32()];
             ornament = StaffOrnament.ornament[reader.ReadInt32()];
             dps = reader.ReadSingle();
             enemyDef = reader.ReadInt32();
             Initialize();
-        }*/
+        }
 
         public override void Initialize()
         {
@@ -196,7 +204,7 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                Main.NewText(e.ToString());
+                ErrorLogger.Log(e.ToString());
             }
         }
 
@@ -400,7 +408,6 @@ namespace kRPG.Items
             item.useAnimation = 1;
             item.useStyle = 1;
             item.knockBack = 5f;
-            item.value = 3000;
             item.UseSound = SoundID.Item1;
             item.scale = 1f;
             item.noMelee = false;
@@ -412,8 +419,11 @@ namespace kRPG.Items
             DisplayName.SetDefault("Procedurally Generated Sword; Please Ignore");
         }
 
-        /*public override void NetSend(BinaryWriter writer)
+        public override void NetSend(BinaryWriter writer)
         {
+            bool proceed = blade != null;
+            writer.Write(proceed);
+            if (!proceed) return;
             writer.Write(blade.type);
             writer.Write(hilt.type);
             writer.Write(accent.type);
@@ -423,13 +433,14 @@ namespace kRPG.Items
 
         public override void NetRecieve(BinaryReader reader)
         {
+            if (!reader.ReadBoolean()) return;
             blade = SwordBlade.blades[reader.ReadInt32()];
             hilt = SwordHilt.hilts[reader.ReadInt32()];
             accent = SwordAccent.accents[reader.ReadInt32()];
             dps = reader.ReadSingle();
             enemyDef = reader.ReadInt32();
             Initialize();
-        }*/
+        }
 
         public override void Initialize()
         {
@@ -494,7 +505,7 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                Main.NewText(e.ToString());
+                ErrorLogger.Log(e.ToString());
             }
         }
 
@@ -526,7 +537,7 @@ namespace kRPG.Items
         {
             if (spear/* && player.altFunctionUse != 2*/)
             {
-                Vector2 pos = player.position; //  + new Vector2(2f * player.direction, 4f)
+                Vector2 pos = player.position;
                 Vector2 unitVelocity = (new Vector2(Main.mouseX - 12f, Main.mouseY - 24f) + Main.screenPosition - pos);
                 unitVelocity.Normalize();
                 Vector2 velocity = unitVelocity * 60f / item.useAnimation;
@@ -537,7 +548,16 @@ namespace kRPG.Items
                 ps.hilt = hilt;
                 ps.blade = blade;
                 ps.accent = accent;
-                ps.Initialize();
+                if (Main.netMode != 2) ps.Initialize();
+                if (Main.netMode == 1)
+                {
+                    ModPacket packet = mod.GetPacket();
+                    packet.Write((byte)Message.SyncSpear);
+                    packet.Write(blade.type);
+                    packet.Write(hilt.type);
+                    packet.Write(accent.type);
+                    packet.Send();
+                }
                 return true;
             }
 
@@ -569,16 +589,6 @@ namespace kRPG.Items
                 noHitbox = true;
                 return;
             }
-            /*if (player.direction < 0)
-            {
-                Vector2 hbRelativePos = hitbox.TopLeft() - player.position;
-                hbRelativePos.X *= texture.Width / 48f;
-                hbRelativePos.Y *= texture.Height / 48f;
-                hitbox.X = (int)(hbRelativePos.X + player.position.X);
-                hitbox.Y = (int)(hbRelativePos.Y + player.position.Y);
-            }
-            hitbox.Width += (int)((float)hitbox.Width * texture.Width / 48f) - hitbox.Width;
-            hitbox.Height += (int)((float)hitbox.Height * texture.Height / 48f) - hitbox.Height;*/
             noHitbox = false;
         }
 

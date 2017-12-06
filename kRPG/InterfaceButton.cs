@@ -13,7 +13,7 @@ namespace kRPG
     {
         private Func<Rectangle> position;
         private Action<Player> pressAction;
-        private Action<SpriteBatch> hoverAction;
+        private Action<Player, SpriteBatch> hoverAction;
 
         private bool hoverActionSet = false;
 
@@ -23,7 +23,7 @@ namespace kRPG
             this.pressAction = pressAction;
         }
 
-        public InterfaceButton(Func<Rectangle> position, Action<Player> pressAction, Action<SpriteBatch> hoverAction)
+        public InterfaceButton(Func<Rectangle> position, Action<Player> pressAction, Action<Player, SpriteBatch> hoverAction)
         {
             this.position = position;
             this.pressAction = pressAction;
@@ -38,7 +38,7 @@ namespace kRPG
                 Main.LocalPlayer.mouseInterface = true;
 
                 if (hoverActionSet)
-                    hoverAction(spriteBatch);
+                    hoverAction(player, spriteBatch);
 
                 if (Main.mouseLeft && Main.mouseLeftRelease)
                     pressAction(player);

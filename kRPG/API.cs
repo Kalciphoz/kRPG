@@ -19,6 +19,7 @@ using Terraria.GameContent.Achievements;
 using kRPG.Items.Glyphs;
 using kRPG.Items;
 using kRPG.Items.Weapons.RangedDrops;
+using Terraria.Audio;
 
 namespace kRPG
 {
@@ -41,7 +42,7 @@ namespace kRPG
         public static void SetItemDefaults(this Item item, int type, bool noMatCheck = false, bool createModItem = true)
         {
             try
-            { 
+            {
                 object globalitems = typeof(Item).GetField("globalItems", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(item);
                 item.ClearNameOverride();
                 if (Main.netMode == 1 || Main.netMode == 2)
@@ -341,13 +342,20 @@ namespace kRPG
 
             return output;
         }
-        
+
         public static int Wealth(this Player player)
         {
             int coins = 0;
 
-            foreach (Item i in player.inventory)
-                coins += CoinStackValue(i);
+            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+
+            foreach (Item item in player.inventory)
+                coins += CoinStackValue(item);
+
+            for (int i = 0; i < character.inventories.Length; i += 1)
+                if (character.activeInvPage != i)
+                    foreach (Item item in character.inventories[i])
+                        coins += CoinStackValue(item);
 
             foreach (Item i in player.bank.item)
                 coins += CoinStackValue(i);
@@ -364,19 +372,19 @@ namespace kRPG
         public static int CoinStackValue(Item i)
         {
             int coins = 0;
-            if (i.type == 71)
+            if (i.type == ItemID.CopperCoin)
             {
                 coins += i.stack;
             }
-            else if (i.type == 72)
+            else if (i.type == ItemID.SilverCoin)
             {
                 coins += i.stack * 100;
             }
-            else if (i.type == 73)
+            else if (i.type == ItemID.GoldCoin)
             {
                 coins += i.stack * 10000;
             }
-            else if (i.type == 74)
+            else if (i.type == ItemID.PlatinumCoin)
             {
                 coins += i.stack * 1000000;
             }
@@ -396,26 +404,42 @@ namespace kRPG
                 coins[i] = 0;
             }
 
-            foreach (Item i in player.inventory)
-                coins = SumCoins(coins, CountCoins(i));
+            coins = SeparateCoinTypes(player.Wealth());
 
-            foreach (Item i in player.bank.item)
-                coins = SumCoins(coins, CountCoins(i));
+            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+            //foreach (Item[] inventory in character.inventories)
+            //    foreach (Item i in inventory)
+            //        coins = SumCoins(coins, CountCoins(i));
 
-            foreach (Item i in player.bank2.item)
-                coins = SumCoins(coins, CountCoins(i));
+            //foreach (Item i in player.bank.item)
+            //    coins = SumCoins(coins, CountCoins(i));
 
-            foreach (Item i in player.bank3.item)
-                coins = SumCoins(coins, CountCoins(i));
+            //foreach (Item i in player.bank2.item)
+            //    coins = SumCoins(coins, CountCoins(i));
+
+            //foreach (Item i in player.bank3.item)
+            //    coins = SumCoins(coins, CountCoins(i));
 
             for (int i = 0; i < 4; i++)
             {
                 if (coins[i] >= cost[i])
                 {
                     foreach (Item item in player.inventory)
-                    {
                         item.stack = RemoveCoins(item, cointype[i], ref cost[i]);
-                    }
+
+                    for (int j = 0; j < character.inventories.Length; j += 1)
+                        if (character.activeInvPage != j)
+                            foreach (Item item in character.inventories[j])
+                                item.stack = RemoveCoins(item, cointype[i], ref cost[i]);
+
+                    foreach (Item item in player.bank.item)
+                        item.stack = RemoveCoins(item, cointype[i], ref cost[i]);
+
+                    foreach (Item item in player.bank2.item)
+                        item.stack = RemoveCoins(item, cointype[i], ref cost[i]);
+
+                    foreach (Item item in player.bank3.item)
+                        item.stack = RemoveCoins(item, cointype[i], ref cost[i]);
                 }
 
                 else
@@ -496,7 +520,7 @@ namespace kRPG
                 Dust dust2 = Main.dust[num];
                 dust2.position.Y = dust2.position.Y + (float)Main.rand.Next(-20, 21);
                 Main.dust[num].velocity *= 0.4f;
-                Main.dust[num].scale *= 1f + (float)Main.rand.Next(40) * 0.01f;
+                Main.dust[num].scale *= 0.8f + (float)Main.rand.Next(40) * 0.01f;
                 Main.dust[num].shader = GameShaders.Armor.GetSecondaryShader(player.cWaist, player);
                 if (Main.rand.Next(2) == 0)
                 {
@@ -505,27 +529,27 @@ namespace kRPG
                 }
             }
             int num2 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2) - 24f, player.position.Y + (float)(player.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
-            Main.gore[num2].scale = 1.5f;
+            //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
             num2 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2) - 24f, player.position.Y + (float)(player.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
-            Main.gore[num2].scale = 1.5f;
+            //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = 1.5f + (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = 1.5f + (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
             num2 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2) - 24f, player.position.Y + (float)(player.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
-            Main.gore[num2].scale = 1.5f;
+            //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = -1.5f - (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = 1.5f + (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
             num2 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2) - 24f, player.position.Y + (float)(player.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
-            Main.gore[num2].scale = 1.5f;
+            //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = 1.5f + (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = -1.5f - (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
             num2 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2) - 24f, player.position.Y + (float)(player.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
-            Main.gore[num2].scale = 1.5f;
+            //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = -1.5f - (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = -1.5f - (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
@@ -540,13 +564,13 @@ namespace kRPG
             npc.GetGlobalNPC<kNPC>().immuneTime = time;
             for (int j = 0; j < 100; j++)
             {
-                int num = Dust.NewDust(new Vector2(dustpos.position.X, dustpos.position.Y), dustpos.width, dustpos.height, 31, 0f, 0f, 100, default(Color), 2f);
+                int num = Dust.NewDust(new Vector2(dustpos.position.X, dustpos.position.Y), dustpos.width, dustpos.height, 31, 0f, 0f, 152, default(Color), 2f);
                 Dust dust = Main.dust[num];
                 dust.position.X = dust.position.X + (float)Main.rand.Next(-20, 21);
                 Dust dust2 = Main.dust[num];
                 dust2.position.Y = dust2.position.Y + (float)Main.rand.Next(-20, 21);
                 Main.dust[num].velocity *= 0.4f;
-                Main.dust[num].scale *= 1f + (float)Main.rand.Next(40) * 0.01f;
+                Main.dust[num].scale *= 0.7f + (float)Main.rand.Next(30) * 0.01f;
                 if (Main.rand.Next(2) == 0)
                 {
                     Main.dust[num].scale *= 1f + (float)Main.rand.Next(40) * 0.01f;
@@ -554,27 +578,27 @@ namespace kRPG
                 }
             }
             int num2 = Gore.NewGore(new Vector2(dustpos.position.X + (float)(dustpos.width / 2) - 24f, dustpos.position.Y + (float)(dustpos.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
-            Main.gore[num2].scale = 1.5f;
+            Main.gore[num2].scale = 0.8f;
             Main.gore[num2].velocity.X = (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
             num2 = Gore.NewGore(new Vector2(dustpos.position.X + (float)(dustpos.width / 2) - 24f, dustpos.position.Y + (float)(dustpos.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
-            Main.gore[num2].scale = 1.5f;
+            Main.gore[num2].scale = 0.8f;
             Main.gore[num2].velocity.X = 1.5f + (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = 1.5f + (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
             num2 = Gore.NewGore(new Vector2(dustpos.position.X + (float)(dustpos.width / 2) - 24f, dustpos.position.Y + (float)(dustpos.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
-            Main.gore[num2].scale = 1.5f;
+            Main.gore[num2].scale = 0.8f;
             Main.gore[num2].velocity.X = -1.5f - (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = 1.5f + (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
             num2 = Gore.NewGore(new Vector2(dustpos.position.X + (float)(dustpos.width / 2) - 24f, dustpos.position.Y + (float)(dustpos.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
-            Main.gore[num2].scale = 1.5f;
+            Main.gore[num2].scale = 0.8f;
             Main.gore[num2].velocity.X = 1.5f + (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = -1.5f - (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
             num2 = Gore.NewGore(new Vector2(dustpos.position.X + (float)(dustpos.width / 2) - 24f, dustpos.position.Y + (float)(dustpos.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
-            Main.gore[num2].scale = 1.5f;
+            Main.gore[num2].scale = 0.8f;
             Main.gore[num2].velocity.X = -1.5f - (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = -1.5f - (float)Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
@@ -588,6 +612,11 @@ namespace kRPG
         public static void DrawStringWithShadow(this SpriteBatch spriteBatch, DynamicSpriteFont font, string text, Vector2 position, Color color, float scale = 1f)
         {
             ChatManager.DrawColorCodedStringWithShadow(spriteBatch, font, text, position, color, 0f, Vector2.Zero, Vector2.One * scale);
+        }
+
+        public static void Draw(this SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Color color, float scale)
+        {
+            spriteBatch.Draw(texture, position, null, color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
         }
 
         public static void ItemSlotDrawExtension(SpriteBatch spriteBatch, Item[] inv, int context, int slot, Vector2 position, Color overrideColor, Color lightColor = default(Color), bool drawSelected = true)
@@ -1031,6 +1060,332 @@ namespace kRPG
             }
         }
 
+        public static void APIQuickHeal(this Player player)
+        {
+            if (player.noItems)
+            {
+                return;
+            }
+            if (player.statLife == player.statLifeMax2 || player.potionDelay > 0)
+            {
+                return;
+            }
+            Item item = player.APIQuickHeal_GetItemToUse();
+            if (item == null)
+            {
+                return;
+            }
+            Main.PlaySound(item.UseSound, player.position);
+            if (item.potion)
+            {
+                if (item.type == 227)
+                {
+                    player.potionDelay = player.restorationDelayTime;
+                    player.AddBuff(21, player.potionDelay, true);
+                }
+                else
+                {
+                    player.potionDelay = player.potionDelayTime;
+                    player.AddBuff(21, player.potionDelay, true);
+                }
+            }
+            ItemLoader.UseItem(item, player);
+            player.statLife += item.healLife;
+            player.statMana += item.healMana;
+            if (player.statLife > player.statLifeMax2)
+            {
+                player.statLife = player.statLifeMax2;
+            }
+            if (player.statMana > player.statManaMax2)
+            {
+                player.statMana = player.statManaMax2;
+            }
+            if (item.healLife > 0 && Main.myPlayer == player.whoAmI)
+            {
+                player.HealEffect(item.healLife, true);
+            }
+            if (item.healMana > 0)
+            {
+                if (Main.myPlayer == player.whoAmI)
+                {
+                    player.ManaEffect(item.healMana);
+                }
+            }
+            if (ItemLoader.ConsumeItem(item, player))
+            {
+                item.stack--;
+            }
+            if (item.stack <= 0)
+            {
+                item.TurnToAir();
+            }
+            API.FindRecipes();
+        }
+
+        public static Item APIQuickHeal_GetItemToUse(this Player player)
+        {
+            int num = player.statLifeMax2 - player.statLife;
+            Item result = null;
+            int num2 = -player.statLifeMax2;
+            for (int i = 0; i < 58; i++)
+            {
+                Item item = player.inventory[i];
+                if (item.stack > 0 && item.type > 0 && item.potion && item.healLife > 0 && ItemLoader.CanUseItem(item, player))
+                {
+                    int num3 = item.healLife - num;
+                    if (num2 < 0)
+                    {
+                        if (num3 > num2)
+                        {
+                            result = item;
+                            num2 = num3;
+                        }
+                    }
+                    else if (num3 < num2 && num3 >= 0)
+                    {
+                        result = item;
+                        num2 = num3;
+                    }
+                }
+            }
+
+            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+            for (int i = 0; i < character.inventories.Length; i += 1)
+                if (character.activeInvPage != i)
+                    for (int j = 0; j < character.inventories[i].Length; j += 1)
+                    {
+                        Item item = character.inventories[i][j];
+                        if (item.stack > 0 && item.type > 0 && item.potion && item.healLife > 0 && ItemLoader.CanUseItem(item, player))
+                        {
+                            int num3 = item.healLife - num;
+                            if (num2 < 0)
+                            {
+                                if (num3 > num2)
+                                {
+                                    result = item;
+                                    num2 = num3;
+                                }
+                            }
+                            else if (num3 < num2 && num3 >= 0)
+                            {
+                                result = item;
+                                num2 = num3;
+                            }
+                        }
+                    }
+
+            return result;
+        }
+
+        public static void APIQuickMana(this Player player)
+        {
+            if (player.noItems)
+            {
+                return;
+            }
+            if (player.statMana == player.statManaMax2)
+            {
+                return;
+            }
+            for (int i = 0; i < 58; i++)
+            {
+                APIQuickMana_TryItem(player, player.inventory[i]);
+            }
+
+            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+            for (int i = 0; i < character.inventories.Length; i += 1)
+                if (character.activeInvPage != i)
+                    for (int j = 0; j < character.inventories[i].Length; j += 1)
+                        APIQuickMana_TryItem(player, character.inventories[i][j]);
+        }
+
+        private static void APIQuickMana_TryItem(Player player, Item item)
+        {
+            if (item.stack > 0 && item.type > 0 && item.healMana > 0 && (player.potionDelay == 0 || !item.potion) && ItemLoader.CanUseItem(item, player))
+            {
+                Main.PlaySound(item.UseSound, player.position);
+                if (item.potion)
+                {
+                    if (item.type == 227)
+                    {
+                        player.potionDelay = player.restorationDelayTime;
+                        player.AddBuff(21, player.potionDelay, true);
+                    }
+                    else
+                    {
+                        player.potionDelay = player.potionDelayTime;
+                        player.AddBuff(21, player.potionDelay, true);
+                    }
+                }
+                ItemLoader.UseItem(item, player);
+                player.statLife += item.healLife;
+                player.statMana += item.healMana;
+                if (player.statLife > player.statLifeMax2)
+                {
+                    player.statLife = player.statLifeMax2;
+                }
+                if (player.statMana > player.statManaMax2)
+                {
+                    player.statMana = player.statManaMax2;
+                }
+                if (item.healLife > 0 && Main.myPlayer == player.whoAmI)
+                {
+                    player.HealEffect(item.healLife, true);
+                }
+                if (item.healMana > 0)
+                {
+                    player.AddBuff(94, Player.manaSickTime, true);
+                    if (Main.myPlayer == player.whoAmI)
+                    {
+                        player.ManaEffect(item.healMana);
+                    }
+                }
+                if (ItemLoader.ConsumeItem(item, player))
+                {
+                    item.stack--;
+                }
+                if (item.stack <= 0)
+                {
+                    item.TurnToAir();
+                }
+                API.FindRecipes();
+                return;
+            }
+        }
+
+        public static void APIQuickBuff(this Player player)
+        {
+            if (player.noItems)
+            {
+                return;
+            }
+            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+
+            if (player.CountBuffs() == 22)
+            {
+                return;
+            }
+
+            for (int i = 0; i < 58; i += 1)
+            {
+                Item item = player.inventory[i];
+                APIQuickBuff_TryItem(player, item);
+            }
+
+            for (int i = 0; i < character.inventories.Length; i += 1)
+            {
+                if (character.activeInvPage != i)
+                    for (int j = 0; j < character.inventories[i].Length; j += 1)
+                    {
+                        Item item = character.inventories[i][j];
+                        APIQuickBuff_TryItem(player, item);
+                    }
+            }
+        }
+
+        private static void APIQuickBuff_TryItem(Player player, Item item)
+        {
+            LegacySoundStyle legacySoundStyle = null;
+
+            if (item.stack > 0 && item.type > 0 && item.buffType > 0 && !item.summon && item.buffType != 90)
+            {
+                int num = item.buffType;
+                bool flag = ItemLoader.CanUseItem(item, player);
+                for (int b = 0; b < 22; b++)
+                {
+                    if (num == 27 && (player.buffType[b] == num || player.buffType[b] == 101 || player.buffType[b] == 102))
+                    {
+                        flag = false;
+                        break;
+                    }
+                    if (player.buffType[b] == num)
+                    {
+                        flag = false;
+                        break;
+                    }
+                    if (Main.meleeBuff[num] && Main.meleeBuff[player.buffType[b]])
+                    {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (Main.lightPet[item.buffType] || Main.vanityPet[item.buffType])
+                {
+                    for (int k = 0; k < 22; k++)
+                    {
+                        if (Main.lightPet[player.buffType[k]] && Main.lightPet[item.buffType])
+                        {
+                            flag = false;
+                        }
+                        if (Main.vanityPet[player.buffType[k]] && Main.vanityPet[item.buffType])
+                        {
+                            flag = false;
+                        }
+                    }
+                }
+                if (item.mana > 0 & flag)
+                {
+                    if (player.statMana >= (int)((float)item.mana * player.manaCost))
+                    {
+                        player.manaRegenDelay = (int)player.maxRegenDelay;
+                        player.statMana -= (int)((float)item.mana * player.manaCost);
+                    }
+                    else
+                    {
+                        flag = false;
+                    }
+                }
+                if (player.whoAmI == Main.myPlayer && item.type == 603 && !Main.cEd)
+                {
+                    flag = false;
+                }
+                if (num == 27)
+                {
+                    num = Main.rand.Next(3);
+                    if (num == 0)
+                    {
+                        num = 27;
+                    }
+                    if (num == 1)
+                    {
+                        num = 101;
+                    }
+                    if (num == 2)
+                    {
+                        num = 102;
+                    }
+                }
+                if (flag)
+                {
+                    ItemLoader.UseItem(item, player);
+                    legacySoundStyle = item.UseSound;
+                    int num2 = item.buffTime;
+                    if (num2 == 0)
+                    {
+                        num2 = 3600;
+                    }
+                    player.AddBuff(num, num2, true);
+                    if (item.consumable)
+                    {
+                        if (ItemLoader.ConsumeItem(item, player))
+                        {
+                            item.stack--;
+                        }
+                        if (item.stack <= 0)
+                        {
+                            item.TurnToAir();
+                        }
+                    }
+                }
+            }
+
+            if (legacySoundStyle != null)
+            {
+                Main.PlaySound(legacySoundStyle, player.position);
+                API.FindRecipes();
+            }
+        }
+
         public static Item GetItem(this Player player, Item newItem)
         {
             int plr = player.whoAmI;
@@ -1085,7 +1440,7 @@ namespace kRPG
                         player.DoCoins(num3);
                         if (plr == Main.myPlayer)
                         {
-                            Recipe.FindRecipes();
+                            API.FindRecipes();
                         }
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
@@ -1097,7 +1452,7 @@ namespace kRPG
                     player.DoCoins(num3);
                     if (plr == Main.myPlayer)
                     {
-                        Recipe.FindRecipes();
+                        API.FindRecipes();
                     }
                 }
             }
@@ -1130,7 +1485,7 @@ namespace kRPG
                             x.stack = x.maxStack;
                             if (plr == Main.myPlayer)
                             {
-                                Recipe.FindRecipes();
+                                API.FindRecipes();
                             }
                         }
                     }
@@ -1154,7 +1509,7 @@ namespace kRPG
                         }
                         if (plr == Main.myPlayer)
                         {
-                            Recipe.FindRecipes();
+                            API.FindRecipes();
                         }
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
@@ -1223,7 +1578,7 @@ namespace kRPG
                         }
                         if (plr == Main.myPlayer)
                         {
-                            Recipe.FindRecipes();
+                            API.FindRecipes();
                         }
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
@@ -1249,7 +1604,7 @@ namespace kRPG
                         }
                         if (plr == Main.myPlayer)
                         {
-                            Recipe.FindRecipes();
+                            API.FindRecipes();
                         }
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
@@ -1317,10 +1672,10 @@ namespace kRPG
             {
                 Dictionary<int, int> dictionary = new Dictionary<int, int>();
                 Item item = null;
-                /*Item[] array = Main.player[Main.myPlayer].inventory;
-                for (int k = 0; k < array.Length; k++)
+                Item[] inv = Main.player[Main.myPlayer].inventory;
+                for (int k = 0; k < inv.Length; k++)
                 {
-                    item = array[k];
+                    item = inv[k];
                     if (item.stack > 0)
                     {
                         if (dictionary.ContainsKey(item.netID))
@@ -1334,20 +1689,21 @@ namespace kRPG
                             dictionary[item.netID] = item.stack;
                         }
                     }
-                }*/
+                }
                 PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
-                foreach (Item[] inv in character.inventories)
-                    foreach (Item i in inv)
-                    {
-                        if (dictionary.ContainsKey(i.netID))
+                for (int j = 0; j < character.inventories.Length; j += 1)
+                    if (j != character.activeInvPage)
+                        foreach (Item i in character.inventories[j])
                         {
-                            Dictionary<int, int> dictionary2;
-                            int netID;
-                            (dictionary2 = dictionary)[netID = i.netID] = dictionary2[netID] + i.stack;
+                            if (dictionary.ContainsKey(i.netID))
+                            {
+                                Dictionary<int, int> dictionary2;
+                                int netID;
+                                (dictionary2 = dictionary)[netID = i.netID] = dictionary2[netID] + i.stack;
+                            }
+                            else
+                                dictionary[i.netID] = i.stack;
                         }
-                        else
-                            dictionary[i.netID] = i.stack;
-                    }
 
                 Item[] array = new Item[0];
                 if (Main.player[Main.myPlayer].chest != -1)
@@ -1472,6 +1828,154 @@ namespace kRPG
             for (int num8 = 0; num8 < Recipe.maxRecipes; num8++)
             {
                 Main.availableRecipeY[num8] -= num7;
+            }
+        }
+
+        public static void CraftItem(Recipe r)
+        {
+            int stack = Main.mouseItem.stack;
+            Main.mouseItem = r.createItem.Clone();
+            Main.mouseItem.stack += stack;
+            if (stack <= 0)
+            {
+                Main.mouseItem.Prefix(-1);
+            }
+            Main.mouseItem.position.X = Main.player[Main.myPlayer].position.X + (float)(Main.player[Main.myPlayer].width / 2) - (float)(Main.mouseItem.width / 2);
+            Main.mouseItem.position.Y = Main.player[Main.myPlayer].position.Y + (float)(Main.player[Main.myPlayer].height / 2) - (float)(Main.mouseItem.height / 2);
+            ItemText.NewText(Main.mouseItem, r.createItem.stack, false, false);
+            r.APICreate();
+            if (Main.mouseItem.type > 0 || r.createItem.type > 0)
+            {
+                RecipeHooks.OnCraft(Main.mouseItem, r);
+                ItemLoader.OnCraft(Main.mouseItem, r);
+                Main.PlaySound(7, -1, -1, 1, 1f, 0f);
+            }
+        }
+
+        public static void APICreate(this Recipe recipe)
+        {
+            for (int i = 0; i < Recipe.maxRequirements; i++)
+            {
+                Item requiredItem = recipe.requiredItem[i];
+                if (requiredItem.type == 0)
+                {
+                    break;
+                }
+                int requiredAmount = requiredItem.stack;
+                ModRecipe modRecipe = recipe as ModRecipe;
+                if (modRecipe != null)
+                {
+                    requiredAmount = modRecipe.ConsumeItem(requiredItem.type, requiredItem.stack);
+                }
+                if (recipe.alchemy && Main.player[Main.myPlayer].alchemyTable)
+                {
+                    if (requiredAmount > 1)
+                    {
+                        int num2 = 0;
+                        for (int j = 0; j < requiredAmount; j++)
+                        {
+                            if (Main.rand.Next(3) == 0)
+                            {
+                                num2++;
+                            }
+                        }
+                        requiredAmount -= num2;
+                    }
+                    else if (Main.rand.Next(3) == 0)
+                    {
+                        requiredAmount = 0;
+                    }
+                }
+                if (requiredAmount > 0)
+                {
+                    Item[] array = Main.player[Main.myPlayer].inventory;
+                    InvLogic(recipe, array, requiredItem, requiredAmount);
+                    PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
+                    for (int j = 0; j < character.inventories.Length; j += 1)
+                    {
+                        if (character.activeInvPage != j)
+                        {
+                            array = character.inventories[j];
+                            InvLogic(recipe, array, requiredItem, requiredAmount);
+                        }
+                    }
+                    if (Main.player[Main.myPlayer].chest != -1)
+                    {
+                        if (Main.player[Main.myPlayer].chest > -1)
+                        {
+                            array = Main.chest[Main.player[Main.myPlayer].chest].item;
+                        }
+                        else if (Main.player[Main.myPlayer].chest == -2)
+                        {
+                            array = Main.player[Main.myPlayer].bank.item;
+                        }
+                        else if (Main.player[Main.myPlayer].chest == -3)
+                        {
+                            array = Main.player[Main.myPlayer].bank2.item;
+                        }
+                        else if (Main.player[Main.myPlayer].chest == -4)
+                        {
+                            array = Main.player[Main.myPlayer].bank3.item;
+                        }
+                        for (int l = 0; l < 40; l++)
+                        {
+                            Item item3 = array[l];
+                            if (requiredAmount <= 0)
+                            {
+                                break;
+                            }
+                            if (item3.IsTheSameAs(requiredItem) || recipe.useWood(item3.type, requiredItem.type) || recipe.useSand(item3.type, requiredItem.type) || recipe.useIronBar(item3.type, requiredItem.type) || recipe.usePressurePlate(item3.type, requiredItem.type) || recipe.useFragment(item3.type, requiredItem.type) || recipe.AcceptedByItemGroups(item3.type, requiredItem.type))
+                            {
+                                if (item3.stack > requiredAmount)
+                                {
+                                    item3.stack -= requiredAmount;
+                                    if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
+                                    {
+                                        NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, (float)l, 0f, 0f, 0, 0, 0);
+                                    }
+                                    requiredAmount = 0;
+                                }
+                                else
+                                {
+                                    requiredAmount -= item3.stack;
+                                    array[l] = new Item();
+                                    if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
+                                    {
+                                        NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, (float)l, 0f, 0f, 0, 0, 0);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            AchievementsHelper.NotifyItemCraft(recipe);
+            AchievementsHelper.NotifyItemPickup(Main.player[Main.myPlayer], recipe.createItem);
+            API.FindRecipes();
+        }
+
+        private static void InvLogic(this Recipe recipe, Item[] array, Item requiredItem, int requiredAmount)
+        {
+            for (int k = 0; k < array.Length; k++)
+            {
+                Item item2 = array[k];
+                if (requiredAmount <= 0)
+                {
+                    break;
+                }
+                if (item2.IsTheSameAs(requiredItem) || recipe.useWood(item2.type, requiredItem.type) || recipe.useSand(item2.type, requiredItem.type) || recipe.useFragment(item2.type, requiredItem.type) || recipe.useIronBar(item2.type, requiredItem.type) || recipe.usePressurePlate(item2.type, requiredItem.type) || recipe.AcceptedByItemGroups(item2.type, requiredItem.type))
+                {
+                    if (item2.stack > requiredAmount)
+                    {
+                        item2.stack -= requiredAmount;
+                        requiredAmount = 0;
+                    }
+                    else
+                    {
+                        requiredAmount -= item2.stack;
+                        array[k] = new Item();
+                    }
+                }
             }
         }
     }

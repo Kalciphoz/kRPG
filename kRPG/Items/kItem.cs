@@ -127,12 +127,6 @@ namespace kRPG.Items
             prefixTooltips = new List<string>();
         }
 
-        public override void UpdateInventory(Item item, Player player)
-        {
-            if (NeedsSaving(item) && !enhanced && !WorldGen.gen && !Main.gameMenu)
-                Initialize(item);
-        }
-
         public override void OnCraft(Item item, Recipe recipe)
         {
             if (NeedsSaving(item))
@@ -273,7 +267,7 @@ namespace kRPG.Items
 
             else if (item.damage > 0)
             {
-                bool randomize = item.modItem is ProceduralItem || item.modItem is RangedWeapon || item.value < 500 || item.type == 881;
+                bool randomize = item.modItem is ProceduralItem || item.modItem is RangedWeapon || item.value <= 1000 || item.type == 881;
                 upgradeLevel = (byte)(RandomizeUpgradeLevel(item, randomize) + (randomize ? (item.modItem is RangedWeapon ? 2 : 0) : 3));
                 kPrefix = (byte)(rand.Next(29) + 1);
             }
@@ -560,34 +554,34 @@ namespace kRPG.Items
                     item.SetNameOverride("Cinereous " + item.Name);
                     bonusDef = 1 + item.rare / 2;
                     prefixTooltips.Add("+" + bonusDef + " defence");
-                    bonusLife = 15 + item.rare * 10;
+                    bonusLife = 10 + item.rare * 5;
                     break;
                 case 6:
                     item.SetNameOverride("Sanguine " + item.Name);
-                    bonusLife = 30 + item.rare * 15;
+                    bonusLife = 15 + item.rare * 10;
                     break;
                 case 7:
                     item.SetNameOverride("Azure " + item.Name);
-                    bonusMana = 10 + item.rare * 4;
+                    bonusMana = 10 + item.rare * 3;
                     break;
                 case 8:
                     item.SetNameOverride("Cerise " + item.Name);
                     bonusMana = 6 + item.rare * 2;
-                    bonusLife = 20 + item.rare * 10;
+                    bonusLife = 10 + item.rare * 5;
                     break;
                 case 9:
                     item.SetNameOverride("Amaranth " + item.Name);
-                    bonusLife = 14 + item.rare * 6;
+                    bonusLife = 10 + item.rare * 4;
                     statBonus[STAT.RESILIENCE] = 1 + item.rare / 3;
                     break;
                 case 10:
                     item.SetNameOverride("Icterine " + item.Name);
-                    bonusLife = 11 + item.rare * 5;
+                    bonusLife = 10 + item.rare * 3;
                     statBonus[STAT.QUICKNESS] = 1 + item.rare / 3;
                     break;
                 case 11:
                     item.SetNameOverride("Byzantine " + item.Name);
-                    bonusLife = 8 + item.rare * 4;
+                    bonusLife = 8 + item.rare * 3;
                     statBonus[STAT.POTENCY] = 1 + item.rare / 3;
                     break;
                 case 12:
@@ -597,7 +591,7 @@ namespace kRPG.Items
                 case 13:
                     item.SetNameOverride("Ebony " + item.Name);
                     bonusEva = 1 + item.rare / 2;
-                    bonusLife = 13 + item.rare * 9;
+                    bonusLife = 9 + item.rare * 5;
                     break;
                 case 14:
                     item.SetNameOverride("Onyx " + item.Name);
@@ -857,8 +851,8 @@ namespace kRPG.Items
                     prefixTooltips.Add("+12% damage");
                     speed = 1.1f;
                     prefixTooltips.Add("+10% speed");
-                    item.crit += 10;
-                    prefixTooltips.Add("+10% critical strike chance");
+                    item.crit += 5;
+                    prefixTooltips.Add("+5% critical strike chance");
                     item.rare += 1;
                     break;
             }
@@ -1080,7 +1074,7 @@ namespace kRPG.Items
             if (bonusLeech > 0f)
                 modPlayer.lifeLeech += bonusLeech;
             if (bonusCrit > 0)
-                modPlayer.critBoost += 1;
+                modPlayer.critBoost += bonusCrit;
             if (bonusMult > 0f)
                 modPlayer.critMultiplier += bonusMult;
             if (bonusRegen > 0f)
@@ -1097,9 +1091,12 @@ namespace kRPG.Items
 
         public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
+            if (NeedsSaving(item) && !enhanced && !WorldGen.gen && !Main.gameMenu)
+                Initialize(item);
+
             PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>(mod);
 
-            if (Upgradeable(item) && Main.mouseRight && character.anvilGUI.IsSelecting() && new Rectangle((int)position.X, (int)position.Y, 38, 38).Contains(Main.mouseX, Main.mouseY))
+            if (Upgradeable(item) && Main.mouseRight && Main.mouseRightRelease && new Rectangle((int)position.X, (int)position.Y, 38, 38).Contains(Main.mouseX, Main.mouseY))
             {
                 character.anvilGUI.AttemptSelectItem(this, item);
             }
@@ -1113,18 +1110,6 @@ namespace kRPG.Items
         public override bool ItemSpace(Item newItem, Player player)
         {
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
-            if (newItem.uniqueStack && player.HasItem(newItem.type))
-            {
-                return false;
-            }
-            if (newItem.type == 58 || newItem.type == 184 || newItem.type == 1734 || newItem.type == 1735 || newItem.type == 1867 || newItem.type == 1868)
-            {
-                return true;
-            }
-            if (ItemID.Sets.NebulaPickup[newItem.type])
-            {
-                return true;
-            }
             int num = 50;
             if (newItem.type == 71 || newItem.type == 72 || newItem.type == 73 || newItem.type == 74)
             {
@@ -1150,57 +1135,7 @@ namespace kRPG.Items
                     }
                 }
             }
-            if (newItem.ammo > 0 && !newItem.notAmmo)
-            {
-                if (newItem.type != 75 && newItem.type != 169 && newItem.type != 23 && newItem.type != 408 && newItem.type != 370 && newItem.type != 1246)
-                {
-                    for (int k = 54; k < 58; k++)
-                    {
-                        if (player.inventory[k].type == 0)
-                        {
-                            return true;
-                        }
-                    }
-                }
-                for (int l = 54; l < 58; l++)
-                {
-                    if (player.inventory[l].type > 0 && player.inventory[l].stack < player.inventory[l].maxStack && newItem.IsTheSameAs(player.inventory[l]))
-                    {
-                        return true;
-                    }
-                }
-            }
-            for (int m = 54; m < 58; m++)
-            {
-                if (player.inventory[m].type > 0 && player.inventory[m].stack < player.inventory[m].maxStack && newItem.IsTheSameAs(player.inventory[m]))
-                {
-                    return true;
-                }
-            }
             return false;
-
-            /*if (item.type == ItemID.CopperCoin || item.type == ItemID.SilverCoin || item.type == ItemID.GoldCoin || item.type == ItemID.PlatinumCoin || item.ammo != AmmoID.None)
-                return false;
-            else if (item.type == ItemID.Star || item.type == ItemID.Heart || item.type == mod.ItemType<PermanenceCrown>() || item.type == mod.ItemType<BlacksmithCrown>())
-                return true;
-            bool fullinv = true;
-            for (int a = 0; a < 50; a += 1)
-            {
-                Item i = player.inventory[a];
-                if (i.stack + item.stack <= i.maxStack && i.type == item.type || i.type == 0)
-                    fullinv = false;
-            }
-            if (fullinv)
-            {
-                for (int i = 0; i < character.inventories.Length; i += 1)
-                    for (int j = 0; j < character.inventories[i].Length; j += 1)
-                    {
-                        Item a = character.inventories[i][j];
-                        if (a.stack + item.stack <= a.maxStack && a.type == item.type || a.type == 0)
-                            return true;
-                    }
-            }
-            return false;*/
         }
 
         public override bool OnPickup(Item item, Player player)
@@ -1280,7 +1215,7 @@ namespace kRPG.Items
                     }
                 }
             }
-            
+
             return false;
         }
 
@@ -1298,10 +1233,23 @@ namespace kRPG.Items
             };
         }
 
+        public override void NetSend(Item item, BinaryWriter writer)
+        {
+            writer.Write(upgradeLevel);
+            writer.Write(kPrefix);
+        }
+
         public override void Load(Item item, TagCompound tag)
         {
             upgradeLevel = tag.GetByte("upgrade level");
             kPrefix = tag.GetByte("prefix");
+            ApplyStats(item);
+        }
+
+        public override void NetReceive(Item item, BinaryReader reader)
+        {
+            upgradeLevel = reader.ReadByte();
+            kPrefix = reader.ReadByte();
             ApplyStats(item);
         }
 

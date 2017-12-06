@@ -16,6 +16,7 @@ using kRPG.Buffs;
 using kRPG.Dusts;
 using kRPG.GUI;
 using kRPG.Items.Glyphs;
+using System.IO;
 
 namespace kRPG.Projectiles
 {
@@ -41,6 +42,7 @@ namespace kRPG.Projectiles
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
+            if (projectile.owner != Main.myPlayer && !(this is WingedEyeball)) return true;
             Draw(spriteBatch, projectile.position - Main.screenPosition, lightColor, projectile.rotation, projectile.scale);
             return false;
         }
@@ -71,6 +73,67 @@ namespace kRPG.Projectiles
         public bool minion
         {
             get { return caster is Projectile; }
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            if (source == null) return;
+            writer.Write(projectile.owner);
+            writer.Write(source.glyphs[(byte)GLYPHTYPE.STAR].type);
+            writer.Write(source.glyphs[(byte)GLYPHTYPE.CROSS].type);
+            writer.Write(source.glyphs[(byte)GLYPHTYPE.MOON].type);
+            writer.Write(projectile.damage);
+            writer.Write(minion);
+            writer.Write(caster.whoAmI);
+            List<GlyphModifier> modifiers = source.modifiers;
+            writer.Write(modifiers.Count);
+            for (int j = 0; j < modifiers.Count; j += 1)
+                writer.Write(modifiers[j].id);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            projectile.owner = reader.ReadInt32();
+            int startype = reader.ReadInt32();
+            int crosstype = reader.ReadInt32();
+            int moontype = reader.ReadInt32();
+            projectile.damage = reader.ReadInt32();
+            bool minion_caster = reader.ReadBoolean();
+            caster = minion_caster ? (Entity)Main.projectile[reader.ReadInt32()] : (Entity)Main.player[reader.ReadInt32()];
+            List<GlyphModifier> modifiers = new List<GlyphModifier>();
+            int count = reader.ReadInt32();
+            for (int i = 0; i < count; i += 1)
+                modifiers.Add(GlyphModifier.modifiers[reader.ReadInt32()]);
+            if (source == null)
+            {
+                source = new ProceduralSpell(mod);
+                source.glyphs[(byte)GLYPHTYPE.STAR].SetDefaults(startype);
+                source.glyphs[(byte)GLYPHTYPE.CROSS].SetDefaults(crosstype);
+                source.glyphs[(byte)GLYPHTYPE.MOON].SetDefaults(moontype);
+                source.modifierOverride = modifiers;
+            }
+            foreach (Item item in source.glyphs)
+            {
+                Glyph glyph = (Glyph)item.modItem;
+                if (glyph.GetAIAction() != null)
+                    ai.Add(glyph.GetAIAction());
+                if (glyph.GetInitAction() != null)
+                    init.Add(glyph.GetInitAction());
+                if (glyph.GetImpactAction() != null)
+                    impact.Add(glyph.GetImpactAction());
+                if (glyph.GetKillAction() != null)
+                    kill.Add(glyph.GetKillAction());
+            }
+            foreach (GlyphModifier modifier in modifiers)
+            {
+                if (modifier.impact != null)
+                    impact.Add(modifier.impact);
+                if (modifier.draw != null)
+                    draw.Add(modifier.draw);
+                if (modifier.init != null)
+                    init.Add(modifier.init);
+            }
+            Initialize();
         }
 
         public static Action<ProceduralSpellProj> AI_RotateToVelocity = delegate(ProceduralSpellProj spell)
@@ -238,6 +301,26 @@ namespace kRPG.Projectiles
 
             return target;
         }
+
+        public override void AI()
+        {
+            if (Main.netMode == 2) return;
+            bool self = source.glyphs[(byte)GLYPHTYPE.MOON].modItem is Moon_Green;
+            if ((!self || circlingProtection.Where(spell => spell.projectile.active).Count() <= source.projCount - 3) && cooldown <= 0)
+            {
+                if (!self)
+                {
+                    GetTarget();
+                    if (distance <= 480f && attack)
+                        if (this is ProceduralMinion)
+                            source.CastSpell(Main.player[projectile.owner], projectile.Center, target.Center, projectile);
+                }
+                else if (this is ProceduralMinion) source.CastSpell(Main.player[projectile.owner], projectile.Center, projectile.Center, projectile);
+
+                cooldown = source.cooldown * 2;
+            }
+            else cooldown -= 1;
+        }
     }
 
     public class Obelisk : ProceduralMinion
@@ -253,25 +336,6 @@ namespace kRPG.Projectiles
             projectile.timeLeft = 1800;
             projectile.tileCollide = false;
             projectile.knockBack = 0f;
-        }
-
-        public override void AI()
-        {
-            bool self = source.glyphs[(byte)GLYPHTYPE.MOON].modItem is Moon_Green;
-            if ((!self || circlingProtection.Where(spell => spell.projectile.active).Count() <= source.projCount - 3) && cooldown <= 0)
-            {
-                if (!self)
-                {
-                    GetTarget();
-                    if (distance <= 640f && attack)
-                        if (this is ProceduralMinion)
-                            source.CastSpell(Main.player[projectile.owner], projectile.Center, target.Center, projectile);
-                }
-                else if (this is ProceduralMinion) source.CastSpell(Main.player[projectile.owner], projectile.Center, projectile.Center, projectile);
-
-                cooldown = source.cooldown * 3 / 2;
-            }
-            else cooldown -= 1;
         }
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
@@ -301,22 +365,8 @@ namespace kRPG.Projectiles
 
         public override void AI()
         {
-            bool self = source.glyphs[(byte)GLYPHTYPE.MOON].modItem is Moon_Green;
+            base.AI();
             Player player = Main.player[projectile.owner];
-            if ((!self || circlingProtection.Where(spell => spell.projectile.active).Count() <= source.projCount - 3) && cooldown <= 0)
-            {
-                if (!self)
-                {
-                    GetTarget();
-                    if (distance <= 480f && attack)
-                        if (this is ProceduralMinion)
-                            source.CastSpell(Main.player[projectile.owner], projectile.Center, target.Center, projectile);
-                }
-                else if (this is ProceduralMinion) source.CastSpell(Main.player[projectile.owner], projectile.Center, projectile.Center, projectile);
-
-                cooldown = source.cooldown * 2;
-            }
-            else cooldown -= 1;
 
             float acceleration = 0.4f;
             projectile.tileCollide = false;
@@ -422,85 +472,85 @@ namespace kRPG.Projectiles
         }
     }
 
-    public class ProceduralSwordThrow : ProceduralProjectile
-    {
-        public SwordHilt hilt;
-        public SwordBlade blade;
-        public SwordAccent accent;
-        public Item sword;
+    //public class ProceduralSwordThrow : ProceduralProjectile
+    //{
+    //    public SwordHilt hilt;
+    //    public SwordBlade blade;
+    //    public SwordAccent accent;
+    //    public Item sword;
 
-        public override void Initialize()
-        {
-            this.texture = GFX.CombineTextures(new List<Texture2D>(){
-                { blade.texture },
-                { hilt.texture },
-                { accent.texture }
-            }, new List<Point>(){
-                { new Point(CombinedTextureSize().X - blade.texture.Width, 0) },
-                { new Point(0, CombinedTextureSize().Y - hilt.texture.Height) },
-                { new Point((int)hilt.origin.X - (int)accent.origin.X, CombinedTextureSize().Y - hilt.texture.Height + (int)hilt.origin.Y - (int)accent.origin.Y) }
-            }, CombinedTextureSize());
-            projectile.width = texture.Width;
-            projectile.height = texture.Height;
-        }
+    //    public override void Initialize()
+    //    {
+    //        this.texture = GFX.CombineTextures(new List<Texture2D>(){
+    //            { blade.texture },
+    //            { hilt.texture },
+    //            { accent.texture }
+    //        }, new List<Point>(){
+    //            { new Point(CombinedTextureSize().X - blade.texture.Width, 0) },
+    //            { new Point(0, CombinedTextureSize().Y - hilt.texture.Height) },
+    //            { new Point((int)hilt.origin.X - (int)accent.origin.X, CombinedTextureSize().Y - hilt.texture.Height + (int)hilt.origin.Y - (int)accent.origin.Y) }
+    //        }, CombinedTextureSize());
+    //        projectile.width = texture.Width;
+    //        projectile.height = texture.Height;
+    //    }
 
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
-        {
-            hitbox = new Rectangle((int)projectile.position.X - texture.Width / 2, (int)projectile.position.Y - texture.Height / 2, texture.Width, texture.Height);
-        }
+    //    public override void ModifyDamageHitbox(ref Rectangle hitbox)
+    //    {
+    //        hitbox = new Rectangle((int)projectile.position.X - texture.Width / 2, (int)projectile.position.Y - texture.Height / 2, texture.Width, texture.Height);
+    //    }
 
-        public override bool? CanHitNPC(NPC target)
-        {
-            Player owner = Main.player[projectile.owner];
-            if ((target.position.X - owner.position.X) * owner.direction > -1f)
-                return base.CanHitNPC(target);
-            else return false;
-        }
+    //    public override bool? CanHitNPC(NPC target)
+    //    {
+    //        Player owner = Main.player[projectile.owner];
+    //        if ((target.position.X - owner.position.X) * owner.direction > -1f)
+    //            return base.CanHitNPC(target);
+    //        else return false;
+    //    }
 
-        public Point CombinedTextureSize()
-        {
-            return new Point(blade.texture.Width - (int)blade.origin.X + (int)hilt.origin.X, (int)blade.origin.Y + hilt.texture.Height - (int)hilt.origin.Y);
-        }
+    //    public Point CombinedTextureSize()
+    //    {
+    //        return new Point(blade.texture.Width - (int)blade.origin.X + (int)hilt.origin.X, (int)blade.origin.Y + hilt.texture.Height - (int)hilt.origin.Y);
+    //    }
 
-        public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
-        {
-            if (texture == null)
-            {
-                Initialize();
-                return;
-            }
-            spriteBatch.Draw(texture, position + texture.Size() / 2f, null, blade.lighted ? Color.White : color, rotation, texture.Bounds.Center(), scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
-        }
+    //    public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
+    //    {
+    //        if (texture == null)
+    //        {
+    //            Initialize();
+    //            return;
+    //        }
+    //        spriteBatch.Draw(texture, position + texture.Size() / 2f, null, blade.lighted ? Color.White : color, rotation, texture.Bounds.Center(), scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+    //    }
 
-        public override void SetDefaults()
-        {
-            projectile.width = 40;
-            projectile.height = 40;
-            projectile.scale = 1f;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 3600;
-            projectile.tileCollide = false;
-            projectile.aiStyle = 3;
-        }
+    //    public override void SetDefaults()
+    //    {
+    //        projectile.width = 40;
+    //        projectile.height = 40;
+    //        projectile.scale = 1f;
+    //        projectile.friendly = true;
+    //        projectile.hostile = false;
+    //        projectile.penetrate = -1;
+    //        projectile.timeLeft = 3600;
+    //        projectile.tileCollide = false;
+    //        projectile.aiStyle = 3;
+    //    }
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Procedurally Generated Sword Projectile; Please Ignore");
-        }
+    //    public override void SetStaticDefaults()
+    //    {
+    //        DisplayName.SetDefault("Procedurally Generated Sword Projectile; Please Ignore");
+    //    }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            Player owner = Main.player[projectile.owner];
-            //if (accent.onHit != null) accent.onHit(owner, target, (ProceduralSword)owner.inventory[owner.selectedItem].modItem, damage, crit);
-        }
-    }
+    //    public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+    //    {
+    //        Player owner = Main.player[projectile.owner];
+    //        //if (accent.onHit != null) accent.onHit(owner, target, (ProceduralSword)owner.inventory[owner.selectedItem].modItem, damage, crit);
+    //    }
+    //}
 
     public class ProceduralSpear : ProceduralProjectile
     {
-        public SwordHilt hilt;
         public SwordBlade blade;
+        public SwordHilt hilt;
         public SwordAccent accent;
 
         public override void Initialize()
@@ -539,9 +589,24 @@ namespace kRPG.Projectiles
             return new Point(blade.texture.Width - (int)blade.origin.X + (int)hilt.spearOrigin.X, (int)blade.origin.Y + hilt.spearTexture.Height - (int)hilt.spearOrigin.Y);
         }
 
+        //public override void SendExtraAI(BinaryWriter writer)
+        //{
+        //    writer.Write(blade.type);
+        //    writer.Write(hilt.type);
+        //    writer.Write(accent.type);
+        //}
+
+        //public override void ReceiveExtraAI(BinaryReader reader)
+        //{
+        //    blade = SwordBlade.blades[reader.ReadInt32()];
+        //    hilt = SwordHilt.hilts[reader.ReadInt32()];
+        //    accent = SwordAccent.accents[reader.ReadInt32()];
+        //    if (Main.netMode == 1) Initialize();
+        //}
+
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            if (texture == null)
+            if (texture == null && Main.netMode != 2)
             {
                 Initialize();
                 return;
@@ -551,15 +616,23 @@ namespace kRPG.Projectiles
 
         public override void SetDefaults()
         {
-            projectile.width = 40;
-            projectile.height = 40;
-            projectile.scale = 1f;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.melee = true;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 600;
-            projectile.tileCollide = false;
+            try
+            { 
+                projectile.width = 40;
+                projectile.height = 40;
+                projectile.scale = 1f;
+                projectile.friendly = true;
+                projectile.hostile = false;
+                projectile.melee = true;
+                projectile.penetrate = -1;
+                projectile.timeLeft = 600;
+                projectile.tileCollide = false;
+            }
+            catch (SystemException e)
+            {
+                Main.NewText(e.ToString());
+                ErrorLogger.Log(e.ToString());
+            }
         }
 
         public override void SetStaticDefaults()
@@ -569,14 +642,15 @@ namespace kRPG.Projectiles
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Player owner = Main.player[projectile.owner];
             try
             {
+                Player owner = Main.player[projectile.owner];
                 if (accent.onHit != null) accent.onHit(owner, target, (ProceduralSword)owner.inventory[owner.selectedItem].modItem, damage, crit);
             }
             catch (SystemException e)
             {
                 Main.NewText(e.ToString());
+                ErrorLogger.Log(e.ToString());
             }
         }
 
@@ -589,62 +663,69 @@ namespace kRPG.Projectiles
 
         public override void AI()
         {
-            // Since we access the owner player instance so much, it's useful to create a helper local variable for this
-            // Sadly, Projectile/ModProjectile does not have its own
-            Player projOwner = Main.player[projectile.owner];
-            // Here we set some of the projectile's owner properties, such as held item and itemtime, along with projectile directio and position based on the player
-            //Vector2 ownerMountedCenter = projOwner.RotatedRelativePoint(projOwner.MountedCenter, true);
-
-            if (projectile.velocity.X > 0)
-                projOwner.direction = 1;
-            else
-                projOwner.direction = -1;
-
-            projectile.direction = projOwner.direction;
-            projectile.spriteDirection = projectile.direction;
-            projOwner.heldProj = projectile.whoAmI;
-            projOwner.itemTime = projOwner.itemAnimation;
-            projectile.position.X = projOwner.Center.X - (float)(texture.Width / 2)/* + 2f*projOwner.direction*/;
-            projectile.position.Y = projOwner.Center.Y - (float)(texture.Height / 2)/* + 4f*/;
-            // As long as the player isn't frozen, the spear can move
-            if (!projOwner.frozen)
+            try
             {
-                if (movementFactor == 0f) // When intially thrown out, the ai0 will be 0f
-                {
-                    movementFactor = 3f;
-                    projectile.netUpdate = true;
-                }
-                if (projOwner.itemAnimation < projOwner.itemAnimationMax / 3)
-                {
-                    movementFactor -= 2.4f;
-                }
+                // Since we access the owner player instance so much, it's useful to create a helper local variable for this
+                // Sadly, Projectile/ModProjectile does not have its own
+                Player projOwner = Main.player[projectile.owner];
+                // Here we set some of the projectile's owner properties, such as held item and itemtime, along with projectile directio and position based on the player
+                //Vector2 ownerMountedCenter = projOwner.RotatedRelativePoint(projOwner.MountedCenter, true);
+
+                if (projectile.velocity.X > 0)
+                    projOwner.direction = 1;
                 else
+                    projOwner.direction = -1;
+
+                projectile.direction = projOwner.direction;
+                projectile.spriteDirection = projectile.direction;
+                projOwner.heldProj = projectile.whoAmI;
+                projOwner.itemTime = projOwner.itemAnimation;
+                projectile.position.X = projOwner.Center.X - (float)(texture.Width / 2)/* + 2f*projOwner.direction*/;
+                projectile.position.Y = projOwner.Center.Y - (float)(texture.Height / 2)/* + 4f*/;
+                // As long as the player isn't frozen, the spear can move
+                if (!projOwner.frozen)
                 {
-                    movementFactor += 2.1f;
+                    if (movementFactor == 0f) // When intially thrown out, the ai0 will be 0f
+                    {
+                        movementFactor = 3f;
+                        projectile.netUpdate = true;
+                    }
+                    if (projOwner.itemAnimation < projOwner.itemAnimationMax / 3)
+                    {
+                        movementFactor -= 2.4f;
+                    }
+                    else
+                    {
+                        movementFactor += 2.1f;
+                    }
                 }
+
+                projectile.position += projectile.velocity * movementFactor;
+                Vector2 unitVelocity = projectile.velocity;
+                unitVelocity.Normalize();
+                projectile.position += unitVelocity * (blade.origin.Y * 2.8f + 8f);
+
+                if (projOwner.itemAnimation == 1)
+                {
+                    projectile.Kill();
+                }
+                // Apply proper rotation, with an offset of 135 degrees due to the sprite's rotation, notice the usage of MathHelper, use this class!
+                // MathHelper.ToRadians(xx degrees here)
+                projectile.rotation = (float)Math.Atan2((double)projectile.velocity.Y, (double)projectile.velocity.X) + MathHelper.ToRadians(45f);
+                // Offset by 90 degrees here
+                if (projectile.spriteDirection == -1)
+                {
+                    projectile.rotation += MathHelper.ToRadians(90f);
+                }
+
+                Rectangle rect = new Rectangle((int)projectile.position.X, (int)projectile.position.Y, texture.Width, texture.Height);
+                if (blade.effect != null) blade.effect(rect, projOwner);
+                if (accent.effect != null) accent.effect(rect, projOwner);
             }
-
-            projectile.position += projectile.velocity * movementFactor;
-            Vector2 unitVelocity = projectile.velocity;
-            unitVelocity.Normalize();
-            projectile.position += unitVelocity * (blade.origin.Y * 2.8f + 8f);
-
-            if (projOwner.itemAnimation == 1)
+            catch (SystemException e)
             {
-                projectile.Kill();
+                Main.NewText(e.ToString());
             }
-            // Apply proper rotation, with an offset of 135 degrees due to the sprite's rotation, notice the usage of MathHelper, use this class!
-            // MathHelper.ToRadians(xx degrees here)
-            projectile.rotation = (float)Math.Atan2((double)projectile.velocity.Y, (double)projectile.velocity.X) + MathHelper.ToRadians(45f);
-            // Offset by 90 degrees here
-            if (projectile.spriteDirection == -1)
-            {
-                projectile.rotation += MathHelper.ToRadians(90f);
-            }
-
-            Rectangle rect = new Rectangle((int)projectile.position.X, (int)projectile.position.Y, texture.Width, texture.Height);
-            if (blade.effect != null) blade.effect(rect, projOwner);
-            if (accent.effect != null) accent.effect(rect, projOwner);
         }
     }
 }

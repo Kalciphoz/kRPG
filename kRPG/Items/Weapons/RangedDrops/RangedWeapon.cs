@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,11 @@ namespace kRPG.Items.Weapons.RangedDrops
         public float dps = 0f;
         public int enemyDef = 0;
         public string name = "";
+
+        public override bool CanPickup(Player player)
+        {
+            return item.value > 100;
+        }
 
         public override void SetDefaults()
         {
@@ -47,9 +53,9 @@ namespace kRPG.Items.Weapons.RangedDrops
             item.SetNameOverride(name);
             item.rare = (int)Math.Min(Math.Floor(dps / 15.0), 9);
             item.useTime = UseTime();
-            item.damage = (int)Math.Round(dps * DPSModifier() * (float)item.useTime / 60f + enemyDef - 6);
+            item.damage = (int)Math.Round(dps * DPSModifier() * (float)item.useTime / 60f + enemyDef - 4);
             if (item.damage < 1) item.damage = 1;
-            item.useTime = (int)Math.Round(((float)item.damage - enemyDef + 6) * 60f / (dps * DPSModifier()));
+            item.useTime = (int)Math.Round(((float)item.damage - enemyDef + 4) * 60f / (dps * DPSModifier()));
             item.useAnimation = item.useTime * Iterations() - 1;
             item.value = (int)(dps * 315);
         }
@@ -94,6 +100,16 @@ namespace kRPG.Items.Weapons.RangedDrops
             };
         }
 
+        public override void NetSend(BinaryWriter writer)
+        {
+            bool proceed = item.value > 100;
+            writer.Write(proceed);
+            if (!proceed) return;
+            writer.Write(dps);
+            writer.Write(enemyDef);
+            writer.Write(name);
+        }
+
         public override void Load(TagCompound tag)
         {
             dps = tag.GetFloat("dps");
@@ -102,12 +118,21 @@ namespace kRPG.Items.Weapons.RangedDrops
             SetStats();
         }
 
+        public override void NetRecieve(BinaryReader reader)
+        {
+            if (!reader.ReadBoolean()) return;
+            dps = reader.ReadSingle();
+            enemyDef = reader.ReadInt32();
+            name = reader.ReadString();
+            SetStats();
+        }
+
         public static int NewRangedWeapon(Mod mod, Vector2 position, int npclevel, int playerlevel, float dps, int enemyDef)
         {
             int combined = npclevel + playerlevel;
             int ammo = 0;
             string weapon = "";
-            if (combined >= 30)
+            if (combined >= 35)
             {
                 switch(Main.rand.Next(5))
                 {
@@ -167,6 +192,7 @@ namespace kRPG.Items.Weapons.RangedDrops
                 packet.Write(item.item.whoAmI);
                 packet.Write(item.dps);
                 packet.Write(item.enemyDef);
+                packet.Send();
             }
             return ammo;
         }
@@ -216,6 +242,11 @@ namespace kRPG.Items.Weapons.RangedDrops
             item.UseSound = SoundID.Item11;
         }
 
+        public override Vector2? HoldoutOffset()
+        {
+            return new Vector2(-1f, -6f);
+        }
+
         public override int UseTime()
         {
             return 13;
@@ -258,6 +289,11 @@ namespace kRPG.Items.Weapons.RangedDrops
             item.useTime = 30;
             item.useAnimation = 30;
             item.UseSound = SoundID.Item11;
+        }
+
+        public override Vector2? HoldoutOffset()
+        {
+            return new Vector2(-1f, -4f);
         }
 
         public override int UseTime()
@@ -488,7 +524,7 @@ namespace kRPG.Items.Weapons.RangedDrops
 
         public override float DPSModifier()
         {
-            return 1.4f;
+            return 1.3f;
         }
     }
 
@@ -534,6 +570,11 @@ namespace kRPG.Items.Weapons.RangedDrops
             item.UseSound = SoundID.Item11;
         }
 
+        public override Vector2? HoldoutOffset()
+        {
+            return new Vector2(-18f, 4f);
+        }
+
         public override bool ConsumeAmmo(Player player)
         {
             return Main.rand.NextFloat() >= 0.33f;
@@ -541,12 +582,7 @@ namespace kRPG.Items.Weapons.RangedDrops
 
         public override int UseTime()
         {
-            return 11;
-        }
-
-        public override float DPSModifier()
-        {
-            return 1.1f;
+            return 13;
         }
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
@@ -600,6 +636,11 @@ namespace kRPG.Items.Weapons.RangedDrops
             item.UseSound = SoundID.Item11;
         }
 
+        public override Vector2? HoldoutOffset()
+        {
+            return new Vector2(-14f, 2f);
+        }
+
         public override bool ConsumeAmmo(Player player)
         {
             return Main.rand.NextFloat() >= 0.33f;
@@ -607,7 +648,12 @@ namespace kRPG.Items.Weapons.RangedDrops
 
         public override int UseTime()
         {
-            return 9;
+            return 10;
+        }
+
+        public override int Iterations()
+        {
+            return 2;
         }
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
@@ -661,6 +707,11 @@ namespace kRPG.Items.Weapons.RangedDrops
             item.useTime = 30;
             item.useAnimation = 30;
             item.UseSound = SoundID.Item11;
+        }
+
+        public override Vector2? HoldoutOffset()
+        {
+            return new Vector2(4f, 10f);
         }
 
         public override bool ConsumeAmmo(Player player)

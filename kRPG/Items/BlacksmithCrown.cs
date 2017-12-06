@@ -27,15 +27,6 @@ namespace kRPG.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Crown of Transcendence");
-            Tooltip.SetDefault("Allows you to upgrade an item to +8\nUsable only once");
-        }
-
-        public override void AddRecipes()
-        {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod, "GloryPoint");
-            recipe.SetResult(this);
-            recipe.AddRecipe();
         }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)

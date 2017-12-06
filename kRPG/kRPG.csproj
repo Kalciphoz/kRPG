@@ -48,6 +48,9 @@
     <Reference Include="ReLogic">
       <HintPath>..\..\..\..\..\..\Downloads\ReLogic.dll</HintPath>
     </Reference>
+    <Reference Include="Storage">
+      <HintPath>..\..\Mod Reader\MagicStorage\Storage.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -94,19 +97,12 @@
     <Compile Include="Items\Weapons\StaffOrnament.cs" />
     <Compile Include="Items\Weapons\StaffPart.cs" />
     <Compile Include="Items\Weapons\SwordAccent.cs" />
-    <Compile Include="Items\Weapons\BarbarianSword.cs" />
     <Compile Include="Items\BlacksmithCrown.cs" />
     <Compile Include="Items\Weapons\Arbalest.cs" />
-    <Compile Include="Items\Weapons\ChainHook.cs" />
     <Compile Include="Items\Weapons\EyeOnAStick.cs" />
-    <Compile Include="Items\GloryPoint.cs" />
-    <Compile Include="Items\GuardianCrown.cs" />
     <Compile Include="Items\kItem.cs" />
     <Compile Include="Items\PermanenceCrown.cs" />
-    <Compile Include="Items\Weapons\FineSteelKatana.cs" />
-    <Compile Include="Items\Weapons\RustyKatana.cs" />
     <Compile Include="Items\Weapons\Scythe.cs" />
-    <Compile Include="Items\Weapons\SlimeSword_Blue.cs" />
     <Compile Include="Items\Weapons\SwordBlade.cs" />
     <Compile Include="Items\Weapons\SwordHilt.cs" />
     <Compile Include="kConfig.cs" />
@@ -207,13 +203,8 @@
     <Content Include="Items\Glyphs\Star_Violet.png" />
     <Content Include="Items\Glyphs\Star_Yellow.png" />
     <Content Include="Items\Weapons\Arbalest.png" />
-    <Content Include="Items\Weapons\BarbarianSword.png" />
     <Content Include="Items\BlacksmithCrown.png" />
-    <Content Include="Items\Weapons\ChainHook.png" />
     <Content Include="Items\Weapons\EyeOnAStick.png" />
-    <Content Include="Items\Weapons\FineSteelKatana.png" />
-    <Content Include="Items\GloryPoint.png" />
-    <Content Include="Items\GuardianCrown.png" />
     <Content Include="Items\PermanenceCrown.png" />
     <Content Include="Items\Weapons\RangedDrops\AngelBow.png" />
     <Content Include="Items\Weapons\RangedDrops\DemonBow.png" />
@@ -225,9 +216,7 @@
     <Content Include="Items\Weapons\RangedDrops\NambuPistol.png" />
     <Content Include="Items\Weapons\RangedDrops\P90.png" />
     <Content Include="Items\Weapons\RangedDrops\WoodenBow.png" />
-    <Content Include="Items\Weapons\RustyKatana.png" />
     <Content Include="Items\Weapons\Scythe.png" />
-    <Content Include="Items\Weapons\SlimeSword_Blue.png" />
     <Content Include="Projectiles\ChainHook.png" />
     <Content Include="SFX\LevelUP.wav" />
   </ItemGroup>

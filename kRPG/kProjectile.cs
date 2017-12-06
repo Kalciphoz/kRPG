@@ -15,7 +15,7 @@ namespace kRPG
     public class kProjectile : GlobalProjectile
     {
         public Dictionary<ELEMENT, int> elementalDamage;
-        public Item item;
+        private Item item;
 
         public override bool InstancePerEntity
         {
@@ -77,6 +77,15 @@ namespace kRPG
                                 SelectItem(projectile);
                 }
             }
+            //if (Main.netMode != 0)
+            //{
+            //    ModPacket packet = mod.GetPacket();
+            //    packet.Write((byte)Message.InitProjEleDmg);
+            //    packet.Write(projectile.whoAmI);
+            //    foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+            //        packet.Write(elementalDamage[element]);
+            //    packet.Send();
+            //}
         }
 
         public void SelectItem(Projectile projectile, Item item)

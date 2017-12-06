@@ -102,16 +102,16 @@ namespace kRPG.NPCs
         {
             int nurse = NPC.FindFirstNPC(NPCID.Nurse);
             int guide = NPC.FindFirstNPC(NPCID.Guide);
-            if (nurse > 0 && Main.rand.Next(9) == 0)
+            if (nurse > 0 && Main.rand.Next(10) == 0)
                 return "I'm so grateful to " + Main.npc[nurse].GivenName + " for removing that stinger from my knee.";
-            else if (guide > 0 && Main.rand.Next(8) == 0)
+            else if (guide > 0 && Main.rand.Next(5) == 0)
             {
                 if (Main.rand.Next(2) == 0)
                     return Main.npc[guide].GivenName + " is looking sharp today.";
                 else
                     return "You know, when I started adventuring, I didn't have a " + Main.npc[guide].GivenName + " around.";
             }
-            else if (npc.GivenName == "Brian Alvarez" && Main.rand.Next(7) == 0)
+            else if (npc.GivenName == "Brian Alvarez" && Main.rand.Next(4) == 0)
             {
                 switch (Main.rand.Next(3))
                 {
@@ -123,21 +123,21 @@ namespace kRPG.NPCs
                         return "My son Emil tells me to move to a retirement home, but I feel like I'm not old enough for that.";
                 }
             }
-            else if (npc.GivenName == "Dylan Alvarez" && Main.rand.Next(7) == 0)
+            else if (npc.GivenName == "Dylan Alvarez" && Main.rand.Next(5) == 0)
             {
                 if (Main.rand.Next(2) == 0)
                     return "I once fought four ritual archmagicians at the same time. I won.";
                 else
                     return "Oh, if you think you're the protagonist of this story, you're dead wrong.";
             }
-            else if (npc.GivenName == "Grian" && Main.rand.Next(7) == 0)
+            else if (npc.GivenName == "Grian" && Main.rand.Next(5) == 0)
             {
                 if (Main.rand.Next(2) == 0)
                     return "This is a very nice place. Have you considered becoming an architect?";
                 else
                     return "I've dabbled in architecture you know. I was quite skilled.";
             }
-            else if (npc.GivenName == "Colonel Zabini" && Main.rand.Next(7) == 0)
+            else if (npc.GivenName == "Colonel Zabini" && Main.rand.Next(5) == 0)
             {
                 if (Main.rand.Next(2) == 0)
                     return "You lot are hopeless without me.";
@@ -145,28 +145,28 @@ namespace kRPG.NPCs
                     return "It's just a game, really. And games are supposed to be fun. So how about if I just do whatever I feel like?";
 
             }
-            else if (npc.GivenName == "General Raynor" && Main.rand.Next(7) == 0)
+            else if (npc.GivenName == "General Raynor" && Main.rand.Next(9) == 0)
                 return "Do me a favor, don't shoot me this time.";
-            else if (npc.GivenName == "Red Cloud" && Main.rand.Next(7) == 0)
+            else if (npc.GivenName == "Red Cloud" && Main.rand.Next(9) == 0)
                 return "I've done enough adventuring for a lifetime.";
-            else if (npc.GivenName == "Arnold" && Main.rand.Next(7) == 0)
+            else if (npc.GivenName == "Arnold" && Main.rand.Next(9) == 0)
                 return "Get into the choppa!";
-            else if (npc.GivenName == "Dominus" && Main.rand.Next(7) == 0)
+            else if (npc.GivenName == "Dominus" && Main.rand.Next(9) == 0)
                 return "This world is an illusion.";
-            else if (npc.GivenName == "Avarius" && Main.rand.Next(7) == 0)
+            else if (npc.GivenName == "Avarius" && Main.rand.Next(9) == 0)
                 return "I was a High Templar in Oriath. I was a god!";
-            else if (npc.GivenName == "Dentarthurdent" && Main.rand.Next(7) == 0)
+            else if (npc.GivenName == "Dentarthurdent" && Main.rand.Next(5) == 0)
             {
                 if (Main.rand.Next(2) == 0)
-                    return "It's a tough world. If you wanna survive out here, you gotta know where your gel is.";
+                    return "It's a tough world. If you wanna survive out here, you gotta know where your cobweb is.";
                 else
-                    return "I would never want to go anywhere without my grappling hook.";
+                    return "I would never want to go anywhere without my wonderful grappling hook.";
             }
-            else if (npc.GivenName == "Harry" && Main.rand.Next(7) == 0)
+            else if (npc.GivenName == "Harry" && Main.rand.Next(9) == 0)
                 return "I must not tell lies.";
-            else if (npc.GivenName == "Voldy" && Main.rand.Next(7) == 0)
+            else if (npc.GivenName == "Voldy" && Main.rand.Next(9) == 0)
                 return "Avada Kedav- Oh, it's you!";
-            switch (Main.rand.Next(6))
+            switch (Main.rand.Next(8))
             {
                 default:
                     return "I used to be an adventurer like you, but then I took a stinger in the knee.";
@@ -180,6 +180,10 @@ namespace kRPG.NPCs
                     return "I used to hunt a rare breed of unicorn and collect its tears. Want to buy some?";
                 case 5:
                     return "I have a few weapons left from my adventuring days. They're yours if you've got the coins!";
+                case 6:
+                    return "Wait for the opportune moment";
+                case 7:
+                    return "I'm not certain I can survive any more visits from old friends.";
             }
         }
 

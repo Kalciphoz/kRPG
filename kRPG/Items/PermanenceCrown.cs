@@ -15,8 +15,6 @@ namespace kRPG.Items
 {
     public class PermanenceCrown : ModItem
     {
-        public int charges = 3;
-
         public override bool CloneNewInstances
         {
             get { return true;  }
@@ -29,26 +27,11 @@ namespace kRPG.Items
             item.height = 24;
             item.value = 62500;
             item.rare = 5;
-            charges = 3;
         }
 
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Crown of Permanence");
-            Tooltip.SetDefault("When an upgrade fails, items remain but are downgraded");
-        }
-
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            tooltips.Add(new TooltipLine(mod, "tooltip2", "Has " + charges.ToString() + " charges"));
-        }
-
-        public override void AddRecipes()
-        {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod, "GloryPoint");
-            recipe.SetResult(this);
-            recipe.AddRecipe();
         }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)

@@ -167,6 +167,8 @@ namespace kRPG.Items.Glyphs
                     return "Star_Orange";
                 case 21:
                     return "Star_Purple";
+                case 22:
+                    return "Moon_Purple";
             }
         }
 
@@ -189,11 +191,29 @@ namespace kRPG.Items.Glyphs
             return compound;
         }
 
+        public override void NetSend(BinaryWriter writer)
+        {
+            writer.Write(modifiers.Count);
+            for (int i = 0; i < modifiers.Count; i += 1)
+                writer.Write(modifiers[i].id);
+        }
+
         public override void Load(TagCompound tag)
         {
+            modifiers.Clear();
             int count = tag.GetInt("ModifierCount");
             for (int i = 0; i < count; i += 1)
                 modifiers.Add(GlyphModifier.modifiers[tag.GetInt("Modifier_" + i)]);
+            initialized = true;
+        }
+
+        public override void NetRecieve(BinaryReader reader)
+        {
+            modifiers.Clear();
+            int count = reader.ReadInt32();
+            for (int i = 0; i < count; i += 1)
+                modifiers.Add(GlyphModifier.modifiers[reader.ReadInt32()]);
+            initialized = true;
         }
     }
 
@@ -241,10 +261,22 @@ namespace kRPG.Items.Glyphs
             return compound;
         }
 
+        public override void NetSend(BinaryWriter writer)
+        {
+            base.NetSend(writer);
+            writer.Write(projCount);
+        }
+
         public override void Load(TagCompound tag)
         {
             base.Load(tag);
             projCount = tag.GetInt("projCount");
+        }
+
+        public override void NetRecieve(BinaryReader reader)
+        {
+            base.NetRecieve(reader);
+            projCount = reader.ReadInt32();
         }
 
         public override ModItem Clone(Item item)
@@ -285,7 +317,7 @@ namespace kRPG.Items.Glyphs
                 eye.Center = target;
                 WingedEyeball we = (WingedEyeball)eye.modProjectile;
                 we.source = spell;
-                foreach (GlyphModifier modifier in modifiers)
+                foreach (GlyphModifier modifier in spell.modifiers)
                     if (modifier.minionAI != null)
                         we.glyphModifiers.Add(modifier.minionAI);
                 character.minions.Add((WingedEyeball)eye.modProjectile);
@@ -300,12 +332,12 @@ namespace kRPG.Items.Glyphs
 
         public override float BaseDamageModifier()
         {
-            return 0.7f;
+            return 0.6f;
         }
 
         public override float BaseManaModifier()
         {
-            return 1.4f;
+            return 1.35f;
         }
     }
 
@@ -346,7 +378,7 @@ namespace kRPG.Items.Glyphs
                 {
                     int x = (int)(target.X / 16f);
                     Tile tile = Main.tile[x, y];
-                    if (tile.active() && tile.collisionType == 1 && Main.tile[x, y - 1].collisionType != 1)
+                    if (tile.active() && Main.tileSolidTop[tile.type] || tile.collisionType == 1 && Main.tile[x, y - 1].collisionType != 1)
                     {
                         placeable = true;
                         placementHeight = y;
@@ -640,7 +672,7 @@ namespace kRPG.Items.Glyphs
 
         public override float BaseDamageModifier()
         {
-            return 1.1f;
+            return 1.05f;
         }
 
         public override Dictionary<ELEMENT, float> eleDmg
@@ -810,7 +842,7 @@ namespace kRPG.Items.Glyphs
                     unitVelocity.Normalize();
                     proj.baseVelocity = unitVelocity * 8f;
                     proj.displacementAngle = angle;
-                    proj.projectile.penetrate = 4;
+                    proj.projectile.penetrate = 3;
                 }
             };
         }
@@ -824,7 +856,7 @@ namespace kRPG.Items.Glyphs
                 Vector2 unitRelativePos = spell.RelativePos(spell.basePosition);
                 unitRelativePos.Normalize();
                 spell.projectile.Center = spell.basePosition + unitRelativePos * rotDistance;
-                spell.displacementVelocity = new Vector2(12f / projCount, 0f).RotatedBy((spell.RelativePos(spell.basePosition)).ToRotation() + (float)API.Tau / 4f);
+                spell.displacementVelocity = new Vector2(12f / spell.source.projCount, 0f).RotatedBy((spell.RelativePos(spell.basePosition)).ToRotation() + (float)API.Tau / 4f);
 
                 float angle = spell.displacementAngle + 0.24f * (- spell.projectile.timeLeft - rotDistance) / projCount;
                 spell.projectile.Center = spell.basePosition + new Vector2(0f, -rotDistance).RotatedBy(angle);
@@ -835,7 +867,7 @@ namespace kRPG.Items.Glyphs
 
         public override float BaseDamageModifier()
         {
-            return 1.2f - projCount * 0.15f;
+            return 1f - projCount * 0.05f;
         }
     }
 
@@ -926,7 +958,7 @@ namespace kRPG.Items.Glyphs
 
         public override float BaseDamageModifier()
         {
-            return 1.18f - projCount * 0.06f;
+            return 1.24f - projCount * 0.08f;
         }
     }
 
@@ -940,7 +972,7 @@ namespace kRPG.Items.Glyphs
 
         private static float GetSpread(int projCount)
         {
-            return 0.030f - projCount * 0.002f;
+            return 0.020f - projCount * 0.001f;
         }
 
         public override Action<ProceduralSpell, Player, Vector2, Vector2, Entity> GetCastAction()
@@ -966,12 +998,12 @@ namespace kRPG.Items.Glyphs
 
         public override float BaseDamageModifier()
         {
-            return 1.5f - projCount * 0.1f;
+            return 1.2f;
         }
 
         public override float BaseManaModifier()
         {
-            return 0.75f + projCount * 0.05f;
+            return 0.72f + projCount * 0.06f;
         }
     }
 
@@ -993,7 +1025,7 @@ namespace kRPG.Items.Glyphs
                 {
                     if (timeLeft % 8 == 0)
                     {
-                        ProceduralSpellProj proj = spell.CreateProjectile(player, new Vector2(0f, 8f), 0f, new Vector2(target.X - area / 2f + Main.rand.NextFloat(area), target.Y - 200f), caster);
+                        ProceduralSpellProj proj = spell.CreateProjectile(player, new Vector2(0f, 8f), 0f, new Vector2(target.X - area / 2f + Main.rand.NextFloat(area), target.Y - 240f), caster);
                         if (proj.alpha < 1f) proj.alpha = 0.5f;
                         proj.projectile.timeLeft = 60;
                     }
@@ -1010,6 +1042,55 @@ namespace kRPG.Items.Glyphs
         public override float BaseDamageModifier()
         {
             return 1.1f - projCount * 0.02f;
+        }
+    }
+
+    public class Moon_Purple : Moon
+    {
+        public override void Randomize()
+        {
+            base.Randomize();
+            projCount = Main.rand.Next(10, 21);
+        }
+
+        public override Action<ProceduralSpell, Player, Vector2, Vector2, Entity> GetCastAction()
+        {
+            return delegate (ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
+            {
+                new SpellEffect(spell, target, projCount * 10, delegate (ProceduralSpell ability, int timeLeft)
+                {
+                    if (timeLeft % 10 == 0)
+                    {
+                        ProceduralSpellProj proj = spell.CreateProjectile(player, new Vector2(0, -9f), Main.rand.NextFloat(-0.07f, 0.07f), caster.Center + new Vector2(0, -16f), caster);
+                        if (proj.alpha < 1f) proj.alpha = 0.5f;
+                        proj.projectile.tileCollide = true;
+                    }
+                });
+            };
+        }
+
+        public override Action<ProceduralSpellProj> GetAIAction()
+        {
+            return delegate (ProceduralSpellProj spell)
+            {
+                spell.projectile.velocity.Y += 0.3f;
+            };
+        }
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Purple Moon Glyph");
+            Tooltip.SetDefault("Shoots up a fountain of projectiles to rain down around you");
+        }
+
+        public override float BaseDamageModifier()
+        {
+            return 2.6f - projCount * 0.06f;
+        }
+
+        public override float BaseManaModifier()
+        {
+            return 1.2f;
         }
     }
 }

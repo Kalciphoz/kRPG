@@ -186,7 +186,7 @@ namespace kRPG.Items.Glyphs
                 Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, mod.ProjectileType<Explosion>(), spell.projectile.damage, 0f, spell.projectile.owner)];
                 proj.minion = true;
             });
-            vanish = new GlyphModifier(5, "Vanish", glyph => glyph is Star, () => Main.rand.Next(3) == 0, 0.95f, 1.1f);
+            vanish = new GlyphModifier(5, "Discord", glyph => glyph is Star, () => Main.rand.Next(3) == 0, 1.2f, 1f);
             crosschains = new GlyphModifier(6, "", glyph => glyph is Cross, () => Main.rand.Next(3) == 0).DefineGroup(delegate
             {
                 switch(Main.rand.Next(2))
@@ -252,9 +252,9 @@ namespace kRPG.Items.Glyphs
                 Player player = Main.player[proj.owner];
                 Entity caster = spell.caster;
                 List<NPC> npcs = new List<NPC>();
-                foreach (NPC npc in Main.npc)
-                    if (new Rectangle((int)Math.Min(caster.Center.X, proj.Center.X), (int)Math.Min(caster.Center.Y, proj.Center.Y), (int)Math.Abs(proj.Center.X - caster.Center.X), (int)Math.Abs(proj.Center.Y - caster.Center.Y)).Intersects(new Rectangle((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height)))
-                        npcs.Add(npc);
+                for (int i = 0; i < Main.npc.Length; i += 1)
+                    if (new Rectangle((int)Math.Min(caster.Center.X, proj.Center.X), (int)Math.Min(caster.Center.Y, proj.Center.Y), (int)Math.Abs(proj.Center.X - caster.Center.X), (int)Math.Abs(proj.Center.Y - caster.Center.Y)).Intersects(new Rectangle((int)Main.npc[i].position.X, (int)Main.npc[i].position.Y, Main.npc[i].width, Main.npc[i].height)))
+                        npcs.Add(Main.npc[i]);
                 Vector2 relativePos = proj.Center - caster.Center;
                 if (relativePos.Length() > 480f) return;
                 int count = (int)(relativePos.Length() / 24);
@@ -263,16 +263,22 @@ namespace kRPG.Items.Glyphs
                     Vector2 chainpos = caster.Center + relativePos * (i + 0.5f) / count;
                     Rectangle bounds = new Rectangle((int)Math.Round(chainpos.X) - 12, (int)Math.Round(chainpos.Y) - 12, 24, 24);
                     foreach (NPC npc in npcs)
-                        if (bounds.Intersects(new Rectangle((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height)) && !npc.townNPC)
-                        {
-                            kNPC kn = npc.GetGlobalNPC<kNPC>();
-                            if (kn.invincibilityTime[proj.whoAmI] <= 0)
+                        if (npc.active)
+                            if (bounds.Intersects(new Rectangle((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height)) && !npc.friendly && !npc.townNPC)
                             {
-                                player.ApplyDamageToNPC(npc, proj.damage, 0f, 0, false);
-                                npc.AddBuff(BuffID.Poisoned, proj.damage + 60);
-                                kn.invincibilityTime[proj.whoAmI] = 12;
+                                kNPC kn = npc.GetGlobalNPC<kNPC>();
+                                bool canHit = true;
+                                if (kn.immuneTime > 0) canHit = false;
+                                if (kn.invincibilityTime.ContainsKey(spell.source))
+                                    if (kn.invincibilityTime[spell.source] > 0)
+                                        canHit = false;
+                                if (canHit)
+                                {
+                                    player.ApplyDamageToNPC(npc, proj.damage, 0f, 0, false);
+                                    npc.AddBuff(BuffID.Poisoned, proj.damage + 60);
+                                    kn.invincibilityTime[spell.source] = 30;
+                                }
                             }
-                        }
                     spriteBatch.Draw(GFX.thornChain, chainpos - Main.screenPosition, null, spell.lighted ? Color.White : color, relativePos.ToRotation() - (float)API.Tau / 4f, new Vector2(10f, 16f), 1f, SpriteEffects.None, 0.1f);
                 }
             });

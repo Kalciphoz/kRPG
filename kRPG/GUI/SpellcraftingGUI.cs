@@ -25,33 +25,41 @@ namespace kRPG.GUI
         private kRPG krpg;
 
         private Func<Vector2> guiposition;
-        
+
         public GlyphSlot[] glyphs = new GlyphSlot[3];
+
+        private float Scale
+        {
+            get
+            {
+                return Math.Min(1f, Main.screenWidth / 3840f + 0.4f);
+            }
+        }
 
         public SpellcraftingGUI(PlayerCharacter character, Mod mod)
         {
             this.character = character;
             this.mod = mod;
             krpg = (kRPG)mod;
-            guiposition = delegate () { return new Vector2((float)Main.screenWidth / 2f - 100f, 192f); };
-            glyphs[0] = new GlyphSlot(delegate() { return guiposition() + new Vector2(84f, 36f); }, GLYPHTYPE.STAR, character);
-            glyphs[1] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 70f); }, GLYPHTYPE.CROSS, character);
-            glyphs[2] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 106f); }, GLYPHTYPE.MOON, character);
+            guiposition = delegate () { return new Vector2((float)Main.screenWidth / 2f - 100f * Scale, 192f * Scale); };
+            glyphs[0] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 36f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.STAR, character);
+            glyphs[1] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 70f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.CROSS, character);
+            glyphs[2] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 106f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.MOON, character);
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
-            spriteBatch.Draw(GFX.spellGui, guiposition(), Color.White);
+            spriteBatch.Draw(GFX.spellGui, guiposition(), null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
             foreach (GlyphSlot slot in glyphs)
                 slot.Draw(spriteBatch);
 
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Place glyphs in all three slots to create a spell", new Vector2(Main.screenWidth / 2f - 176f, Main.screenHeight / 2f + 200f), Color.White);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Press a key while holding shift to bind it as a hotkey", new Vector2(Main.screenWidth / 2f - 176f, Main.screenHeight / 2f + 224f), Color.White);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Place glyphs in all three slots to create a spell", new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 200f * Scale), Color.White, Scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Press a key while holding shift to bind it as a hotkey", new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 224f * Scale), Color.White, Scale);
 
-            Vector2 buttonPosition = new Vector2(Main.screenWidth / 2f - 92f, Main.screenHeight / 2f + 256f);
-            spriteBatch.Draw(GFX.button_close, buttonPosition, Color.White);
+            Vector2 buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
+            spriteBatch.Draw(GFX.button_close, buttonPosition, Color.White, Scale);
 
-            if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.button_confirm.Width && Main.mouseY <= buttonPosition.Y + GFX.button_confirm.Height)
+            if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + (int)(GFX.button_confirm.Width * Scale) && Main.mouseY <= buttonPosition.Y + (int)(GFX.button_confirm.Height * Scale))
             {
                 Main.LocalPlayer.mouseInterface = true;
                 if (Main.mouseLeft && Main.mouseLeftRelease)
@@ -84,11 +92,12 @@ namespace kRPG.GUI
         }
         private PlayerCharacter character;
         private Func<Vector2> position;
+        private Func<float> scale;
         private Rectangle Bounds
         {
             get
             {
-                return new Rectangle((int)position().X, (int)position().Y, 30, 30);
+                return new Rectangle((int)position().X, (int)position().Y, (int)(30 * scale()), (int)(30 * scale()));
             }
         }
         private ProceduralSpell Ability
@@ -98,18 +107,19 @@ namespace kRPG.GUI
                 return character.selectedAbility;
             }
         }
-        
-        public GlyphSlot(Func<Vector2> position, GLYPHTYPE type, PlayerCharacter character)
+
+        public GlyphSlot(Func<Vector2> position, Func<float> scale, GLYPHTYPE type, PlayerCharacter character)
         {
             this.type = type;
             this.character = character;
             this.position = position;
+            this.scale = scale;
         }
 
         private bool CanPlaceItem(Item item)
         {
             bool check = false;
-            switch(type)
+            switch (type)
             {
                 case GLYPHTYPE.STAR:
                     check = item.modItem is Items.Glyphs.Star;
@@ -156,7 +166,7 @@ namespace kRPG.GUI
             }
             if (Glyph.type == 0) return;
             Texture2D texture = Main.itemTexture[Glyph.type];
-            spriteBatch.Draw(texture, Bounds.TopLeft() + new Vector2(2f, 2f), Color.White);
+            spriteBatch.Draw(texture, Bounds.TopLeft() + new Vector2(2f, 2f), Color.White, scale());
         }
     }
 }

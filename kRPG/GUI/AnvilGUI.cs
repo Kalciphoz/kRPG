@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using ReLogic.Graphics;
 using Terraria.ID;
+using System;
 
 namespace kRPG.GUI
 {
@@ -23,42 +24,49 @@ namespace kRPG.GUI
         {
             get
             {
-                return new Vector2((float)Main.screenWidth / 2f - 128f, Main.screenHeight / 2f);
+                return new Vector2((float)Main.screenWidth / 2f - 128f * scale, Main.screenHeight / 2f);
+            }
+        }
+        private float scale
+        {
+            get
+            {
+                return Math.Min(1f, Main.screenWidth / 3840f + 0.4f);
             }
         }
         private Vector2 BtnCancelPos
         {
             get
             {
-                return new Vector2(GuiPosition.X + 36f, GuiPosition.Y + 268f);
+                return new Vector2(Main.screenWidth / 2f - 92f * scale, GuiPosition.Y + 268f * scale);
             }
         }
         private Vector2 BtnUpgradePos
         {
             get
             {
-                return new Vector2(GuiPosition.X + 36f, GuiPosition.Y + 208f); 
+                return new Vector2(Main.screenWidth / 2f - 92f * scale, GuiPosition.Y + 208f * scale); 
             }
         }
         private Vector2 BtnExperiencePos
         {
             get
             {
-                return new Vector2(GuiPosition.X + 150f, GuiPosition.Y - 76f);
+                return new Vector2(GuiPosition.X + 150f * scale, GuiPosition.Y - 76f * scale);
             }
         }
         private Vector2 BtnPermanencePos
         {
             get
             {
-                return new Vector2(GuiPosition.X + 150f, GuiPosition.Y - 12f);
+                return new Vector2(GuiPosition.X + 150f * scale, GuiPosition.Y - 12f * scale);
             }
         }
         private Vector2 BtnTranscendencePos
         {
             get
             {
-                return new Vector2(GuiPosition.X + 150f, GuiPosition.Y + 52f);
+                return new Vector2(GuiPosition.X + 150f * scale, GuiPosition.Y + 52f * scale);
             }
         }
 
@@ -77,7 +85,7 @@ namespace kRPG.GUI
             this.mod = mod;
             krpg = (kRPG)mod;
             
-            AddButton(delegate() { return new Rectangle((int)BtnCancelPos.X, (int)BtnCancelPos.Y, GFX.BTN_WIDTH, GFX.BTN_HEIGHT); }, delegate (Player player)
+            AddButton(delegate() { return new Rectangle((int)BtnCancelPos.X, (int)BtnCancelPos.Y, (int)(GFX.BTN_WIDTH * scale), (int)(GFX.BTN_HEIGHT * scale)); }, delegate (Player player)
             {
                 Main.PlaySound(SoundID.MenuTick);
                 CloseGUI();
@@ -105,33 +113,33 @@ namespace kRPG.GUI
             if (character.permanence < 1) permanenceCrown = false;
             if (character.transcendence < 1) transcendenceCrown = false;
 
-            spriteBatch.Draw(GFX.anvil, new Vector2(GuiPosition.X - 150f, GuiPosition.Y - 100f), Color.White);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Upgrading an item increases its power, but does not always succeed", new Vector2(GuiPosition.X - 176f, GuiPosition.Y - 148f), Color.White);
+            spriteBatch.Draw(GFX.anvil, new Vector2(GuiPosition.X - 150f * scale, GuiPosition.Y - 100f * scale), Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Upgrading an item increases its power, but does not always succeed", new Vector2(GuiPosition.X - 176f * scale, GuiPosition.Y - 148f * scale), Color.White, scale);
             if (permanenceCrown)
-                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "If the upgrade fails, the item will be downgraded.", new Vector2(GuiPosition.X - 176f, GuiPosition.Y - 124), Color.Lime);
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "If the upgrade fails, the item will be downgraded.", new Vector2(GuiPosition.X - 176f * scale, GuiPosition.Y - 124 * scale), Color.Lime, scale);
             else
-                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "If the upgrade fails, the item will be destroyed.", new Vector2(GuiPosition.X - 176f, GuiPosition.Y - 124), Color.Red);
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "If the upgrade fails, the item will be destroyed.", new Vector2(GuiPosition.X - 176f * scale, GuiPosition.Y - 124 * scale), Color.Red, scale);
 
-            spriteBatch.Draw(guardianCrown ? GFX.button_crown_pressed : GFX.button_crown, BtnExperiencePos, Color.White);
-            spriteBatch.Draw(Main.itemTexture[mod.ItemType<GuardianCrown>()], BtnExperiencePos + new Vector2(9f, 10f), guardianCrown ? Color.Gray : Color.White);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Increases success chance of upgrades by 10%", BtnExperiencePos + new Vector2(64f, 4f), Color.White);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "at the cost of a much higher price in currency", BtnExperiencePos + new Vector2(64f, 28f), Color.White);
-            spriteBatch.Draw(permanenceCrown ? GFX.button_crown_pressed : GFX.button_crown, BtnPermanencePos, Color.White);
-            spriteBatch.Draw(Main.itemTexture[mod.ItemType<PermanenceCrown>()], BtnPermanencePos + new Vector2(9f, 10f), permanenceCrown ? Color.Gray : Color.White);
-            spriteBatch.DrawStringWithShadow(Main.fontItemStack, character.permanence.ToString(), BtnPermanencePos + new Vector2(8f, 24f), Color.White);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "When an upgrade fails, items are downgraded", BtnPermanencePos + new Vector2(64f, 4f), Color.White);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "instead of being destroyed. " + (character.permanence == 1 ? "1 crown left." : character.permanence + " crowns left."), BtnPermanencePos + new Vector2(64f, 28f), Color.White);
-            spriteBatch.Draw(transcendenceCrown ? GFX.button_crown_pressed : GFX.button_crown, BtnTranscendencePos, Color.White);
-            spriteBatch.Draw(Main.itemTexture[mod.ItemType<BlacksmithCrown>()], BtnTranscendencePos + new Vector2(9f, 10f), transcendenceCrown ? Color.Gray : Color.White);
-            spriteBatch.DrawStringWithShadow(Main.fontItemStack, character.transcendence.ToString(), BtnTranscendencePos + new Vector2(8f, 24f), Color.White);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Allows you to upgrade an item to +8", BtnTranscendencePos + new Vector2(64f, 4f), Color.White);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.transcendence == 1 ? "1 crown left." : character.transcendence + " crowns left.", BtnTranscendencePos + new Vector2(64f, 28f), Color.White);
+            spriteBatch.Draw(guardianCrown ? GFX.button_crown_pressed : GFX.button_crown, BtnExperiencePos, Color.White, scale);
+            spriteBatch.Draw(GFX.guardianCrown, BtnExperiencePos + new Vector2(9f, 10f), guardianCrown ? Color.Gray : Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Increases success chance of upgrades by 10%", BtnExperiencePos + new Vector2(64f, 4f) * scale, Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "at the cost of a much higher price in currency", BtnExperiencePos + new Vector2(64f, 28f) * scale, Color.White, scale);
+            spriteBatch.Draw(permanenceCrown ? GFX.button_crown_pressed : GFX.button_crown, BtnPermanencePos, Color.White, scale);
+            spriteBatch.Draw(Main.itemTexture[mod.ItemType<PermanenceCrown>()], BtnPermanencePos + new Vector2(9f, 10f), permanenceCrown ? Color.Gray : Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontItemStack, character.permanence.ToString(), BtnPermanencePos + new Vector2(8f, 24f) * scale, Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "When an upgrade fails, items are downgraded", BtnPermanencePos + new Vector2(64f, 4f) * scale, Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "instead of being destroyed. " + (character.permanence == 1 ? "1 crown left." : character.permanence + " crowns left."), BtnPermanencePos + new Vector2(64f, 28f) * scale, Color.White, scale);
+            spriteBatch.Draw(transcendenceCrown ? GFX.button_crown_pressed : GFX.button_crown, BtnTranscendencePos, Color.White, scale);
+            spriteBatch.Draw(Main.itemTexture[mod.ItemType<BlacksmithCrown>()], BtnTranscendencePos + new Vector2(9f, 10f), transcendenceCrown ? Color.Gray : Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontItemStack, character.transcendence.ToString(), BtnTranscendencePos + new Vector2(8f, 24f) * scale, Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Allows you to upgrade an item to +8", BtnTranscendencePos + new Vector2(64f, 4f) * scale, Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.transcendence == 1 ? "1 crown left." : character.transcendence + " crowns left.", BtnTranscendencePos + new Vector2(64f, 28f) * scale, Color.White, scale);
 
-            spriteBatch.Draw(GFX.button_close, BtnCancelPos, Color.White);
+            spriteBatch.Draw(GFX.button_close, BtnCancelPos, Color.White, scale);
 
             if (!selected)
             {
-                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "<Right-click a weapon to select it for upgrading>", new Vector2(GuiPosition.X - 176f, GuiPosition.Y + 128f), Color.White);
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "<Right-click a weapon to select it for upgrading>", new Vector2(GuiPosition.X - 176f * scale, GuiPosition.Y + 128f * scale), Color.White, scale);
             }
 
             else
@@ -143,17 +151,17 @@ namespace kRPG.GUI
                     selected = false;
                 }
 
-                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Selected item: " + item.HoverName, new Vector2(GuiPosition.X - 192f, GuiPosition.Y + 128f), Color.White);
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Selected item: " + item.HoverName, new Vector2(GuiPosition.X - 192f * scale, GuiPosition.Y + 128f * scale), Color.White, scale);
 
                 int modifier = guardianCrown ? 4 : 1;
                 if (player.Wealth() >= upgradeCost*modifier)
                 {
                     int bonusChance = guardianCrown ? 10 : 0;
 
-                    spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Upgrade Cost: " + API.MoneyToString(upgradeCost*modifier), new Vector2(GuiPosition.X - 192f, GuiPosition.Y + 152f), Color.White);
-                    spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Chance to succeed: " + (upgradeSuccess + bonusChance).ToString() + "%", new Vector2(GuiPosition.X - 192f, GuiPosition.Y + 176f), bonusChance > 0 ? Color.Lime : Color.White);
-                    spriteBatch.Draw(GFX.button_upgrade, BtnUpgradePos, Color.White);
-                    if (new Rectangle((int)BtnUpgradePos.X, (int)BtnUpgradePos.Y, GFX.BTN_WIDTH, GFX.BTN_HEIGHT).Contains(Main.mouseX, Main.mouseY) && Main.mouseLeft && Main.mouseLeftRelease)
+                    spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Upgrade Cost: " + API.MoneyToString(upgradeCost*modifier), new Vector2(GuiPosition.X - 192f * scale, GuiPosition.Y + 152f * scale), Color.White, scale);
+                    spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Chance to succeed: " + (upgradeSuccess + bonusChance).ToString() + "%", new Vector2(GuiPosition.X - 192f * scale, GuiPosition.Y + 176f * scale), bonusChance > 0 ? Color.Lime : Color.White, scale);
+                    spriteBatch.Draw(GFX.button_upgrade, BtnUpgradePos, Color.White, scale);
+                    if (new Rectangle((int)BtnUpgradePos.X, (int)BtnUpgradePos.Y, (int)(GFX.BTN_WIDTH * scale), (int)(GFX.BTN_HEIGHT * scale)).Contains(Main.mouseX, Main.mouseY) && Main.mouseLeft && Main.mouseLeftRelease)
                     {
                         Main.PlaySound(SoundID.MenuTick);
                         if (ki.upgradeLevel >= PlayerCharacter.defaultMaxUpgradeLevel)
@@ -161,39 +169,39 @@ namespace kRPG.GUI
 
                         if (Main.rand.Next(100) < upgradeSuccess + bonusChance)
                         {
-                            this.ki.Upgrade(item);
+                            ki.Upgrade(item);
                         }
                         else
                         {
                             if (permanenceCrown)
-                                this.ki.Downgrade(item);
+                                ki.Downgrade(item);
                             else
-                                this.ki.Destroy(item);
+                                ki.Destroy(item);
                         }
 
                         if (permanenceCrown && bonusChance + upgradeSuccess < 100)
                             character.permanence -= 1;
 
                         player.RemoveCoins(upgradeCost*modifier);
-                        Reset();
+                        if (!AttemptSelectItem(ki, item)) CloseGUI();
                     }
                 }
 
                 else
                 {
-                    spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Upgrade Cost: " + API.MoneyToString(upgradeCost*modifier), new Vector2(GuiPosition.X - 192f, GuiPosition.Y + 152f), Color.Red);
+                    spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Upgrade Cost: " + API.MoneyToString(upgradeCost*modifier), new Vector2(GuiPosition.X - 192f * scale, GuiPosition.Y + 152f * scale), Color.Red, scale);
                 }
             }
 
             if (position != null) if (Vector2.Distance(player.Center, position) > 128) CloseGUI();
         }
 
-        public void AttemptSelectItem(kItem ki, Item item)
+        public bool AttemptSelectItem(kItem ki, Item item)
         {
             byte startLevel = ki.upgradeLevel;
 
             if (startLevel >= 7 && (startLevel >= 8 || !transcendenceCrown))
-                return;
+                return false;
 
             this.ki = ki;
             this.item = item;
@@ -236,12 +244,14 @@ namespace kRPG.GUI
             {
                 upgradeCost = (int)(item.value * 1.5);
             }
+
+            return true;
         }
 
-        public bool IsSelecting()
-        {
-            return guiActive && !selected;
-        }
+        //public bool IsSelecting()
+        //{
+        //    return guiActive && !selected;
+        //}
 
         public override void OnClose()
         {

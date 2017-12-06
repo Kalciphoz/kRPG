@@ -16,6 +16,7 @@ using Terraria.ID;
 using Terraria.DataStructures;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria.GameInput;
 
 namespace kRPG
 {
@@ -110,7 +111,7 @@ namespace kRPG
             get
             {
                 float diff = 4f + level / 12f;
-                return diff * (1f - 0.8f) / (accuracy + diff);
+                return 1f - diff * (1f - 0.8f) / (accuracy + diff);
             }
         }
         public float accuracyCounter = 0.5f;
@@ -211,10 +212,10 @@ namespace kRPG
         public override void SetupStartInventory(IList<Item> items)
         {
             Random rand = new Random();
-            switch (rand.Next(5))
+            switch (rand.Next(8))
             {
                 default:
-                    items[0].SetDefaults(ItemID.WoodenSword);
+                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TinBroadsword : ItemID.CopperBroadsword);
                     break;
                 case 1:
                     items[0].SetDefaults(ItemID.Spear);
@@ -223,20 +224,35 @@ namespace kRPG
                     items[0].SetDefaults(ItemID.WoodenBoomerang);
                     break;
                 case 3:
-                    items[0].SetDefaults(ItemID.WandofSparking);
+                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TopazStaff : ItemID.AmethystStaff);
                     break;
                 case 4:
-                    items[0].SetDefaults(ItemID.WoodenBow);
+                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TinBow : ItemID.CopperBow);
                     Item arrows = new Item();
-                    arrows.SetDefaults(ItemID.WoodenArrow);
-                    arrows.stack = 150;
+                    arrows.SetDefaults(rand.Next(2) == 0 ? ItemID.FlamingArrow : ItemID.WoodenArrow);
+                    arrows.stack = rand.Next(2) == 0 ? 150 : 200;
                     items.Add(arrows);
                     break;
+                case 5:
+                    items[0].SetDefaults(ItemID.Shuriken);
+                    items[0].stack = rand.Next(2) == 0 ? 150 : 100;
+                    Item knives = new Item();
+                    knives.SetDefaults(rand.Next(2) == 0 ? ItemID.PoisonedKnife : ItemID.ThrowingKnife);
+                    knives.stack = 50;
+                    items.Add(knives);
+                    break;
+                case 6:
+                    items[0].SetDefaults(ItemID.WoodYoyo);
+                    break;
+                case 7:
+                    items[0].SetDefaults(ItemID.ChainKnife);
+                    break;
             }
-            items[1].SetDefaults(ItemID.CopperPickaxe);
+            items[1].SetDefaults(rand.Next(3) == 0 ? ItemID.TinPickaxe : rand.Next(2) == 0 ? ItemID.CactusPickaxe : ItemID.CopperPickaxe);
             items[1].GetGlobalItem<kItem>().Initialize(items[1], true);
-            items[2].SetDefaults(ItemID.CopperAxe);
+            items[2].SetDefaults(rand.Next(2) == 0 ? ItemID.TinAxe : ItemID.CopperAxe);
             items[2].GetGlobalItem<kItem>().Initialize(items[2], true);
+
             Item star = new Item();
             star.SetDefaults(mod.ItemType<Star_Blue>());
             Item cross = new Item();
@@ -257,7 +273,7 @@ namespace kRPG
             }
             ((Glyph)cross.modItem).Randomize();
             Item moon = new Item();
-            switch (rand.Next(4))
+            switch (rand.Next(5))
             {
                 default:
                     moon.SetDefaults(mod.ItemType<Moon_Yellow>());
@@ -270,6 +286,9 @@ namespace kRPG
                     break;
                 case 3:
                     moon.SetDefaults(mod.ItemType<Moon_Violet>());
+                    break;
+                case 4:
+                    moon.SetDefaults(mod.ItemType<Moon_Purple>());
                     break;
             }
             ((Glyph)moon.modItem).Randomize();
@@ -319,7 +338,15 @@ namespace kRPG
         public void LevelUP()
         {
             this.level += 1;
-            if (!Main.gameMenu) GFX.sfx_levelUp.Play(0.6f, 0f, 0f);
+            if (!Main.gameMenu) GFX.sfx_levelUp.Play(0.7f * Main.soundVolume, 0f, 0f);
+            if (Main.netMode == 1)
+            {
+                ModPacket packet = mod.GetPacket();
+                packet.Write((byte)Message.SyncLevel);
+                packet.Write(player.whoAmI);
+                packet.Write(level);
+                packet.Send();
+            }
             levelAnimation = 0;
             Main.NewText("Congratulations! You are now level " + level.ToString(), 255, 223, 63);
         }
@@ -351,10 +378,24 @@ namespace kRPG
                 if (!hasAilment[element]) ailmentIntensity[element] = 0;
                 hasAilment[element] = false;
             }
+
+            if (Main.netMode == 1 && (int)Main.time % 300 == 0)
+            {
+                ModPacket packet = mod.GetPacket();
+                packet.Write((byte)Message.SyncStats);
+                packet.Write(player.whoAmI);
+                packet.Write(level);
+                packet.Write(baseStats[STAT.RESILIENCE]);
+                packet.Write(baseStats[STAT.QUICKNESS]);
+                packet.Write(baseStats[STAT.POTENCY]);
+                packet.Write(baseStats[STAT.WITS]);
+                packet.Send();
+            }
         }
 
         public override void DrawEffects(PlayerDrawInfo drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)
         {
+            if (Main.netMode == 2 || Main.myPlayer != player.whoAmI) return;
             if (player.statLife < 1) return;
             if (hasAilment[ELEMENT.FIRE])
             {
@@ -418,6 +459,52 @@ namespace kRPG
             }
         }
 
+        public override void PreUpdate()
+        {
+            if (Main.chatRelease && !Main.drawingPlayerChat && !Main.editSign && !Main.editChest && Main.netMode != 2)
+            {
+                if (PlayerInput.Triggers.Current.QuickHeal)
+                    if (!PlayerInput.Triggers.Old.QuickHeal)
+                    {
+                        player.APIQuickHeal();
+                        PlayerInput.Triggers.Old.QuickHeal = true;
+                    }
+
+                if (PlayerInput.Triggers.Current.QuickMana)
+                    if (!PlayerInput.Triggers.Old.QuickMana)
+                    {
+                        player.APIQuickMana();
+                        PlayerInput.Triggers.Old.QuickMana = true;
+                    }
+
+                if (PlayerInput.Triggers.Current.QuickBuff)
+                    if (!PlayerInput.Triggers.Old.QuickBuff)
+                    {
+                        player.APIQuickBuff();
+                        PlayerInput.Triggers.Old.QuickBuff = true;
+                    }
+            }
+
+            int selectedBinding3 = player.QuicksRadial.SelectedBinding;
+            player.QuicksRadial.Update();
+            if (player.QuicksRadial.SelectedBinding != -1 && PlayerInput.Triggers.JustReleased.RadialQuickbar && !PlayerInput.MiscSettingsTEMP.HotbarRadialShouldBeUsed)
+            {
+                switch (player.QuicksRadial.SelectedBinding)
+                {
+                    case 0:
+                        player.APIQuickHeal();
+                        break;
+                    case 1:
+                        player.APIQuickBuff();
+                        break;
+                    case 2:
+                        player.APIQuickMana();
+                        break;
+                }
+                PlayerInput.Triggers.JustReleased.RadialQuickbar = false;
+            }
+        }
+
         public override void PostUpdateEquips()
         {
             if (!initialized)
@@ -427,7 +514,6 @@ namespace kRPG
             }
 
             UpdateStats();
-            player.statManaMax = 14 + (level - 1) * 2;
             if (lifeRegen > 0 && !player.bleed && !player.onFire && !player.poisoned && !player.onFire2 && !player.venom && !player.onFrostBurn) regenTimer += 1f;
             if (regenTimer > 60f / lifeRegen)
             {
@@ -445,7 +531,8 @@ namespace kRPG
             }
             manaRegenTimer += 1f;
 
-            if (Main.chatRelease && !Main.drawingPlayerChat && !Main.editSign && !Main.editChest)
+            if (Main.chatRelease && !Main.drawingPlayerChat && !Main.editSign && !Main.editChest && Main.netMode != 2)
+            {
                 for (int i = 0; i < abilities.Length; i += 1)
                     if (abilities[i].CompleteSkill())
                     {
@@ -456,24 +543,34 @@ namespace kRPG
                             if (!glyph.CanUse()) useable = false;
                         }
 
-                        if (Main.keyState.IsKeyDown(abilities[i].key) && abilities[i].remaining == 0 && useable && player.statMana >= abilities[i].ManaCost(this))
+                        if (Main.keyState.IsKeyDown(abilities[i].key) && Main.keyState.IsKeyUp(Keys.LeftShift) && abilities[i].remaining == 0 && useable && player.statMana >= abilities[i].ManaCost(this))
                         {
-                            if (Main.netMode == 1)
-                            {
-                                ModPacket packet = mod.GetPacket();
-                                packet.Write((byte)Message.CastSpell);
-                                packet.Write(player.whoAmI);
-                                packet.Write(i);
-                                packet.Write(Main.MouseWorld.X);
-                                packet.Write(Main.MouseWorld.Y);
-                                packet.Send();
-                            }
-                            if (Main.netMode == 0)
+                            //if (Main.netMode == 1)
+                            //{
+                            //    ProceduralSpell spell = abilities[i];
+                            //    ModPacket packet = mod.GetPacket();
+                            //    packet.Write((byte)Message.CastSpell);
+                            //    packet.Write(player.whoAmI);
+                            //    packet.Write(Main.MouseWorld.X);
+                            //    packet.Write(Main.MouseWorld.Y);
+                            //    packet.Write(spell.glyphs[(byte)GLYPHTYPE.STAR].type);
+                            //    packet.Write(spell.glyphs[(byte)GLYPHTYPE.CROSS].type);
+                            //    packet.Write(spell.glyphs[(byte)GLYPHTYPE.MOON].type);
+                            //    packet.Write(spell.ProjectileDamage(this));
+                            //    packet.Write(spell.projCount);
+                            //    List<GlyphModifier> modifiers = spell.modifiers;
+                            //    packet.Write(modifiers.Count);
+                            //    for (int j = 0; j < modifiers.Count; j += 1)
+                            //        packet.Write(modifiers[j].id);
+                            //    packet.Send();
+                            //}
+                            if (Main.netMode != 2)
                                 abilities[i].UseAbility(player, Main.MouseWorld);
                             player.statMana -= abilities[i].ManaCost(this);
                         }
                     }
-            
+            }
+
             for (int i = 0; i < spellEffects.Count; i += 1)
                 spellEffects[i].Update(this);
 
@@ -532,9 +629,8 @@ namespace kRPG
                 if (Main.itemTexture[mod.ItemType<ProceduralStaff>()] != ((ProceduralStaff)item.modItem).texture)
                     Main.itemTexture[mod.ItemType<ProceduralStaff>()] = ((ProceduralStaff)item.modItem).texture;
 
-            for (int i = 0; i < 40; i += 1)
-                inventories[activeInvPage][i] = player.inventory[i + 10];
-            if (Main.netMode != 2) inventoryGUI.guiActive = Main.playerInventory;
+            //for (int i = 0; i < 40; i += 1)
+            //    inventories[activeInvPage][i] = player.inventory[i + 10];
 
             //API.FindRecipes();
         }
@@ -545,7 +641,7 @@ namespace kRPG
                 player.inventory[i + 10] = inventories[page][i];
             activeInvPage = page;
             statPage = false;
-            Recipe.FindRecipes();
+            API.FindRecipes();
             for (int i = 0; i < 50; i += 1)
                 if (player.inventory[i].type == 71 || player.inventory[i].type == 72 || player.inventory[i].type == 73 || player.inventory[i].type == 74)
                     player.DoCoins(i);
@@ -631,8 +727,12 @@ namespace kRPG
 
         public void UpdateStats()
         {
-            player.statLifeMax2 = 90 + TotalStats(STAT.RESILIENCE) * 15 + level * 10 + bonusLife;
-            player.statManaMax2 += bonusMana + TotalStats(STAT.WITS) * 7;
+            float lifeMultiplier = 1f + (player.statLifeMax - 100f) / 400f;
+            player.statLifeMax2 += 115 + TotalStats(STAT.RESILIENCE) * 10 + level * 5 + bonusLife - player.statLifeMax;
+            player.statLifeMax2 = (int)Math.Round(player.statLifeMax2 * lifeMultiplier);
+            float manaMultiplier = 1f + (player.statManaMax - 20f) / 200f * 1.5f;
+            player.statManaMax2 += 19 + level + bonusMana + TotalStats(STAT.WITS) * 3 - player.statManaMax;
+            player.statManaMax2 = (int)Math.Round(player.statManaMax2 * manaMultiplier);
             player.statDefense += TotalStats(STAT.RESILIENCE);
             allres += TotalStats(STAT.WITS);
             evasion += TotalStats(STAT.QUICKNESS);
@@ -643,33 +743,36 @@ namespace kRPG
                 lifeDegen = ailmentIntensity[ELEMENT.FIRE] / 2;
             manaRegen = player.statManaMax2 * 0.06f + TotalStats(STAT.WITS) * 0.6f;
 
-            if (mana < 0) mana = 0;
-            if (player.statMana < 0) player.statMana = 0;
-            if (player.statMana < mana)
-                mana = player.statMana;
-            if (rituals[RITUAL.ELAN_VITAL] && mana < player.statManaMax2)
+            if (Main.netMode != 2)
             {
-                if (player.statLife > player.statLifeMax2 * 0.4 + player.statManaMax2 - mana)
+                if (mana < 0) mana = 0;
+                if (player.statMana < 0) player.statMana = 0;
+                if (player.statMana < mana)
+                    mana = player.statMana;
+                if (rituals[RITUAL.ELAN_VITAL] && mana < player.statManaMax2)
                 {
-                    player.statLife -= player.statManaMax2 - mana;
-                    mana = player.statManaMax2;
+                    if (player.statLife > player.statLifeMax2 * 0.4 + player.statManaMax2 - mana)
+                    {
+                        player.statLife -= player.statManaMax2 - mana;
+                        mana = player.statManaMax2;
+                    }
+                    else if (player.statLife > player.statLifeMax2 * 0.4)
+                    {
+                        mana += (int)(player.statLife - player.statLifeMax2 * 0.4);
+                        player.statLife = (int)(player.statLifeMax2 * 0.4);
+                    }
                 }
-                else if (player.statLife > player.statLifeMax2 * 0.4)
+                if (player.statMana == player.statManaMax2 && mana == player.statMana - 1)
+                    mana = player.statMana;
+                else player.statMana = mana;
+                if (manaRegenTimer > 60f / manaRegen)
                 {
-                    mana += (int)(player.statLife - player.statLifeMax2 * 0.4);
-                    player.statLife = (int)(player.statLifeMax2 * 0.4);
+                    mana = Math.Min(mana + (int)(manaRegenTimer / (60f / manaRegen)), player.statManaMax2);
+                    manaRegenTimer = manaRegenTimer % (60f / manaRegen);
                 }
+                player.statMana = mana;
             }
-            if (player.statMana == player.statManaMax2 && mana == player.statMana - 1)
-                mana = player.statMana;
-            else player.statMana = mana;
-            if (manaRegenTimer > 60f / manaRegen)
-            {
-                mana = Math.Min(mana + (int)(manaRegenTimer / (60f / manaRegen)), player.statManaMax2);
-                manaRegenTimer = manaRegenTimer % (60f / manaRegen);
-            }
-            player.statMana = mana;
-            
+
             critMultiplier += TotalStats(STAT.POTENCY) * 0.06f;
             lifeLeech += TotalStats(STAT.POTENCY) * 0.004f;
             lifeLeech += Math.Min(0.006f, TotalStats(STAT.POTENCY)*0.002f);
@@ -680,9 +783,9 @@ namespace kRPG
             player.minionDamage *= damageMultiplier;
             player.thrownDamage *= damageMultiplier;
 
-            player.moveSpeed *= 1f + Math.Min(1.5f, TotalStats(STAT.QUICKNESS) * 0.03f + Math.Min(level * 0.01f, 0.6f));
+            player.moveSpeed *= 1f + Math.Min(1.2f, TotalStats(STAT.QUICKNESS) * 0.02f + Math.Min(level * 0.005f, 0.5f));
             player.meleeSpeed *= 1f + TotalStats(STAT.QUICKNESS) * 0.01f;
-            player.jumpSpeedBoost += Math.Min(5f, TotalStats(STAT.QUICKNESS) * 0.2f + Math.Min(level * 0.1f, 2f));
+            player.jumpSpeedBoost += Math.Min(5f, TotalStats(STAT.QUICKNESS) * 0.2f + Math.Min(level * 0.05f, 2f));
 
             critBoost += TotalStats(STAT.QUICKNESS);
             player.magicCrit += critBoost;
@@ -703,21 +806,22 @@ namespace kRPG
         {
             Dictionary<ELEMENT, int> dict = new Dictionary<ELEMENT, int>();
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                dict[element] = proj.GetGlobalProjectile<kProjectile>().elementalDamage[element];
+                dict[element] = proj.GetGlobalProjectile<kProjectile>().GetIndividualElements(proj, player)[element];
             ModifyDamageTakenFromNPC(ref damage, ref crit, dict);
         }
 
         public void ModifyDamageTakenFromNPC(ref int damage, ref bool crit, Dictionary<ELEMENT, int> eleDmg)
         {
-            damage = (int)(0.38 * Math.Pow(damage, 1.4));
+            double dmg = 0.55 * Math.Pow(damage, 1.3);
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                eleDmg[element] = (int)(0.38 * Math.Pow(eleDmg[element], 1.4));
+                eleDmg[element] = (int)(0.55 * Math.Pow(eleDmg[element], 1.3));
             if (!Main.expertMode)
             {
-                damage = (int)(damage * 1.4);
+                dmg = dmg * 1.3;
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                    eleDmg[element] = (int)(eleDmg[element] * 1.4);
+                    eleDmg[element] = (int)(eleDmg[element] * 1.3);
             }
+            damage = (int)Math.Round(dmg);
             bool bossfight = false;
             foreach (NPC n in Main.npc)
                 if (n.active)
@@ -803,12 +907,7 @@ namespace kRPG
 
             if (crit)
             {
-                float mult = 1;
-                if (item != null)
-                    mult = DamageMultiplier(null, item.melee, item.ranged, item.magic, item.thrown, item.summon);
-                else if (proj != null)
-                    mult = DamageMultiplier(null, proj.melee, proj.ranged, proj.magic, proj.thrown, proj.minion);
-                damage = (int)(damage / mult * (mult + critMultiplier));
+                damage = (int)(damage / damageBoost * (damageBoost + critMultiplier));
                 if (rituals[RITUAL.ELDRITCH_FURY])
                 {
                     int i = damage;
@@ -1143,6 +1242,15 @@ namespace kRPG
             foreach (ProceduralSpellProj spell in circlingProtection)
                 spell.projectile.Kill();
             circlingProtection.Clear();
+        }
+
+        public override void PlayerConnect(Player player)
+        {
+            ModPacket packet = mod.GetPacket();
+            packet.Write((byte)Message.SyncLevel);
+            packet.Write(player.whoAmI);
+            packet.Write(level);
+            packet.Send();
         }
     }
 }
