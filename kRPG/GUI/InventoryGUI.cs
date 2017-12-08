@@ -1096,16 +1096,11 @@ namespace kRPG.GUI
                                 }
                                 mouseReforge.SetValue(null, true);
                                 Main.player[Main.myPlayer].mouseInterface = true;
-                                if (Main.mouseLeftRelease && Main.mouseLeft && Main.player[Main.myPlayer].BuyItem(num62, -1))
+                                if (Main.mouseLeftRelease && Main.mouseLeft && Main.player[Main.myPlayer].CanBuyItem(num62, -1))
                                 {
-                                    bool favorited = Main.reforgeItem.favorited;
                                     ItemLoader.PreReforge(Main.reforgeItem);
-                                    Main.reforgeItem.netDefaults(Main.reforgeItem.netID);
-                                    Main.reforgeItem.Prefix(-2);
                                     Main.reforgeItem.position.X = Main.player[Main.myPlayer].position.X + (float)(Main.player[Main.myPlayer].width / 2) - (float)(Main.reforgeItem.width / 2);
                                     Main.reforgeItem.position.Y = Main.player[Main.myPlayer].position.Y + (float)(Main.player[Main.myPlayer].height / 2) - (float)(Main.reforgeItem.height / 2);
-                                    Main.reforgeItem.favorited = favorited;
-                                    ItemLoader.PostReforge(Main.reforgeItem);
                                     ItemText.NewText(Main.reforgeItem, Main.reforgeItem.stack, true, false);
                                     Main.PlaySound(SoundID.Item37, -1, -1);
                                 }

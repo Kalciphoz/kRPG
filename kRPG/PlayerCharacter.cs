@@ -778,7 +778,7 @@ namespace kRPG
                 player.statMana = mana;
             }
 
-            critMultiplier += TotalStats(STAT.POTENCY) * 0.06f;
+            critMultiplier += TotalStats(STAT.POTENCY) * 0.05f;
             lifeLeech += TotalStats(STAT.POTENCY) * 0.004f;
             lifeLeech += Math.Min(0.006f, TotalStats(STAT.POTENCY)*0.002f);
 

@@ -92,39 +92,8 @@ namespace kRPG.Items
         {
             upgradeLevel = 255;
             kPrefix = 0;
-
-            elementalDamage = new Dictionary<ELEMENT, int>()
-            {
-                {ELEMENT.FIRE, 0},
-                {ELEMENT.COLD, 0},
-                {ELEMENT.LIGHTNING, 0},
-                {ELEMENT.SHADOW, 0},
-            };
-            statBonus = new Dictionary<STAT, int>()
-            {
-                {STAT.RESILIENCE, 0},
-                {STAT.QUICKNESS, 0},
-                {STAT.POTENCY, 0},
-                {STAT.WITS, 0},
-            };
-            resBonus = new Dictionary<ELEMENT, int>()
-            {
-                {ELEMENT.FIRE, 0},
-                {ELEMENT.COLD, 0},
-                {ELEMENT.LIGHTNING, 0},
-                {ELEMENT.SHADOW, 0},
-            };
-            bonusEva = 0;
-            bonusDef = 0;
-            bonusLife = 0;
-            bonusMana = 0;
-            bonusAccuracy = 0;
-            bonusLeech = 0f;
-            bonusCrit = 0;
-            bonusMult = 0f;
-            bonusRegen = 0f;
-            bonusAllres = 0;
-            prefixTooltips = new List<string>();
+            
+            ClearPrefixes();
         }
 
         public override void OnCraft(Item item, Recipe recipe)
@@ -179,37 +148,56 @@ namespace kRPG.Items
             return copy;
         }
 
-        public override void PreReforge(Item item)
+        public override bool NewPreReforge(Item item)
         {
-            if (item.type == mod.ItemType<ProceduralSword>())
-            {
-                ProceduralSword sword = (ProceduralSword)item.modItem;
-                reforgehilt = sword.hilt;
-                reforgeblade = sword.blade;
-                reforgeaccent = sword.accent;
-                reforgedps = sword.dps;
-                reforgedef = sword.enemyDef;
-            }
-            else if (item.type == mod.ItemType<ProceduralStaff>())
-            {
-                ProceduralStaff staff = (ProceduralStaff)item.modItem;
-                reforgestaff = staff.staff;
-                reforgegem = staff.gem;
-                reforgeornament = staff.ornament;
-                reforgedps = staff.dps;
-                reforgedef = staff.enemyDef;
-            }
-            else if (item.modItem is RangedWeapon)
-            {
-                RangedWeapon weapon = (RangedWeapon)item.modItem;
-                reforgedps = weapon.dps;
-                reforgedef = weapon.enemyDef;
-                reforgename = weapon.name;
-            }
-            reforgelevel = upgradeLevel;
+            //if (item.type == mod.ItemType<ProceduralSword>())
+            //{
+            //    ProceduralSword sword = (ProceduralSword)item.modItem;
+            //    reforgehilt = sword.hilt;
+            //    reforgeblade = sword.blade;
+            //    reforgeaccent = sword.accent;
+            //    reforgedps = sword.dps;
+            //    reforgedef = sword.enemyDef;
+            //}
+            //else if (item.type == mod.ItemType<ProceduralStaff>())
+            //{
+            //    ProceduralStaff staff = (ProceduralStaff)item.modItem;
+            //    reforgestaff = staff.staff;
+            //    reforgegem = staff.gem;
+            //    reforgeornament = staff.ornament;
+            //    //reforgedps = staff.dps;
+            //    //reforgedef = staff.enemyDef;
+            //}
+            //else if (item.modItem is RangedWeapon)
+            //{
+            //    RangedWeapon weapon = (RangedWeapon)item.modItem;
+            //    reforgedps = weapon.dps;
+            //    reforgedef = weapon.enemyDef;
+            //    reforgename = weapon.name;
+            //}
+            //reforgelevel = upgradeLevel;
+
+            //if (item.type == mod.ItemType<ProceduralSword>())
+            //    ((ProceduralSword)item.modItem).Initialize();
+            //else if (item.type == mod.ItemType<ProceduralStaff>())
+            //    ((ProceduralStaff)item.modItem).Initialize();
+            //else if (item.modItem is RangedWeapon)
+            //    ((RangedWeapon)item.modItem).SetStats();
+            //else
+            //    item.SetItemDefaults(item.type);
+
+            if (item.accessory)
+                kPrefix = (byte)(Main.rand.Next(27) + 1);
+            else if (item.damage > 0)
+                kPrefix = (byte)(Main.rand.Next(29) + 1);
+            else if (item.defense > 0)
+                kPrefix = (byte)(Main.rand.Next(19) + 1);
+
+            ApplyStats(item);
+            return false;
         }
 
-        public override void PostReforge(Item item)
+        /*public override void PostReforge(Item item)
         {
             item.SetItemDefaults(item.type);
             if (item.type == mod.ItemType<ProceduralSword>())
@@ -249,7 +237,7 @@ namespace kRPG.Items
                 kPrefix = (byte)(Main.rand.Next(19) + 1);
             upgradeLevel = reforgelevel;
             ApplyStats(item);
-        }
+        }*/
 
         public void Initialize(Item item, bool reset = true)
         {
@@ -372,11 +360,45 @@ namespace kRPG.Items
             if (item.damage < 1) item.damage = 1;
         }
 
+        public void ClearPrefixes()
+        {
+            elementalDamage = new Dictionary<ELEMENT, int>()
+            {
+                {ELEMENT.FIRE, 0},
+                {ELEMENT.COLD, 0},
+                {ELEMENT.LIGHTNING, 0},
+                {ELEMENT.SHADOW, 0},
+            };
+            statBonus = new Dictionary<STAT, int>()
+            {
+                {STAT.RESILIENCE, 0},
+                {STAT.QUICKNESS, 0},
+                {STAT.POTENCY, 0},
+                {STAT.WITS, 0},
+            };
+            resBonus = new Dictionary<ELEMENT, int>()
+            {
+                {ELEMENT.FIRE, 0},
+                {ELEMENT.COLD, 0},
+                {ELEMENT.LIGHTNING, 0},
+                {ELEMENT.SHADOW, 0},
+            };
+            bonusEva = 0;
+            bonusDef = 0;
+            bonusLife = 0;
+            bonusMana = 0;
+            bonusAccuracy = 0;
+            bonusLeech = 0f;
+            bonusCrit = 0;
+            bonusMult = 0f;
+            bonusRegen = 0f;
+            bonusAllres = 0;
+            prefixTooltips = new List<string>();
+        }
+
         public void PrefixAccessory(Item item)
         {
-            foreach (STAT stat in Enum.GetValues(typeof(STAT)))
-                statBonus[stat] = 0;
-            bonusEva = 0;
+            ClearPrefixes();
 
             switch (kPrefix - 1)
             {
@@ -447,8 +469,8 @@ namespace kRPG.Items
                     break;
                 case 14:
                     item.SetNameOverride("Brutal " + item.Name);
-                    bonusMult = 0.2f;
-                    prefixTooltips.Add("+20 crit multiplier");
+                    bonusMult = 0.20f;
+                    prefixTooltips.Add("+40 crit multiplier");
                     break;
                 case 15:
                     item.SetNameOverride("Warding " + item.Name);
@@ -512,20 +534,7 @@ namespace kRPG.Items
 
         public void PrefixArmour(Item item)
         {
-            foreach (STAT stat in Enum.GetValues(typeof(STAT)))
-                statBonus[stat] = 0;
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                resBonus[element] = 0;
-            bonusDef = 0;
-            bonusEva = 0;
-            bonusLife = 0;
-            bonusMana = 0;
-            bonusAccuracy = 0;
-            bonusLeech = 0f;
-            bonusCrit = 0;
-            bonusMult = 0f;
-            bonusRegen = 0f;
-            bonusAllres = 0;
+            ClearPrefixes();
             
             switch (kPrefix - 1)
             {

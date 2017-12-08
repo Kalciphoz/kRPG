@@ -206,9 +206,9 @@ namespace kRPG
             invincibilityTime = new Dictionary<ProceduralSpell, int>();
             Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
             int playerlevel = Main.netMode == 0 ? player.GetModPlayer<PlayerCharacter>().level : 20;
-            npc.lifeMax = (int)Math.Round(npc.lifeMax * (GetLevel(npc.netID) / 35f + 0.5f + playerlevel * 0.02f));
-            npc.life = (int)Math.Round(npc.life * (GetLevel(npc.netID) / 35f + 0.5f + playerlevel * 0.02f));
-            npc.defense = (int)Math.Round(npc.defense * (GetLevel(npc.netID) / 200f + 1f));
+            npc.lifeMax = (int)Math.Round(npc.lifeMax * (GetLevel(npc.netID) / 30f + 0.4f + playerlevel * 0.025f));
+            npc.life = (int)Math.Round(npc.life * (GetLevel(npc.netID) / 30f + 0.4f + playerlevel * 0.025f));
+            npc.defense = (int)Math.Round(npc.defense * (GetLevel(npc.netID) / 160f + 1f));
             npc.lavaImmune = npc.lavaImmune || npc.defense > 60;
             if (npc.damage > 0 && !npc.boss && Main.rand.Next(3) != 0 || Main.netMode != 0)
             {
