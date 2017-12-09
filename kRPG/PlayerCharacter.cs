@@ -985,8 +985,10 @@ namespace kRPG
                 return 80 + level * 20;
             else if (level < 10)
                 return level * 40;
-            else
+            else if (level < 189)
                 return (int)(280 * Math.Pow(1.09, level - 5)+3*level);
+            else
+	    	return Int32.MaxValue;
         }
 
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
