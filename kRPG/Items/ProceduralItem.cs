@@ -349,7 +349,7 @@ namespace kRPG.Items
             return null;
         }
 
-        public Texture2D OverhaulGetTexture(Item item)
+        public Texture2D OverhaulGetTexture()
         {
             return texture;
         }
@@ -719,7 +719,7 @@ namespace kRPG.Items
             return null;
         }
 
-        public Texture2D OverhaulGetTexture(Item item)
+        public Texture2D OverhaulGetTexture()
         {
             return texture;
         }
