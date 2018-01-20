@@ -189,7 +189,7 @@ namespace kRPG
                 for (int j = 0; j < abilities[i].glyphs.Length; j += 1)
                 {
                     abilities[i].glyphs[j] = new Item();
-                    abilities[i].glyphs[j].SetDefaults();
+                    abilities[i].glyphs[j].SetDefaults(0,true);
                 }
             }
             abilities[0].key = Keys.Z;
@@ -204,7 +204,7 @@ namespace kRPG
                 for (int j = 0; j < inventories[i].Length; j += 1)
                 {
                     inventories[i][j] = new Item();
-                    inventories[i][j].SetDefaults();
+                    inventories[i][j].SetDefaults(0,true);
                 }
             }
         }
@@ -215,60 +215,60 @@ namespace kRPG
             switch (rand.Next(8))
             {
                 default:
-                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TinBroadsword : ItemID.CopperBroadsword);
+                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TinBroadsword : ItemID.CopperBroadsword,true);
                     break;
                 case 1:
-                    items[0].SetDefaults(ItemID.Spear);
+                    items[0].SetDefaults(ItemID.Spear,true);
                     break;
                 case 2:
-                    items[0].SetDefaults(ItemID.WoodenBoomerang);
+                    items[0].SetDefaults(ItemID.WoodenBoomerang,true);
                     break;
                 case 3:
-                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TopazStaff : ItemID.AmethystStaff);
+                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TopazStaff : ItemID.AmethystStaff,true);
                     break;
                 case 4:
-                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TinBow : ItemID.CopperBow);
+                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TinBow : ItemID.CopperBow,true);
                     Item arrows = new Item();
-                    arrows.SetDefaults(rand.Next(2) == 0 ? ItemID.FlamingArrow : ItemID.WoodenArrow);
+                    arrows.SetDefaults(rand.Next(2) == 0 ? ItemID.FlamingArrow : ItemID.WoodenArrow,true);
                     arrows.stack = rand.Next(2) == 0 ? 150 : 200;
                     items.Add(arrows);
                     break;
                 case 5:
-                    items[0].SetDefaults(ItemID.Shuriken);
+                    items[0].SetDefaults(ItemID.Shuriken,true);
                     items[0].stack = rand.Next(2) == 0 ? 150 : 100;
                     Item knives = new Item();
-                    knives.SetDefaults(rand.Next(2) == 0 ? ItemID.PoisonedKnife : ItemID.ThrowingKnife);
+                    knives.SetDefaults(rand.Next(2) == 0 ? ItemID.PoisonedKnife : ItemID.ThrowingKnife,true);
                     knives.stack = 50;
                     items.Add(knives);
                     break;
                 case 6:
-                    items[0].SetDefaults(ItemID.WoodYoyo);
+                    items[0].SetDefaults(ItemID.WoodYoyo,true);
                     break;
                 case 7:
-                    items[0].SetDefaults(ItemID.ChainKnife);
+                    items[0].SetDefaults(ItemID.ChainKnife,true);
                     break;
             }
-            items[1].SetDefaults(rand.Next(3) == 0 ? ItemID.TinPickaxe : rand.Next(2) == 0 ? ItemID.CactusPickaxe : ItemID.CopperPickaxe);
+            items[1].SetDefaults(rand.Next(3) == 0 ? ItemID.TinPickaxe : rand.Next(2) == 0 ? ItemID.CactusPickaxe : ItemID.CopperPickaxe,true);
             items[1].GetGlobalItem<kItem>().Initialize(items[1], true);
             items[2].SetDefaults(rand.Next(2) == 0 ? ItemID.TinAxe : ItemID.CopperAxe);
-            items[2].GetGlobalItem<kItem>().Initialize(items[2], true);
+            items[2].GetGlobalItem<kItem>().Initialize(items[2],true);
 
             Item star = new Item();
-            star.SetDefaults(mod.ItemType<Star_Blue>());
+            star.SetDefaults(mod.ItemType<Star_Blue>(),true);
             Item cross = new Item();
             switch (rand.Next(4))
             {
                 default:
-                    cross.SetDefaults(mod.ItemType<Cross_Red>());
+                    cross.SetDefaults(mod.ItemType<Cross_Red>(),true);
                     break;
                 case 1:
-                    cross.SetDefaults(mod.ItemType<Cross_Orange>());
+                    cross.SetDefaults(mod.ItemType<Cross_Orange>(),true);
                     break;
                 case 2:
-                    cross.SetDefaults(mod.ItemType<Cross_Yellow>());
+                    cross.SetDefaults(mod.ItemType<Cross_Yellow>(),true);
                     break;
                 case 3:
-                    cross.SetDefaults(mod.ItemType<Cross_Green>());
+                    cross.SetDefaults(mod.ItemType<Cross_Green>(),true);
                     break;
             }
             ((Glyph)cross.modItem).Randomize();
@@ -276,19 +276,19 @@ namespace kRPG
             switch (rand.Next(5))
             {
                 default:
-                    moon.SetDefaults(mod.ItemType<Moon_Yellow>());
+                    moon.SetDefaults(mod.ItemType<Moon_Yellow>(),true);
                     break;
                 case 1:
-                    moon.SetDefaults(mod.ItemType<Moon_Green>());
+                    moon.SetDefaults(mod.ItemType<Moon_Green>(),true);
                     break;
                 case 2:
-                    moon.SetDefaults(mod.ItemType<Moon_Blue>());
+                    moon.SetDefaults(mod.ItemType<Moon_Blue>(),true);
                     break;
                 case 3:
-                    moon.SetDefaults(mod.ItemType<Moon_Violet>());
+                    moon.SetDefaults(mod.ItemType<Moon_Violet>(),true);
                     break;
                 case 4:
-                    moon.SetDefaults(mod.ItemType<Moon_Purple>());
+                    moon.SetDefaults(mod.ItemType<Moon_Purple>(),true);
                     break;
             }
             ((Glyph)moon.modItem).Randomize();
@@ -301,6 +301,9 @@ namespace kRPG
 
         public override void ModifyDrawLayers(List<PlayerLayer> layers)
         {
+			if(kRPG.overhaul!=null) {
+				return;
+			}
             for (int i = 0; i < layers.Count; i += 1)
             {
                 if (layers[i].Name.Contains("Held"))
@@ -986,8 +989,10 @@ namespace kRPG
                 return 80 + level * 20;
             else if (level < 10)
                 return level * 40;
-            else
+            else if (level < 189)
                 return (int)(280 * Math.Pow(1.09, level - 5)+3*level);
+            else
+	    	return Int32.MaxValue;
         }
 
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
@@ -1072,7 +1077,6 @@ namespace kRPG
                 for (int j = 0; j < inventories[i].Length; j += 1)
                 {
                     inventories[i][j] = new Item();
-                    inventories[i][j].SetDefaults();
                 }
             }
 
@@ -1086,7 +1090,6 @@ namespace kRPG
                 for (int j = 0; j < abilities[i].glyphs.Length; j += 1)
                 {
                     abilities[i].glyphs[j] = new Item();
-                    abilities[i].glyphs[j].SetDefaults();
                 }
             }
             abilities[0].key = Keys.Z;
@@ -1119,6 +1122,10 @@ namespace kRPG
         public override void OnEnterWorld(Player player)
         {
             InitializeGUI();
+
+			if(player.whoAmI==Main.myPlayer) {
+				kRPG.CheckForUpdates();
+			}
         }
 
         public override TagCompound Save()

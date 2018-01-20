@@ -238,7 +238,7 @@ namespace kRPG.Items
         {
             if (texture == null)
             {
-                item.SetDefaults(0);
+                item.SetDefaults(0,true);
             }
             spriteBatch.Draw(texture, position, null, color, rotation, Vector2.Zero, scale, SpriteEffects.None, 0f);
         }
@@ -249,7 +249,7 @@ namespace kRPG.Items
             Vector2 position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
             if (texture == null)
             {
-                item.SetDefaults(0);
+                item.SetDefaults(0,true);
             }
             SpriteEffects effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             DrawData draw = new DrawData(texture, position, null, color, rotation, new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale, effects, 0);
@@ -340,19 +340,8 @@ namespace kRPG.Items
             }
         }
 
-        public bool? OverhaulHasTag(string tag)
-        {
-            if (tag == "magicstaff")
-            {
-                return true;
-            }
-            return null;
-        }
-
-        public Texture2D OverhaulGetTexture(Item item)
-        {
-            return texture;
-        }
+        public bool? OverhaulHasTag(string tag)	=> tag=="magicWeapon" ? (bool?)true : null;
+        public Texture2D OverhaulGetTexture()	=> texture;
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -601,7 +590,7 @@ namespace kRPG.Items
         {
             if (texture == null)
             {
-                item.SetDefaults(0);
+                item.SetDefaults(0,true);
                 return;
             }
             spriteBatch.Draw(texture, position, null, lighted ? Color.White : color, rotation, Vector2.Zero, scale, SpriteEffects.None, 0f);
@@ -707,21 +696,7 @@ namespace kRPG.Items
             }
         }
 
-        public bool? OverhaulHasTag(string tag)
-        {
-            if (spear)
-            { 
-                if (tag == "spear")
-                    return true;
-            }
-            else if (tag == "broadsword")
-                return true;
-            return null;
-        }
-
-        public Texture2D OverhaulGetTexture(Item item)
-        {
-            return texture;
-        }
+        public bool? OverhaulHasTag(string tag)	=> (spear ? tag=="spear" : tag=="broadsword") ? (bool?)true : null;
+        public Texture2D OverhaulGetTexture()	=> texture;
     }
 }
