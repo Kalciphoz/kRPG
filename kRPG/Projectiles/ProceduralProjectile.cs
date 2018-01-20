@@ -107,9 +107,9 @@ namespace kRPG.Projectiles
             if (source == null)
             {
                 source = new ProceduralSpell(mod);
-                source.glyphs[(byte)GLYPHTYPE.STAR].SetDefaults(startype);
-                source.glyphs[(byte)GLYPHTYPE.CROSS].SetDefaults(crosstype);
-                source.glyphs[(byte)GLYPHTYPE.MOON].SetDefaults(moontype);
+                source.glyphs[(byte)GLYPHTYPE.STAR].SetDefaults(startype,true);
+                source.glyphs[(byte)GLYPHTYPE.CROSS].SetDefaults(crosstype,true);
+                source.glyphs[(byte)GLYPHTYPE.MOON].SetDefaults(moontype,true);
                 source.modifierOverride = modifiers;
             }
             foreach (Item item in source.glyphs)

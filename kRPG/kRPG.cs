@@ -1,21 +1,22 @@
-﻿using Terraria.ModLoader;
-using System.Collections.Generic;
-using Terraria;
-using Microsoft.Xna.Framework;
-using kRPG.Items.Weapons;
-using kRPG.Items.Glyphs;
-using Microsoft.Xna.Framework.Graphics;
-using System.IO;
+﻿using kRPG.GUI;
 using kRPG.Items;
-using System;
+using kRPG.Items.Glyphs;
+using kRPG.Items.Weapons;
 using kRPG.Items.Weapons.RangedDrops;
-using Terraria.UI;
-using kRPG.GUI;
 using kRPG.Projectiles;
+using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using Terraria;
+using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace kRPG
 {
-    public enum STAT : byte { RESILIENCE, QUICKNESS, POTENCY, WITS };
+	public enum STAT : byte { RESILIENCE, QUICKNESS, POTENCY, WITS };
     public enum ELEMENT : byte { FIRE, COLD, LIGHTNING, SHADOW };
     public enum RITUAL : byte { DEMON_PACT, WARRIOR_OATH, ELAN_VITAL, STONE_ASPECT, ELDRITCH_FURY, MIND_FORTRESS, BLOOD_DRINKING };
 
@@ -61,6 +62,10 @@ namespace kRPG
 
     public class kRPG : Mod
     {
+		public static kRPG mod;
+
+		public static Mod overhaul;
+
         public static Dictionary<Message, List<DataTag>> dataTags = new Dictionary<Message, List<DataTag>>()
         {
             { Message.AddXP, new List<DataTag>(){ DataTag.amount, DataTag.npcId } },
@@ -76,6 +81,7 @@ namespace kRPG
             { Message.SyncSpear, new List<DataTag>(){ DataTag.projId, DataTag.partPrimary, DataTag.partSecondary, DataTag.partTertiary } }
         };
         public Texture2D[] invslot = new Texture2D[16];
+
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
@@ -125,9 +131,9 @@ namespace kRPG
                         Projectile projectile = Main.projectile[(int)tags[DataTag.projId]];
                         projectile.owner = (int)tags[DataTag.playerId];
                         ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
-                        ps.source.glyphs[(byte)GLYPHTYPE.STAR].SetDefaults((int)tags[DataTag.glyph_star]);
-                        ps.source.glyphs[(byte)GLYPHTYPE.CROSS].SetDefaults((int)tags[DataTag.glyph_cross]);
-                        ps.source.glyphs[(byte)GLYPHTYPE.MOON].SetDefaults((int)tags[DataTag.glyph_moon]);
+                        ps.source.glyphs[(byte)GLYPHTYPE.STAR].SetDefaults((int)tags[DataTag.glyph_star],true);
+                        ps.source.glyphs[(byte)GLYPHTYPE.CROSS].SetDefaults((int)tags[DataTag.glyph_cross],true);
+                        ps.source.glyphs[(byte)GLYPHTYPE.MOON].SetDefaults((int)tags[DataTag.glyph_moon],true);
                         projectile.damage = (int)tags[DataTag.damage];
                         int modifierCount = (int)tags[DataTag.modifierCount];
                         List<GlyphModifier> modifiers = new List<GlyphModifier>();
@@ -245,6 +251,7 @@ namespace kRPG
                 AutoloadGores = true,
                 AutoloadSounds = true
             };
+			mod = this;
         }
 
         public override void ModifyInterfaceLayers(List<Terraria.UI.GameInterfaceLayer> layers)
@@ -256,6 +263,8 @@ namespace kRPG
 
         public override void Load()
         {
+			overhaul = ModLoader.GetMod("TerrariaOverhaul");
+
             kConfig.Initialize();
             if (Main.netMode != 2)
             {
@@ -343,5 +352,46 @@ namespace kRPG
             }
             return true;
         }
-    }
+
+		#region UpdateCheck
+		public class VersionInfo
+		{
+			public string version;
+			public string summary;
+		}
+		//Mirsario's code in Mirsario's code style
+		public static void CheckForUpdates()
+		{
+			#pragma warning disable 162
+			try {
+				string url=				@"http://raw.githubusercontent.com/Kalciphoz/kRPG/master/kRPG_VersionInfo.json";
+				WebClient client=		new WebClient();
+				Version currentVersion=	mod.Version;
+				client.DownloadStringCompleted+= (sender,e) => { 
+					try {
+						string text=				e.Result;
+						VersionInfo versionInfo=	JsonConvert.DeserializeObject<VersionInfo>(text);
+						Version latestVersion=		new Version(versionInfo.version);
+						if(latestVersion>currentVersion) {
+							//Public update available
+							Main.NewText("[c/cccccc:New version of] [c/ffdb00:KRPG] [c/cccccc:available]");
+							Main.NewTextMultiline("[c/cccccc:Summary:] "+versionInfo.summary,WidthLimit:725);
+							Main.NewText("[c/cccccc:Get the update from Mod Browser]");
+						}else if(latestVersion==currentVersion && new Version(kConfig.stats.lastStartVersion)<currentVersion) {
+							//After installing a public update
+							Main.NewText("[c/cccccc:KRPG is now up to date!]");
+							Main.NewTextMultiline("[c/cccccc:Summary changes:] "+versionInfo.summary,WidthLimit:725);
+						}
+						kConfig.stats.lastStartVersion=	currentVersion.ToString();
+						kConfig.SaveStats();
+					}
+					catch {}
+				};
+				client.DownloadStringAsync(new Uri(url),url);
+			}
+			catch {}
+			#pragma warning restore 162
+		}
+		#endregion
+	}
 }

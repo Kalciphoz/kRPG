@@ -13,15 +13,9 @@ namespace kRPG
 {
     public class kConfig
     {
-        public static ClientConfig clientside
-        {
-            get
-            {
-                return configLocal.clientside;
-            }
-        }
-        public static string configName = "kRPG_Settings.json";
-        public static string configPath;
+        public static ClientConfig clientside	=> configLocal.clientside;
+		public static string configPath			=> Main.SavePath+Path.DirectorySeparatorChar+"kRPG_Settings.json";
+		public static string statsPath			=> Main.SavePath+Path.DirectorySeparatorChar+"kRPG_Stats.json";
 
         //Make this fancier?
         internal static Config _configLocal = new Config();
@@ -57,17 +51,26 @@ namespace kRPG
                 _configServer = value;
             }
         }
+		internal static ConfigStats _stats=	new ConfigStats();
+		public static ConfigStats stats {
+			get {
+				if(_stats==null) {
+					_stats=	new ConfigStats();
+					LoadConfig(statsPath,ref _stats);
+				}
+				return _stats;
+			}
+			private set {
+				_stats=	value;
+			}
+		}
 
         public static void Initialize()
         {
             try
             {
-                configPath = string.Concat(new object[] {
-                    Main.SavePath,
-                    Path.DirectorySeparatorChar,
-                    configName,
-                });
                 configLocal = new Config();
+				stats = new ConfigStats();
                 Load();
             }
             catch (SystemException e)
@@ -84,6 +87,10 @@ namespace kRPG
                 _configLocal = new Config();
                 LoadConfig(configPath, ref _configLocal);
                 Save();
+
+				_stats = new ConfigStats();
+				LoadConfig(statsPath,ref _stats);
+				SaveStats();
             }
             catch (SystemException e)
             {
@@ -119,6 +126,11 @@ namespace kRPG
                 ErrorLogger.Log(e.ToString());
             }
         }
+		public static void SaveStats()
+		{
+			Directory.CreateDirectory(Main.SavePath);
+			File.WriteAllText(statsPath,JsonConvert.SerializeObject(stats,Formatting.Indented).Replace("  ","\t"));
+		}
         
         public class ClientConfig
         {
@@ -130,5 +142,9 @@ namespace kRPG
         {
             public ClientConfig clientside = new ClientConfig();
         }
+		public class ConfigStats
+		{
+			public string lastStartVersion=		"1.1.1";
+		}
     }
 }
