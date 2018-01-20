@@ -36,6 +36,18 @@ namespace kRPG
             return values[Main.rand.Next(values.Count)];
         }
 
+        public static bool Contains<T>(this IEnumerable<T> e, Predicate<T> match)
+        {
+            List<T> values = e.ToList();
+            return values.Contains(match);
+        }
+
+        public static bool Contains<T>(this IEnumerable<T> e, T item)
+        {
+            List<T> values = e.ToList();
+            return values.Contains(item);
+        }
+
         static MethodInfo IsModItem = typeof(ItemLoader).GetMethod("IsModItem", BindingFlags.NonPublic | BindingFlags.Static);
         static PropertyInfo modItem = typeof(Item).GetProperty("modItem", BindingFlags.Public | BindingFlags.Instance);
 
@@ -617,6 +629,11 @@ namespace kRPG
         public static void Draw(this SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Color color, float scale)
         {
             spriteBatch.Draw(texture, position, null, color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+        }
+
+        public static void Draw(this SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float scale)
+        {
+            spriteBatch.Draw(texture, position, sourceRectangle, color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
         }
 
         public static void ItemSlotDrawExtension(SpriteBatch spriteBatch, Item[] inv, int context, int slot, Vector2 position, Color overrideColor, Color lightColor = default(Color), bool drawSelected = true)

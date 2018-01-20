@@ -120,12 +120,12 @@ namespace kRPG.GUI
                 if (player.lavaTime < player.lavaMax)
                 {
                     int currentBubbles = (int)Math.Round((decimal)bubbles_length * player.lavaTime / player.lavaMax);
-                    spriteBatch.Draw(GFX.bubbles_lava, GuiPosition + bubbles_origin, new Rectangle(0, 0, currentBubbles, bubbles_thickness), Color.White);
+                    spriteBatch.Draw(GFX.bubbles_lava, GuiPosition + bubbles_origin * Scale, new Rectangle(0, 0, currentBubbles, bubbles_thickness), Color.White, Scale);
                 }
                 if (player.breath < player.breathMax)
                 {
                     int currentBubbles = (int)Math.Round((decimal)bubbles_length * player.breath / player.breathMax);
-                    spriteBatch.Draw(GFX.bubbles, GuiPosition + bubbles_origin, new Rectangle(0, 0, currentBubbles, bubbles_thickness), Color.White);
+                    spriteBatch.Draw(GFX.bubbles, GuiPosition + bubbles_origin * Scale, new Rectangle(0, 0, currentBubbles, bubbles_thickness), Color.White, Scale);
                 }
 
                 Main.spriteBatch.End();

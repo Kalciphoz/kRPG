@@ -42,6 +42,7 @@ namespace kRPG.Items.Weapons
         public static SwordHilt carbon;
         public static SwordHilt thorns;
         public static SwordHilt chlorophyteMount;
+        public static SwordHilt ominousHilt;
 
         private static Dictionary<SWORDTHEME, List<SwordHilt>> hiltsByTheme;
 
@@ -133,6 +134,7 @@ namespace kRPG.Items.Weapons
             carbon = new SwordHilt("CarbonHilt", 11, 6, "High-tech ", 1.05f, 1f, 1f, 6, false, false, 2);
             thorns = new SwordHilt("ThornHilt", 6, 7, "Thorny ", 1.1f, 0.8f, 1f);
             chlorophyteMount = new SwordHilt("ChlorophyteMount", 19, 4, "Mounted ", 0.9f, 0.9f, 1f, 0, true).defineSpear("ChlorophyteMount", 35, 4);
+            ominousHilt = new SwordHilt("OminousHilt", 8, 6, "Ominous ", 1f, 0.9f, 2f, 2, false, true, 2, 0.08f);
 
             hiltsByTheme = new Dictionary<SWORDTHEME, List<SwordHilt>>()
             {
@@ -140,7 +142,7 @@ namespace kRPG.Items.Weapons
                 {SWORDTHEME.MONSTROUS, new List<SwordHilt>(){ eyes, coe, boneMount, boneCrest, demonEye }},
                 {SWORDTHEME.RUNIC, new List<SwordHilt>(){ purpleCrossguard, violetCrossguard, goldenRunicKatana, violetRunicKatana, arcaneMount }},
                 {SWORDTHEME.HELLISH, new List<SwordHilt>(){ hellstoneBasket, hellstoneCrossguard, torch, hellstoneMount, bone, boneMount }},
-                {SWORDTHEME.HARDMODE, new List<SwordHilt>(){ clock, carbon, thorns, chlorophyteMount }}
+                {SWORDTHEME.HARDMODE, new List<SwordHilt>(){ clock, carbon, thorns, chlorophyteMount, ominousHilt }}
             };
         }
 

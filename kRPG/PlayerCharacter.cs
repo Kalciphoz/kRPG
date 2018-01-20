@@ -778,8 +778,8 @@ namespace kRPG
                 player.statMana = mana;
             }
 
-            critMultiplier += TotalStats(STAT.POTENCY) * 0.05f;
-            lifeLeech += TotalStats(STAT.POTENCY) * 0.004f;
+            critMultiplier += TotalStats(STAT.POTENCY) * 0.04f;
+            lifeLeech += TotalStats(STAT.POTENCY) * 0.002f;
             lifeLeech += Math.Min(0.006f, TotalStats(STAT.POTENCY)*0.002f);
 
             player.meleeDamage *= damageMultiplier;
@@ -792,7 +792,7 @@ namespace kRPG
             player.meleeSpeed *= 1f + TotalStats(STAT.QUICKNESS) * 0.01f;
             player.jumpSpeedBoost += Math.Min(5f, TotalStats(STAT.QUICKNESS) * 0.2f + Math.Min(level * 0.05f, 2f));
 
-            critBoost += TotalStats(STAT.QUICKNESS);
+            critBoost += Math.Min(TotalStats(STAT.QUICKNESS), Math.Max(4, TotalStats(STAT.QUICKNESS) / 2 + 2));
             player.magicCrit += critBoost;
             player.meleeCrit += critBoost;
             player.rangedCrit += critBoost;
@@ -817,14 +817,14 @@ namespace kRPG
 
         public void ModifyDamageTakenFromNPC(ref int damage, ref bool crit, Dictionary<ELEMENT, int> eleDmg)
         {
-            double dmg = 0.55 * Math.Pow(damage, 1.3);
+            double dmg = 0.5 * Math.Pow(damage, 1.35);
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                eleDmg[element] = (int)(0.55 * Math.Pow(eleDmg[element], 1.3));
+                eleDmg[element] = (int)(0.5 * Math.Pow(eleDmg[element], 1.35));
             if (!Main.expertMode)
             {
-                dmg = dmg * 1.3;
+                dmg = dmg * 1.35;
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                    eleDmg[element] = (int)(eleDmg[element] * 1.3);
+                    eleDmg[element] = (int)(eleDmg[element] * 1.35);
             }
             damage = (int)Math.Round(dmg);
             bool bossfight = false;
@@ -853,13 +853,14 @@ namespace kRPG
                         else
                             buff = mod.GetBuff<Shadow>();
                         player.AddBuff(buff.Type, bossfight ? 90 : 210);
-                        ailmentIntensity[element] = Main.expertMode ? eleDmg[element] * 2 / 3 : eleDmg[element];
+                        int intensity = eleDmg[element] * 3 / 2;
+                        ailmentIntensity[element] = Main.expertMode ? intensity * 2 / 3 : intensity;
                         hasAilment[element] = true;
                     }
                 }
             }
-            if (Main.rand.Next(player.statLifeMax2) < damage*2)
-                player.AddBuff(mod.BuffType<Physical>(), 15 + Math.Min(15, damage * 30 / player.statLifeMax2));
+            if (Main.rand.Next(player.statLifeMax2 + player.statDefense) < damage*3)
+                player.AddBuff(mod.BuffType<Physical>(), 15 + Math.Min(30, damage * 30 / player.statLifeMax2));
             if (hasAilment[ELEMENT.LIGHTNING])
                 damage += 1 + ailmentIntensity[ELEMENT.LIGHTNING];
         }

@@ -42,7 +42,7 @@ namespace kRPG.Projectiles
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            if (projectile.owner != Main.myPlayer && !(this is WingedEyeball)) return true;
+            if (projectile.owner != Main.myPlayer && !(this is ProceduralSpellProj) && !(this is WingedEyeball)) return true;
             Draw(spriteBatch, projectile.position - Main.screenPosition, lightColor, projectile.rotation, projectile.scale);
             return false;
         }
@@ -57,6 +57,7 @@ namespace kRPG.Projectiles
 
         public bool lighted = false;
         public bool homing = false;
+        public bool bounce = false;
 
         public float displacementAngle = 0f;
         public Vector2 displacementVelocity = Vector2.Zero;
@@ -223,7 +224,25 @@ namespace kRPG.Projectiles
         public override void AI()
         {
             if (alpha < 1f) alpha += 0.02f;
+            if (!caster.active) projectile.Kill();
             foreach (Action<ProceduralSpellProj> action in ai) if (action != null) action(this);
+        }
+
+        public override bool OnTileCollide(Vector2 velocity)
+        {
+            if (bounce)
+            {
+                Main.PlaySound(SoundID.Item10, projectile.position);
+
+                if (projectile.velocity.Y != velocity.Y)
+                    projectile.velocity.Y = -velocity.Y;
+
+                if (projectile.velocity.X != velocity.X)
+                    projectile.velocity.X = -velocity.X;
+
+                return false;
+            }
+            return true;
         }
 
         public override ModProjectile Clone()

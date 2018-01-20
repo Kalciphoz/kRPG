@@ -27,6 +27,7 @@ namespace kRPG.Items.Glyphs
         public static GlyphModifier manaleech;
         public static GlyphModifier thornchains;
         public static GlyphModifier pierce;
+        public static GlyphModifier bounce;
 
         public static GlyphModifier group_impactEffects;
 
@@ -285,6 +286,11 @@ namespace kRPG.Items.Glyphs
             pierce = new GlyphModifier(10, "Pierces two additional enemies", glyph => glyph is Moon, () => Main.rand.Next(3) == 0, 0.8f, 1.1f).SetInit(delegate (ProceduralSpellProj spell)
             {
                 if (spell.projectile.penetrate > 0) spell.projectile.penetrate += 2;
+            });
+            bounce = new GlyphModifier(11, "Bouncing", glyph => glyph is Moon_Blue || glyph is Moon_Purple, () => Main.rand.Next(7) < 2, 0.8f, 1f).SetInit(delegate (ProceduralSpellProj spell)
+            {
+                spell.projectile.tileCollide = true;
+                spell.bounce = true;
             });
         }
     }

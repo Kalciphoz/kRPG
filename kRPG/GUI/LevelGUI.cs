@@ -139,7 +139,7 @@ namespace kRPG.GUI
             foreach (STAT s in statFlame.Keys)
                 if (statFlame[s].CheckHover()) hoverstat = s;
 
-            if (hoverstat != null) spriteBatch.Draw(GFX.deerskull_eyes[hoverstat.Value], GuiPosition, Color.White);
+            if (hoverstat != null) spriteBatch.Draw(GFX.deerskull_eyes[hoverstat.Value], GuiPosition, Color.White, Scale);
         }
     }
 }

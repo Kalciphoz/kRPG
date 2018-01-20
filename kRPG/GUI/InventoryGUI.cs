@@ -100,8 +100,9 @@ namespace kRPG.GUI
 
             for (int i = 0; i < 40; i += 1)
                 character.inventories[character.activeInvPage][i] = player.inventory[i + 10];
-
-            API.FindRecipes();
+            
+            if ((int)Math.Round(Main.GlobalTime) % 30 == 0)
+                API.FindRecipes();
 
             Vanilla(!character.statPage);
             if (character.statPage) DrawStatPage(spriteBatch, character);

@@ -419,24 +419,38 @@ namespace kRPG.Items.Glyphs
         {
             return delegate (ProceduralSpellProj spell)
             {
-                spell.texture = GFX.projectile_fireball;
-                spell.projectile.width = spell.texture.Width;
-                spell.projectile.height = spell.texture.Height;
-                spell.projectile.magic = true;
-                spell.draw_trail = true;
-                spell.lighted = true;
-                spell.projectile.scale = spell.minion ? 0.7f : 1f;
+                try
+                { 
+                    spell.texture = GFX.projectile_fireball;
+                    spell.projectile.width = spell.texture.Width;
+                    spell.projectile.height = spell.texture.Height;
+                    spell.projectile.magic = true;
+                    spell.draw_trail = true;
+                    spell.lighted = true;
+                    spell.projectile.scale = spell.minion ? 0.7f : 1f;
+                }
+                catch (SystemException e)
+                {
+                    ErrorLogger.Log(e.ToString());
+                }
             };
         }
         public override Action<ProceduralSpellProj> GetAIAction()
         {
             return delegate (ProceduralSpellProj spell)
             {
-                ProceduralSpellProj.AI_RotateToVelocity(spell);
-                if (Main.rand.NextFloat(0f, 1.5f) <= spell.alpha)
+                try
                 {
-                    int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Fire, spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 1f + spell.alpha * 2f);
-                    Main.dust[dust].noGravity = true;
+                    ProceduralSpellProj.AI_RotateToVelocity(spell);
+                    if (Main.rand.NextFloat(0f, 1.5f) <= spell.alpha)
+                    {
+                        int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Fire, spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 1f + spell.alpha * 2f);
+                        Main.dust[dust].noGravity = true;
+                    }
+                }
+                catch (SystemException e)
+                {
+                    ErrorLogger.Log(e.ToString());
                 }
             };
         }
@@ -445,9 +459,16 @@ namespace kRPG.Items.Glyphs
         {
             return delegate (ProceduralSpellProj spell)
             {
-                for (int k = 0; k < 20; k++)
+                try
+                { 
+                    for (int k = 0; k < 20; k++)
+                    {
+                        Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, DustID.Fire, spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f, 0, default(Color), 1.5f);
+                    }
+                }
+                catch (SystemException e)
                 {
-                    Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, DustID.Fire, spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f, 0, default(Color), 2f);
+                    ErrorLogger.Log(e.ToString());
                 }
             };
         }
@@ -659,7 +680,14 @@ namespace kRPG.Items.Glyphs
             {
                 for (int k = 0; k < 8; k++)
                 {
-                    Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, mod.DustType<Ice>(), spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f);
+                    try
+                    {
+                        Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, mod.DustType<Ice>(), spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f);
+                    }
+                    catch (SystemException e)
+                    {
+                        ErrorLogger.Log(e.ToString());
+                    }
                 }
             };
         }

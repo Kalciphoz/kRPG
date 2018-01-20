@@ -1102,7 +1102,6 @@ namespace kRPG.Items
         {
             if (NeedsSaving(item) && !enhanced && !WorldGen.gen && !Main.gameMenu)
                 Initialize(item);
-
             PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>(mod);
 
             if (Upgradeable(item) && Main.mouseRight && Main.mouseRightRelease && new Rectangle((int)position.X, (int)position.Y, 38, 38).Contains(Main.mouseX, Main.mouseY))

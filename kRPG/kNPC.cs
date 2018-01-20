@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using kRPG.Items.Glyphs;
 using kRPG.Projectiles;
 using kRPG.Items.Weapons.RangedDrops;
+using Terraria.Audio;
 
 namespace kRPG
 {
@@ -29,6 +30,15 @@ namespace kRPG
         public Dictionary<ProceduralSpell, int> invincibilityTime = new Dictionary<ProceduralSpell, int>();
         public int immuneTime = 0;
         public bool dealseledmg = false;
+        private bool lifeRegen = false;
+        private int regenTimer = 0;
+        private float speedModifier = 1f;
+        private bool elusive = false;
+        private bool sagely = false;
+        private bool explosive = false;
+        
+        public ProceduralSpellProj rotMissile = null;
+        public ProceduralSpellProj rotSecondary = null;
 
         public Dictionary<ELEMENT, bool> hasAilment = new Dictionary<ELEMENT, bool>()
         {
@@ -138,7 +148,7 @@ namespace kRPG
             Player player = Main.player[npc.target];
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
             character.accuracyCounter += character.hitChance;
-            if (character.accuracyCounter < 1f && !character.rituals[RITUAL.WARRIOR_OATH])
+            if (character.accuracyCounter < (elusive ? 1.2f : 1f) && !character.rituals[RITUAL.WARRIOR_OATH])
             {
                 npc.NinjaDodge(npc, 10);
                 if (Vector2.Distance(player.Center, npc.Center) < 192)
@@ -153,14 +163,17 @@ namespace kRPG
                 SyncCounters(npc.target, character, false);
                 return false;
             }
-            character.accuracyCounter -= 1f;
+            else
+                character.accuracyCounter -= (elusive ? 1.2f : 1f);
             SyncCounters(npc.target, character, false);
             character.critAccuracyCounter += character.critHitChance;
             if (crit)
+            {
                 if (character.critAccuracyCounter < 1f)
                     crit = false;
-            else
-                character.critAccuracyCounter -= 1f;
+                else
+                    character.critAccuracyCounter -= 1f;
+            }
             SyncCounters(npc.target, character, true);
             return true;
         }
@@ -182,8 +195,9 @@ namespace kRPG
             if (projectile.modProjectile is ProceduralSpellProj)
             {
                 ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
-                if (invincibilityTime.ContainsKey(ps.source))
-                    if (invincibilityTime[ps.source] > 0) return false;
+                if (ps.source != null)
+                    if (invincibilityTime.ContainsKey(ps.source))
+                        if (invincibilityTime[ps.source] > 0) return false;
             }
             return null;
         }
@@ -201,7 +215,11 @@ namespace kRPG
                 if (invincibilityTime[spell] > 0) invincibilityTime[spell] -= 1;
                 else invincibilityTime.Remove(spell);
             if (immuneTime > 0) immuneTime -= 1;
-            if (initialized) return;
+            if (initialized)
+            {
+                Update(npc);
+                return;
+            }
             if (npc.lifeMax < 10) return;
             invincibilityTime = new Dictionary<ProceduralSpell, int>();
             Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
@@ -227,17 +245,184 @@ namespace kRPG
                     if (haselement[element]) elementalDamage[element] = Math.Max(1, portionsize);
                 dealseledmg = count > 0;
             }
+            if (Main.rand.Next(8) < 3 && !npc.boss && !npc.townNPC && !npc.friendly) Prefix(npc);
             if (!Main.expertMode)
             {
                 npc.lifeMax = (int)(npc.lifeMax * 1.3);
                 npc.life = (int)(npc.life * 1.3);
             }
-
             initialized = true;
+        }
+
+        public void Update(NPC npc)
+        {
+            if (lifeRegen) regenTimer += 1;
+            int amount = npc.lifeMax / 20;
+            if (regenTimer > 60f / amount)
+            {
+                npc.life = Math.Min(npc.life + (int)(regenTimer / (60f / amount)), npc.lifeMax);
+                regenTimer = regenTimer % (60 / amount);
+            }
+            if (npc.aiStyle == 3 && npc.velocity.Y == 0f)
+                    npc.velocity.X = MathHelper.Lerp(npc.velocity.X, npc.direction * Math.Max(Math.Abs(npc.velocity.X), 8f), 1f * speedModifier / 20f);
+            if (sagely)
+            {
+                try
+                {
+                    int rotDistance = 64;
+                    int rotTimeLeft = 36000;
+
+                    if (rotMissile != null)
+                        if (rotMissile.projectile.active && npc.active)
+                            goto Secondary;
+                        else
+                            rotMissile.projectile.Kill();
+
+                    Projectile proj1 = Main.projectile[Projectile.NewProjectile(npc.Center, new Vector2(0f, -1.5f), mod.ProjectileType<ProceduralSpellProj>(), npc.damage, 3f)];
+                    proj1.hostile = true;
+                    proj1.friendly = false;
+                    ProceduralSpellProj ps1 = (ProceduralSpellProj)proj1.modProjectile;
+                    ps1.origin = proj1.position;
+                    Cross cross1 = Main.rand.Next(2) == 0 ? (Cross)new Cross_Red() : new Cross_Violet();
+                    ps1.ai.Add(delegate (ProceduralSpellProj spell)
+                    {
+                        cross1.GetAIAction()(spell);
+
+                        float displacementAngle = (float)API.Tau / 4f;
+                        Vector2 displacementVelocity = Vector2.Zero;
+                        if (rotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
+                        {
+                            Vector2 unitRelativePos = spell.RelativePos(spell.caster.Center);
+                            unitRelativePos.Normalize();
+                            spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
+                            displacementVelocity = new Vector2(-2f, 0f).RotatedBy((spell.RelativePos(spell.caster.Center)).ToRotation() + (float)API.Tau / 4f);
+
+                            float angle = displacementAngle - 0.06f * (float)(rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
+                            spell.projectile.Center = spell.caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
+                        }
+                        else
+                        {
+                            spell.projectile.Center = spell.caster.Center + new Vector2(0f, -1.5f).RotatedBy(displacementAngle) * (rotTimeLeft - spell.projectile.timeLeft);
+                        }
+                        spell.projectile.velocity = displacementVelocity + spell.caster.velocity;
+                        spell.basePosition = spell.caster.position;
+                    });
+                    ps1.init.Add(cross1.GetInitAction());
+                    ps1.caster = npc;
+                    ps1.Initialize();
+                    ps1.projectile.penetrate = -1;
+                    ps1.projectile.timeLeft = rotTimeLeft;
+                    rotMissile = ps1;
+
+                    Secondary:
+
+                    if (rotSecondary != null)
+                        if (rotSecondary.projectile.active && npc.active)
+                            return;
+                        else
+                            rotSecondary.projectile.Kill();
+
+                    Projectile proj2 = Main.projectile[Projectile.NewProjectile(npc.Center, new Vector2(0f, 1.5f), mod.ProjectileType<ProceduralSpellProj>(), npc.damage, 3f)];
+                    proj2.hostile = true;
+                    proj2.friendly = false;
+                    ProceduralSpellProj ps2 = (ProceduralSpellProj)proj2.modProjectile;
+                    ps2.origin = proj2.position;
+                    Cross cross2 = Main.rand.Next(2) == 0 ? (Cross)new Cross_Blue() : new Cross_Purple();
+                    ps2.ai.Add(delegate (ProceduralSpellProj spell)
+                    {
+                        cross2.GetAIAction()(spell);
+
+                        float displacementAngle = (float)API.Tau / 4f + (float)Math.PI;
+                        Vector2 displacementVelocity = Vector2.Zero;
+                        if (rotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
+                        {
+                            Vector2 unitRelativePos = spell.RelativePos(spell.caster.Center);
+                            unitRelativePos.Normalize();
+                            spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
+                            displacementVelocity = new Vector2(-2f, 0f).RotatedBy((spell.RelativePos(spell.caster.Center)).ToRotation() + (float)API.Tau / 4f);
+
+                            float angle = displacementAngle - 0.06f * (float)(rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
+                            spell.projectile.Center = spell.caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
+                        }
+                        else
+                        {
+                            spell.projectile.Center = spell.caster.Center + new Vector2(0f, 1.5f).RotatedBy(displacementAngle) * (rotTimeLeft - spell.projectile.timeLeft);
+                        }
+                        spell.projectile.velocity = displacementVelocity + spell.caster.velocity;
+                        spell.basePosition = spell.caster.position;
+                    });
+                    ps2.init.Add(cross2.GetInitAction());
+                    ps2.caster = npc;
+                    ps2.Initialize();
+                    ps2.projectile.penetrate = -1;
+                    ps2.projectile.timeLeft = rotTimeLeft;
+                    rotSecondary = ps2;
+                }
+                catch (SystemException e)
+                {
+                    Main.NewText(e.ToString());
+                    ErrorLogger.Log(e.ToString());
+                }
+            }
+        }
+
+        public void Prefix(NPC npc)
+        {
+            Reroll:
+            switch(Main.rand.Next(8))
+            {
+                default:
+                    if (npc.aiStyle != 3) goto Reroll;
+                    npc.GivenName = "Swift " + npc.FullName;
+                    speedModifier *= 2f;
+                    break;
+                case 1:
+                    npc.GivenName = "Massive " + npc.FullName;
+                    npc.scale *= 1.11f;
+                    speedModifier *= 1.1f;
+                    npc.lifeMax = (int)(npc.lifeMax * 1.4);
+                    npc.life = (int)(npc.life * 1.4);
+                    break;
+                case 2:
+                    npc.GivenName = "Shimmering " + npc.FullName;
+                    lifeRegen = true;
+                    break;
+                case 3:
+                    npc.GivenName = "Elusive " + npc.FullName;
+                    elusive = true;
+                    npc.scale *= 0.8f;
+                    speedModifier *= 1.25f;
+                    break;
+                case 4:
+                    npc.GivenName = "Brutal " + npc.FullName;
+                    npc.damage = (int)Math.Round(npc.damage * 1.2);
+                    npc.defense = 0;
+                    break;
+                case 5:
+                    if (npc.aiStyle == 6) goto Reroll;
+                    npc.GivenName = "Sagely " + npc.FullName;
+                    sagely = true;
+                    break;
+                case 6:
+                    npc.GivenName = "Explosive " + npc.FullName;
+                    npc.lifeMax = (int)(npc.lifeMax * 0.5);
+                    explosive = true;
+                    break;
+            }
+            npc.scale *= 1.1f;
+            npc.lifeMax = (int)(npc.lifeMax * 1.2);
+            
+            speedModifier *= 1.09f;
         }
 
         public override void NPCLoot(NPC npc)
         {
+            if (explosive)
+            {
+                Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), npc.Center);
+                Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, mod.ProjectileType<NPC_Explosion>(), npc.damage * 3 / 2, 0f)];
+            }
+
             if (npc.lifeMax < 10) return;
             if (npc.friendly) return;
             if (npc.townNPC) return;

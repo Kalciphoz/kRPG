@@ -121,16 +121,16 @@ namespace kRPG.GUI
                 spriteBatch.DrawStringWithShadow(Main.fontMouseText, "If the upgrade fails, the item will be destroyed.", new Vector2(GuiPosition.X - 176f * scale, GuiPosition.Y - 124 * scale), Color.Red, scale);
 
             spriteBatch.Draw(guardianCrown ? GFX.button_crown_pressed : GFX.button_crown, BtnExperiencePos, Color.White, scale);
-            spriteBatch.Draw(GFX.guardianCrown, BtnExperiencePos + new Vector2(9f, 10f), guardianCrown ? Color.Gray : Color.White, scale);
+            spriteBatch.Draw(GFX.guardianCrown, BtnExperiencePos + new Vector2(9f, 10f) * scale, guardianCrown ? Color.Gray : Color.White, scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Increases success chance of upgrades by 10%", BtnExperiencePos + new Vector2(64f, 4f) * scale, Color.White, scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "at the cost of a much higher price in currency", BtnExperiencePos + new Vector2(64f, 28f) * scale, Color.White, scale);
             spriteBatch.Draw(permanenceCrown ? GFX.button_crown_pressed : GFX.button_crown, BtnPermanencePos, Color.White, scale);
-            spriteBatch.Draw(Main.itemTexture[mod.ItemType<PermanenceCrown>()], BtnPermanencePos + new Vector2(9f, 10f), permanenceCrown ? Color.Gray : Color.White, scale);
+            spriteBatch.Draw(Main.itemTexture[mod.ItemType<PermanenceCrown>()], BtnPermanencePos + new Vector2(9f, 10f) * scale, permanenceCrown ? Color.Gray : Color.White, scale);
             spriteBatch.DrawStringWithShadow(Main.fontItemStack, character.permanence.ToString(), BtnPermanencePos + new Vector2(8f, 24f) * scale, Color.White, scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "When an upgrade fails, items are downgraded", BtnPermanencePos + new Vector2(64f, 4f) * scale, Color.White, scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "instead of being destroyed. " + (character.permanence == 1 ? "1 crown left." : character.permanence + " crowns left."), BtnPermanencePos + new Vector2(64f, 28f) * scale, Color.White, scale);
             spriteBatch.Draw(transcendenceCrown ? GFX.button_crown_pressed : GFX.button_crown, BtnTranscendencePos, Color.White, scale);
-            spriteBatch.Draw(Main.itemTexture[mod.ItemType<BlacksmithCrown>()], BtnTranscendencePos + new Vector2(9f, 10f), transcendenceCrown ? Color.Gray : Color.White, scale);
+            spriteBatch.Draw(Main.itemTexture[mod.ItemType<BlacksmithCrown>()], BtnTranscendencePos + new Vector2(9f, 10f) * scale, transcendenceCrown ? Color.Gray : Color.White, scale);
             spriteBatch.DrawStringWithShadow(Main.fontItemStack, character.transcendence.ToString(), BtnTranscendencePos + new Vector2(8f, 24f) * scale, Color.White, scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Allows you to upgrade an item to +8", BtnTranscendencePos + new Vector2(64f, 4f) * scale, Color.White, scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.transcendence == 1 ? "1 crown left." : character.transcendence + " crowns left.", BtnTranscendencePos + new Vector2(64f, 28f) * scale, Color.White, scale);
