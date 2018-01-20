@@ -248,7 +248,7 @@ namespace kRPG
                 }
                 if (item.type >= 1803 && item.type <= 1807)
                 {
-                    item.SetDefaults(1533 + item.type - 1803, false);
+                    item.SetDefaults(1533 + item.type - 1803, true);
                 }
                 if (item.dye > 0)
                 {

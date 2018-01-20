@@ -1059,7 +1059,7 @@ namespace kRPG.Items
         public void Destroy(Item item)
         {
             Main.NewText("Failed to upgrade - item was destroyed", 255, 0, 0);
-            item.SetDefaults(0);
+            item.SetDefaults(0,true);
         }
 
         public bool Upgradeable(Item item)
