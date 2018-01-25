@@ -452,7 +452,7 @@ namespace kRPG
             }
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
             int life = npc.type == NPCID.SolarCrawltipedeTail || npc.type == NPCID.SolarCrawltipedeBody || npc.type == NPCID.SolarCrawltipedeHead ? npc.lifeMax / 8 : npc.lifeMax;
-            int defFactor = npc.defense * life / (character.level + 10);
+            int defFactor = (npc.defense < 0) ? 1 : npc.defense * life / (character.level + 10);
             int baseExp = Main.rand.Next((life + defFactor) / 5) + (life + defFactor) / 6;
             int scaled = Main.expertMode ? (int)(baseExp * 0.5) : baseExp;
             if (Main.netMode == 2)
