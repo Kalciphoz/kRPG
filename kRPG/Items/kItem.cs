@@ -1118,6 +1118,9 @@ namespace kRPG.Items
         public override bool ItemSpace(Item newItem, Player player)
         {
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+            if (newItem.type == mod.ItemType<PermanenceCrown>() || newItem.type == mod.ItemType<BlacksmithCrown>())
+                return true;
+            
             int num = 50;
             if (newItem.type == 71 || newItem.type == 72 || newItem.type == 73 || newItem.type == 74)
             {
