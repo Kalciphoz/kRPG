@@ -8,10 +8,13 @@ using kRPG.Items.Weapons;
 using kRPG.Dusts;
 using kRPG.Buffs;
 using System.Collections.Generic;
+using System.Runtime.Remoting;
 using kRPG.Items.Glyphs;
 using kRPG.Projectiles;
 using kRPG.Items.Weapons.RangedDrops;
+using kRPG.Modifiers;
 using Terraria.Audio;
+using Terraria.ModLoader.IO;
 
 namespace kRPG
 {
@@ -30,15 +33,8 @@ namespace kRPG
         public Dictionary<ProceduralSpell, int> invincibilityTime = new Dictionary<ProceduralSpell, int>();
         public int immuneTime = 0;
         public bool dealseledmg = false;
-        private bool lifeRegen = false;
-        private int regenTimer = 0;
-        private float speedModifier = 1f;
-        private bool elusive = false;
-        private bool sagely = false;
-        private bool explosive = false;
         
-        public ProceduralSpellProj rotMissile = null;
-        public ProceduralSpellProj rotSecondary = null;
+        private List<NPCModifier> modifiers = new List<NPCModifier>();
 
         public Dictionary<ELEMENT, bool> hasAilment = new Dictionary<ELEMENT, bool>()
         {
@@ -61,7 +57,28 @@ namespace kRPG
             {ELEMENT.LIGHTNING, 0},
             {ELEMENT.SHADOW, 0}
         };
+        
+        public List<Func<kNPC, NPC, NPCModifier>> modifierFuncs = new List<Func<kNPC, NPC, NPCModifier>>()
+        {
+            DamageModifier.New,
+            ElusiveModifier.New,
+            ExplosiveModifier.New,
+            LifeRegenModifier.New,
+            SageModifier.New,
+            SizeModifier.New,
+            SpeedModifier.New
+        }; 
 
+        public void InitializeModifiers(NPC npc)
+        {
+            npc.GivenName = npc.FullName;
+            int amount = 1;
+            for (int i = 0; i < amount; i++)
+            {
+                modifiers.Add(modifierFuncs[Main.rand.Next(modifierFuncs.Count)].Invoke(this, npc));
+            }
+        }
+        
         public override void ResetEffects(NPC npc)
         {
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
@@ -83,6 +100,11 @@ namespace kRPG
 
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
+            for (var i = 0; i < modifiers.Count; i++)
+            {
+                modifiers[i].DrawEffects(npc, ref drawColor);
+            }
+            
             if (hasAilment[ELEMENT.FIRE])
             {
                 if (Main.rand.Next(2) == 0)
@@ -127,12 +149,20 @@ namespace kRPG
 
         public override void ModifyHitPlayer(NPC npc, Player target, ref int damage, ref bool crit)
         {
+            for (var i = 0; i < modifiers.Count; i++)
+            {
+                modifiers[i].ModifyHitPlayer(npc, target, ref damage, ref crit);
+            }
             if (hasAilment[ELEMENT.SHADOW])
                 damage = damage * (20 + 9360 / (130 + ailmentIntensity[ELEMENT.SHADOW])) / 100;
         }
 
         public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
         {
+            for (var i = 0; i < modifiers.Count; i++)
+            {
+                modifiers[i].OnHitByProjectile(npc, projectile, damage, knockback, crit);
+            }
             if (projectile.modProjectile is ProceduralSpellProj)
             {
                 ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
@@ -148,7 +178,15 @@ namespace kRPG
             Player player = Main.player[npc.target];
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
             character.accuracyCounter += character.hitChance;
-            if (character.accuracyCounter < (elusive ? 1.2f : 1f) && !character.rituals[RITUAL.WARRIOR_OATH])
+
+            float dodgeChanceModifier = 1f;
+            
+            for (var i = 0; i < modifiers.Count; i++)
+            {
+                dodgeChanceModifier *= modifiers[i].StrikeNPC(npc, damage, defense, knockback, hitDirection, crit);
+            }
+
+            if (character.accuracyCounter < 1 * dodgeChanceModifier && !character.rituals[RITUAL.WARRIOR_OATH])
             {
                 npc.NinjaDodge(npc, 10);
                 if (Vector2.Distance(player.Center, npc.Center) < 192)
@@ -156,6 +194,7 @@ namespace kRPG
                     player.immune = true;
                     player.immuneTime = 30;
                 }
+
                 damage = 0;
                 crit = false;
                 if (character.player.inventory[character.player.selectedItem] != character.lastSelectedWeapon)
@@ -164,7 +203,7 @@ namespace kRPG
                 return false;
             }
             else
-                character.accuracyCounter -= (elusive ? 1.2f : 1f);
+                character.accuracyCounter -= 1 * dodgeChanceModifier;
             SyncCounters(npc.target, character, false);
             character.critAccuracyCounter += character.critHitChance;
             if (crit)
@@ -210,6 +249,11 @@ namespace kRPG
 
         public override void PostAI(NPC npc)
         {
+            for (var i = 0; i < modifiers.Count; i++)
+            {
+                modifiers[i].PostAI(npc);
+            }
+            
             List<ProceduralSpell> keys = new List<ProceduralSpell>(invincibilityTime.Keys);
             foreach (ProceduralSpell spell in keys)
                 if (invincibilityTime[spell] > 0) invincibilityTime[spell] -= 1;
@@ -220,7 +264,9 @@ namespace kRPG
                 Update(npc);
                 return;
             }
+            
             if (npc.lifeMax < 10) return;
+            
             invincibilityTime = new Dictionary<ProceduralSpell, int>();
             Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
             int playerlevel = Main.netMode == 0 ? player.GetModPlayer<PlayerCharacter>().level : 20;
@@ -228,6 +274,7 @@ namespace kRPG
             npc.life = (int)Math.Round(npc.life * (GetLevel(npc.netID) / 30f + 0.4f + playerlevel * 0.025f));
             npc.defense = (int)Math.Round(npc.defense * (GetLevel(npc.netID) / 160f + 1f));
             npc.lavaImmune = npc.lavaImmune || npc.defense > 60;
+            
             if (npc.damage > 0 && !npc.boss && Main.rand.Next(3) != 0 || Main.netMode != 0)
             {
                 Dictionary<ELEMENT, bool> haselement = new Dictionary<ELEMENT, bool>()
@@ -245,184 +292,34 @@ namespace kRPG
                     if (haselement[element]) elementalDamage[element] = Math.Max(1, portionsize);
                 dealseledmg = count > 0;
             }
-            if (Main.rand.Next(8) < 3 && !npc.boss && !npc.townNPC && !npc.friendly) Prefix(npc);
+            
+            if (Main.rand.Next(8) < 3 && !npc.boss && !npc.townNPC && !npc.friendly)
+                InitializeModifiers(npc);
+            
             if (!Main.expertMode)
             {
                 npc.lifeMax = (int)(npc.lifeMax * 1.3);
                 npc.life = (int)(npc.life * 1.3);
             }
+            
             initialized = true;
         }
 
         public void Update(NPC npc)
         {
-            if (lifeRegen) regenTimer += 1;
-            int amount = npc.lifeMax / 20;
-            if (regenTimer > 60f / amount)
+            for (var i = 0; i < modifiers.Count; i++)
             {
-                npc.life = Math.Min(npc.life + (int)(regenTimer / (60f / amount)), npc.lifeMax);
-                regenTimer = regenTimer % (60 / amount);
+                modifiers[i].Update(npc);
             }
-            if (npc.aiStyle == 3 && npc.velocity.Y == 0f)
-                    npc.velocity.X = MathHelper.Lerp(npc.velocity.X, npc.direction * Math.Max(Math.Abs(npc.velocity.X), 8f), 1f * speedModifier / 20f);
-            if (sagely)
-            {
-                try
-                {
-                    int rotDistance = 64;
-                    int rotTimeLeft = 36000;
-
-                    if (rotMissile != null)
-                        if (rotMissile.projectile.active && npc.active)
-                            goto Secondary;
-                        else
-                            rotMissile.projectile.Kill();
-
-                    Projectile proj1 = Main.projectile[Projectile.NewProjectile(npc.Center, new Vector2(0f, -1.5f), mod.ProjectileType<ProceduralSpellProj>(), npc.damage, 3f)];
-                    proj1.hostile = true;
-                    proj1.friendly = false;
-                    ProceduralSpellProj ps1 = (ProceduralSpellProj)proj1.modProjectile;
-                    ps1.origin = proj1.position;
-                    Cross cross1 = Main.rand.Next(2) == 0 ? (Cross)new Cross_Red() : new Cross_Violet();
-                    ps1.ai.Add(delegate (ProceduralSpellProj spell)
-                    {
-                        cross1.GetAIAction()(spell);
-
-                        float displacementAngle = (float)API.Tau / 4f;
-                        Vector2 displacementVelocity = Vector2.Zero;
-                        if (rotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
-                        {
-                            Vector2 unitRelativePos = spell.RelativePos(spell.caster.Center);
-                            unitRelativePos.Normalize();
-                            spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
-                            displacementVelocity = new Vector2(-2f, 0f).RotatedBy((spell.RelativePos(spell.caster.Center)).ToRotation() + (float)API.Tau / 4f);
-
-                            float angle = displacementAngle - 0.06f * (float)(rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
-                            spell.projectile.Center = spell.caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
-                        }
-                        else
-                        {
-                            spell.projectile.Center = spell.caster.Center + new Vector2(0f, -1.5f).RotatedBy(displacementAngle) * (rotTimeLeft - spell.projectile.timeLeft);
-                        }
-                        spell.projectile.velocity = displacementVelocity + spell.caster.velocity;
-                        spell.basePosition = spell.caster.position;
-                    });
-                    ps1.init.Add(cross1.GetInitAction());
-                    ps1.caster = npc;
-                    ps1.Initialize();
-                    ps1.projectile.penetrate = -1;
-                    ps1.projectile.timeLeft = rotTimeLeft;
-                    rotMissile = ps1;
-
-                    Secondary:
-
-                    if (rotSecondary != null)
-                        if (rotSecondary.projectile.active && npc.active)
-                            return;
-                        else
-                            rotSecondary.projectile.Kill();
-
-                    Projectile proj2 = Main.projectile[Projectile.NewProjectile(npc.Center, new Vector2(0f, 1.5f), mod.ProjectileType<ProceduralSpellProj>(), npc.damage, 3f)];
-                    proj2.hostile = true;
-                    proj2.friendly = false;
-                    ProceduralSpellProj ps2 = (ProceduralSpellProj)proj2.modProjectile;
-                    ps2.origin = proj2.position;
-                    Cross cross2 = Main.rand.Next(2) == 0 ? (Cross)new Cross_Blue() : new Cross_Purple();
-                    ps2.ai.Add(delegate (ProceduralSpellProj spell)
-                    {
-                        cross2.GetAIAction()(spell);
-
-                        float displacementAngle = (float)API.Tau / 4f + (float)Math.PI;
-                        Vector2 displacementVelocity = Vector2.Zero;
-                        if (rotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
-                        {
-                            Vector2 unitRelativePos = spell.RelativePos(spell.caster.Center);
-                            unitRelativePos.Normalize();
-                            spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
-                            displacementVelocity = new Vector2(-2f, 0f).RotatedBy((spell.RelativePos(spell.caster.Center)).ToRotation() + (float)API.Tau / 4f);
-
-                            float angle = displacementAngle - 0.06f * (float)(rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
-                            spell.projectile.Center = spell.caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
-                        }
-                        else
-                        {
-                            spell.projectile.Center = spell.caster.Center + new Vector2(0f, 1.5f).RotatedBy(displacementAngle) * (rotTimeLeft - spell.projectile.timeLeft);
-                        }
-                        spell.projectile.velocity = displacementVelocity + spell.caster.velocity;
-                        spell.basePosition = spell.caster.position;
-                    });
-                    ps2.init.Add(cross2.GetInitAction());
-                    ps2.caster = npc;
-                    ps2.Initialize();
-                    ps2.projectile.penetrate = -1;
-                    ps2.projectile.timeLeft = rotTimeLeft;
-                    rotSecondary = ps2;
-                }
-                catch (SystemException e)
-                {
-                    Main.NewText(e.ToString());
-                    ErrorLogger.Log(e.ToString());
-                }
-            }
-        }
-
-        public void Prefix(NPC npc)
-        {
-            Reroll:
-            switch(Main.rand.Next(8))
-            {
-                default:
-                    if (npc.aiStyle != 3) goto Reroll;
-                    npc.GivenName = "Swift " + npc.FullName;
-                    speedModifier *= 2f;
-                    break;
-                case 1:
-                    npc.GivenName = "Massive " + npc.FullName;
-                    npc.scale *= 1.11f;
-                    speedModifier *= 1.1f;
-                    npc.lifeMax = (int)(npc.lifeMax * 1.4);
-                    npc.life = (int)(npc.life * 1.4);
-                    break;
-                case 2:
-                    npc.GivenName = "Shimmering " + npc.FullName;
-                    lifeRegen = true;
-                    break;
-                case 3:
-                    npc.GivenName = "Elusive " + npc.FullName;
-                    elusive = true;
-                    npc.scale *= 0.8f;
-                    speedModifier *= 1.25f;
-                    break;
-                case 4:
-                    npc.GivenName = "Brutal " + npc.FullName;
-                    npc.damage = (int)Math.Round(npc.damage * 1.2);
-                    npc.defense = 0;
-                    break;
-                case 5:
-                    if (npc.aiStyle == 6) goto Reroll;
-                    npc.GivenName = "Sagely " + npc.FullName;
-                    sagely = true;
-                    break;
-                case 6:
-                    npc.GivenName = "Explosive " + npc.FullName;
-                    npc.lifeMax = (int)(npc.lifeMax * 0.5);
-                    explosive = true;
-                    break;
-            }
-            npc.scale *= 1.1f;
-            npc.lifeMax = (int)(npc.lifeMax * 1.2);
-            
-            speedModifier *= 1.09f;
         }
 
         public override void NPCLoot(NPC npc)
         {
-            if (explosive)
+            for (var i = 0; i < modifiers.Count; i++)
             {
-                Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), npc.Center);
-                Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, mod.ProjectileType<NPC_Explosion>(), npc.damage * 3 / 2, 0f)];
+                modifiers[i].NPCLoot(npc);
             }
-
+            
             if (npc.lifeMax < 10) return;
             if (npc.friendly) return;
             if (npc.townNPC) return;
