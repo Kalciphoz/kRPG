@@ -16,5 +16,10 @@ namespace kRPG.Modifiers
         {
             return new DamageModifier(kNPC, npc, 1f+ Main.rand.NextFloat(1));
         }
+
+        public new static NPCModifier New(kNPC kNPC, NPC npc)
+        {
+            return new DamageModifier(kNPC, npc);
+        }
     }
 }

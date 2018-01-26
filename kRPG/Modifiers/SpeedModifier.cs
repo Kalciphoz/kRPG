@@ -25,5 +25,10 @@ namespace kRPG.Modifiers
         {
             return new SpeedModifier(kNPC, npc, 1f+ Main.rand.NextFloat(2));
         }
+
+        public new static NPCModifier New(kNPC kNPC, NPC npc)
+        {
+            return new SpeedModifier(kNPC, npc);
+        }
     }
 }

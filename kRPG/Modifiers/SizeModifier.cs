@@ -20,5 +20,10 @@ namespace kRPG.Modifiers
         {
             return new SizeModifier(kNPC, npc, .5f + Main.rand.NextFloat(2), .5f+ Main.rand.NextFloat(1));
         }
+
+        public new static NPCModifier New(kNPC kNPC, NPC npc)
+        {
+            return new SizeModifier(kNPC, npc);
+        }
     }
 }

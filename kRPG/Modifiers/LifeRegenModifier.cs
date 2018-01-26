@@ -28,5 +28,10 @@ namespace kRPG.Modifiers
         {
             return new LifeRegenModifier(kNPC, npc);
         }
+
+        public new static NPCModifier New(kNPC kNPC, NPC npc)
+        {
+            return new LifeRegenModifier(kNPC, npc);
+        }
     }
 }

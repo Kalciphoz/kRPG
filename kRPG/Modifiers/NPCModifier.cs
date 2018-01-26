@@ -42,5 +42,10 @@ namespace kRPG.Modifiers
         {
             return null;
         }
+        
+        public static NPCModifier New(kNPC kNPC, NPC npc)
+        {
+            return null;
+        }
     }
 }

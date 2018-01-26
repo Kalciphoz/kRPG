@@ -58,15 +58,15 @@ namespace kRPG
             {ELEMENT.SHADOW, 0}
         };
         
-        public List<Func<kNPC, NPC, NPCModifier>> RandomModifierFuncs = new List<Func<kNPC, NPC, NPCModifier>>()
+        public List<Func<kNPC, NPC, NPCModifier>> modifierFuncs = new List<Func<kNPC, NPC, NPCModifier>>()
         {
-            DamageModifier.Random,
-            ElusiveModifier.Random,
-            ExplosiveModifier.Random,
-            LifeRegenModifier.Random,
-            SageModifier.Random,
-            SizeModifier.Random,
-            SpeedModifier.Random
+            DamageModifier.New,
+            ElusiveModifier.New,
+            ExplosiveModifier.New,
+            LifeRegenModifier.New,
+            SageModifier.New,
+            SizeModifier.New,
+            SpeedModifier.New
         }; 
 
         public void InitializeModifiers(NPC npc)
@@ -75,7 +75,7 @@ namespace kRPG
             int amount = 1;
             for (int i = 0; i < amount; i++)
             {
-                modifiers.Add(RandomModifierFuncs[Main.rand.Next(RandomModifierFuncs.Count)].Invoke(this, npc));
+                modifiers.Add(modifierFuncs[Main.rand.Next(modifierFuncs.Count)].Invoke(this, npc));
             }
         }
         
