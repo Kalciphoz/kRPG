@@ -125,5 +125,11 @@ namespace kRPG.Items.Weapons
         {
             return ornamentByTheme[theme].Random();
         }
+
+        public static void Unload()
+        {
+            foreach (StaffOrnament o in ornament.Values)
+                o.texture = null;
+        }
     }
 }

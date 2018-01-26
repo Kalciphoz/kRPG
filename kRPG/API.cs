@@ -1656,6 +1656,7 @@ namespace kRPG
 
         public static void FindRecipes()
         {
+            if (Main.netMode == 2) return;
             int num = Main.availableRecipe[Main.focusRecipe];
             float num2 = Main.availableRecipeY[Main.focusRecipe];
             for (int i = 0; i < Recipe.maxRecipes; i++)
@@ -1707,21 +1708,23 @@ namespace kRPG
                         }
                     }
                 }
-                PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
-                for (int j = 0; j < character.inventories.Length; j += 1)
-                    if (j != character.activeInvPage)
-                        foreach (Item i in character.inventories[j])
-                        {
-                            if (dictionary.ContainsKey(i.netID))
+                if (Main.player[Main.myPlayer].active)
+                {
+                    PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
+                    for (int j = 0; j < character.inventories.Length; j += 1)
+                        if (j != character.activeInvPage)
+                            foreach (Item i in character.inventories[j])
                             {
-                                Dictionary<int, int> dictionary2;
-                                int netID;
-                                (dictionary2 = dictionary)[netID = i.netID] = dictionary2[netID] + i.stack;
+                                if (dictionary.ContainsKey(i.netID))
+                                {
+                                    Dictionary<int, int> dictionary2;
+                                    int netID;
+                                    (dictionary2 = dictionary)[netID = i.netID] = dictionary2[netID] + i.stack;
+                                }
+                                else
+                                    dictionary[i.netID] = i.stack;
                             }
-                            else
-                                dictionary[i.netID] = i.stack;
-                        }
-
+                }
                 Item[] array = new Item[0];
                 if (Main.player[Main.myPlayer].chest != -1)
                 {

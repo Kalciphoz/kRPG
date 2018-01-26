@@ -44,7 +44,7 @@ namespace kRPG.GUI
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
             for (int i = 0; i < character.abilities.Length; i += 1)
             {
-                character.abilities[i].Draw(spriteBatch, GuiPosition + new Vector2(i * (GFX.skillSlot.Width + 8f) * scale, 0), player, scale);
+                character.abilities[i].Draw(spriteBatch, GuiPosition + new Vector2(i * (GFX.skillSlot.Width + 8f) * scale, 0), scale);
             }
         }
     }

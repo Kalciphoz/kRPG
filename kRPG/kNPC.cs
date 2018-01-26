@@ -123,6 +123,52 @@ namespace kRPG
                     Main.dust[dust].noGravity = true;
                 }
             }
+
+            if (npc.friendly) return;
+
+            if (elementalDamage[ELEMENT.FIRE] > 0)
+            {
+                if (Main.rand.Next(3) == 0)
+                {
+                    int height = npc.height / 6;
+                    int dust = Dust.NewDust(npc.BottomLeft - new Vector2(2f, height - 4f), npc.width + 4, height + 4, DustID.Fire, 0f, 0f, 100, default(Color), 2.5f);
+                    Main.dust[dust].noGravity = true;
+                    Main.dust[dust].velocity = Vector2.Zero;
+                }
+            }
+
+            if (elementalDamage[ELEMENT.COLD] > 0)
+            {
+                if (Main.rand.Next(3) == 0)
+                {
+                    int height = npc.height / 6;
+                    int dust = Dust.NewDust(npc.BottomLeft - new Vector2(2f, height - 4f), npc.width + 4, height + 4, mod.GetDust<Ice>().Type, 0f, 0f, 100, default(Color), 1f);
+                    Main.dust[dust].noGravity = true;
+                    Main.dust[dust].velocity = Vector2.Zero;
+                }
+            }
+
+            if (elementalDamage[ELEMENT.LIGHTNING] > 0)
+            {
+                if (Main.rand.Next(3) == 0)
+                {
+                    int height = npc.height / 6;
+                    int dust = Dust.NewDust(npc.BottomLeft - new Vector2(2f, height - 4f), npc.width + 4, height + 4, DustID.Electric, 0f, 0f, 100, default(Color), 0.5f);
+                    Main.dust[dust].noGravity = true;
+                    Main.dust[dust].velocity = Vector2.Zero;
+                }
+            }
+
+            if (elementalDamage[ELEMENT.SHADOW] > 0)
+            {
+                if (Main.rand.Next(3) == 0)
+                {
+                    int height = npc.height / 6;
+                    int dust = Dust.NewDust(npc.BottomLeft - new Vector2(2f, height - 4f), npc.width + 4, height + 4, DustID.Shadowflame, 0f, 0f, 100, default(Color), 1f);
+                    Main.dust[dust].noGravity = true;
+                    Main.dust[dust].velocity = Vector2.Zero;
+                }
+            }
         }
 
         public override void ModifyHitPlayer(NPC npc, Player target, ref int damage, ref bool crit)
@@ -223,12 +269,27 @@ namespace kRPG
             if (npc.lifeMax < 10) return;
             invincibilityTime = new Dictionary<ProceduralSpell, int>();
             Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
-            int playerlevel = Main.netMode == 0 ? player.GetModPlayer<PlayerCharacter>().level : 20;
+
+            int playerlevel = 0;
+            if (Main.netMode == 0) playerlevel = Main.LocalPlayer.GetModPlayer<PlayerCharacter>().level;
+            else
+            {
+                int count = 0;
+                for (int i = 0; i < Main.player.Length; i += 1)
+                    if (Main.player[i] != null)
+                        if (Main.player[i].active)
+                        {
+                            playerlevel += Main.player[i].GetModPlayer<PlayerCharacter>().level;
+                            count += 1;
+                        }
+                playerlevel = playerlevel / count + 1;
+            }
+
             npc.lifeMax = (int)Math.Round(npc.lifeMax * (GetLevel(npc.netID) / 30f + 0.4f + playerlevel * 0.025f));
             npc.life = (int)Math.Round(npc.life * (GetLevel(npc.netID) / 30f + 0.4f + playerlevel * 0.025f));
             npc.defense = (int)Math.Round(npc.defense * (GetLevel(npc.netID) / 160f + 1f));
             npc.lavaImmune = npc.lavaImmune || npc.defense > 60;
-            if (npc.damage > 0 && !npc.boss && Main.rand.Next(3) != 0 || Main.netMode != 0)
+            if (npc.damage > 0 && !npc.boss && Main.rand.Next(3) != 0 && Main.netMode != 1)
             {
                 Dictionary<ELEMENT, bool> haselement = new Dictionary<ELEMENT, bool>()
                 {
@@ -244,8 +305,20 @@ namespace kRPG
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                     if (haselement[element]) elementalDamage[element] = Math.Max(1, portionsize);
                 dealseledmg = count > 0;
+
+                if (Main.netMode == 2)
+                {
+                    ModPacket packet = mod.GetPacket();
+                    packet.Write((byte)Message.NPCEleDmg);
+                    packet.Write(npc.whoAmI);
+                    packet.Write(haselement[ELEMENT.FIRE]);
+                    packet.Write(haselement[ELEMENT.COLD]);
+                    packet.Write(haselement[ELEMENT.LIGHTNING]);
+                    packet.Write(haselement[ELEMENT.SHADOW]);
+                    packet.Send();
+                }
             }
-            if (Main.rand.Next(8) < 3 && !npc.boss && !npc.townNPC && !npc.friendly) Prefix(npc);
+            if (Main.rand.Next(8) < 3 && !npc.boss && !npc.townNPC && !npc.friendly && Main.netMode != 1) Prefix(npc);
             if (!Main.expertMode)
             {
                 npc.lifeMax = (int)(npc.lifeMax * 1.3);
@@ -366,10 +439,12 @@ namespace kRPG
             }
         }
 
-        public void Prefix(NPC npc)
+        public void Prefix(NPC npc, int i = -1)
         {
+            int prefix;
             Reroll:
-            switch(Main.rand.Next(8))
+            prefix = i == -1 ? Main.rand.Next(8) : i;
+            switch(prefix)
             {
                 default:
                     if (npc.aiStyle != 3) goto Reroll;
@@ -399,7 +474,7 @@ namespace kRPG
                     npc.defense = 0;
                     break;
                 case 5:
-                    if (npc.aiStyle == 6) goto Reroll;
+                    if (npc.aiStyle == 6 || Main.netMode != 0) goto Reroll;
                     npc.GivenName = "Sagely " + npc.FullName;
                     sagely = true;
                     break;
@@ -420,14 +495,14 @@ namespace kRPG
             if (explosive)
             {
                 Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), npc.Center);
-                Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, mod.ProjectileType<NPC_Explosion>(), npc.damage * 3 / 2, 0f)];
+                Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, mod.ProjectileType<NPC_Explosion>(), npc.damage * 5 / 4, 0f)];
             }
 
             if (npc.lifeMax < 10) return;
             if (npc.friendly) return;
             if (npc.townNPC) return;
 
-            if (Main.rand.Next(2500) < GetLevel(npc.type))
+            if (Main.rand.Next(1500) < GetLevel(npc.type))
             {
                 if (Main.rand.Next(8) == 0)
                     Item.NewItem(npc.position, mod.ItemType<BlacksmithCrown>());
@@ -436,23 +511,24 @@ namespace kRPG
             }
 
             int level = GetLevel(npc.netID);
-            
-            Player player = Array.Find(Main.player, p => p.active);
-            if (Main.netMode == 0) player = Main.LocalPlayer;
-            else if (Main.player[npc.target].active) player = Main.player[npc.target];
+
+            int playerlevel = 0;
+            if (Main.netMode == 0) playerlevel = Main.LocalPlayer.GetModPlayer<PlayerCharacter>().level;
             else
             {
-                PlayerCharacter c = player.GetModPlayer<PlayerCharacter>();
-                foreach (Player p in Main.player)
-                    if (p != null)
-                        if (p.active)
-                            if (p.GetModPlayer<PlayerCharacter>() != null)
-                                if (p.GetModPlayer<PlayerCharacter>().level > c.level)
-                                    player = p;
+                int count = 0;
+                for (int i = 0; i < Main.player.Length; i += 1)
+                    if (Main.player[i] != null)
+                        if (Main.player[i].active)
+                        {
+                            playerlevel += Main.player[i].GetModPlayer<PlayerCharacter>().level;
+                            count += 1;
+                        }
+                playerlevel = playerlevel / count + 1;
             }
-            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+
             int life = npc.type == NPCID.SolarCrawltipedeTail || npc.type == NPCID.SolarCrawltipedeBody || npc.type == NPCID.SolarCrawltipedeHead ? npc.lifeMax / 8 : npc.lifeMax;
-            int defFactor = npc.defense * life / (character.level + 10);
+            int defFactor = npc.defense * life / (level + 10);
             int baseExp = Main.rand.Next((life + defFactor) / 5) + (life + defFactor) / 6;
             int scaled = Main.expertMode ? (int)(baseExp * 0.5) : baseExp;
             if (Main.netMode == 2)
@@ -464,12 +540,12 @@ namespace kRPG
                 packet.Send();
             }
             else
-                character.AddXP(scaled);
+                Main.LocalPlayer.GetModPlayer<PlayerCharacter>().AddXP(scaled);
 
-            if (level < Math.Min(character.level - 17, 70)) return;
+            if (level < Math.Min(playerlevel - 15, 70)) return;
             
-            float dps = Math.Min((float)(Math.Pow(1.04, Math.Min(130, character.level)) * 9f), (float)(Math.Pow(1.023, level)*15) + 14);
-            int assumedDef = !Main.hardMode ? 5 : character.level/3;
+            float dps = Math.Min((float)(Math.Pow(1.04, Math.Min(130, playerlevel)) * 9f), (float)(Math.Pow(1.024, level)*15) + 18);
+            int assumedDef = !Main.hardMode ? 5 : playerlevel/3;
 
             if (npc.FullName.Contains("Green Slime"))
             {
@@ -483,9 +559,10 @@ namespace kRPG
                     ProceduralSword.NewSword(mod, npc.position, SwordHilt.RandomHilt(SWORDTHEME.GENERIC), SwordBlade.slimeBlue, Main.rand.Next(2) < 1 ? SwordAccent.RandomAccent() : SwordAccent.none, dps, assumedDef);
             }
 
-            else if (Main.rand.Next((character.level < 5 ? 5 : (character.level < 10 ? 8 : 20))) == 0)
+            else if (Main.rand.Next((playerlevel < 5 ? 5 : (playerlevel < 10 ? 8 : 20))) == 0)
             {
-                if (Main.rand.Next(5) == 0) Item.NewItem(npc.position, RangedWeapon.NewRangedWeapon(mod, npc.position, level, character.level, dps, assumedDef), Main.rand.Next(30, 90));
+                Player player = Main.player[npc.target] != null ? Main.player[npc.target] : Main.player[0];
+                if (Main.rand.Next(5) == 0) Item.NewItem(npc.position, RangedWeapon.NewRangedWeapon(mod, npc.position, level, playerlevel, dps, assumedDef), Main.rand.Next(30, 90));
                 else if (Main.rand.Next(9) < 5) ProceduralSword.GenerateSword(mod, npc.position, GetTheme(player), dps, assumedDef);
                 else ProceduralStaff.GenerateStaff(mod, npc.position, GetStaffTheme(player), dps * 1.2f, assumedDef);
             }

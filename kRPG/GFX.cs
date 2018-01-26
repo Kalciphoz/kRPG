@@ -32,6 +32,7 @@ namespace kRPG
         private const string LETTERS = GUI_DIRECTORY + "Char/Gothic_";
         private const string UNSPENTPOINTS = GUI_DIRECTORY + "UnspentPoints";
         private const string ITEMSLOT = GUI_DIRECTORY + "ItemSlot";
+        private const string ITEMSLOT_BROKEN = GUI_DIRECTORY + "ItemSlot_Broken";
         private const string FAVOURITEDSLOT = GUI_DIRECTORY + "FavouritedSlot";
         private const string SELECTEDSLOT = GUI_DIRECTORY + "SelectedSlot";
         private const string SKILLSLOT = GUI_DIRECTORY + "SkillSlot";
@@ -90,6 +91,7 @@ namespace kRPG
         public static Dictionary<Keys, Texture2D> gothicLetter = new Dictionary<Keys, Texture2D>();
         public static Texture2D unspentPoints;
         public static Texture2D itemSlot;
+        public static Texture2D itemSlot_broken;
         public static Texture2D favouritedSlot;
         public static Texture2D selectedSlot;
         public static Texture2D skillSlot;
@@ -198,6 +200,7 @@ namespace kRPG
             }
             unspentPoints = mod.GetTexture(UNSPENTPOINTS);
             itemSlot = mod.GetTexture(ITEMSLOT);
+            itemSlot_broken = mod.GetTexture(ITEMSLOT_BROKEN);
             favouritedSlot = mod.GetTexture(FAVOURITEDSLOT);
             selectedSlot = mod.GetTexture(SELECTEDSLOT);
             skillSlot = mod.GetTexture(SKILLSLOT);
@@ -263,6 +266,7 @@ namespace kRPG
                 gothicLetter[k] = null;
             unspentPoints = null;
             itemSlot = null;
+            itemSlot_broken = null;
             favouritedSlot = null;
             selectedSlot = null;
             skillSlot = null;

@@ -275,14 +275,21 @@ namespace kRPG.Items
 
             if (!clean)
             {
-                if (item.modItem is ProceduralSword)
-                    ((ProceduralSword)item.modItem).ResetStats();
-                else if (item.modItem is ProceduralStaff)
-                    ((ProceduralStaff)item.modItem).ResetStats();
-                else if (item.modItem is RangedWeapon)
-                    ((RangedWeapon)item.modItem).SetStats();
-                else
-                    item.SetItemDefaults(item.type);
+                try
+                {
+                    if (item.modItem is ProceduralSword)
+                        ((ProceduralSword)item.modItem).ResetStats();
+                    else if (item.modItem is ProceduralStaff)
+                        ((ProceduralStaff)item.modItem).ResetStats();
+                    else if (item.modItem is RangedWeapon)
+                        ((RangedWeapon)item.modItem).SetStats();
+                    else
+                        item.SetItemDefaults(item.type);
+                }
+                catch (SystemException e)
+                {
+                    ErrorLogger.Log(e.ToString());
+                }
             }
 
             if (item.defense > 0 || item.accessory)
@@ -475,7 +482,7 @@ namespace kRPG.Items
                 case 15:
                     item.SetNameOverride("Warding " + item.Name);
                     bonusAllres = 3;
-                    prefixTooltips.Add("+3 to all resistances");
+                    prefixTooltips.Add("+4 to all resistances");
                     break;
                 case 16:
                     item.SetNameOverride("Flame Retardant " + item.Name);
@@ -501,7 +508,7 @@ namespace kRPG.Items
                 case 21:
                     item.SetNameOverride("Protective " + item.Name);
                     bonusAllres = 2;
-                    prefixTooltips.Add("+2 to all resistances");
+                    prefixTooltips.Add("+3 to all resistances");
                     break;
                 case 22:
                     item.SetNameOverride("Lava-Infused " + item.Name);
@@ -526,7 +533,7 @@ namespace kRPG.Items
                 case 26:
                     item.SetNameOverride("Enchanted " + item.Name);
                     bonusAllres = 4;
-                    prefixTooltips.Add("+4 to all resistances");
+                    prefixTooltips.Add("+5 to all resistances");
                     item.rare += 1;
                     break;
             }
@@ -1100,7 +1107,11 @@ namespace kRPG.Items
 
         public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            if (NeedsSaving(item) && !enhanced && !WorldGen.gen && !Main.gameMenu)
+            Player player = Main.LocalPlayer;
+            bool flag = false;
+            if (player.chest >= 0)
+                if (Main.chest[player.chest].item.Contains(item)) flag = true;
+            if (NeedsSaving(item) && !enhanced && !WorldGen.gen && !Main.gameMenu && (player.inventory.Contains(item) || flag || player.bank.item.Contains(item) || player.bank2.item.Contains(item) || player.bank3.item.Contains(item)))
                 Initialize(item);
             PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>(mod);
 
@@ -1118,110 +1129,130 @@ namespace kRPG.Items
         public override bool ItemSpace(Item newItem, Player player)
         {
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
-            int num = 50;
-            if (newItem.type == 71 || newItem.type == 72 || newItem.type == 73 || newItem.type == 74)
+            try
             {
-                num = 54;
-            }
-            for (int i = 0; i < num; i++)
-            {
-                Item item = player.inventory[i];
-                if ((item.type == 0 || item.stack == 0) && (!kConfig.configLocal.clientside.manualInventory || num > 50 || character.activeInvPage == 0) || item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
+                if (ItemID.Sets.NebulaPickup[newItem.type] || newItem.type == ItemID.Heart || newItem.type == ItemID.CandyApple || newItem.type == ItemID.CandyCane || newItem.type == ItemID.Star || newItem.type == ItemID.SoulCake || newItem.type == ItemID.SugarPlum || newItem.type == mod.ItemType<PermanenceCrown>() || newItem.type == mod.ItemType<BlacksmithCrown>())
                 {
                     return true;
                 }
-            }
-            for (int i = 0; i < character.inventories.Length; i++)
-            {
-                for (int j = 0; j < character.inventories[i].Length; j += 1)
+                int num = 50;
+                if (newItem.type == 71 || newItem.type == 72 || newItem.type == 73 || newItem.type == 74)
                 {
-                    Item item = character.inventories[i][j];
-                    if ((item.type == 0 || item.stack == 0) && (!kConfig.configLocal.clientside.manualInventory || i == 0) || item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
+                    num = 54;
+                }
+                for (int i = 0; i < num; i++)
+                {
+                    Item item = player.inventory[i];
+                    if ((item.type == 0 || item.stack == 0) && (!kConfig.configLocal.clientside.manualInventory || num > 50 || character.activeInvPage == 0) || item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
                     {
-                        //Main.NewText((!kConfig.configLocal.clientside.manualInventory) + "||" + (i == 0));
                         return true;
                     }
                 }
+                for (int i = 0; i < character.inventories.Length; i++)
+                {
+                    for (int j = 0; j < character.inventories[i].Length; j += 1)
+                    {
+                        Item item = character.inventories[i][j];
+                        if ((item.type == 0 || item.stack == 0) && (!kConfig.configLocal.clientside.manualInventory || i == 0) || item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
+                        {
+                            //Main.NewText((!kConfig.configLocal.clientside.manualInventory) + "||" + (i == 0));
+                            return true;
+                        }
+                    }
+                }
             }
+            catch (SystemException e)
+            {
+                ErrorLogger.Log("ItemSpace() failed - TO FIX THE PROBLEM: Delete the kRPG_Settings.json file in Documents/My Games/Terraria/ModLoader. Full error trace: " + e);
+            }
+
             return false;
         }
 
         public override bool OnPickup(Item item, Player player)
         {
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
-            if (player.whoAmI == Main.myPlayer && (player.inventory[player.selectedItem].type != 0 || player.itemAnimation <= 0))
+
+            try
             {
-                if (ItemID.Sets.NebulaPickup[item.type])
+                if (player.whoAmI == Main.myPlayer && (player.inventory[player.selectedItem].type != 0 || player.itemAnimation <= 0))
                 {
-                    Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                    item = new Item();
-                    if (Main.netMode == 1)
+                    if (ItemID.Sets.NebulaPickup[item.type])
                     {
-                        NetMessage.SendData(102, -1, -1, null, player.whoAmI, (float)item.buffType, player.Center.X, player.Center.Y, 0, 0, 0);
-                        NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                        Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
+                        item = new Item();
+                        if (Main.netMode == 1)
+                        {
+                            NetMessage.SendData(102, -1, -1, null, player.whoAmI, (float)item.buffType, player.Center.X, player.Center.Y, 0, 0, 0);
+                            NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                        }
+                        else
+                        {
+                            player.NebulaLevelup(item.buffType);
+                        }
+                    }
+                    if (item.type == ItemID.Heart || item.type == ItemID.CandyApple || item.type == ItemID.CandyCane)
+                    {
+                        Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
+                        int healAmount = 10 + player.GetModPlayer<PlayerCharacter>().level / 2;
+                        player.statLife += healAmount;
+                        if (Main.myPlayer == player.whoAmI)
+                        {
+                            player.HealEffect(healAmount);
+                        }
+                        if (player.statLife > player.statLifeMax2)
+                        {
+                            player.statLife = player.statLifeMax2;
+                        }
+                        item = new Item();
+                        if (Main.netMode == 1)
+                        {
+                            NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                        }
+                    }
+                    else if (item.type == ItemID.Star || item.type == ItemID.SoulCake || item.type == ItemID.SugarPlum)
+                    {
+                        Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
+                        int healAmount = 5 + character.TotalStats(STAT.WITS);
+                        character.mana += healAmount;
+                        player.statMana += healAmount;
+                        if (Main.myPlayer == player.whoAmI)
+                        {
+                            player.ManaEffect(healAmount);
+                        }
+                        item = new Item();
+                        if (Main.netMode == 1)
+                        {
+                            NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                        }
+                    }
+                    else if (item.type == mod.ItemType<PermanenceCrown>())
+                    {
+                        character.permanence += 1;
+                        ItemText.NewText(item, item.stack);
+                        Main.PlaySound(7, player.position);
+                        return false;
+                    }
+                    else if (item.type == mod.ItemType<BlacksmithCrown>())
+                    {
+                        character.transcendence += 1;
+                        ItemText.NewText(item, item.stack);
+                        Main.PlaySound(7, player.position);
+                        return false;
                     }
                     else
                     {
-                        player.NebulaLevelup(item.buffType);
+                        item = player.GetItem(item);
+                        if (Main.netMode == 1)
+                        {
+                            NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                        }
                     }
                 }
-                if (item.type == ItemID.Heart || item.type == ItemID.CandyApple || item.type == ItemID.CandyCane)
-                {
-                    Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                    int healAmount = 10 + player.GetModPlayer<PlayerCharacter>().level / 2;
-                    player.statLife += healAmount;
-                    if (Main.myPlayer == player.whoAmI)
-                    {
-                        player.HealEffect(healAmount);
-                    }
-                    if (player.statLife > player.statLifeMax2)
-                    {
-                        player.statLife = player.statLifeMax2;
-                    }
-                    item = new Item();
-                    if (Main.netMode == 1)
-                    {
-                        NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
-                    }
-                }
-                else if (item.type == ItemID.Star || item.type == ItemID.SoulCake || item.type == ItemID.SugarPlum)
-                {
-                    Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                    int healAmount = 5 + character.TotalStats(STAT.WITS);
-                    character.mana += healAmount;
-                    player.statMana += healAmount;
-                    if (Main.myPlayer == player.whoAmI)
-                    {
-                        player.ManaEffect(healAmount);
-                    }
-                    item = new Item();
-                    if (Main.netMode == 1)
-                    {
-                        NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
-                    }
-                }
-                else if (item.type == mod.ItemType<PermanenceCrown>())
-                {
-                    character.permanence += 1;
-                    ItemText.NewText(item, item.stack);
-                    Main.PlaySound(7, player.position);
-                    return false;
-                }
-                else if (item.type == mod.ItemType<BlacksmithCrown>())
-                {
-                    character.transcendence += 1;
-                    ItemText.NewText(item, item.stack);
-                    Main.PlaySound(7, player.position);
-                    return false;
-                }
-                else
-                {
-                    item = player.GetItem(item);
-                    if (Main.netMode == 1)
-                    {
-                        NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
-                    }
-                }
+            }
+            catch (SystemException e)
+            {
+                ErrorLogger.Log("OnPickup() failed - TO FIX THE PROBLEM: Delete the kRPG_Settings.json file in Documents/My Games/Terraria/ModLoader. Full error trace: " + e);
             }
 
             return false;

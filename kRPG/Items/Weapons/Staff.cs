@@ -92,5 +92,11 @@ namespace kRPG.Items.Weapons
         {
             return stavesByTheme[theme].Random();
         }
+
+        public static void Unload()
+        {
+            foreach (Staff staff in staves.Values)
+                staff.texture = null;
+        }
     }
 }

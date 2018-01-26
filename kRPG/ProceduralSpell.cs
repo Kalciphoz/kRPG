@@ -35,7 +35,7 @@ namespace kRPG
             get { return !(glyphs[(byte)GLYPHTYPE.STAR].modItem is Star_Blue); }
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, Player player, float scale)
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, float scale)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace kRPG
                     remaining -= 1;
 
                 Rectangle bounds = new Rectangle((int)position.X, (int)position.Y, (int)(GFX.skillSlot.Width * scale), (int)(GFX.skillSlot.Height * scale));
-                PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+                PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
 
                 if (spriteBatch == null || character == null) return;
 

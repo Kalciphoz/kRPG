@@ -94,6 +94,8 @@ namespace kRPG.GUI
         {
             if (!Main.playerInventory && !Main.player[Main.myPlayer].ghost)
             {
+                this.character = player.GetModPlayer<PlayerCharacter>();
+
                 DrawHotbar(spriteBatch);
 
                 spriteBatch.Draw(GFX.statusBars_BG, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);

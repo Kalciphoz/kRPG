@@ -49,22 +49,26 @@ namespace kRPG.GUI
             AddButton(delegate () { return new Rectangle((int)(origin.X + 142f * scale), (int)(origin.Y + 102f * scale), (int)(GFX.button_stats.Width * scale), (int)(GFX.button_stats.Height * scale)); }, delegate (Player player)
             {
                 Main.PlaySound(SoundID.MenuTick);
-                character.statPage = !character.statPage;
+                PlayerCharacter pc = player.GetModPlayer<PlayerCharacter>();
+                pc.statPage = !pc.statPage;
             });
             AddButton(delegate () { return new Rectangle((int)(origin.X + 174f * scale), (int)(origin.Y + 102f * scale), (int)(GFX.button_page1.Width * scale), (int)(GFX.button_page1.Height * scale)); }, delegate (Player player)
             {
                 Main.PlaySound(SoundID.MenuTick);
-                character.OpenInventoryPage(0);
+                PlayerCharacter pc = player.GetModPlayer<PlayerCharacter>();
+                pc.OpenInventoryPage(0);
             });
             AddButton(delegate () { return new Rectangle((int)(origin.X + 206f * scale), (int)(origin.Y + 102f * scale), (int)(GFX.button_page2.Width * scale), (int)(GFX.button_page2.Height * scale)); }, delegate (Player player)
             {
                 Main.PlaySound(SoundID.MenuTick);
-                character.OpenInventoryPage(1);
+                PlayerCharacter pc = player.GetModPlayer<PlayerCharacter>();
+                pc.OpenInventoryPage(1);
             });
             AddButton(delegate() { return new Rectangle((int)(origin.X + 238f * scale), (int)(origin.Y + 102f * scale), (int)(GFX.button_page3.Width * scale), (int)(GFX.button_page3.Height * scale)); }, delegate (Player player)
             {
                 Main.PlaySound(SoundID.MenuTick);
-                character.OpenInventoryPage(2);
+                PlayerCharacter pc = player.GetModPlayer<PlayerCharacter>();
+                pc.OpenInventoryPage(2);
             });
             AddButton(delegate () { return new Rectangle((int)points_origin.X, (int)points_origin.Y, (int)(GFX.inventory_points.Width * scale), (int)(GFX.inventory_points.Height * scale)); }, delegate (Player player)
             {
@@ -73,8 +77,8 @@ namespace kRPG.GUI
                 character.levelGUI.guiActive = player.GetModPlayer<PlayerCharacter>(mod).UnspentPoints();
             }, delegate (Player player, SpriteBatch spriteBatch)
             {
+                Main.LocalPlayer.mouseInterface = true;
                 string s = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>(mod).UnspentPoints() ? "Click here to allocate stat points" : "You have no unspent stat points";
-                //spriteBatch.DrawString(Main.fontMouseText, s, new Vector2(Main.mouseX - 16f, Main.mouseY + 20f), Color.White);
                 Main.instance.MouseText(s);
             });
         }
@@ -101,7 +105,7 @@ namespace kRPG.GUI
             for (int i = 0; i < 40; i += 1)
                 character.inventories[character.activeInvPage][i] = player.inventory[i + 10];
             
-            if ((int)Math.Round(Main.GlobalTime) % 30 == 0)
+            if ((int)Main.time % 30 < 1)
                 API.FindRecipes();
 
             Vanilla(!character.statPage);
@@ -268,7 +272,30 @@ namespace kRPG.GUI
                         }
                         ItemSlot.MouseHover(Main.player[Main.myPlayer].inventory, 0, id);
                     }
-                    API.ItemSlotDrawExtension(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 0, id, new Vector2((float)x2, (float)y2), Color.White, Color.White);
+                    try
+                    {
+                        API.ItemSlotDrawExtension(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 0, id, new Vector2((float)x2, (float)y2), Color.White, Color.White);
+                    }
+                    catch (SystemException e)
+                    {
+                        ErrorLogger.Log(e.ToString());
+
+                        if (Main.LocalPlayer.inventory[id].modItem is ProceduralItem)
+                        {
+                            try
+                            {
+                                ProceduralItem item = (ProceduralItem)Main.LocalPlayer.inventory[id].modItem;
+                                item.Initialize();
+                            }
+                            catch (SystemException e2)
+                            {
+                                ErrorLogger.Log("Failed to initialize: " + e2);
+                                spriteBatch.Draw(GFX.itemSlot_broken, new Vector2((float)x2, (float)y2), Color.White, Main.inventoryScale);
+                                Main.LocalPlayer.inventory[id].SetDefaults();
+                                ErrorLogger.Log("ITEM " + id + " WAS DESTROYED.");
+                            }
+                        }
+                    }
                 }
             }
             Main.inventoryScale = oldinvscale;
@@ -1754,7 +1781,7 @@ namespace kRPG.GUI
                     Main.spriteBatch.Draw(Main.chestStackTexture[num121], new Vector2((float)num122, (float)num123), new Rectangle?(new Rectangle(0, 0, Main.chestStackTexture[num121].Width, Main.chestStackTexture[num121].Height)), Color.White, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
                     if (!Main.mouseText && num121 == 1)
                     {
-                        main.MouseText(Language.GetTextValue("GameUI.QuickStackToNearby"), 0, 0, -1, -1, -1, -1);
+                        main.MouseText(Language.GetTextValue("GameUI.ToNearby"), 0, 0, -1, -1, -1, -1);
                     }
                 }
                 if (Main.player[Main.myPlayer].chest == -1 && Main.npcShop == 0)

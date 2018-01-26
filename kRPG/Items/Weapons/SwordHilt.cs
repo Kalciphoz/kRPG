@@ -150,5 +150,11 @@ namespace kRPG.Items.Weapons
         {
             return hiltsByTheme[theme].Random();
         }
+
+        public static void Unload()
+        {
+            foreach (SwordHilt hilt in hilts.Values)
+                hilt.texture = null;
+        }
     }
 }

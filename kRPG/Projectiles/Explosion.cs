@@ -57,7 +57,7 @@ namespace kRPG.Projectiles
         public override void SetStaticDefaults()
         {
             Main.projFrames[projectile.type] = 9;
-            DisplayName.SetDefault("Hostile Explosion");
+            DisplayName.SetDefault("Exploding Enemy");
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)

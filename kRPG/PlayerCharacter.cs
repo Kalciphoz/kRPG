@@ -90,12 +90,11 @@ namespace kRPG
         public float critMultiplier = 1f;
         public int evasion = 2;
         public int accuracy = 0;
-        public float damageBoost = 1f;
         public float damageMultiplier
         {
             get
             {
-                return (1f + TotalStats(STAT.POTENCY) * 0.05f + Math.Min(0.09f, TotalStats(STAT.POTENCY) * 0.06f)) * damageBoost;
+                return (1f + TotalStats(STAT.POTENCY) * 0.05f + Math.Min(0.09f, TotalStats(STAT.POTENCY) * 0.06f));
             }
         }
         public float hitChance
@@ -360,7 +359,6 @@ namespace kRPG
                 tempStats[stat] = 0;
             evasion = 2;
             accuracy = 0;
-            damageBoost = 1f;
             bonusLife = 0;
             bonusMana = 0;
             lifeRegen = 1;
@@ -548,25 +546,6 @@ namespace kRPG
 
                         if (Main.keyState.IsKeyDown(abilities[i].key) && Main.keyState.IsKeyUp(Keys.LeftShift) && abilities[i].remaining == 0 && useable && player.statMana >= abilities[i].ManaCost(this))
                         {
-                            //if (Main.netMode == 1)
-                            //{
-                            //    ProceduralSpell spell = abilities[i];
-                            //    ModPacket packet = mod.GetPacket();
-                            //    packet.Write((byte)Message.CastSpell);
-                            //    packet.Write(player.whoAmI);
-                            //    packet.Write(Main.MouseWorld.X);
-                            //    packet.Write(Main.MouseWorld.Y);
-                            //    packet.Write(spell.glyphs[(byte)GLYPHTYPE.STAR].type);
-                            //    packet.Write(spell.glyphs[(byte)GLYPHTYPE.CROSS].type);
-                            //    packet.Write(spell.glyphs[(byte)GLYPHTYPE.MOON].type);
-                            //    packet.Write(spell.ProjectileDamage(this));
-                            //    packet.Write(spell.projCount);
-                            //    List<GlyphModifier> modifiers = spell.modifiers;
-                            //    packet.Write(modifiers.Count);
-                            //    for (int j = 0; j < modifiers.Count; j += 1)
-                            //        packet.Write(modifiers[j].id);
-                            //    packet.Send();
-                            //}
                             if (Main.netMode != 2)
                                 abilities[i].UseAbility(player, Main.MouseWorld);
                             player.statMana -= abilities[i].ManaCost(this);
@@ -916,7 +895,7 @@ namespace kRPG
 
             if (crit)
             {
-                damage = (int)(damage / damageBoost * (damageBoost + critMultiplier));
+                damage = (int)(damage / damageMultiplier * (damageMultiplier + critMultiplier));
                 if (rituals[RITUAL.ELDRITCH_FURY])
                 {
                     int i = damage;
@@ -989,10 +968,10 @@ namespace kRPG
                 return 80 + level * 20;
             else if (level < 10)
                 return level * 40;
-            else if (level < 189)
-                return (int)(280 * Math.Pow(1.09, level - 5)+3*level);
+            else if (level < 163)
+                return (int)(280 * Math.Pow(1.09, level - 5) + 3 * level);
             else
-	    	return Int32.MaxValue;
+                return (int)(2000000000 - 288500000000 / level);
         }
 
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
@@ -1109,7 +1088,7 @@ namespace kRPG
             inventoryGUI = new InventoryGUI(this, mod);
             abilitiesGUI = new AbilitiesGUI(this, mod);
             abilitiesGUI.guiActive = true;
-            spellcraftingGUI = new GUI.SpellcraftingGUI(this, mod/*, glyphs, this*/);
+            spellcraftingGUI = new GUI.SpellcraftingGUI(mod/*, glyphs, this*/);
         }
 
         public void CloseGUIs()

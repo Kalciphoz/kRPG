@@ -20,7 +20,6 @@ namespace kRPG.GUI
 
     public class SpellcraftingGUI : BaseGUI
     {
-        private PlayerCharacter character;
         private Mod mod;
         private kRPG krpg;
 
@@ -36,15 +35,14 @@ namespace kRPG.GUI
             }
         }
 
-        public SpellcraftingGUI(PlayerCharacter character, Mod mod)
+        public SpellcraftingGUI(Mod mod)
         {
-            this.character = character;
             this.mod = mod;
             krpg = (kRPG)mod;
             guiposition = delegate () { return new Vector2((float)Main.screenWidth / 2f - 100f * Scale, 192f * Scale); };
-            glyphs[0] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 36f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.STAR, character);
-            glyphs[1] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 70f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.CROSS, character);
-            glyphs[2] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 106f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.MOON, character);
+            glyphs[0] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 36f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.STAR);
+            glyphs[1] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 70f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.CROSS);
+            glyphs[2] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 106f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.MOON);
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
@@ -72,7 +70,7 @@ namespace kRPG.GUI
 
         public override void OnClose()
         {
-            character.selectedAbility = null;
+            Main.LocalPlayer.GetModPlayer<PlayerCharacter>().selectedAbility = null;
         }
     }
 
@@ -90,7 +88,6 @@ namespace kRPG.GUI
                 Ability.glyphs[(byte)type] = value;
             }
         }
-        private PlayerCharacter character;
         private Func<Vector2> position;
         private Func<float> scale;
         private Rectangle Bounds
@@ -104,14 +101,13 @@ namespace kRPG.GUI
         {
             get
             {
-                return character.selectedAbility;
+                return Main.LocalPlayer.GetModPlayer<PlayerCharacter>().selectedAbility;
             }
         }
 
-        public GlyphSlot(Func<Vector2> position, Func<float> scale, GLYPHTYPE type, PlayerCharacter character)
+        public GlyphSlot(Func<Vector2> position, Func<float> scale, GLYPHTYPE type)
         {
             this.type = type;
-            this.character = character;
             this.position = position;
             this.scale = scale;
         }
@@ -136,6 +132,8 @@ namespace kRPG.GUI
 
         public bool AttemptPlace()
         {
+            PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
+
             if (CanPlaceItem(Main.mouseItem))
             {
                 foreach (ProceduralMinion minion in character.minions.Where(minion => minion.source == character.selectedAbility && minion.projectile.modProjectile is ProceduralMinion))

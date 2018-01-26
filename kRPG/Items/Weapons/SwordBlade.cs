@@ -228,5 +228,11 @@ namespace kRPG.Items.Weapons
         {
             return bladeByTheme[theme].Random();
         }
+
+        public static void Unload()
+        {
+            foreach (SwordBlade blade in blades.Values)
+                blade.texture = null;
+        }
     }
 }

@@ -167,5 +167,11 @@ namespace kRPG.Items.Weapons
         {
             return accents.Random();
         }
+
+        public static void Unload()
+        {
+            foreach (SwordAccent accent in accents.Values)
+                accent.texture = null;
+        }
     }
 }

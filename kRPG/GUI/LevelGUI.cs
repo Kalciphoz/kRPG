@@ -66,13 +66,15 @@ namespace kRPG.GUI
             krpg = (kRPG)mod;
 
             statFlame = new Dictionary<STAT, StatFlame>();
-            statFlame[STAT.RESILIENCE] = new StatFlame(character, mod, this, STAT.RESILIENCE, delegate() { return Position[STAT.RESILIENCE]; }, GFX.flames[STAT.RESILIENCE]);
-            statFlame[STAT.QUICKNESS] = new StatFlame(character, mod, this, STAT.QUICKNESS, delegate () { return Position[STAT.QUICKNESS]; }, GFX.flames[STAT.QUICKNESS]);
-            statFlame[STAT.POTENCY] = new StatFlame(character, mod, this, STAT.POTENCY, delegate () { return Position[STAT.POTENCY]; }, GFX.flames[STAT.POTENCY]);
+            statFlame[STAT.RESILIENCE] = new StatFlame(mod, this, STAT.RESILIENCE, delegate() { return Position[STAT.RESILIENCE]; }, GFX.flames[STAT.RESILIENCE]);
+            statFlame[STAT.QUICKNESS] = new StatFlame(mod, this, STAT.QUICKNESS, delegate () { return Position[STAT.QUICKNESS]; }, GFX.flames[STAT.QUICKNESS]);
+            statFlame[STAT.POTENCY] = new StatFlame(mod, this, STAT.POTENCY, delegate () { return Position[STAT.POTENCY]; }, GFX.flames[STAT.POTENCY]);
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
+            character = player.GetModPlayer<PlayerCharacter>();
+
             spriteBatch.Draw(GFX.deerskull, GuiPosition, Color.White, Scale);
 
             int remaining = character.level - character.pointsAllocated - 1;
@@ -97,12 +99,12 @@ namespace kRPG.GUI
                 }
             }
 
-            statFlame[STAT.RESILIENCE].Draw(spriteBatch, Scale);
-            statFlame[STAT.RESILIENCE].Update(spriteBatch);
-            statFlame[STAT.QUICKNESS].Draw(spriteBatch, Scale);
-            statFlame[STAT.QUICKNESS].Update(spriteBatch);
-            statFlame[STAT.POTENCY].Draw(spriteBatch, Scale);
-            statFlame[STAT.POTENCY].Update(spriteBatch);
+            statFlame[STAT.RESILIENCE].Draw(spriteBatch, player, Scale);
+            statFlame[STAT.RESILIENCE].Update(spriteBatch, player);
+            statFlame[STAT.QUICKNESS].Draw(spriteBatch, player, Scale);
+            statFlame[STAT.QUICKNESS].Update(spriteBatch, player);
+            statFlame[STAT.POTENCY].Draw(spriteBatch, player, Scale);
+            statFlame[STAT.POTENCY].Update(spriteBatch, player);
 
             buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
             spriteBatch.Draw(GFX.button_confirm, buttonPosition, Color.White, Scale);

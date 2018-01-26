@@ -181,5 +181,11 @@ namespace kRPG.Items.Weapons
         {
             return gemsByTheme[theme].Random();
         }
+
+        public static void Unload()
+        {
+            foreach (StaffGem gem in gems.Values)
+                gem.texture = null;
+        }
     }
 }

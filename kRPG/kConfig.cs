@@ -13,9 +13,27 @@ namespace kRPG
 {
     public class kConfig
     {
-        public static ClientConfig clientside	=> configLocal.clientside;
-		public static string configPath			=> Main.SavePath+Path.DirectorySeparatorChar+"kRPG_Settings.json";
-		public static string statsPath			=> Main.SavePath+Path.DirectorySeparatorChar+"kRPG_Stats.json";
+        public static ClientConfig clientside
+        {
+            get
+            {
+                return configLocal.clientside;
+            }
+        }
+		public static string configPath
+        {
+            get
+            {
+                return Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Settings.json";
+            }
+        }
+		public static string statsPath
+        {
+            get
+            {
+                return Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Stats.json";
+            }
+        }
 
         //Make this fancier?
         internal static Config _configLocal = new Config();
@@ -86,10 +104,12 @@ namespace kRPG
 
                 _configLocal = new Config();
                 LoadConfig(configPath, ref _configLocal);
+                if (_configLocal == null) _configLocal = new Config();
                 Save();
 
 				_stats = new ConfigStats();
 				LoadConfig(statsPath,ref _stats);
+                if (_stats == null) _stats = new ConfigStats();
 				SaveStats();
             }
             catch (SystemException e)

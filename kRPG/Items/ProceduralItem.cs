@@ -340,8 +340,15 @@ namespace kRPG.Items
             }
         }
 
-        public bool? OverhaulHasTag(string tag)	=> tag=="magicWeapon" ? (bool?)true : null;
-        public Texture2D OverhaulGetTexture()	=> texture;
+        public bool? OverhaulHasTag(string tag)
+        {
+            return tag == "magicWeapon" ? (bool?)true : null;
+        }
+
+        public Texture2D OverhaulGetTexture()
+        {
+            return texture;
+        }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -696,7 +703,14 @@ namespace kRPG.Items
             }
         }
 
-        public bool? OverhaulHasTag(string tag)	=> (spear ? tag=="spear" : tag=="broadsword") ? (bool?)true : null;
-        public Texture2D OverhaulGetTexture()	=> texture;
+        public bool? OverhaulHasTag(string tag)
+        {
+            return (spear ? tag == "spear" : tag == "broadsword") ? (bool?)true : null;
+        }
+
+        public Texture2D OverhaulGetTexture()
+        {
+            return texture;
+        }
     }
 }

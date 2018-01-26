@@ -15,14 +15,15 @@ namespace kRPG.Projectiles
     {
         public override void SetDefaults()
         {
-            projectile.width = 96;
-            projectile.height = 64;
+            projectile.width = 192;
+            projectile.height = 128;
             projectile.timeLeft = 57;
             projectile.friendly = true;
             projectile.hostile = false;
             projectile.tileCollide = false;
             projectile.penetrate = -1;
             projectile.ownerHitCheck = true;
+            projectile.scale = 1f;
         }
 
         public override void SetStaticDefaults()
@@ -34,7 +35,9 @@ namespace kRPG.Projectiles
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             projectile.frame = 19 - (int)Math.Ceiling(projectile.timeLeft / 3.0);
-            spriteBatch.Draw(Main.projectileTexture[projectile.type], projectile.position - Main.screenPosition, new Rectangle(0, projectile.frame * 64, 96, 64), Color.White, 0f, Vector2.Zero, 1.5f, SpriteEffects.None, 0f);
+            Texture2D text = Main.projectileTexture[projectile.type];
+            int height = text.Height / Main.projFrames[projectile.type];
+            spriteBatch.Draw(text, projectile.position - Main.screenPosition, new Rectangle(0, projectile.frame * height, text.Width, height), Color.White);
             return false;
         }
 

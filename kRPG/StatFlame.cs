@@ -12,7 +12,6 @@ namespace kRPG
 {
     public class StatFlame
     {
-        private PlayerCharacter character;
         private Mod mod;
         private STAT id;
         private Func<Vector2> position;
@@ -35,9 +34,8 @@ namespace kRPG
             }
         }
 
-        public StatFlame(PlayerCharacter character, Mod mod, LevelGUI levelGUI, STAT id, Func<Vector2> position, Texture2D texture)
+        public StatFlame(Mod mod, LevelGUI levelGUI, STAT id, Func<Vector2> position, Texture2D texture)
         {
-            this.character = character;
             this.mod = mod;
             this.levelGUI = levelGUI;
             this.id = id;
@@ -46,8 +44,9 @@ namespace kRPG
             this.counter = (int)id * 8;
         }
 
-        public void Draw(SpriteBatch spriteBatch, float scale)
+        public void Draw(SpriteBatch spriteBatch, Player player, float scale)
         {
+            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
             if (counter > (8 * animationTime - 1)) counter = 0;
             frameNumber = (int)(Math.Floor((double)counter / (double)animationTime));
             spriteBatch.Draw(character.rituals[RITUAL.DEMON_PACT] && id == STAT.RESILIENCE ? GFX.flames_converted : texture, position(), new Rectangle(0, frameNumber * 68, 56, 68), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
@@ -57,8 +56,10 @@ namespace kRPG
             counter++;
         }
 
-        public void Update(SpriteBatch spriteBatch)
+        public void Update(SpriteBatch spriteBatch, Player player)
         {
+            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+
             if (CheckHover())
             {
                 if (id == STAT.RESILIENCE)

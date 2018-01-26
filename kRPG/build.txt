@@ -7,4 +7,3 @@ includeSource = true
 buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*
 includePDB = true
 weakReferences = TerrariaOverhaul, MagicStorage
-languageVersion = 6
