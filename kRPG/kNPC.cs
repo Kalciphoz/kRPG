@@ -72,7 +72,7 @@ namespace kRPG
         public void InitializeModifiers(NPC npc)
         {
             npc.GivenName = npc.FullName;
-            int amount = 1 + Main.rand.Next(6);
+            int amount = 1;
             for (int i = 0; i < amount; i++)
             {
                 modifiers.Add(RandomModifierFuncs[Main.rand.Next(RandomModifierFuncs.Count)].Invoke(this, npc));
