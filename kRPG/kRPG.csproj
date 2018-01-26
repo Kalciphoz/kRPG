@@ -110,6 +110,14 @@
     <Compile Include="kProjectile.cs" />
     <Compile Include="kRPG.cs" />
     <Compile Include="kTile.cs" />
+    <Compile Include="Modifiers\DamageModifier.cs" />
+    <Compile Include="Modifiers\ElusiveModifier.cs" />
+    <Compile Include="Modifiers\ExplosiveModifier.cs" />
+    <Compile Include="Modifiers\LifeRegenModifier.cs" />
+    <Compile Include="Modifiers\NPCModifier.cs" />
+    <Compile Include="Modifiers\SageModifier.cs" />
+    <Compile Include="Modifiers\SizeModifier.cs" />
+    <Compile Include="Modifiers\SpeedModifier.cs" />
     <Compile Include="NPCs\RetiredAdventurer.cs" />
     <Compile Include="PlayerCharacter.cs" />
     <Compile Include="ProceduralSpell.cs" />
