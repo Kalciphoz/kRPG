@@ -561,40 +561,47 @@ namespace kRPG
 
         public override void PostItemCheck()
         {
-            Item item = player.inventory[player.selectedItem];
-            if (item.type != mod.ItemType<ProceduralStaff>() || item.shoot > 0)
-                return;
-            player.releaseUseItem = true;
-            if (player.itemAnimation == 1 && item.stack > 0)
+            try
             {
-                if (player.whoAmI != Main.myPlayer && player.controlUseItem)
+                Item item = player.inventory[player.selectedItem];
+                if (item.type != mod.ItemType<ProceduralStaff>() || item.shoot > 0)
+                    return;
+                player.releaseUseItem = true;
+                if (player.itemAnimation == 1 && item.stack > 0)
                 {
-                    player.itemAnimation = (int)(item.useAnimation / PlayerHooks.TotalMeleeSpeedMultiplier(player, item));
-                    player.itemAnimationMax = player.itemAnimation;
-                    player.reuseDelay = (int)(item.reuseDelay / PlayerHooks.TotalUseTimeMultiplier(player, item));
-                    if (item.UseSound != null)
+                    if (player.whoAmI != Main.myPlayer && player.controlUseItem)
                     {
-                        Main.PlaySound(item.UseSound, player.Center);
+                        player.itemAnimation = (int)(item.useAnimation / PlayerHooks.TotalMeleeSpeedMultiplier(player, item));
+                        player.itemAnimationMax = player.itemAnimation;
+                        player.reuseDelay = (int)(item.reuseDelay / PlayerHooks.TotalUseTimeMultiplier(player, item));
+                        if (item.UseSound != null)
+                        {
+                            Main.PlaySound(item.UseSound, player.Center);
+                        }
+                    }
+                    else
+                    {
+                        player.itemAnimation = 0;
                     }
                 }
-                else
+                if (player.itemTime < 2)
                 {
-                    player.itemAnimation = 0;
+                    Vector2 pos = player.RotatedRelativePoint(player.MountedCenter, true);
+                    Vector2 relativeMousePos = Main.MouseWorld - pos;
+                    itemRotation = Math.Atan2((relativeMousePos.Y * player.direction), relativeMousePos.X * player.direction) - player.fullRotation;
+                    //NetMessage.SendData(13, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                    //NetMessage.SendData(41, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
                 }
+                float scaleFactor = 6f;
+                if (player.itemAnimation > 0)
+                    player.itemRotation = (float)itemRotation;
+                player.itemLocation = player.MountedCenter;
+                player.itemLocation += player.itemRotation.ToRotationVector2() * scaleFactor * (float)player.direction;
             }
-            if (player.itemTime < 2)
+            catch (SystemException e)
             {
-                Vector2 pos = player.RotatedRelativePoint(player.MountedCenter, true);
-                Vector2 relativeMousePos = Main.MouseWorld - pos;
-                itemRotation = Math.Atan2((relativeMousePos.Y * player.direction), relativeMousePos.X * player.direction) - player.fullRotation;
-                NetMessage.SendData(13, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
-                NetMessage.SendData(41, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                ErrorLogger.Log(e.ToString());
             }
-            float scaleFactor = 6f;
-            if (player.itemAnimation > 0)
-                player.itemRotation = (float)itemRotation;
-            player.itemLocation = player.MountedCenter;
-            player.itemLocation += player.itemRotation.ToRotationVector2() * scaleFactor * (float)player.direction;
         }
 
         public override void PostUpdate()
@@ -715,11 +722,13 @@ namespace kRPG
         public void UpdateStats()
         {
             float lifeMultiplier = 1f + (player.statLifeMax - 100f) / 400f;
+            int addedLife = player.statLifeMax2 - player.statLifeMax;
             player.statLifeMax2 += 115 + TotalStats(STAT.RESILIENCE) * 10 + level * 5 + bonusLife - player.statLifeMax;
-            player.statLifeMax2 = (int)Math.Round(player.statLifeMax2 * lifeMultiplier);
+            player.statLifeMax2 = (int)Math.Round(player.statLifeMax2 * lifeMultiplier) + addedLife;
             float manaMultiplier = 1f + (player.statManaMax - 20f) / 200f * 1.5f;
+            int addedMana = player.statManaMax2 - player.statManaMax;
             player.statManaMax2 += 19 + level + bonusMana + TotalStats(STAT.WITS) * 3 - player.statManaMax;
-            player.statManaMax2 = (int)Math.Round(player.statManaMax2 * manaMultiplier);
+            player.statManaMax2 = (int)Math.Round(player.statManaMax2 * manaMultiplier) + addedMana;
             player.statDefense += TotalStats(STAT.RESILIENCE);
             allres += TotalStats(STAT.WITS);
             evasion += TotalStats(STAT.QUICKNESS);
@@ -800,15 +809,18 @@ namespace kRPG
         public void ModifyDamageTakenFromNPC(ref int damage, ref bool crit, Dictionary<ELEMENT, int> eleDmg)
         {
             double dmg = 0.5 * Math.Pow(damage, 1.35);
+            Dictionary<ELEMENT, int> originalEle = eleDmg;
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 eleDmg[element] = (int)(0.5 * Math.Pow(eleDmg[element], 1.35));
             if (!Main.expertMode)
             {
-                dmg = dmg * 1.35;
+                dmg = dmg * 1.3;
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                    eleDmg[element] = (int)(eleDmg[element] * 1.35);
+                    eleDmg[element] = (int)(eleDmg[element] * 1.3);
             }
-            damage = (int)Math.Round(dmg);
+            damage = (int)Math.Round(Math.Min(dmg, (double)damage * 3));
+            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                eleDmg[element] = Math.Min((int)originalEle[element] * 3, eleDmg[element]);
             bool bossfight = false;
             foreach (NPC n in Main.npc)
                 if (n.active)

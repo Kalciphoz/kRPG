@@ -53,9 +53,9 @@ namespace kRPG.Items.Weapons.RangedDrops
             item.SetNameOverride(name);
             item.rare = (int)Math.Min(Math.Floor(dps / 15.0), 9);
             item.useTime = UseTime();
-            item.damage = (int)Math.Round(dps * DPSModifier() * (float)item.useTime / 60f + enemyDef - 4);
+            item.damage = (int)Math.Round(dps * DPSModifier() * (float)item.useTime / 60f + enemyDef - 2);
             if (item.damage < 1) item.damage = 1;
-            item.useTime = (int)Math.Round(((float)item.damage - enemyDef + 4) * 60f / (dps * DPSModifier()));
+            item.useTime = (int)Math.Round(((float)item.damage - enemyDef + 2) * 60f / (dps * DPSModifier()));
             item.useAnimation = item.useTime * Iterations() - 1;
             item.value = (int)(dps * 315);
         }
@@ -649,11 +649,6 @@ namespace kRPG.Items.Weapons.RangedDrops
         public override int UseTime()
         {
             return 10;
-        }
-
-        public override int Iterations()
-        {
-            return 2;
         }
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)

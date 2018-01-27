@@ -500,17 +500,28 @@ namespace kRPG.Items.Glyphs
         {
             return delegate (ProceduralSpellProj spell)
             {
-                PlayerCharacter character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
-                if (character.lastSelectedWeapon.modItem is ProceduralSword)
+                if (Main.netMode != 2)
                 {
-                    spell.texture = ((ProceduralSword)character.lastSelectedWeapon.modItem).texture;
+                    if (Main.netMode == 0 || spell.projectile.owner == Main.myPlayer)
+                    {
+                        PlayerCharacter character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
+
+                        if (character.lastSelectedWeapon.modItem is ProceduralSword)
+                            spell.texture = ((ProceduralSword)character.lastSelectedWeapon.modItem).texture;
+                        else
+                            spell.texture = Main.itemTexture[character.lastSelectedWeapon.type];
+                    }
+                    else
+                        spell.texture = GFX.projectile_boulder;
+
+                    spell.projectile.width = spell.texture.Width;
+                    spell.projectile.height = spell.texture.Height;
                 }
                 else
                 {
-                    spell.texture = Main.itemTexture[character.lastSelectedWeapon.type];
+                    spell.projectile.width = 48;
+                    spell.projectile.height = 48;
                 }
-                spell.projectile.width = spell.texture.Width;
-                spell.projectile.height = spell.texture.Height;
                 spell.projectile.melee = true;
                 spell.draw_trail = true;
                 spell.alpha = 1f;
@@ -958,23 +969,30 @@ namespace kRPG.Items.Glyphs
         {
             return delegate (ProceduralSpellProj spell)
             {
-                int rotDistance = spell.minion ? 72 : 96;
-                if (RotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
+                try
                 {
-                    Vector2 unitRelativePos = spell.RelativePos(spell.caster.Center);
-                    unitRelativePos.Normalize();
-                    spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
-                    spell.displacementVelocity = new Vector2(1.5f, 0f).RotatedBy((spell.RelativePos(spell.caster.Center)).ToRotation() + (float)API.Tau / 4f);
+                    int rotDistance = spell.minion ? 72 : 96;
+                    if (RotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
+                    {
+                        Vector2 unitRelativePos = spell.RelativePos(spell.caster.Center);
+                        unitRelativePos.Normalize();
+                        spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
+                        spell.displacementVelocity = new Vector2(1.5f, 0f).RotatedBy((spell.RelativePos(spell.caster.Center)).ToRotation() + (float)API.Tau / 4f);
 
-                    float angle = spell.displacementAngle + 0.04f * (float)(RotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
-                    spell.projectile.Center = spell.caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
+                        float angle = spell.displacementAngle + 0.04f * (float)(RotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
+                        spell.projectile.Center = spell.caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
+                    }
+                    else
+                    {
+                        spell.projectile.Center = spell.caster.Center + new Vector2(0f, -1.5f).RotatedBy(spell.displacementAngle) * (RotTimeLeft - spell.projectile.timeLeft);
+                    }
+                    spell.projectile.velocity = spell.displacementVelocity + spell.caster.velocity;
+                    spell.basePosition = spell.caster.position;
                 }
-                else
+                catch (SystemException e)
                 {
-                    spell.projectile.Center = spell.caster.Center + new Vector2(0f, -1.5f).RotatedBy(spell.displacementAngle) * (RotTimeLeft - spell.projectile.timeLeft);
+                    ErrorLogger.Log(e.ToString());
                 }
-                spell.projectile.velocity = spell.displacementVelocity + spell.caster.velocity;
-                spell.basePosition = spell.caster.position;
             };
         }
 

@@ -21,7 +21,7 @@ namespace kRPG.Modifiers
         public override void NPCLoot(NPC npc)
         {
             Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), npc.Center);
-            Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, kNPC.mod.ProjectileType<NPC_Explosion>(), npc.damage * 3 / 2, 0f)];
+            Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, kNPC.mod.ProjectileType<NPC_Explosion>(), npc.damage * 5 / 4, 0f)];
         }
         
         

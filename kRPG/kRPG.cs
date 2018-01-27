@@ -94,7 +94,6 @@ namespace kRPG
             Dictionary<DataTag, object> tags = new Dictionary<DataTag, object>();
             foreach (DataTag tag in dataTags[msg])
                 tags.Add(tag, tag.read(reader));
-            ErrorLogger.Log("Handling Packet: " + msg.ToString());
             switch (msg)
             {
                 //case Message.InitProjEleDmg:
@@ -137,14 +136,14 @@ namespace kRPG
                         kn.dealseledmg = count > 0;
                     }
                     break;
-                case Message.PrefixNPC:
-                    if (Main.netMode == 1)
-                    {
-                        NPC npc = Main.npc[(int)tags[DataTag.npcId]];
-                        kNPC kn = npc.GetGlobalNPC<kNPC>();
-                        kn.Prefix(npc, (int)tags[DataTag.amount]);
-                    }
-                    break;
+                //case Message.PrefixNPC:
+                //    if (Main.netMode == 1)
+                //    {
+                //        NPC npc = Main.npc[(int)tags[DataTag.npcId]];
+                //        kNPC kn = npc.GetGlobalNPC<kNPC>();
+                //        kn.Prefix(npc, (int)tags[DataTag.amount]);
+                //    }
+                //    break;
                 case Message.SyncStats:
                     if (Main.netMode == 2)
                     {
@@ -161,25 +160,52 @@ namespace kRPG
                         Main.player[(int)tags[DataTag.playerId]].GetModPlayer<PlayerCharacter>().level = (int)tags[DataTag.amount];
                     break;
                 case Message.CreateProjectile:
-                    if (Main.netMode == 2)
+                    try
                     {
+                        if (Main.netMode == 1)
+                            if ((int)tags[DataTag.playerId] == Main.myPlayer)
+                                break;
+
+                        int modifierCount = (int)tags[DataTag.modifierCount];
+                        List<GlyphModifier> modifiers = new List<GlyphModifier>();
+                        for (int i = 0; i < modifierCount; i += 1)
+                            modifiers.Add(GlyphModifier.modifiers[reader.ReadInt32()]);
+
+                        Projectile projectile = Main.projectile[(int)tags[DataTag.projId]];
+                        if (projectile == null) break;
+                        projectile.owner = (int)tags[DataTag.playerId];
+                        if (!(projectile.modProjectile is ProceduralSpellProj)) break;
+                        ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
+                        ps.source = new ProceduralSpell(mod);
+                        ps.source.glyphs = new Item[3];
+                        for (int i = 0; i < ps.source.glyphs.Length; i += 1)
+                        {
+                            ps.source.glyphs[i] = new Item();
+                            ps.source.glyphs[i].SetDefaults(0, true);
+                        }
+                        ps.source.glyphs[(byte)GLYPHTYPE.STAR].SetDefaults((int)tags[DataTag.glyph_star], true);
+                        ps.source.glyphs[(byte)GLYPHTYPE.CROSS].SetDefaults((int)tags[DataTag.glyph_cross], true);
+                        ps.source.glyphs[(byte)GLYPHTYPE.MOON].SetDefaults((int)tags[DataTag.glyph_moon], true);
+                        projectile.damage = (int)tags[DataTag.damage];
+                        projectile.minion = (bool)tags[DataTag.flag];
                         try
                         {
-                            int modifierCount = (int)tags[DataTag.modifierCount];
-                            List<GlyphModifier> modifiers = new List<GlyphModifier>();
-                            for (int i = 0; i < modifierCount; i += 1)
-                                modifiers.Add(GlyphModifier.modifiers[reader.ReadInt32()]);
-
-                            Projectile projectile = Main.projectile[(int)tags[DataTag.projId]];
-                            projectile.owner = (int)tags[DataTag.playerId];
-                            if (!(projectile.modProjectile is ProceduralSpellProj)) break;
-                            ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
-                            ps.source.glyphs[(byte)GLYPHTYPE.STAR].SetDefaults((int)tags[DataTag.glyph_star], true);
-                            ps.source.glyphs[(byte)GLYPHTYPE.CROSS].SetDefaults((int)tags[DataTag.glyph_cross], true);
-                            ps.source.glyphs[(byte)GLYPHTYPE.MOON].SetDefaults((int)tags[DataTag.glyph_moon], true);
-                            projectile.damage = (int)tags[DataTag.damage];
-                            ps.source.modifierOverride = modifiers;
-                            foreach (Item item in ps.source.glyphs)
+                            if (projectile.minion)
+                                ps.caster = Main.projectile[(int)tags[DataTag.entityId]];
+                            else if (projectile.hostile)
+                                ps.caster = Main.npc[(int)tags[DataTag.entityId]];
+                            else
+                                ps.caster = Main.player[(int)tags[DataTag.entityId]];
+                        }
+                        catch (SystemException e)
+                        {
+                            ErrorLogger.Log("Source-assignment failed, aborting...");
+                            break;
+                        }
+                        ps.source.modifierOverride = modifiers;
+                        foreach (Item item in ps.source.glyphs)
+                        {
+                            if (item != null)
                             {
                                 Glyph glyph = (Glyph)item.modItem;
                                 if (glyph.GetAIAction() != null)
@@ -191,21 +217,40 @@ namespace kRPG
                                 if (glyph.GetKillAction() != null)
                                     ps.kill.Add(glyph.GetKillAction());
                             }
-                            foreach (GlyphModifier modifier in modifiers)
-                            {
-                                if (modifier.impact != null)
-                                    ps.impact.Add(modifier.impact);
-                                if (modifier.draw != null)
-                                    ps.draw.Add(modifier.draw);
-                                if (modifier.init != null)
-                                    ps.init.Add(modifier.init);
-                            }
-                            ps.Initialize();
                         }
-                        catch (SystemException e)
+                        foreach (GlyphModifier modifier in modifiers)
                         {
-                            ErrorLogger.Log(e.ToString());
+                            if (modifier.impact != null)
+                                ps.impact.Add(modifier.impact);
+                            if (modifier.draw != null)
+                                ps.draw.Add(modifier.draw);
+                            if (modifier.init != null)
+                                ps.init.Add(modifier.init);
                         }
+                        ps.Initialize();
+
+                        if (Main.netMode == 2)
+                        {
+                            ModPacket packet = mod.GetPacket();
+                            packet.Write((byte)Message.CreateProjectile);
+                            packet.Write(projectile.owner);
+                            packet.Write(projectile.whoAmI);
+                            packet.Write(ps.source.glyphs[(byte)GLYPHTYPE.STAR].type);
+                            packet.Write(ps.source.glyphs[(byte)GLYPHTYPE.CROSS].type);
+                            packet.Write(ps.source.glyphs[(byte)GLYPHTYPE.MOON].type);
+                            packet.Write(projectile.damage);
+                            packet.Write(projectile.minion);
+                            packet.Write(ps.caster.whoAmI);
+                            List<GlyphModifier> mods = modifiers;
+                            packet.Write(mods.Count);
+                            for (int j = 0; j < mods.Count; j += 1)
+                                packet.Write(mods[j].id);
+                            packet.Send();
+                        }
+                    }
+                    catch (SystemException e)
+                    {
+                        ErrorLogger.Log("Error handling packet: " + msg.ToString() + " on " + (Main.netMode == 2 ? "serverside" : "clientside") + ", full error trace: " + e.ToString());
                     }
                     break;
                 case Message.AddXP:

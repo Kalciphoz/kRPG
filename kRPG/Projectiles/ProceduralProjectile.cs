@@ -224,7 +224,8 @@ namespace kRPG.Projectiles
         public override void AI()
         {
             if (alpha < 1f) alpha += 0.02f;
-            if (!caster.active) projectile.Kill();
+            if (caster == null) projectile.Kill();
+            else if (!caster.active) projectile.Kill();
             foreach (Action<ProceduralSpellProj> action in ai) if (action != null) action(this);
         }
 

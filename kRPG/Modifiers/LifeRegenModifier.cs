@@ -9,7 +9,7 @@ namespace kRPG.Modifiers
         
         public LifeRegenModifier(kNPC kNPC, NPC npc) : base(kNPC, npc)
         {
-            npc.GivenName = "Regenerative " + npc.GivenName;
+            npc.GivenName = "Shimmering " + npc.GivenName;
         }
 
         public override void Update(NPC npc)

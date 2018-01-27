@@ -215,11 +215,18 @@ namespace kRPG.Items
 
         public override bool UseItem(Player player)
         {
-            if (gem.projectile != null)
+            try
             {
-                gem.projectile(player, item);
-                Main.PlaySound(item.UseSound, player.Center);
-                return true;
+                if (gem.projectile != null)
+                {
+                    gem.projectile(player, item);
+                    Main.PlaySound(item.UseSound, player.Center);
+                    return true;
+                }
+            }
+            catch (SystemException e)
+            {
+                ErrorLogger.Log(e.ToString());
             }
             return false;
         }
@@ -245,23 +252,30 @@ namespace kRPG.Items
 
         public void DrawHeld(PlayerDrawInfo drawinfo, Color color, float rotation, float scale, Vector2 playerCenter)
         {
-            Player player = Main.player[Main.myPlayer];
-            Vector2 position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
-            if (texture == null)
+            try
             {
-                item.SetDefaults(0,true);
-            }
-            SpriteEffects effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            DrawData draw = new DrawData(texture, position, null, color, rotation, new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale, effects, 0);
-            for (int i = 0; i < Main.playerDrawData.Count; i += 1)
-            {
-                if (Main.playerDrawData[i].texture == Main.itemTexture[player.inventory[player.selectedItem].type])
+                Player player = Main.player[Main.myPlayer];
+                Vector2 position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
+                if (texture == null)
                 {
-                    Main.playerDrawData.Insert(i, draw);
-                    return;
+                    item.SetDefaults(0, true);
                 }
+                SpriteEffects effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+                DrawData draw = new DrawData(texture, position, null, color, rotation, new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale, effects, 0);
+                for (int i = 0; i < Main.playerDrawData.Count; i += 1)
+                {
+                    if (Main.playerDrawData[i].texture == Main.itemTexture[player.inventory[player.selectedItem].type])
+                    {
+                        Main.playerDrawData.Insert(i, draw);
+                        return;
+                    }
+                }
+                Main.playerDrawData.Add(draw);
             }
-            Main.playerDrawData.Add(draw);
+            catch (SystemException e)
+            {
+                ErrorLogger.Log(e.ToString());
+            }
         }
 
         public static Item GenerateStaff(Mod mod, Vector2 position, STAFFTHEME theme, float dps, int enemyDef)
@@ -531,32 +545,38 @@ namespace kRPG.Items
 
         public override bool UseItem(Player player)
         {
-            if (spear/* && player.altFunctionUse != 2*/)
+            try
             {
-                Vector2 pos = player.position;
-                Vector2 unitVelocity = (new Vector2(Main.mouseX - 12f, Main.mouseY - 24f) + Main.screenPosition - pos);
-                unitVelocity.Normalize();
-                Vector2 velocity = unitVelocity * 60f / item.useAnimation;
-                Projectile projectile = Main.projectile[Projectile.NewProjectile(pos, velocity, mod.GetProjectile<ProceduralSpear>().projectile.type, item.damage, item.knockBack, player.whoAmI)];
-                projectile.GetGlobalProjectile<kProjectile>().elementalDamage = item.GetGlobalItem<kItem>().elementalDamage;
-                projectile.scale = item.scale;
-                ProceduralSpear ps = (ProceduralSpear)projectile.modProjectile;
-                ps.hilt = hilt;
-                ps.blade = blade;
-                ps.accent = accent;
-                if (Main.netMode != 2) ps.Initialize();
-                if (Main.netMode == 1)
+                if (spear/* && player.altFunctionUse != 2*/)
                 {
-                    ModPacket packet = mod.GetPacket();
-                    packet.Write((byte)Message.SyncSpear);
-                    packet.Write(blade.type);
-                    packet.Write(hilt.type);
-                    packet.Write(accent.type);
-                    packet.Send();
+                    Vector2 pos = player.position;
+                    Vector2 unitVelocity = (new Vector2(Main.mouseX - 12f, Main.mouseY - 24f) + Main.screenPosition - pos);
+                    unitVelocity.Normalize();
+                    Vector2 velocity = unitVelocity * 60f / item.useAnimation;
+                    Projectile projectile = Main.projectile[Projectile.NewProjectile(pos, velocity, mod.GetProjectile<ProceduralSpear>().projectile.type, item.damage, item.knockBack, player.whoAmI)];
+                    projectile.GetGlobalProjectile<kProjectile>().elementalDamage = item.GetGlobalItem<kItem>().elementalDamage;
+                    projectile.scale = item.scale;
+                    ProceduralSpear ps = (ProceduralSpear)projectile.modProjectile;
+                    ps.hilt = hilt;
+                    ps.blade = blade;
+                    ps.accent = accent;
+                    if (Main.netMode != 2) ps.Initialize();
+                    if (Main.netMode == 1)
+                    {
+                        ModPacket packet = mod.GetPacket();
+                        packet.Write((byte)Message.SyncSpear);
+                        packet.Write(blade.type);
+                        packet.Write(hilt.type);
+                        packet.Write(accent.type);
+                        packet.Send();
+                    }
+                    return true;
                 }
-                return true;
             }
-
+            catch (SystemException e)
+            {
+                ErrorLogger.Log(e.ToString());
+            }
             return false;
         }
 
@@ -605,24 +625,31 @@ namespace kRPG.Items
 
         public void DrawHeld(PlayerDrawInfo drawinfo, Color color, float rotation, float scale, Vector2 playerCenter)
         {
-            Player player = Main.player[Main.myPlayer];
-            Vector2 position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
-            if (texture == null)
+            try
             {
-                item.SetDefaults(0);
-                return;
-            }
-            SpriteEffects effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            DrawData draw = new DrawData(texture, position, null, lighted ? Color.White : color, rotation, new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale, effects, 0);
-            for (int i = 0; i < Main.playerDrawData.Count; i += 1)
-            {
-                if (Main.playerDrawData[i].texture == Main.itemTexture[player.inventory[player.selectedItem].type])
+                Player player = Main.player[Main.myPlayer];
+                Vector2 position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
+                if (texture == null)
                 {
-                    Main.playerDrawData.Insert(i, draw);
+                    item.SetDefaults(0);
                     return;
                 }
+                SpriteEffects effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+                DrawData draw = new DrawData(texture, position, null, lighted ? Color.White : color, rotation, new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale, effects, 0);
+                for (int i = 0; i < Main.playerDrawData.Count; i += 1)
+                {
+                    if (Main.playerDrawData[i].texture == Main.itemTexture[player.inventory[player.selectedItem].type])
+                    {
+                        Main.playerDrawData.Insert(i, draw);
+                        return;
+                    }
+                }
+                Main.playerDrawData.Add(draw);
             }
-            Main.playerDrawData.Add(draw);
+            catch (SystemException e)
+            {
+                ErrorLogger.Log(e.ToString());
+            }
         }
 
         public static Item GenerateSword(Mod mod, Vector2 position, SWORDTHEME theme, float dps, int enemyDef)

@@ -8,9 +8,9 @@ namespace kRPG.Modifiers
     {
         public float speedModifier = 1f;
         
-        public SpeedModifier(kNPC kNPC, NPC npc, float speedModifier = 2f) : base(kNPC, npc)
+        public SpeedModifier(kNPC kNPC, NPC npc, float speedModifier = 1.8f) : base(kNPC, npc)
         {
-            npc.GivenName = "Speedy " + npc.GivenName;
+            npc.GivenName = "Swift " + npc.GivenName;
             this.speedModifier = speedModifier;
         }
 

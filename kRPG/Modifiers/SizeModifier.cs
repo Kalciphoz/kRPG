@@ -5,12 +5,12 @@ namespace kRPG.Modifiers
     public class SizeModifier : NPCModifier
     {
         
-        public SizeModifier(kNPC kNPC, NPC npc, float scaleModifier = 2f, float lifeModifier = 1.4f) : base(kNPC, npc)
+        public SizeModifier(kNPC kNPC, NPC npc, float scaleModifier = 1.2f, float lifeModifier = 1.4f) : base(kNPC, npc)
         { 
             npc.scale *= scaleModifier;
             npc.lifeMax = (int)(npc.lifeMax * lifeModifier);
             npc.life = (int)(npc.life * lifeModifier);
-            if (scaleModifier > 1)
+            if (scaleModifier < 1)
                 npc.GivenName = "Small " + npc.GivenName;
             else
                 npc.GivenName = "Massive " + npc.GivenName;

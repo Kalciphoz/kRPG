@@ -210,19 +210,19 @@ namespace kRPG.GUI
             upgradeSuccess = 90 - startLevel * 10;
             if (startLevel == 0)
             {
-                upgradeCost = (int)(item.value / 50);
+                upgradeCost = (int)(item.value / 20);
             }
             else if (startLevel == 1)
             {
-                upgradeCost = (int)(item.value / 30);
+                upgradeCost = (int)(item.value / 15);
             }
             else if (startLevel == 2)
             {
-                upgradeCost = (int)(item.value / 20);
+                upgradeCost = (int)(item.value / 10);
             }
             else if (startLevel == 3)
             {
-                upgradeCost = (int)(item.value / 10);
+                upgradeCost = (int)(item.value / 8);
             }
             else if (startLevel == 4)
             {
