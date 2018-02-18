@@ -3,6 +3,7 @@ using kRPG.Items;
 using kRPG.Items.Glyphs;
 using kRPG.Items.Weapons;
 using kRPG.Items.Weapons.RangedDrops;
+using kRPG.Modifiers;
 using kRPG.Projectiles;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
@@ -136,14 +137,21 @@ namespace kRPG
                         kn.dealseledmg = count > 0;
                     }
                     break;
-                //case Message.PrefixNPC:
-                //    if (Main.netMode == 1)
-                //    {
-                //        NPC npc = Main.npc[(int)tags[DataTag.npcId]];
-                //        kNPC kn = npc.GetGlobalNPC<kNPC>();
-                //        kn.Prefix(npc, (int)tags[DataTag.amount]);
-                //    }
-                //    break;
+                case Message.PrefixNPC:
+                    if (Main.netMode == 1)
+                    {
+                        NPC npc = Main.npc[(int)tags[DataTag.npcId]];
+                        kNPC kn = npc.GetGlobalNPC<kNPC>();
+                        for (int i = 0; i < (int)tags[DataTag.amount]; i += 1)
+                        {
+                            NPCModifier modifier = kn.modifierFuncs[reader.ReadInt32()].Invoke(kn, npc);
+                            modifier.Read(reader);
+                            modifier.Apply();
+                            kn.modifiers.Add(modifier);
+                        }
+                        kn.MakeNotable(npc);
+                    }
+                    break;
                 case Message.SyncStats:
                     if (Main.netMode == 2)
                     {

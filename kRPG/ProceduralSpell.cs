@@ -60,7 +60,6 @@ namespace kRPG
                         Main.PlaySound(SoundID.MenuTick);
                         character.CloseGUIs();
                         character.selectedAbility = this;
-                        character.spellcraftingGUI.guiActive = true;
                     }
                 }
 

@@ -36,7 +36,7 @@ namespace kRPG.GUI
         {
             this.character = character;
             this.mod = mod;
-            this.krpg = (kRPG)mod;
+            krpg = (kRPG)mod;
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)

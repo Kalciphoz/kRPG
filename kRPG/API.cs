@@ -909,7 +909,7 @@ namespace kRPG
             Vector2 vector = texture2D.Size() * inventoryScale;
             if (item.type > 0 && item.stack > 0)
             {
-                Texture2D texture2D3 = Main.itemTexture[item.type];
+                Texture2D texture2D3 = item.modItem is ProceduralItem ? ((ProceduralItem)item.modItem).texture : Main.itemTexture[item.type];
                 Rectangle rectangle2;
                 if (Main.itemAnimations[item.type] != null)
                 {

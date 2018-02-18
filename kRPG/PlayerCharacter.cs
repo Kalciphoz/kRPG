@@ -561,6 +561,9 @@ namespace kRPG
 
         public override void PostItemCheck()
         {
+            if (Main.netMode == 1)
+                if (player.whoAmI != Main.myPlayer) return;
+
             try
             {
                 Item item = player.inventory[player.selectedItem];
@@ -589,8 +592,8 @@ namespace kRPG
                     Vector2 pos = player.RotatedRelativePoint(player.MountedCenter, true);
                     Vector2 relativeMousePos = Main.MouseWorld - pos;
                     itemRotation = Math.Atan2((relativeMousePos.Y * player.direction), relativeMousePos.X * player.direction) - player.fullRotation;
-                    //NetMessage.SendData(13, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
-                    //NetMessage.SendData(41, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                    NetMessage.SendData(13, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                    NetMessage.SendData(41, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
                 }
                 float scaleFactor = 6f;
                 if (player.itemAnimation > 0)
@@ -606,6 +609,9 @@ namespace kRPG
 
         public override void PostUpdate()
         {
+            if (Main.netMode == 2) return;
+            if (Main.netMode == 1 && Main.myPlayer != player.whoAmI) return;
+
             Item item = player.inventory[player.selectedItem];
             if (item.damage > 0 && (item.melee || !item.noMelee || item.modItem is ProceduralSword))
                 lastSelectedWeapon = item;
@@ -739,7 +745,7 @@ namespace kRPG
                 lifeDegen = ailmentIntensity[ELEMENT.FIRE] / 2;
             manaRegen = player.statManaMax2 * 0.06f + TotalStats(STAT.WITS) * 0.6f;
 
-            if (Main.netMode != 2)
+            if (Main.netMode != 2 && Main.myPlayer == player.whoAmI)
             {
                 if (mana < 0) mana = 0;
                 if (player.statMana < 0) player.statMana = 0;

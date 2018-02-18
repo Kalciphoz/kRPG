@@ -1,26 +1,39 @@
 ﻿using System;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace kRPG.Modifiers
 {
     public class SpeedModifier : NPCModifier
     {
-        public float speedModifier = 1f;
+        private float speedModifier = 1f;
+        private kNPC kn;
         
         public SpeedModifier(kNPC kNPC, NPC npc, float speedModifier = 1.8f) : base(kNPC, npc)
         {
+            this.npc = npc;
+            kn = kNPC;
             npc.GivenName = "Swift " + npc.GivenName;
             this.speedModifier = speedModifier;
         }
 
-        public override void Update(NPC npc)
+        public override void Apply()
         {
-            base.Update(npc);
-            if (npc.aiStyle == 3 && npc.velocity.Y == 0f)
-                npc.velocity.X = MathHelper.Lerp(npc.velocity.X, npc.direction * Math.Max(Math.Abs(npc.velocity.X), 8f), 1f * speedModifier / 20f);
+            kn.speedModifier = speedModifier;
         }
-        
+
+        public override void Write(ModPacket packet)
+        {
+            packet.Write(speedModifier);
+        }
+
+        public override void Read(BinaryReader reader)
+        {
+            speedModifier = reader.ReadSingle();
+        }
+
         public new static NPCModifier Random(kNPC kNPC, NPC npc)
         {
             return new SpeedModifier(kNPC, npc, 1f+ Main.rand.NextFloat(2));

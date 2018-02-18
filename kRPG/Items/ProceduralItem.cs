@@ -64,6 +64,7 @@ namespace kRPG.Items
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
             if (Main.netMode == 2 || texture == null) return false;
+            if (Main.itemTexture[item.type] == null) Main.itemTexture[item.type] = texture;
             float s = scale * Main.itemTexture[item.type].Height / texture.Height;
             Draw(spriteBatch, position, drawColor, 0f, s);
             return false;

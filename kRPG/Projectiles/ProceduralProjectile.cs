@@ -626,12 +626,18 @@ namespace kRPG.Projectiles
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            if (texture == null && Main.netMode != 2)
+            if (texture == null && Main.netMode == 0)
             {
                 Initialize();
                 return;
             }
-            spriteBatch.Draw(texture, position + texture.Size() / 2f, null, blade.lighted ? Color.White : color, rotation, projectile.spriteDirection > 0 ? texture.Bounds.TopRight() : Vector2.Zero, scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+            if (Main.netMode == 0)
+                spriteBatch.Draw(texture, position + texture.Size() / 2f, null, blade.lighted ? Color.White : color, rotation, projectile.spriteDirection > 0 ? texture.Bounds.TopRight() : Vector2.Zero, scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+            else if (Main.netMode == 1)
+            {
+                Texture2D t2d = Main.projectileTexture[projectile.type];
+                spriteBatch.Draw(t2d, position + t2d.Size() / 2f, null, color, rotation, projectile.spriteDirection > 0 ? t2d.Bounds.TopRight() : Vector2.Zero, scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+            }
         }
 
         public override void SetDefaults()

@@ -39,17 +39,28 @@ namespace kRPG
 
                 if (Main.npc.GetUpperBound(0) >= projectile.owner)
                 {
-                    if (projectile.hostile && !projectile.friendly && Main.npc[projectile.owner] != null)
+                    if (projectile.hostile && !projectile.friendly)
                     {
-                        NPC npc = Main.npc[projectile.owner];
-                        if (npc.boss) return;
-                        kNPC kn = npc.GetGlobalNPC<kNPC>();
-                        int elecount = 0;
+                        bool bossfight = false;
+                        foreach (NPC n in Main.npc)
+                            if (n.active)
+                                if (n.boss) bossfight = true;
+                        if (bossfight) return;
+
+                        Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
+                        Dictionary<ELEMENT, bool> haselement = new Dictionary<ELEMENT, bool>()
+                        {
+                            { ELEMENT.FIRE, player.ZoneUnderworldHeight || player.ZoneTowerSolar || player.ZoneMeteor || player.ZoneDesert || Main.rand.Next(10) == 0 && Main.netMode == 0 },
+                            { ELEMENT.COLD, player.ZoneSnow || player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneDungeon || player.ZoneRain || Main.rand.Next(10) == 0 && Main.netMode == 0 },
+                            { ELEMENT.LIGHTNING, player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneTowerStardust || player.ZoneMeteor || player.ZoneHoly || Main.rand.Next(10) == 0 && Main.netMode == 0 },
+                            { ELEMENT.SHADOW, player.ZoneCorrupt || player.ZoneCrimson || player.ZoneUnderworldHeight || player.ZoneTowerNebula || !Main.dayTime && (Main.rand.Next(10) == 0 && Main.netMode == 0 && player.ZoneOverworldHeight) }
+                        };
+                        int count = 0;
                         foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                            if (kn.elementalDamage[element] > 0) elecount += 1;
-                        int portionsize = (int)Math.Round((double)projectile.damage * kNPC.ELE_DMG_MODIFIER / 2.0 / elecount);
+                            if (haselement[element]) count += 1;
+                        int portionsize = (int)Math.Round((double)projectile.damage * kNPC.ELE_DMG_MODIFIER / 3.0 / count);
                         foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                            if (kn.elementalDamage[element] > 0) elementalDamage[element] = Math.Max(1, portionsize);
+                            if (haselement[element]) elementalDamage[element] = Math.Max(1, portionsize);
                         return;
                     }
                 }

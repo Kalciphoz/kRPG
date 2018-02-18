@@ -34,7 +34,9 @@ namespace kRPG
         public int immuneTime = 0;
         public bool dealseledmg = false;
         
-        private List<NPCModifier> modifiers = new List<NPCModifier>();
+        public List<NPCModifier> modifiers = new List<NPCModifier>();
+
+        public float speedModifier = 1f;
 
         public Dictionary<ELEMENT, bool> hasAilment = new Dictionary<ELEMENT, bool>()
         {
@@ -73,10 +75,34 @@ namespace kRPG
         {
             npc.GivenName = npc.FullName;
             int amount = 1;
+            ModPacket packet;
             for (int i = 0; i < amount; i++)
             {
-                modifiers.Add(modifierFuncs[Main.rand.Next(modifierFuncs.Count)].Invoke(this, npc));
+                int random = Main.rand.Next(modifierFuncs.Count);
+                NPCModifier modifier = modifierFuncs[random].Invoke(this, npc);
+                modifiers.Add(modifier);
             }
+            if (Main.netMode == 2)
+            {
+                packet = mod.GetPacket();
+                packet.Write((byte)Message.PrefixNPC);
+                packet.Write(npc.whoAmI);
+                packet.Write(amount);
+                for (int i = 0; i < amount; i++)
+                {
+                    packet.Write(modifiers.FindIndex(modifier => modifier == modifiers[i]));
+                    modifiers[i].Write(packet);
+                }
+                packet.Send();
+            }
+            MakeNotable(npc);
+        }
+
+        public void MakeNotable(NPC npc)
+        {
+            npc.scale *= 1.1f;
+            npc.lifeMax = (int)(npc.lifeMax * 1.2);
+            speedModifier *= 1.09f;
         }
         
         public override void ResetEffects(NPC npc)
@@ -293,7 +319,7 @@ namespace kRPG
                 dealseledmg = count > 0;
             }
             
-            if (Main.rand.Next(8) < 3 && !npc.boss && !npc.townNPC && !npc.friendly)
+            if (Main.rand.Next(8) < 3 && !npc.boss && !npc.townNPC && !npc.friendly && Main.netMode != 1)
                 InitializeModifiers(npc);
             
             if (!Main.expertMode)
@@ -307,6 +333,9 @@ namespace kRPG
 
         public void Update(NPC npc)
         {
+            if (npc.aiStyle == 3 && npc.velocity.Y == 0f)
+                npc.velocity.X = MathHelper.Lerp(npc.velocity.X, npc.direction * Math.Max(Math.Abs(npc.velocity.X), 8f), 1f * speedModifier / 20f);
+
             for (var i = 0; i < modifiers.Count; i++)
             {
                 modifiers[i].Update(npc);

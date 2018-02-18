@@ -16,6 +16,7 @@ namespace kRPG.Modifiers
 
         public SageModifier(kNPC kNPC, NPC npc) : base(kNPC, npc)
         {
+            this.npc = npc;
             npc.GivenName = "Sagely " + npc.GivenName;
             this.kNPC = kNPC;
         }
