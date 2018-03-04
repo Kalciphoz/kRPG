@@ -65,8 +65,8 @@ namespace kRPG.Items
         {
             if (Main.netMode == 2 || texture == null) return false;
             if (Main.itemTexture[item.type] == null) Main.itemTexture[item.type] = texture;
-            float s = scale * Main.itemTexture[item.type].Height / texture.Height;
-            Draw(spriteBatch, position, drawColor, 0f, s);
+            //float s = scale * Main.itemTexture[item.type].Height / texture.Height;
+            Draw(spriteBatch, position, drawColor, 0f, scale);
             return false;
         }
 
@@ -555,6 +555,7 @@ namespace kRPG.Items
                     unitVelocity.Normalize();
                     Vector2 velocity = unitVelocity * 60f / item.useAnimation;
                     Projectile projectile = Main.projectile[Projectile.NewProjectile(pos, velocity, mod.GetProjectile<ProceduralSpear>().projectile.type, item.damage, item.knockBack, player.whoAmI)];
+                    projectile.owner = player.whoAmI;
                     projectile.GetGlobalProjectile<kProjectile>().elementalDamage = item.GetGlobalItem<kItem>().elementalDamage;
                     projectile.scale = item.scale;
                     ProceduralSpear ps = (ProceduralSpear)projectile.modProjectile;
@@ -569,6 +570,7 @@ namespace kRPG.Items
                         packet.Write(blade.type);
                         packet.Write(hilt.type);
                         packet.Write(accent.type);
+                        packet.Write(projectile.owner);
                         packet.Send();
                     }
                     return true;

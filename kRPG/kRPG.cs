@@ -82,7 +82,7 @@ namespace kRPG
             { Message.SyncLevel, new List<DataTag>(){ DataTag.playerId, DataTag.amount } },
             { Message.InitProjEleDmg, new List<DataTag>(){ DataTag.projId, DataTag.fire, DataTag.cold, DataTag.lightning, DataTag.shadow } },
             { Message.SyncStats, new List<DataTag>(){ DataTag.playerId, DataTag.amount, DataTag.resilience, DataTag.quickness, DataTag.potency, DataTag.wits } },
-            { Message.SyncSpear, new List<DataTag>(){ DataTag.projId, DataTag.partPrimary, DataTag.partSecondary, DataTag.partTertiary } },
+            { Message.SyncSpear, new List<DataTag>(){ DataTag.projId, DataTag.partPrimary, DataTag.partSecondary, DataTag.partTertiary, DataTag.playerId } },
             { Message.PrefixNPC, new List<DataTag>(){ DataTag.npcId, DataTag.amount } },
             { Message.NPCEleDmg, new List<DataTag>(){ DataTag.npcId, DataTag.flag, DataTag.flag2, DataTag.flag3, DataTag.flag4 } }
         };
@@ -276,7 +276,18 @@ namespace kRPG
                     spear.blade = SwordBlade.blades[(int)tags[DataTag.partPrimary]];
                     spear.hilt = SwordHilt.hilts[(int)tags[DataTag.partSecondary]];
                     spear.accent = SwordAccent.accents[(int)tags[DataTag.partTertiary]];
-                    if (Main.netMode == 1) spear.Initialize();
+                    spear.projectile.owner = (int)tags[DataTag.playerId];
+                    if (Main.netMode == 1 && spear.projectile.owner != Main.myPlayer) spear.Initialize();
+                    else if (Main.netMode == 2)
+                    {
+                        ModPacket packet = mod.GetPacket();
+                        packet.Write((byte)Message.SyncSpear);
+                        packet.Write(spear.projectile.whoAmI);
+                        packet.Write(spear.blade.type);
+                        packet.Write(spear.hilt.type);
+                        packet.Write(spear.accent.type);
+                        packet.Send();
+                    }
                     break;
                 case Message.SwordInit:
                     if (Main.netMode == 1)

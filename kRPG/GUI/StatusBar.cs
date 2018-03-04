@@ -229,22 +229,10 @@ namespace kRPG.GUI
             int pos_X = Main.screenWidth - 480;
             for (int i = 0; i < 10; i++)
             {
-                if (i == Main.player[Main.myPlayer].selectedItem)
-                {
-                    if (Main.hotbarScale[i] < 1f)
-                    {
-                        Main.hotbarScale[i] += 0.05f;
-                    }
-                }
-                else if ((double)Main.hotbarScale[i] > 0.75)
-                {
-                    Main.hotbarScale[i] -= 0.05f;
-                }
-                float num2 = Main.hotbarScale[i];
-                int num3 = (int)(20f + 22f * (1f - num2));
-                int a = (int)(75f + 150f * num2);
+                int num3 = (int)(20f + 22f * (1f - Scale));
+                int a = (int)(75f + 150f * Scale);
                 Color lightColor = new Color(255, 255, 255, a);
-                if (!Main.player[Main.myPlayer].hbLocked && !PlayerInput.IgnoreMouseInterface && Main.mouseX >= pos_X && (float)Main.mouseX <= (float)pos_X + (float)Main.inventoryBackTexture.Width * Main.hotbarScale[i] && Main.mouseY >= num3 && (float)Main.mouseY <= (float)num3 + (float)Main.inventoryBackTexture.Height * Main.hotbarScale[i] && !Main.player[Main.myPlayer].channel)
+                if (!Main.player[Main.myPlayer].hbLocked && !PlayerInput.IgnoreMouseInterface && Main.mouseX >= pos_X && (float)Main.mouseX <= (float)pos_X + (float)Main.inventoryBackTexture.Width * Scale && Main.mouseY >= num3 && (float)Main.mouseY <= (float)num3 + (float)Main.inventoryBackTexture.Height * Scale && !Main.player[Main.myPlayer].channel)
                 {
                     Main.player[Main.myPlayer].mouseInterface = true;
                     Main.player[Main.myPlayer].showItemIcon = false;
@@ -267,21 +255,20 @@ namespace kRPG.GUI
                     Main.rare = Main.player[Main.myPlayer].inventory[i].rare;
                 }
                 float num4 = Main.inventoryScale;
-                Main.inventoryScale = num2;
-                ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 13, i, new Vector2((float)pos_X, (float)num3), Color.White);
+                Main.inventoryScale = Scale;
+                API.ItemSlotDrawExtension(Main.spriteBatch, Main.LocalPlayer.inventory, 13, i, new Vector2((float)pos_X, (float)num3), Color.White, Color.White);
                 Main.inventoryScale = num4;
-                pos_X += (int)((float)Main.inventoryBackTexture.Width * Main.hotbarScale[i]) + 4;
+                pos_X += (int)((float)Main.inventoryBackTexture.Width * Scale);
             }
             int selectedItem = Main.player[Main.myPlayer].selectedItem;
             if (selectedItem >= 10 && (selectedItem != 58 || Main.mouseItem.type > 0))
             {
-                float num5 = 1f;
-                int num6 = (int)(20f + 22f * (1f - num5));
-                int a2 = (int)(75f + 150f * num5);
+                int num6 = (int)(20f + 22f * (1f - Scale));
+                int a2 = (int)(75f + 150f * Scale);
                 Color lightColor2 = new Color(255, 255, 255, a2);
                 float num7 = Main.inventoryScale;
-                Main.inventoryScale = num5;
-                ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 13, selectedItem, new Vector2((float)pos_X, (float)num6), Color.White);
+                Main.inventoryScale = Scale;
+                API.ItemSlotDrawExtension(Main.spriteBatch, Main.LocalPlayer.inventory, 13, selectedItem, new Vector2((float)pos_X, (float)num6), Color.White, Color.White);
                 Main.inventoryScale = num7;
             }
         }

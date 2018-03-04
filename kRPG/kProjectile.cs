@@ -37,6 +37,10 @@ namespace kRPG
                     {ELEMENT.SHADOW, 0}
                 };
 
+                if (projectile.modProjectile is Explosion || projectile.modProjectile is NPC_Explosion)
+                {
+                    elementalDamage[ELEMENT.FIRE] = projectile.damage;
+                }
                 if (Main.npc.GetUpperBound(0) >= projectile.owner)
                 {
                     if (projectile.hostile && !projectile.friendly)

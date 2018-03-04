@@ -70,7 +70,7 @@ namespace kRPG.GUI
             }
         }
 
-        private int upgradeCost = 0;
+        private uint upgradeCost = 0;
 
         //in percent:
         private int upgradeSuccess;
@@ -153,7 +153,7 @@ namespace kRPG.GUI
 
                 spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Selected item: " + item.HoverName, new Vector2(GuiPosition.X - 192f * scale, GuiPosition.Y + 128f * scale), Color.White, scale);
 
-                int modifier = guardianCrown ? 4 : 1;
+                byte modifier = (byte)(guardianCrown ? 4 : 1);
                 if (player.Wealth() >= upgradeCost*modifier)
                 {
                     int bonusChance = guardianCrown ? 10 : 0;
@@ -210,39 +210,39 @@ namespace kRPG.GUI
             upgradeSuccess = 90 - startLevel * 10;
             if (startLevel == 0)
             {
-                upgradeCost = (int)(item.value / 20);
+                upgradeCost = (uint)(item.value / 20);
             }
             else if (startLevel == 1)
             {
-                upgradeCost = (int)(item.value / 15);
+                upgradeCost = (uint)(item.value / 15);
             }
             else if (startLevel == 2)
             {
-                upgradeCost = (int)(item.value / 10);
+                upgradeCost = (uint)(item.value / 10);
             }
             else if (startLevel == 3)
             {
-                upgradeCost = (int)(item.value / 8);
+                upgradeCost = (uint)(item.value / 8);
             }
             else if (startLevel == 4)
             {
-                upgradeCost = (int)(item.value / 5);
+                upgradeCost = (uint)(item.value / 5);
             }
             else if (startLevel == 5)
             {
-                upgradeCost = (int)(item.value / 3);
+                upgradeCost = (uint)(item.value / 3);
             }
             else if (startLevel == 6)
             {
-                upgradeCost = (int)(item.value / 2);
+                upgradeCost = (uint)(item.value / 2);
             }
             else if (startLevel == 7)
             {
-                upgradeCost = (int)(item.value);
+                upgradeCost = (uint)(item.value);
             }
             else if (startLevel == 8)
             {
-                upgradeCost = (int)(item.value * 1.5);
+                upgradeCost = (uint)(item.value * 1.5);
             }
 
             return true;

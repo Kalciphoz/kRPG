@@ -35,7 +35,7 @@ namespace kRPG.GUI
             }
         }
 
-        public SpellcraftingGUI(Mod mod)
+        public SpellcraftingGUI(Mod mod) : base()
         {
             this.mod = mod;
             krpg = (kRPG)mod;
@@ -43,7 +43,6 @@ namespace kRPG.GUI
             glyphs[0] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 36f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.STAR);
             glyphs[1] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 70f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.CROSS);
             glyphs[2] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 106f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.MOON);
-            gui_elements.Add(this);
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)

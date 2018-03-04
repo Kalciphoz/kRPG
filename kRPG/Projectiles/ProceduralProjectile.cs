@@ -609,21 +609,6 @@ namespace kRPG.Projectiles
             return new Point(blade.texture.Width - (int)blade.origin.X + (int)hilt.spearOrigin.X, (int)blade.origin.Y + hilt.spearTexture.Height - (int)hilt.spearOrigin.Y);
         }
 
-        //public override void SendExtraAI(BinaryWriter writer)
-        //{
-        //    writer.Write(blade.type);
-        //    writer.Write(hilt.type);
-        //    writer.Write(accent.type);
-        //}
-
-        //public override void ReceiveExtraAI(BinaryReader reader)
-        //{
-        //    blade = SwordBlade.blades[reader.ReadInt32()];
-        //    hilt = SwordHilt.hilts[reader.ReadInt32()];
-        //    accent = SwordAccent.accents[reader.ReadInt32()];
-        //    if (Main.netMode == 1) Initialize();
-        //}
-
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
             if (texture == null && Main.netMode == 0)
@@ -631,7 +616,7 @@ namespace kRPG.Projectiles
                 Initialize();
                 return;
             }
-            if (Main.netMode == 0)
+            if (Main.netMode == 0 || projectile.owner == Main.myPlayer)
                 spriteBatch.Draw(texture, position + texture.Size() / 2f, null, blade.lighted ? Color.White : color, rotation, projectile.spriteDirection > 0 ? texture.Bounds.TopRight() : Vector2.Zero, scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
             else if (Main.netMode == 1)
             {
@@ -695,7 +680,7 @@ namespace kRPG.Projectiles
                 // Sadly, Projectile/ModProjectile does not have its own
                 Player projOwner = Main.player[projectile.owner];
                 // Here we set some of the projectile's owner properties, such as held item and itemtime, along with projectile directio and position based on the player
-                //Vector2 ownerMountedCenter = projOwner.RotatedRelativePoint(projOwner.MountedCenter, true);
+                Vector2 ownerMountedCenter = projOwner.RotatedRelativePoint(projOwner.MountedCenter, true);
 
                 if (projectile.velocity.X > 0)
                     projOwner.direction = 1;
@@ -706,8 +691,8 @@ namespace kRPG.Projectiles
                 projectile.spriteDirection = projectile.direction;
                 projOwner.heldProj = projectile.whoAmI;
                 projOwner.itemTime = projOwner.itemAnimation;
-                projectile.position.X = projOwner.Center.X - (float)(texture.Width / 2)/* + 2f*projOwner.direction*/;
-                projectile.position.Y = projOwner.Center.Y - (float)(texture.Height / 2)/* + 4f*/;
+                projectile.position.X = ownerMountedCenter.X - (float)(projectile.width / 2)/* + 2f*projOwner.direction*/;
+                projectile.position.Y = ownerMountedCenter.Y - (float)(projectile.height / 2)/* + 4f*/;
                 // As long as the player isn't frozen, the spear can move
                 if (!projOwner.frozen)
                 {
@@ -744,13 +729,14 @@ namespace kRPG.Projectiles
                     projectile.rotation += MathHelper.ToRadians(90f);
                 }
 
-                Rectangle rect = new Rectangle((int)projectile.position.X, (int)projectile.position.Y, texture.Width, texture.Height);
-                if (blade.effect != null) blade.effect(rect, projOwner);
-                if (accent.effect != null) accent.effect(rect, projOwner);
+                Rectangle rect = new Rectangle((int)projectile.position.X, (int)projectile.position.Y, projectile.width, projectile.height);
+                if (blade != null) if (blade.effect != null) blade.effect(rect, projOwner);
+                if (accent != null) if (accent.effect != null) accent.effect(rect, projOwner);
             }
             catch (SystemException e)
             {
-                Main.NewText(e.ToString());
+                //ErrorLogger.Log(e.ToString());
+                //Main.NewText(e.ToString());
             }
         }
     }

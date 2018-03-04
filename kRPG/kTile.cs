@@ -13,7 +13,8 @@ namespace kRPG
             if (Main.netMode != 2)
                 if (type == TileID.Anvils || type == TileID.MythrilAnvil)
                 {
-                    PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>(mod);
+                    Main.PlaySound(SoundID.MenuOpen, new Vector2(i * 16f + 16, j * 16f + 8));
+                    PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>(mod);
                     character.CloseGUIs();
                     character.anvilGUI.guiActive = true;
                     character.anvilGUI.position = new Vector2(i * 16f + 16f, j * 16f + 8f);

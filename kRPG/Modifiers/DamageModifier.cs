@@ -12,7 +12,7 @@ namespace kRPG.Modifiers
         public DamageModifier(kNPC kNPC, NPC npc, float damageModifier = 1.2f) : base(kNPC, npc)
         {
             this.npc = npc;
-            npc.GivenName = "Brutal " + npc.GivenName;
+            npc.GivenName = "Brutal " + npc.FullName;
             this.damageModifier = damageModifier;
             if (Main.netMode != 1) Apply();
         }

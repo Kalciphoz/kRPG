@@ -317,10 +317,10 @@ namespace kRPG
         const byte g = 2;
         const byte p = 3;
 
-        public static string MoneyToString(int amount)
+        public static string MoneyToString(ulong amount)
         {
             string output = "";
-            int[] coins = SeparateCoinTypes(amount);
+            uint[] coins = SeparateCoinTypes(amount);
 
             if (coins[p] > 0)
             {
@@ -342,22 +342,22 @@ namespace kRPG
             return output;
         }
 
-        public static int[] SeparateCoinTypes(int amount)
+        public static uint[] SeparateCoinTypes(ulong amount)
         {
 
             //splitting the cost into individual coin types
-            int[] output = new int[4];
-            output[c] = Math.Max(0, amount % 100);
-            output[s] = Math.Max(0, (amount % 10000 - output[c]) / 100);
-            output[g] = Math.Max(0, (amount % 1000000 - output[c] - output[s]) / 10000);
-            output[p] = Math.Max(0, (amount - output[c] - output[s] - output[g]) / 1000000);
+            uint[] output = new uint[4];
+            output[c] = (uint)Math.Max(0, amount % 100);
+            output[s] = (uint)Math.Max(0, (amount % 10000 - output[c]) / 100);
+            output[g] = (uint)Math.Max(0, (amount % 1000000 - output[c] - output[s]) / 10000);
+            output[p] = (uint)Math.Max(0, (amount - output[c] - output[s] - output[g]) / 1000000);
 
             return output;
         }
 
-        public static int Wealth(this Player player)
+        public static ulong Wealth(this Player player)
         {
-            int coins = 0;
+            ulong coins = 0;
 
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
 
@@ -381,36 +381,36 @@ namespace kRPG
             return coins;
         }
 
-        public static int CoinStackValue(Item i)
+        public static uint CoinStackValue(Item i)
         {
-            int coins = 0;
+            uint coins = 0;
             if (i.type == ItemID.CopperCoin)
             {
-                coins += i.stack;
+                coins += (uint)i.stack;
             }
             else if (i.type == ItemID.SilverCoin)
             {
-                coins += i.stack * 100;
+                coins += (uint)i.stack * 100;
             }
             else if (i.type == ItemID.GoldCoin)
             {
-                coins += i.stack * 10000;
+                coins += (uint)i.stack * 10000;
             }
             else if (i.type == ItemID.PlatinumCoin)
             {
-                coins += i.stack * 1000000;
+                coins += (uint)i.stack * 1000000;
             }
             return coins;
         }
 
-        public static void RemoveCoins(this Player player, int amount)
+        public static void RemoveCoins(this Player player, ulong amount)
         {
             int[] cointype = { 71, 72, 73, 74 };
 
             //splitting the cost into individual coin types
-            int[] cost = API.SeparateCoinTypes(amount);
+            uint[] cost = API.SeparateCoinTypes(amount);
 
-            int[] coins = new int[4];
+            uint[] coins = new uint[4];
             for (int i = 0; i < coins.Length; i++)
             {
                 coins[i] = 0;
@@ -458,24 +458,24 @@ namespace kRPG
                 {
                     cost[i + 1] += 1;
                     cost[i] -= 100;
-                    Item.NewItem((int)player.position.X, (int)player.position.Y, 0, 0, cointype[i], -cost[i], true, 0, true);
+                    Item.NewItem((int)player.position.X, (int)player.position.Y, 0, 0, cointype[i], -(int)cost[i], true, 0, true);
                 }
             }
         }
 
-        public static int RemoveCoins(Item item, int cointype, ref int amount)
+        public static int RemoveCoins(Item item, int cointype, ref uint amount)
         {
             int stacksize = item.stack;
             if (item.type == cointype)
             {
                 if (stacksize >= amount)
                 {
-                    stacksize -= amount;
+                    stacksize -= (int)amount;
                     amount = 0;
                 }
                 else
                 {
-                    amount -= item.stack;
+                    amount -= (uint)item.stack;
                     stacksize = 0;
                 }
             }

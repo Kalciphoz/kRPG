@@ -15,7 +15,7 @@ namespace kRPG.Modifiers
         public ExplosiveModifier(kNPC kNPC, NPC npc, float lifeModifier = 0.5f) : base(kNPC, npc)
         {
             this.npc = npc;
-            npc.GivenName = "Explosive " + npc.GivenName;
+            npc.GivenName = "Explosive " + npc.FullName;
             this.kNPC = kNPC;
             Apply();
         }

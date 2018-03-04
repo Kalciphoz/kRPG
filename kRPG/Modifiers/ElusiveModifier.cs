@@ -11,7 +11,7 @@ namespace kRPG.Modifiers
         public ElusiveModifier(kNPC kNPC, NPC npc, float dodgeModifier = 1.2f) : base(kNPC, npc)
         {
             this.npc = npc;
-            npc.GivenName = "Elusive " + npc.GivenName;
+            npc.GivenName = "Elusive " + npc.FullName;
             this.dodgeModifier = dodgeModifier;
         }
 

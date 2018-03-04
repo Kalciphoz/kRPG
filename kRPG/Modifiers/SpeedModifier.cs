@@ -15,7 +15,7 @@ namespace kRPG.Modifiers
         {
             this.npc = npc;
             kn = kNPC;
-            npc.GivenName = "Swift " + npc.GivenName;
+            npc.GivenName = "Swift " + npc.FullName;
             this.speedModifier = speedModifier;
         }
 

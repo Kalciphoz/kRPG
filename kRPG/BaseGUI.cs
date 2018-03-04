@@ -20,7 +20,6 @@ namespace kRPG
         public BaseGUI()
         {
             gui_elements.Add(this);
-            return;
         }
 
         public virtual bool PreDraw()
