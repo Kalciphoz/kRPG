@@ -37,7 +37,7 @@ namespace kRPG.Modifiers
                 Projectile proj1 =
                     Main.projectile[
                         Projectile.NewProjectile(npc.Center, new Vector2(0f, -1.5f),
-                            kNPC.mod.ProjectileType<ProceduralSpellProj>(), npc.damage, 3f)];
+                            ModContent.ProjectileType<ProceduralSpellProj>(), npc.damage, 3f)];
                 proj1.hostile = true;
                 proj1.friendly = false;
                 ProceduralSpellProj ps1 = (ProceduralSpellProj) proj1.modProjectile;
@@ -90,7 +90,7 @@ namespace kRPG.Modifiers
                 Projectile proj2 =
                     Main.projectile[
                         Projectile.NewProjectile(npc.Center, new Vector2(0f, 1.5f),
-                            kNPC.mod.ProjectileType<ProceduralSpellProj>(), npc.damage, 3f)];
+                            ModContent.ProjectileType<ProceduralSpellProj>(), npc.damage, 3f)];
                 proj2.hostile = true;
                 proj2.friendly = false;
                 ProceduralSpellProj ps2 = (ProceduralSpellProj) proj2.modProjectile;

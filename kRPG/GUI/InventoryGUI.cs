@@ -74,11 +74,11 @@ namespace kRPG.GUI
             {
                 character.CloseGUIs();
                 Main.PlaySound(SoundID.MenuTick);
-                character.levelGUI.guiActive = player.GetModPlayer<PlayerCharacter>(mod).UnspentPoints();
+                character.levelGUI.guiActive = player.GetModPlayer<PlayerCharacter>().UnspentPoints();
             }, delegate (Player player, SpriteBatch spriteBatch)
             {
                 Main.LocalPlayer.mouseInterface = true;
-                string s = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>(mod).UnspentPoints() ? "Click here to allocate stat points" : "You have no unspent stat points";
+                string s = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>().UnspentPoints() ? "Click here to allocate stat points" : "You have no unspent stat points";
                 Main.instance.MouseText(s);
             });
         }
@@ -133,9 +133,9 @@ namespace kRPG.GUI
                 spriteBatch.Draw(GFX.inventory_points, points_origin, Color.White, scale);
 
             Mod mod = ModLoader.GetMod("kRPG");
-            spriteBatch.Draw(Main.itemTexture[mod.ItemType<PermanenceCrown>()], origin + new Vector2(600f, 68f) * scale, Color.White, scale);
+            spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<PermanenceCrown>()], origin + new Vector2(600f, 68f) * scale, Color.White, scale);
             spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.permanence.ToString(), origin + new Vector2(640f, 72f) * scale, Color.White, scale * 1.2f);
-            spriteBatch.Draw(Main.itemTexture[mod.ItemType<BlacksmithCrown>()], origin + new Vector2(600f, 108f) * scale, Color.White, scale);
+            spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<BlacksmithCrown>()], origin + new Vector2(600f, 108f) * scale, Color.White, scale);
             spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.transcendence.ToString(), origin + new Vector2(640f, 112f) * scale, Color.White, scale * 1.2f);
 
             StatusBar.DrawBuffs();

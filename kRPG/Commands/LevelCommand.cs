@@ -33,7 +33,7 @@ namespace kRPG.Commands
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {
-            PlayerCharacter character = caller.Player.GetModPlayer<PlayerCharacter>(mod);
+            PlayerCharacter character = caller.Player.GetModPlayer<PlayerCharacter>();
             float xp = character.xp / character.ExperienceToLevel();
             character.level = Int32.Parse(args[0]);
             character.xp = (int)(character.ExperienceToLevel() * xp);

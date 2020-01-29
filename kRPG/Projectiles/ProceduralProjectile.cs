@@ -13,7 +13,7 @@ using Terraria.ID;
 using kRPG.Items.Weapons;
 using kRPG.Items;
 using kRPG.Buffs;
-using kRPG.Dusts;
+
 using kRPG.GUI;
 using kRPG.Items.Glyphs;
 using System.IO;
@@ -360,7 +360,7 @@ namespace kRPG.Projectiles
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            Texture2D t = Main.projectileTexture[mod.ProjectileType<Obelisk>()];
+            Texture2D t = Main.projectileTexture[ModContent.ProjectileType<Obelisk>()];
             spriteBatch.Draw(t, position + t.Bounds.Center(), null, Color.White, rotation, t.Bounds.Center(), scale, SpriteEffects.None, 0f);
         }
     }
@@ -487,7 +487,7 @@ namespace kRPG.Projectiles
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            Texture2D t = Main.projectileTexture[mod.ProjectileType<WingedEyeball>()];
+            Texture2D t = Main.projectileTexture[ModContent.ProjectileType<WingedEyeball>()];
             spriteBatch.Draw(t, position + t.Bounds.Center(), new Rectangle(0, projectile.frame * 40, 90, 40), color, rotation, t.Bounds.Center(), scale, projectile.spriteDirection < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
         }
     }

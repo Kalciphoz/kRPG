@@ -118,7 +118,7 @@ namespace kRPG.Items.Glyphs
 
                 Projectile m = minion.projectile;
                 Player player = Main.player[m.owner];
-                Projectile projectile = Main.projectile[Projectile.NewProjectile(m.Center, new Vector2(0f, -1.5f), minion.mod.ProjectileType<ProceduralSpellProj>(), minion.source.ProjectileDamage(player.GetModPlayer<PlayerCharacter>()), 3f, m.owner)];
+                Projectile projectile = Main.projectile[Projectile.NewProjectile(m.Center, new Vector2(0f, -1.5f), ModContent.ProjectileType<ProceduralSpellProj>(), minion.source.ProjectileDamage(player.GetModPlayer<PlayerCharacter>()), 3f, m.owner)];
                 projectile.minion = true;
                 ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
                 ps.origin = projectile.position;
@@ -178,13 +178,13 @@ namespace kRPG.Items.Glyphs
             smokePellets = new GlyphModifier(3, "Smoke Pellets", glyph => false, () => false, 0.9f).SetImpact(delegate (ProceduralSpellProj spell, NPC npc, int damage)
             {
                 Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), spell.projectile.Center);
-                Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(24, 48), Vector2.Zero, mod.ProjectileType<SmokePellets>(), 2, 0f, spell.projectile.owner)];
+                Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(), 2, 0f, spell.projectile.owner)];
                 proj.minion = true;
             });
             explosions = new GlyphModifier(4, "Explosive", glyph => false, () => false, 0.85f).SetImpact(delegate (ProceduralSpellProj spell, NPC npc, int damage)
             {
                 Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), spell.projectile.Center);
-                Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, mod.ProjectileType<Explosion>(), spell.projectile.damage, 0f, spell.projectile.owner)];
+                Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(), spell.projectile.damage, 0f, spell.projectile.owner)];
                 proj.minion = true;
             });
             vanish = new GlyphModifier(5, "Discord", glyph => glyph is Star, () => Main.rand.Next(3) == 0, 1.2f, 1f);

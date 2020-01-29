@@ -90,7 +90,7 @@ namespace kRPG.Items.Weapons
             Vector2 velocity = unitVelocity * item.shootSpeed;
             for (int i = 0; i < projCount; i += 1)
             {
-                Projectile projectile = Main.projectile[Projectile.NewProjectile(player.Center, velocity.RotatedBy(API.Tau * (-spread / 2f + i * spread + spread / 2f)), mod.ProjectileType<ProceduralSpellProj>(), item.damage, item.knockBack, player.whoAmI)];
+                Projectile projectile = Main.projectile[Projectile.NewProjectile(player.Center, velocity.RotatedBy(API.Tau * (-spread / 2f + i * spread + spread / 2f)), ModContent.ProjectileType<ProceduralSpellProj>(), item.damage, item.knockBack, player.whoAmI)];
                 ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
                 ps.origin = projectile.position;
                 if (cross.GetAIAction() != null)

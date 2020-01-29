@@ -110,7 +110,7 @@ namespace kRPG.Items.Weapons
             explosive = new StaffOrnament("Explosive", 6, 4, " of Blasting", false, 1.2f, 0.9f, 0.9f).SetEffect(delegate (Player player, NPC npc, Item item, int damage, bool crit)
             {
                 Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), player.Center);
-                Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModLoader.GetMod("kRPG").ProjectileType<Explosion>(), damage / 2, 0f, player.whoAmI)];
+                Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(), damage / 2, 0f, player.whoAmI)];
             });
 
             ornamentByTheme = new Dictionary<STAFFTHEME, List<StaffOrnament>>()

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace kRPG.Dusts
+namespace Dusts
 {
     public class Ice : ModDust
     {

@@ -243,7 +243,7 @@ namespace kRPG.Items
         {
             if (!NeedsSaving(item)) return;
             if (reset)
-                if (item.type != mod.ItemType<ProceduralSword>() && item.type != mod.ItemType<ProceduralStaff>() && !(item.modItem is RangedWeapon))
+                if (item.type != ModContent.ItemType<ProceduralSword>() && item.type != ModContent.ItemType<ProceduralStaff>() && !(item.modItem is RangedWeapon))
                     item.SetItemDefaults(item.type);
             
             Random rand = new Random();
@@ -1113,7 +1113,7 @@ namespace kRPG.Items
                 if (Main.chest[player.chest].item.Contains(item)) flag = true;
             if (NeedsSaving(item) && !enhanced && !WorldGen.gen && !Main.gameMenu && (player.inventory.Contains(item) || flag || player.bank.item.Contains(item) || player.bank2.item.Contains(item) || player.bank3.item.Contains(item)))
                 Initialize(item);
-            PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>(mod);
+            PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
 
             if (Upgradeable(item) && Main.mouseRight && Main.mouseRightRelease && new Rectangle((int)position.X, (int)position.Y, 38, 38).Contains(Main.mouseX, Main.mouseY))
             {
@@ -1131,7 +1131,7 @@ namespace kRPG.Items
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
             try
             {
-                if (ItemID.Sets.NebulaPickup[newItem.type] || newItem.type == ItemID.Heart || newItem.type == ItemID.CandyApple || newItem.type == ItemID.CandyCane || newItem.type == ItemID.Star || newItem.type == ItemID.SoulCake || newItem.type == ItemID.SugarPlum || newItem.type == mod.ItemType<PermanenceCrown>() || newItem.type == mod.ItemType<BlacksmithCrown>())
+                if (ItemID.Sets.NebulaPickup[newItem.type] || newItem.type == ItemID.Heart || newItem.type == ItemID.CandyApple || newItem.type == ItemID.CandyCane || newItem.type == ItemID.Star || newItem.type == ItemID.SoulCake || newItem.type == ItemID.SugarPlum || newItem.type == ModContent.ItemType<PermanenceCrown>() || newItem.type == ModContent.ItemType<BlacksmithCrown>())
                 {
                     return true;
                 }
@@ -1226,14 +1226,14 @@ namespace kRPG.Items
                             NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
                         }
                     }
-                    else if (item.type == mod.ItemType<PermanenceCrown>())
+                    else if (item.type == ModContent.ItemType<PermanenceCrown>())
                     {
                         character.permanence += 1;
                         ItemText.NewText(item, item.stack);
                         Main.PlaySound(7, player.position);
                         return false;
                     }
-                    else if (item.type == mod.ItemType<BlacksmithCrown>())
+                    else if (item.type == ModContent.ItemType<BlacksmithCrown>())
                     {
                         character.transcendence += 1;
                         ItemText.NewText(item, item.stack);
@@ -1316,7 +1316,7 @@ namespace kRPG.Items
             }
             else foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
             {
-                dictionary[element] = (int)Math.Round(elementalDamage[element] * (ignoreModifiers ? 1 : player.GetModPlayer<PlayerCharacter>(mod).DamageMultiplier(element, item.melee, item.ranged, item.magic, item.thrown, item.summon)));
+                dictionary[element] = (int)Math.Round(elementalDamage[element] * (ignoreModifiers ? 1 : player.GetModPlayer<PlayerCharacter>().DamageMultiplier(element, item.melee, item.ranged, item.magic, item.thrown, item.summon)));
             }
             return dictionary;
         }
@@ -1338,7 +1338,7 @@ namespace kRPG.Items
                 PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
                 character.mana = Math.Min(player.statManaMax2, character.mana + item.healMana);
                 player.statMana = character.mana;
-                player.AddBuff(mod.BuffType<ManaCooldown>(), 600);
+                player.AddBuff(ModContent.BuffType<ManaCooldown>(), 600);
                 return true;
             }
             return false;

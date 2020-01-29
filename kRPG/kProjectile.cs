@@ -64,7 +64,7 @@ namespace kRPG
                         return;
                     }
                 }
-                if (projectile.type == mod.ProjectileType<ProceduralSpellProj>())
+                if (projectile.type == ModContent.ProjectileType<ProceduralSpellProj>())
                 {
                     PlayerCharacter character = Main.player[projectile.owner].GetModPlayer<PlayerCharacter>();
                     ProceduralSpellProj spell = (ProceduralSpellProj)projectile.modProjectile;
@@ -84,7 +84,7 @@ namespace kRPG
                     Player player = Main.player[projectile.owner];
                     if (player.active)
                         if (player.inventory[player.selectedItem] != null)
-                            if (player.inventory[player.selectedItem].active && projectile.type != mod.ProjectileType<Explosion>() && projectile.type != mod.ProjectileType<SmokePellets>())
+                            if (player.inventory[player.selectedItem].active && projectile.type != ModContent.ProjectileType<Explosion>() && projectile.type != ModContent.ProjectileType<SmokePellets>())
                                 SelectItem(projectile);
                 }
             }

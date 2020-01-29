@@ -61,10 +61,10 @@ namespace kRPG.NPCs
 
         public override void SetupShop(Chest shop, ref int nextSlot)
         {
-            shop.item[nextSlot++].SetDefaults(mod.ItemType<ScintillatingBloodLacrima>(),true);
-            shop.item[nextSlot++].SetDefaults(mod.ItemType<EyeOnAStick>(),true);
-            shop.item[nextSlot++].SetDefaults(mod.ItemType<Scythe>(),true);
-            shop.item[nextSlot++].SetDefaults(mod.ItemType<Arbalest>(),true);
+            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<ScintillatingBloodLacrima>(),true);
+            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<EyeOnAStick>(),true);
+            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<Scythe>(),true);
+            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<Arbalest>(),true);
         }
 
         public override string TownNPCName()

@@ -81,11 +81,11 @@ namespace kRPG.GUI
             {
                 character.CloseGUIs();
                 Main.PlaySound(SoundID.MenuTick);
-                character.levelGUI.guiActive = player.GetModPlayer<PlayerCharacter>(mod).UnspentPoints() && !Main.playerInventory;
+                character.levelGUI.guiActive = player.GetModPlayer<PlayerCharacter>().UnspentPoints() && !Main.playerInventory;
             }, delegate (Player player, SpriteBatch spriteBatch)
             {
                 Main.LocalPlayer.mouseInterface = true;
-                string s = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>(mod).UnspentPoints() ? "Click here to allocate stat points" : "You have no unspent stat points";
+                string s = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>().UnspentPoints() ? "Click here to allocate stat points" : "You have no unspent stat points";
                 Main.instance.MouseText(s);
             });
         }

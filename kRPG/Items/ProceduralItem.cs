@@ -554,7 +554,7 @@ namespace kRPG.Items
                     Vector2 unitVelocity = (new Vector2(Main.mouseX - 12f, Main.mouseY - 24f) + Main.screenPosition - pos);
                     unitVelocity.Normalize();
                     Vector2 velocity = unitVelocity * 60f / item.useAnimation;
-                    Projectile projectile = Main.projectile[Projectile.NewProjectile(pos, velocity, mod.GetProjectile<ProceduralSpear>().projectile.type, item.damage, item.knockBack, player.whoAmI)];
+                    Projectile projectile = Main.projectile[Projectile.NewProjectile(pos, velocity, ModContent.GetInstance < ProceduralSpear >().projectile.type, item.damage, item.knockBack, player.whoAmI)];
                     projectile.GetGlobalProjectile<kProjectile>().elementalDamage = item.GetGlobalItem<kItem>().elementalDamage;
                     projectile.scale = item.scale;
                     ProceduralSpear ps = (ProceduralSpear)projectile.modProjectile;

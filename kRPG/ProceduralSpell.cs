@@ -143,7 +143,7 @@ namespace kRPG
             if (vanish)
             {
                 Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), oldCenter);
-                Projectile.NewProjectile(oldCenter - new Vector2(24, 48), Vector2.Zero, mod.ProjectileType<SmokePellets>(), 2, 0f, player.whoAmI);
+                Projectile.NewProjectile(oldCenter - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(), 2, 0f, player.whoAmI);
                 Vector2 vector32;
                 vector32.X = (float)Main.mouseX + Main.screenPosition.X;
                 if (player.gravDir == 1f)
@@ -203,7 +203,7 @@ namespace kRPG
         public ProceduralSpellProj CreateProjectile(Player player, Vector2 velocity, float angle = 0f, Vector2? position = null, Entity caster = null)
         {
             if (caster == null) caster = player;
-            Projectile projectile = Main.projectile[Projectile.NewProjectile(position == null ? caster.Center : (Vector2)position, velocity.RotatedBy(API.Tau * angle), mod.ProjectileType<ProceduralSpellProj>(), ProjectileDamage(player.GetModPlayer<PlayerCharacter>()), 3f, player.whoAmI)];
+            Projectile projectile = Main.projectile[Projectile.NewProjectile(position == null ? caster.Center : (Vector2)position, velocity.RotatedBy(API.Tau * angle), ModContent.ProjectileType<ProceduralSpellProj>(), ProjectileDamage(player.GetModPlayer<PlayerCharacter>()), 3f, player.whoAmI)];
             ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
             ps.origin = projectile.position;
             foreach (Item item in glyphs)

@@ -5,10 +5,11 @@ using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using kRPG.Items;
 using kRPG.Items.Weapons;
-using kRPG.Dusts;
+
 using kRPG.Buffs;
 using System.Collections.Generic;
 using System.Runtime.Remoting;
+using Dusts;
 using kRPG.Items.Glyphs;
 using kRPG.Projectiles;
 using kRPG.Items.Weapons.RangedDrops;
@@ -147,7 +148,7 @@ namespace kRPG
             {
                 if (Main.rand.Next(2) == 0)
                 {
-                    int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width + 4, npc.height + 4, mod.GetDust<Ice>().Type, npc.velocity.X, npc.velocity.Y, 100, Color.White, 1.5f);
+                    int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width + 4, npc.height + 4, ModContent.GetInstance<Ice>().Type, npc.velocity.X, npc.velocity.Y, 100, Color.White, 1.5f);
                     Main.dust[dust].noGravity = true;
                 }
                 Lighting.AddLight(npc.position, 0f, 0.4f, 1f);
@@ -356,9 +357,9 @@ namespace kRPG
             if (Main.rand.Next(2500) < GetLevel(npc.type))
             {
                 if (Main.rand.Next(8) == 0)
-                    Item.NewItem(npc.position, mod.ItemType<BlacksmithCrown>());
+                    Item.NewItem(npc.position, ModContent.ItemType<BlacksmithCrown>());
                 else
-                    Item.NewItem(npc.position, mod.ItemType<PermanenceCrown>());
+                    Item.NewItem(npc.position, ModContent.ItemType<PermanenceCrown>());
             }
 
             int level = GetLevel(npc.netID);

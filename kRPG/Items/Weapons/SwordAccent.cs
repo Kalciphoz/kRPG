@@ -1,4 +1,4 @@
-﻿using kRPG.Dusts;
+﻿
 using kRPG.Projectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dusts;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -105,7 +106,7 @@ namespace kRPG.Items.Weapons
             flame = new SwordAccent("Flame", " of Ignition", 2, 2, 3, delegate (Player player, NPC npc, ProceduralSword sword, int damage, bool crit)
             {
                 Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), player.Center);
-                Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModLoader.GetMod("kRPG").ProjectileType<Explosion>(), Math.Max(1, (int)Math.Round(sword.eleDamage[ELEMENT.FIRE]*damage*2)), 0f, player.whoAmI)];
+                Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(), Math.Max(1, (int)Math.Round(sword.eleDamage[ELEMENT.FIRE]*damage*2)), 0f, player.whoAmI)];
             }, 1.05f).setEleDamage(new Dictionary<ELEMENT, float>
             {
                 { ELEMENT.FIRE, 0.2f },
@@ -123,7 +124,7 @@ namespace kRPG.Items.Weapons
             gemGreen = new SwordAccent("GemGreen", " of Thunder", 2, 2, 2, delegate (Player player, NPC npc, ProceduralSword sword, int damage, bool crit)
             {
                 Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), player.Center);
-                Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(24, 48), Vector2.Zero, ModLoader.GetMod("kRPG").ProjectileType<SmokePellets>(), Math.Max(1, damage/6), 0f, player.whoAmI)];
+                Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(), Math.Max(1, damage/6), 0f, player.whoAmI)];
             }, 1.1f, 4).setEleDamage(new Dictionary<ELEMENT, float>
             {
                 { ELEMENT.FIRE, 0f },
@@ -142,7 +143,7 @@ namespace kRPG.Items.Weapons
             {
                 if (Main.rand.Next(3) == 0)
                 {
-                    int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, player.GetModPlayer<PlayerCharacter>().mod.GetDust<Ice>().Type, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 100, new Color(), 1.5f);
+                    int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, ModContent.GetInstance <Ice>().Type, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 100, new Color(), 1.5f);
                     Main.dust[dust].noGravity = true;
                 }
                 Lighting.AddLight(rect.Center(), 0f, 0.4f, 1f);

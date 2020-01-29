@@ -36,7 +36,7 @@ namespace kRPG.Items
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            spriteBatch.Draw(Main.itemTexture[mod.ItemType<PermanenceCrown>()], item.position, Color.White);
+            spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<PermanenceCrown>()], item.position, Color.White);
             Lighting.AddLight(item.position, 1f, 0.4f, 1f);
         }
     }

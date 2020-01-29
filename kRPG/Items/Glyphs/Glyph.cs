@@ -9,9 +9,9 @@ using kRPG.Projectiles;
 using Terraria.ModLoader.IO;
 using kRPG.Buffs;
 using Microsoft.Xna.Framework;
-using kRPG.Dusts;
 using Terraria.ID;
 using System.IO;
+using Dusts;
 
 namespace kRPG.Items.Glyphs
 {
@@ -304,7 +304,7 @@ namespace kRPG.Items.Glyphs
                 PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
                 if (character.minions.Exists(minion => minion is WingedEyeball))
                 {
-                    foreach (ProceduralMinion eyeball in character.minions.Where(minion => minion.projectile.type == mod.ProjectileType<WingedEyeball>()))
+                    foreach (ProceduralMinion eyeball in character.minions.Where(minion => minion.projectile.type == ModContent.ProjectileType<WingedEyeball>()))
                     {
                         foreach (ProceduralSpellProj psp in eyeball.circlingProtection)
                             psp.projectile.Kill();
@@ -313,7 +313,7 @@ namespace kRPG.Items.Glyphs
                         eyeball.projectile.Kill();
                     }
                 }
-                Projectile eye = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, mod.ProjectileType<WingedEyeball>(), 0, 0f, player.whoAmI)];
+                Projectile eye = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<WingedEyeball>(), 0, 0f, player.whoAmI)];
                 eye.Center = target;
                 WingedEyeball we = (WingedEyeball)eye.modProjectile;
                 we.source = spell;
@@ -390,7 +390,7 @@ namespace kRPG.Items.Glyphs
                 PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
                 if (character.minions.Exists(minion => minion is Obelisk))
                 {
-                    foreach (ProceduralMinion obelisk in character.minions.Where(minion => minion.projectile.type == mod.ProjectileType<Obelisk>()))
+                    foreach (ProceduralMinion obelisk in character.minions.Where(minion => minion.projectile.type == ModContent.ProjectileType<Obelisk>()))
                     {
                         foreach (ProceduralSpellProj psp in obelisk.circlingProtection)
                             psp.projectile.Kill();
@@ -399,7 +399,7 @@ namespace kRPG.Items.Glyphs
                         obelisk.projectile.Kill();
                     }
                 }
-                Projectile totem = Main.projectile[Projectile.NewProjectile(new Vector2((int)(target.X / 16) * 16, placementHeight * 16) + new Vector2(8f, -32f), Vector2.Zero, mod.GetProjectile<Obelisk>().projectile.type, 0, 0f, player.whoAmI)];
+                Projectile totem = Main.projectile[Projectile.NewProjectile(new Vector2((int)(target.X / 16) * 16, placementHeight * 16) + new Vector2(8f, -32f), Vector2.Zero,ModContent.GetInstance<Obelisk>().projectile.type, 0, 0f, player.whoAmI)];
                 totem.position = new Vector2((int)(target.X / 16) * 16, placementHeight * 16) - new Vector2(8f, 62f);
                 ((Obelisk)totem.modProjectile).source = spell;
                 character.minions.Add((Obelisk)totem.modProjectile);
@@ -678,7 +678,7 @@ namespace kRPG.Items.Glyphs
             {
                 if (Main.rand.NextFloat(0f, 2f) <= spell.alpha)
                 {
-                    int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, spell.mod.GetDust<Ice>().Type, 0f, 0f, 100, Color.White, 0.5f + spell.alpha);
+                    int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height,ModContent.GetInstance<Ice>().Type, 0f, 0f, 100, Color.White, 0.5f + spell.alpha);
                     Main.dust[dust].noGravity = true;
                 }
                 Lighting.AddLight(spell.projectile.Center, 0f, 0.4f, 1f);
@@ -693,7 +693,7 @@ namespace kRPG.Items.Glyphs
                 {
                     try
                     {
-                        Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, mod.DustType<Ice>(), spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f);
+                        Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, ModContent.DustType<Ice>(), spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f);
                     }
                     catch (SystemException e)
                     {

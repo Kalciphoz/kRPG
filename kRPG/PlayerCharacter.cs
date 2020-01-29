@@ -4,11 +4,12 @@ using Terraria;
 using kRPG.GUI;
 using Terraria.ModLoader.IO;
 using System.Collections.Generic;
+using Dusts;
 using kRPG.Items;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using kRPG.Buffs;
-using kRPG.Dusts;
+
 using kRPG.Projectiles;
 using Microsoft.Xna.Framework.Input;
 using kRPG.Items.Glyphs;
@@ -253,21 +254,21 @@ namespace kRPG
             items[2].GetGlobalItem<kItem>().Initialize(items[2],true);
 
             Item star = new Item();
-            star.SetDefaults(mod.ItemType<Star_Blue>(),true);
+            star.SetDefaults(ModContent.ItemType<Star_Blue>(),true);
             Item cross = new Item();
             switch (rand.Next(4))
             {
                 default:
-                    cross.SetDefaults(mod.ItemType<Cross_Red>(),true);
+                    cross.SetDefaults(ModContent.ItemType<Cross_Red>(),true);
                     break;
                 case 1:
-                    cross.SetDefaults(mod.ItemType<Cross_Orange>(),true);
+                    cross.SetDefaults(ModContent.ItemType<Cross_Orange>(),true);
                     break;
                 case 2:
-                    cross.SetDefaults(mod.ItemType<Cross_Yellow>(),true);
+                    cross.SetDefaults(ModContent.ItemType<Cross_Yellow>(),true);
                     break;
                 case 3:
-                    cross.SetDefaults(mod.ItemType<Cross_Green>(),true);
+                    cross.SetDefaults(ModContent.ItemType<Cross_Green>(),true);
                     break;
             }
             ((Glyph)cross.modItem).Randomize();
@@ -275,19 +276,19 @@ namespace kRPG
             switch (rand.Next(5))
             {
                 default:
-                    moon.SetDefaults(mod.ItemType<Moon_Yellow>(),true);
+                    moon.SetDefaults(ModContent.ItemType<Moon_Yellow>(),true);
                     break;
                 case 1:
-                    moon.SetDefaults(mod.ItemType<Moon_Green>(),true);
+                    moon.SetDefaults(ModContent.ItemType<Moon_Green>(),true);
                     break;
                 case 2:
-                    moon.SetDefaults(mod.ItemType<Moon_Blue>(),true);
+                    moon.SetDefaults(ModContent.ItemType<Moon_Blue>(),true);
                     break;
                 case 3:
-                    moon.SetDefaults(mod.ItemType<Moon_Violet>(),true);
+                    moon.SetDefaults(ModContent.ItemType<Moon_Violet>(),true);
                     break;
                 case 4:
-                    moon.SetDefaults(mod.ItemType<Moon_Purple>(),true);
+                    moon.SetDefaults(ModContent.ItemType<Moon_Purple>(),true);
                     break;
             }
             ((Glyph)moon.modItem).Randomize();
@@ -415,7 +416,7 @@ namespace kRPG
             {
                 if (Main.rand.Next(2) == 0)
                 {
-                    int dust = Dust.NewDust(player.position - new Vector2(2f, 2f), player.width + 4, player.height + 4, mod.GetDust<Ice>().Type, player.velocity.X, player.velocity.Y, 100, Color.White, 1.5f);
+                    int dust = Dust.NewDust(player.position - new Vector2(2f, 2f), player.width + 4, player.height + 4, ModContent.GetInstance<Ice>().Type, player.velocity.X, player.velocity.Y, 100, Color.White, 1.5f);
                     Main.dust[dust].noGravity = true;
                 }
                 Lighting.AddLight(player.position, 0f, 0.4f, 1f);
@@ -567,7 +568,7 @@ namespace kRPG
             try
             {
                 Item item = player.inventory[player.selectedItem];
-                if (item.type != mod.ItemType<ProceduralStaff>() || item.shoot > 0)
+                if (item.type != ModContent.ItemType<ProceduralStaff>() || item.shoot > 0)
                     return;
                 player.releaseUseItem = true;
                 if (player.itemAnimation == 1 && item.stack > 0)
@@ -621,8 +622,8 @@ namespace kRPG
                     Main.itemTexture[item.type] = ((ProceduralSword)item.modItem).texture;
 
             if (item.modItem is ProceduralStaff)
-                if (Main.itemTexture[mod.ItemType<ProceduralStaff>()] != ((ProceduralStaff)item.modItem).texture)
-                    Main.itemTexture[mod.ItemType<ProceduralStaff>()] = ((ProceduralStaff)item.modItem).texture;
+                if (Main.itemTexture[ModContent.ItemType<ProceduralStaff>()] != ((ProceduralStaff)item.modItem).texture)
+                    Main.itemTexture[ModContent.ItemType<ProceduralStaff>()] = ((ProceduralStaff)item.modItem).texture;
 
             //for (int i = 0; i < 40; i += 1)
             //    inventories[activeInvPage][i] = player.inventory[i + 10];
@@ -845,13 +846,13 @@ namespace kRPG
                         Type t = ailments[element];
                         ModBuff buff;
                         if (ailments[element] == typeof(Fire))
-                            buff = mod.GetBuff<Fire>();
+                            buff = ModContent.GetInstance<Fire>();
                         else if (ailments[element] == typeof(Cold))
-                            buff = mod.GetBuff<Cold>();
+                            buff = ModContent.GetInstance<Cold>();
                         else if (ailments[element] == typeof(Lightning))
-                            buff = mod.GetBuff<Lightning>();
+                            buff = ModContent.GetInstance<Lightning>();
                         else
-                            buff = mod.GetBuff<Shadow>();
+                            buff = ModContent.GetInstance<Shadow>();
                         player.AddBuff(buff.Type, bossfight ? 90 : 210);
                         int intensity = eleDmg[element] * 3 / 2;
                         ailmentIntensity[element] = Main.expertMode ? intensity * 2 / 3 : intensity;
@@ -860,7 +861,7 @@ namespace kRPG
                 }
             }
             if (Main.rand.Next(player.statLifeMax2 + player.statDefense) < damage*3)
-                player.AddBuff(mod.BuffType<Physical>(), 15 + Math.Min(30, damage * 30 / player.statLifeMax2));
+                player.AddBuff(ModContent.BuffType<Physical>(), 15 + Math.Min(30, damage * 30 / player.statLifeMax2));
             if (hasAilment[ELEMENT.LIGHTNING])
                 damage += 1 + ailmentIntensity[ELEMENT.LIGHTNING];
         }
@@ -892,7 +893,7 @@ namespace kRPG
 
             if (item != null)
             {
-                kItem ki = item.GetGlobalItem<kItem>(mod);
+                kItem ki = item.GetGlobalItem<kItem>();
                 damage += ki.GetEleDamage(item, player);
                 eleDmg = ki.GetIndividualElements(item, player);
             }
@@ -937,13 +938,13 @@ namespace kRPG
                         Type t = ailments[element];
                         ModBuff buff;
                         if (ailments[element] == typeof(Fire))
-                            buff = mod.GetBuff<Fire>();
+                            buff = ModContent.GetInstance<Fire>();
                         else if (ailments[element] == typeof(Cold))
-                            buff = mod.GetBuff<Cold>();
+                            buff = ModContent.GetInstance<Cold>();
                         else if (ailments[element] == typeof(Lightning))
-                            buff = mod.GetBuff<Lightning>();
+                            buff = ModContent.GetInstance<Lightning>();
                         else
-                            buff = mod.GetBuff<Shadow>();
+                            buff = ModContent.GetInstance<Shadow>();
                         target.AddBuff(buff.Type, target.boss ? 30 + Math.Min(eleDmg[element], 30) * 3 : 120 + Math.Min(eleDmg[element], 15) * 12);
                         victim.ailmentIntensity[element] = target.boss ? eleDmg[element] / 2 : eleDmg[element];
                         victim.hasAilment[element] = true;
@@ -1001,19 +1002,19 @@ namespace kRPG
         {
             Item item = player.inventory[player.selectedItem];
             LeechLife(item, damage);
-            if (item.type == mod.ItemType<ProceduralStaff>())
+            if (item.type == ModContent.ItemType<ProceduralStaff>())
             {
                 ProceduralStaff staff = (ProceduralStaff)item.modItem;
                 bool proceed = false;
                 if (proj.type == item.shoot)
                     proceed = true;
-                else if (proj.type == mod.ProjectileType<ProceduralSpellProj>())
+                else if (proj.type == ModContent.ProjectileType<ProceduralSpellProj>())
                     proceed = ((ProceduralSpellProj)proj.modProjectile).source == null;
                 if (proceed && staff.ornament != null)
                     if (staff.ornament.onHit != null) staff.ornament.onHit(player, target, item, damage, crit);
 
             }
-            else if (proj.type == mod.ProjectileType<ProceduralSpear>() && item.type == mod.ItemType<ProceduralSword>())
+            else if (proj.type == ModContent.ProjectileType<ProceduralSpear>() && item.type == ModContent.ItemType<ProceduralSword>())
             {
                 ProceduralSword spear = (ProceduralSword)item.modItem;
                 if (spear.accent != null)
