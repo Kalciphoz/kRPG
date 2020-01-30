@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace kRPG.GUI
 {
-    public class AbilitiesGUI : BaseGUI
+    public class AbilitiesGUI : BaseGui
     {
         private Vector2 GuiPosition => new Vector2(Main.screenWidth - GFX.skillSlot.Width * 8 * scale, Main.screenHeight - GFX.skillSlot.Height * scale - 12);
 

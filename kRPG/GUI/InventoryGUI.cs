@@ -17,11 +17,11 @@ using Terraria.UI.Gamepad;
 
 namespace kRPG.GUI
 {
-    public class InventoryGUI : BaseGUI
+    public class InventoryGUI : BaseGui
     {
         public Vector2 origin => new Vector2(40f, 8f) * scale;
 
-        private float scale => Math.Min(1f, Main.screenWidth / 3840f + 0.4f);
+        private float scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
 
         public override bool PreDraw()
         {

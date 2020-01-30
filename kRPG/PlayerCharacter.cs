@@ -456,21 +456,21 @@ namespace kRPG
                 if (PlayerInput.Triggers.Current.QuickHeal)
                     if (!PlayerInput.Triggers.Old.QuickHeal)
                     {
-                        player.APIQuickHeal();
+                        player.ApiQuickHeal();
                         PlayerInput.Triggers.Old.QuickHeal = true;
                     }
 
                 if (PlayerInput.Triggers.Current.QuickMana)
                     if (!PlayerInput.Triggers.Old.QuickMana)
                     {
-                        player.APIQuickMana();
+                        player.ApiQuickMana();
                         PlayerInput.Triggers.Old.QuickMana = true;
                     }
 
                 if (PlayerInput.Triggers.Current.QuickBuff)
                     if (!PlayerInput.Triggers.Old.QuickBuff)
                     {
-                        player.APIQuickBuff();
+                        player.ApiQuickBuff();
                         PlayerInput.Triggers.Old.QuickBuff = true;
                     }
             }
@@ -485,13 +485,13 @@ namespace kRPG
             switch (player.QuicksRadial.SelectedBinding)
             {
                 case 0:
-                    player.APIQuickHeal();
+                    player.ApiQuickHeal();
                     break;
                 case 1:
-                    player.APIQuickBuff();
+                    player.ApiQuickBuff();
                     break;
                 case 2:
-                    player.APIQuickMana();
+                    player.ApiQuickMana();
                     break;
             }
 
@@ -1099,7 +1099,7 @@ namespace kRPG
         public void InitializeGUI()
         {
             if (Main.netMode == 2) return;
-            BaseGUI.gui_elements.Clear();
+            BaseGui.guiElements.Clear();
             anvilGUI = new AnvilGUI(this);
             levelGUI = new LevelGUI(this, mod);
             statusBar = new StatusBar(this, mod);
@@ -1111,9 +1111,9 @@ namespace kRPG
 
         public void CloseGUIs()
         {
-            anvilGUI.CloseGUI();
-            levelGUI.CloseGUI();
-            spellcraftingGUI.CloseGUI();
+            anvilGUI.CloseGui();
+            levelGUI.CloseGui();
+            spellcraftingGUI.CloseGui();
         }
 
         public override void OnEnterWorld(Player player)

@@ -11,7 +11,7 @@ namespace kRPG.GUI
     /// <summary>
     /// UI for the Anvil
     /// </summary>
-    public class AnvilGUI : BaseGUI
+    public class AnvilGUI : BaseGui
     {
         /// <summary>
         /// Player Character gui shown for
@@ -25,7 +25,7 @@ namespace kRPG.GUI
 
         private static Vector2 GuiPosition => new Vector2(Main.screenWidth / 2f - 128f * Scale, Main.screenHeight / 2f);
 
-        private static float Scale => Math.Min(1f, Main.screenWidth / 3840f + 0.4f);
+        private static float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
 
         private static Vector2 BtnCancelPos => new Vector2(Main.screenWidth / 2f - 92f * Scale, GuiPosition.Y + 268f * Scale);
 
@@ -53,7 +53,7 @@ namespace kRPG.GUI
             AddButton(() => new Rectangle((int)BtnCancelPos.X, (int)BtnCancelPos.Y, (int)(GFX.BTN_WIDTH * Scale), (int)(GFX.BTN_HEIGHT * Scale)), delegate
         {
             Main.PlaySound(SoundID.MenuTick);
-            CloseGUI();
+            CloseGui();
         });
             AddButton(() => new Rectangle((int)BtnExperiencePos.X, (int)BtnExperiencePos.Y, 48, 48), delegate { guardianCrown = !guardianCrown; });
             AddButton(() => new Rectangle((int)BtnPermanencePos.X, (int)BtnPermanencePos.Y, 48, 48), delegate
@@ -168,7 +168,7 @@ namespace kRPG.GUI
                             playerCharacter.permanence -= 1;
 
                         player.RemoveCoins(upgradeCost * modifier);
-                        if (!AttemptSelectItem(ki, item)) CloseGUI();
+                        if (!AttemptSelectItem(ki, item)) CloseGui();
                     }
                 }
 
@@ -181,7 +181,7 @@ namespace kRPG.GUI
 
             //if (playerPosition != null) 
             if (Vector2.Distance(player.Center, playerPosition) > 128)
-                CloseGUI();
+                CloseGui();
         }
 
         public bool AttemptSelectItem(kItem tKi, Item tItem)

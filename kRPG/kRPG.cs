@@ -551,9 +551,9 @@ namespace kRPG
             if (Main.netMode == 2 || Main.gameMenu) return true;
             try
             {
-                for (int i = 0; i < BaseGUI.gui_elements.Count; i += 1)
+                for (int i = 0; i < BaseGui.guiElements.Count; i += 1)
                 {
-                    var gui = BaseGUI.gui_elements[i];
+                    var gui = BaseGui.guiElements[i];
                     if (gui.PreDraw())
                         gui.Draw(Main.spriteBatch, Main.LocalPlayer);
                 }

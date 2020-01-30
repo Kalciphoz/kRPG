@@ -17,13 +17,13 @@ namespace kRPG.GUI
         MOON
     }
 
-    public class SpellcraftingGUI : BaseGUI
+    public class SpellcraftingGUI : BaseGui
     {
         private readonly Func<Vector2> guiPosition;
 
         public GlyphSlot[] glyphs = new GlyphSlot[3];
 
-        private float Scale => Math.Min(1f, Main.screenWidth / 3840f + 0.4f);
+        private float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
 
         public SpellcraftingGUI(Mod mod)
         {
@@ -35,7 +35,7 @@ namespace kRPG.GUI
 
             glyphs[2] = new GlyphSlot(() => guiPosition() + new Vector2(84f, 106f) * Scale, () => Scale, GLYPHTYPE.MOON);
 
-            gui_elements.Add(this);
+            guiElements.Add(this);
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
@@ -60,7 +60,7 @@ namespace kRPG.GUI
             if (!Main.mouseLeft || !Main.mouseLeftRelease)
                 return;
             Main.PlaySound(SoundID.MenuTick);
-            CloseGUI();
+            CloseGui();
         }
 
         public override bool PreDraw()

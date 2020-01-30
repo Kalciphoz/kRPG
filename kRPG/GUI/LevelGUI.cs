@@ -9,11 +9,11 @@ using Terraria.ModLoader;
 
 namespace kRPG.GUI
 {
-    public class LevelGUI : BaseGUI
+    public class LevelGUI : BaseGui
     {
         private PlayerCharacter character;
 
-        private float Scale => Math.Min(1f, Main.screenWidth / 3840f + 0.5f);
+        private float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.5f);
 
         private float Width => 200f * Scale;
 
@@ -66,7 +66,7 @@ namespace kRPG.GUI
                 if (Main.mouseLeft && Main.mouseLeftRelease)
                 {
                     Main.PlaySound(SoundID.MenuTick);
-                    CloseGUI();
+                    CloseGui();
                     return;
                 }
             }
