@@ -24,10 +24,8 @@ namespace kRPG
 
         public int level = 1;
         public int xp = 0;
-        public int pointsAllocated
-        {
-            get
-            {
+        public int pointsAllocated {
+            get {
                 int points = 0;
                 foreach (STAT stat in Enum.GetValues(typeof(STAT)))
                 {
@@ -70,10 +68,8 @@ namespace kRPG
             {ELEMENT.LIGHTNING, 0},
             {ELEMENT.SHADOW, 0}
         };
-        public Dictionary<ELEMENT, int> resistance
-        {
-            get
-            {
+        public Dictionary<ELEMENT, int> resistance {
+            get {
                 Dictionary<ELEMENT, int> dict = new Dictionary<ELEMENT, int>();
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                     dict[element] = eleres[element] + allres;
@@ -88,25 +84,19 @@ namespace kRPG
         public float critMultiplier = 1f;
         public int evasion = 2;
         public int accuracy = 0;
-        public float damageMultiplier
-        {
-            get
-            {
+        public float damageMultiplier {
+            get {
                 return (1f + TotalStats(STAT.POTENCY) * 0.05f + Math.Min(0.09f, TotalStats(STAT.POTENCY) * 0.06f));
             }
         }
-        public float hitChance
-        {
-            get
-            {
+        public float hitChance {
+            get {
                 float diff = 7f + level / 40f;
                 return 1f - diff * (1f - 0.85f) / (accuracy + diff);
             }
         }
-        public float critHitChance
-        {
-            get
-            {
+        public float critHitChance {
+            get {
                 float diff = 4f + level / 12f;
                 return 1f - diff * (1f - 0.8f) / (accuracy + diff);
             }
@@ -164,7 +154,7 @@ namespace kRPG
         {
             if (rituals[RITUAL.DEMON_PACT] && stat == STAT.POTENCY)
                 return baseStats[stat] + tempStats[stat] + baseStats[STAT.RESILIENCE];
-            
+
             if (rituals[RITUAL.DEMON_PACT] && stat == STAT.RESILIENCE)
                 return tempStats[stat];
 
@@ -186,7 +176,7 @@ namespace kRPG
                 for (int j = 0; j < abilities[i].glyphs.Length; j += 1)
                 {
                     abilities[i].glyphs[j] = new Item();
-                    abilities[i].glyphs[j].SetDefaults(0,true);
+                    abilities[i].glyphs[j].SetDefaults(0, true);
                 }
             }
             abilities[0].key = Keys.Z;
@@ -201,71 +191,71 @@ namespace kRPG
                 for (int j = 0; j < inventories[i].Length; j += 1)
                 {
                     inventories[i][j] = new Item();
-                    inventories[i][j].SetDefaults(0,true);
+                    inventories[i][j].SetDefaults(0, true);
                 }
             }
         }
 
-        public override void SetupStartInventory(IList<Item> items)
+        public override void SetupStartInventory(IList<Item> items, bool mediumcoreDeath)
         {
             Random rand = new Random();
             switch (rand.Next(8))
             {
                 default:
-                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TinBroadsword : ItemID.CopperBroadsword,true);
+                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TinBroadsword : ItemID.CopperBroadsword, true);
                     break;
                 case 1:
-                    items[0].SetDefaults(ItemID.Spear,true);
+                    items[0].SetDefaults(ItemID.Spear, true);
                     break;
                 case 2:
-                    items[0].SetDefaults(ItemID.WoodenBoomerang,true);
+                    items[0].SetDefaults(ItemID.WoodenBoomerang, true);
                     break;
                 case 3:
-                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TopazStaff : ItemID.AmethystStaff,true);
+                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TopazStaff : ItemID.AmethystStaff, true);
                     break;
                 case 4:
-                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TinBow : ItemID.CopperBow,true);
+                    items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TinBow : ItemID.CopperBow, true);
                     Item arrows = new Item();
-                    arrows.SetDefaults(rand.Next(2) == 0 ? ItemID.FlamingArrow : ItemID.WoodenArrow,true);
+                    arrows.SetDefaults(rand.Next(2) == 0 ? ItemID.FlamingArrow : ItemID.WoodenArrow, true);
                     arrows.stack = rand.Next(2) == 0 ? 150 : 200;
                     items.Add(arrows);
                     break;
                 case 5:
-                    items[0].SetDefaults(ItemID.Shuriken,true);
+                    items[0].SetDefaults(ItemID.Shuriken, true);
                     items[0].stack = rand.Next(2) == 0 ? 150 : 100;
                     Item knives = new Item();
-                    knives.SetDefaults(rand.Next(2) == 0 ? ItemID.PoisonedKnife : ItemID.ThrowingKnife,true);
+                    knives.SetDefaults(rand.Next(2) == 0 ? ItemID.PoisonedKnife : ItemID.ThrowingKnife, true);
                     knives.stack = 50;
                     items.Add(knives);
                     break;
                 case 6:
-                    items[0].SetDefaults(ItemID.WoodYoyo,true);
+                    items[0].SetDefaults(ItemID.WoodYoyo, true);
                     break;
                 case 7:
-                    items[0].SetDefaults(ItemID.ChainKnife,true);
+                    items[0].SetDefaults(ItemID.ChainKnife, true);
                     break;
             }
-            items[1].SetDefaults(rand.Next(3) == 0 ? ItemID.TinPickaxe : rand.Next(2) == 0 ? ItemID.CactusPickaxe : ItemID.CopperPickaxe,true);
+            items[1].SetDefaults(rand.Next(3) == 0 ? ItemID.TinPickaxe : rand.Next(2) == 0 ? ItemID.CactusPickaxe : ItemID.CopperPickaxe, true);
             items[1].GetGlobalItem<kItem>().Initialize(items[1], true);
             items[2].SetDefaults(rand.Next(2) == 0 ? ItemID.TinAxe : ItemID.CopperAxe);
-            items[2].GetGlobalItem<kItem>().Initialize(items[2],true);
+            items[2].GetGlobalItem<kItem>().Initialize(items[2], true);
 
             Item star = new Item();
-            star.SetDefaults(ModContent.ItemType<Star_Blue>(),true);
+            star.SetDefaults(ModContent.ItemType<Star_Blue>(), true);
             Item cross = new Item();
             switch (rand.Next(4))
             {
                 default:
-                    cross.SetDefaults(ModContent.ItemType<Cross_Red>(),true);
+                    cross.SetDefaults(ModContent.ItemType<Cross_Red>(), true);
                     break;
                 case 1:
-                    cross.SetDefaults(ModContent.ItemType<Cross_Orange>(),true);
+                    cross.SetDefaults(ModContent.ItemType<Cross_Orange>(), true);
                     break;
                 case 2:
-                    cross.SetDefaults(ModContent.ItemType<Cross_Yellow>(),true);
+                    cross.SetDefaults(ModContent.ItemType<Cross_Yellow>(), true);
                     break;
                 case 3:
-                    cross.SetDefaults(ModContent.ItemType<Cross_Green>(),true);
+                    cross.SetDefaults(ModContent.ItemType<Cross_Green>(), true);
                     break;
             }
             ((Glyph)cross.modItem).Randomize();
@@ -273,19 +263,19 @@ namespace kRPG
             switch (rand.Next(5))
             {
                 default:
-                    moon.SetDefaults(ModContent.ItemType<Moon_Yellow>(),true);
+                    moon.SetDefaults(ModContent.ItemType<Moon_Yellow>(), true);
                     break;
                 case 1:
-                    moon.SetDefaults(ModContent.ItemType<Moon_Green>(),true);
+                    moon.SetDefaults(ModContent.ItemType<Moon_Green>(), true);
                     break;
                 case 2:
-                    moon.SetDefaults(ModContent.ItemType<Moon_Blue>(),true);
+                    moon.SetDefaults(ModContent.ItemType<Moon_Blue>(), true);
                     break;
                 case 3:
-                    moon.SetDefaults(ModContent.ItemType<Moon_Violet>(),true);
+                    moon.SetDefaults(ModContent.ItemType<Moon_Violet>(), true);
                     break;
                 case 4:
-                    moon.SetDefaults(ModContent.ItemType<Moon_Purple>(),true);
+                    moon.SetDefaults(ModContent.ItemType<Moon_Purple>(), true);
                     break;
             }
             ((Glyph)moon.modItem).Randomize();
@@ -298,39 +288,40 @@ namespace kRPG
 
         public override void ModifyDrawLayers(List<PlayerLayer> layers)
         {
-			if(kRPG.overhaul!=null) {
-				return;
-			}
+            if (kRPG.overhaul != null)
+            {
+                return;
+            }
             for (int i = 0; i < layers.Count; i += 1)
             {
                 if (layers[i].Name.Contains("Held"))
                 {
-                    layers.Insert(i+2, new PlayerLayer("kRPG", "ProceduralItem", (drawinfo) =>
-                    {
-                        if (player.itemAnimation > 0)
-                        {
-                            if (player.HeldItem.type == mod.GetItem("ProceduralStaff").item.type)
-                            {
-                                if (Main.gameMenu) return;
+                    layers.Insert(i + 2, new PlayerLayer("kRPG", "ProceduralItem", (drawinfo) =>
+                      {
+                          if (player.itemAnimation > 0)
+                          {
+                              if (player.HeldItem.type == mod.GetItem("ProceduralStaff").item.type)
+                              {
+                                  if (Main.gameMenu) return;
 
-                                ProceduralStaff staff = (ProceduralStaff)player.HeldItem.modItem;
+                                  ProceduralStaff staff = (ProceduralStaff)player.HeldItem.modItem;
 
-                                Vector2 pos = player.Center - Main.screenPosition;
-                                staff.DrawHeld(drawinfo, Lighting.GetColor((int)(player.Center.X / 16f), (int)(player.Center.Y / 16f)), (float)player.itemRotation + (float)API.Tau * player.direction / 8, staff.item.scale, pos);
-                            }
-                            else if (player.HeldItem.type == mod.GetItem("ProceduralSword").item.type)
-                            {
-                                if (Main.gameMenu) return;
+                                  Vector2 pos = player.Center - Main.screenPosition;
+                                  staff.DrawHeld(drawinfo, Lighting.GetColor((int)(player.Center.X / 16f), (int)(player.Center.Y / 16f)), (float)player.itemRotation + (float)API.Tau * player.direction / 8, staff.item.scale, pos);
+                              }
+                              else if (player.HeldItem.type == mod.GetItem("ProceduralSword").item.type)
+                              {
+                                  if (Main.gameMenu) return;
 
-                                ProceduralSword sword = (ProceduralSword)player.HeldItem.modItem;
+                                  ProceduralSword sword = (ProceduralSword)player.HeldItem.modItem;
 
-                                if (sword.spear) return;
+                                  if (sword.spear) return;
 
-                                Vector2 pos = player.Center - Main.screenPosition;
-                                sword.DrawHeld(drawinfo, Lighting.GetColor((int)(player.Center.X / 16f), (int)(player.Center.Y / 16f)), (float)player.itemRotation + (float)API.Tau, sword.item.scale, pos);
-                            }
-                        }
-                    }));
+                                  Vector2 pos = player.Center - Main.screenPosition;
+                                  sword.DrawHeld(drawinfo, Lighting.GetColor((int)(player.Center.X / 16f), (int)(player.Center.Y / 16f)), (float)player.itemRotation + (float)API.Tau, sword.item.scale, pos);
+                              }
+                          }
+                      }));
                 }
             }
         }
@@ -370,7 +361,7 @@ namespace kRPG
             allres = 0;
 
             if (leechCooldown > 0) leechCooldown--;
-            
+
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
             {
                 eleres[element] = 0;
@@ -601,7 +592,7 @@ namespace kRPG
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
         }
 
@@ -630,7 +621,7 @@ namespace kRPG
 
         public override void PreUpdateBuffs()
         {
-            
+
         }
 
         public void OpenInventoryPage(int page)
@@ -775,7 +766,7 @@ namespace kRPG
 
             critMultiplier += TotalStats(STAT.POTENCY) * 0.04f;
             lifeLeech += TotalStats(STAT.POTENCY) * 0.002f;
-            lifeLeech += Math.Min(0.006f, TotalStats(STAT.POTENCY)*0.002f);
+            lifeLeech += Math.Min(0.006f, TotalStats(STAT.POTENCY) * 0.002f);
 
             player.meleeDamage *= damageMultiplier;
             player.rangedDamage *= damageMultiplier;
@@ -857,7 +848,7 @@ namespace kRPG
                     }
                 }
             }
-            if (Main.rand.Next(player.statLifeMax2 + player.statDefense) < damage*3)
+            if (Main.rand.Next(player.statLifeMax2 + player.statDefense) < damage * 3)
                 player.AddBuff(ModContent.BuffType<Physical>(), 15 + Math.Min(30, damage * 30 / player.statLifeMax2));
             if (hasAilment[ELEMENT.LIGHTNING])
                 damage += 1 + ailmentIntensity[ELEMENT.LIGHTNING];
@@ -916,8 +907,8 @@ namespace kRPG
                 {
                     int i = damage;
                     int c = target.boss ? 7 : 2;
-                    damage += Math.Min(mana*c, i);
-                    mana = Math.Max(0, mana - i/c);
+                    damage += Math.Min(mana * c, i);
+                    mana = Math.Max(0, mana - i / c);
                 }
             }
 
@@ -966,8 +957,8 @@ namespace kRPG
             if (Main.gameMenu) return;
             if (xp == 0) return;
             this.xp += xp;
-            
-            Check:
+
+        Check:
             if (this.xp >= ExperienceToLevel())
             {
                 this.xp -= ExperienceToLevel();
@@ -1118,9 +1109,10 @@ namespace kRPG
         {
             InitializeGUI();
 
-			if(player.whoAmI==Main.myPlayer) {
-				kRPG.CheckForUpdates();
-			}
+            if (player.whoAmI == Main.myPlayer)
+            {
+                kRPG.CheckForUpdates();
+            }
         }
 
         public override TagCompound Save()
@@ -1128,18 +1120,18 @@ namespace kRPG
             TagCompound tagCompound = new TagCompound
             {
                 {"level", level},
-				{"xp", xp},
-				{"baseRESILIENCE", baseStats[STAT.RESILIENCE]},
-				{"baseQUICKNESS", baseStats[STAT.QUICKNESS]},
-				{"basePOTENCY", baseStats[STAT.POTENCY]},
-				{"baseWITS", baseStats[STAT.WITS]},
-				{"RITUAL_DEMON_PACT", rituals[RITUAL.DEMON_PACT]},
-				{"RITUAL_WARRIOR_OATH", rituals[RITUAL.WARRIOR_OATH]},
-				{"RITUAL_ELAN_VITAL", rituals[RITUAL.ELAN_VITAL]},
-				{"RITUAL_STONE_ASPECT", rituals[RITUAL.STONE_ASPECT]},
-				{"RITUAL_ELDRITCH_FURY", rituals[RITUAL.ELDRITCH_FURY]},
-				{"RITUAL_MIND_FORTRESS", rituals[RITUAL.MIND_FORTRESS]},
-				{"RITUAL_BLOOD_DRINKING", rituals[RITUAL.BLOOD_DRINKING]},
+                {"xp", xp},
+                {"baseRESILIENCE", baseStats[STAT.RESILIENCE]},
+                {"baseQUICKNESS", baseStats[STAT.QUICKNESS]},
+                {"basePOTENCY", baseStats[STAT.POTENCY]},
+                {"baseWITS", baseStats[STAT.WITS]},
+                {"RITUAL_DEMON_PACT", rituals[RITUAL.DEMON_PACT]},
+                {"RITUAL_WARRIOR_OATH", rituals[RITUAL.WARRIOR_OATH]},
+                {"RITUAL_ELAN_VITAL", rituals[RITUAL.ELAN_VITAL]},
+                {"RITUAL_STONE_ASPECT", rituals[RITUAL.STONE_ASPECT]},
+                {"RITUAL_ELDRITCH_FURY", rituals[RITUAL.ELDRITCH_FURY]},
+                {"RITUAL_MIND_FORTRESS", rituals[RITUAL.MIND_FORTRESS]},
+                {"RITUAL_BLOOD_DRINKING", rituals[RITUAL.BLOOD_DRINKING]},
                 {"life", player.statLife },
                 {"permanence", permanence },
                 {"transcendence", transcendence }
@@ -1158,7 +1150,7 @@ namespace kRPG
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log("@Abilities :: " + e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Abilities :: " + e.ToString());
             }
 
             try
@@ -1169,7 +1161,7 @@ namespace kRPG
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log("@Inventories :: " + e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Inventories :: " + e.ToString());
             }
 
             return tagCompound;
@@ -1184,10 +1176,10 @@ namespace kRPG
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log("@Level&XP :: " + e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Level&XP :: " + e.ToString());
             }
             try
-            { 
+            {
                 foreach (STAT stat in Enum.GetValues(typeof(STAT)))
                     baseStats[stat] = tag.GetInt("base" + stat.ToString());
                 foreach (RITUAL rite in Enum.GetValues(typeof(RITUAL)))
@@ -1195,7 +1187,7 @@ namespace kRPG
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log("@Stats&Rituals :: " + e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Stats&Rituals :: " + e.ToString());
             }
             try
             {
@@ -1213,7 +1205,7 @@ namespace kRPG
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log("@Abilities :: " + e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Abilities :: " + e.ToString());
             }
             try
             {
@@ -1224,7 +1216,7 @@ namespace kRPG
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log("@Inventory :: " + e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Inventory :: " + e.ToString());
             }
             try
             {
@@ -1236,7 +1228,7 @@ namespace kRPG
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log("@Miscellaneous :: " + e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Miscellaneous :: " + e.ToString());
             }
         }
 

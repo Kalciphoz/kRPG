@@ -88,7 +88,7 @@ namespace kRPG
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
         }
         public static void Load()
@@ -109,7 +109,7 @@ namespace kRPG
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
         }
         private static void LoadConfig<T>(string path, ref T config) where T : class
@@ -126,7 +126,7 @@ namespace kRPG
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
         }
         public static void Save()
@@ -138,7 +138,7 @@ namespace kRPG
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
         }
 		public static void SaveStats()

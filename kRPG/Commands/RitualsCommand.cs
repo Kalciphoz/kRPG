@@ -5,25 +5,13 @@ namespace kRPG.Commands
 {
     public class RitualsCommand : ModCommand
     {
-        public override CommandType Type
-        {
-            get { return CommandType.Chat; }
-        }
+        public override CommandType Type => CommandType.Chat;
 
-        public override string Command
-        {
-            get { return "toggleritual"; }
-        }
+        public override string Command => "toggleritual";
 
-        public override string Usage
-        {
-            get { return "/toggleritual <name>"; }
-        }
+        public override string Usage => "/toggleritual <name>";
 
-        public override string Description
-        {
-	        get { return "Switches a ritual on or off"; }
-        }
+        public override string Description => "Switches a ritual on or off";
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {

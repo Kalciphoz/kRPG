@@ -17,94 +17,58 @@ namespace kRPG.GUI
         private Item item;
         public Vector2 position;
 
-        private bool selected = false;
+        private bool selected;
 
-        private Vector2 GuiPosition
-        {
-            get
-            {
-                return new Vector2((float)Main.screenWidth / 2f - 128f * scale, Main.screenHeight / 2f);
-            }
-        }
-        private float scale
-        {
-            get
-            {
-                return Math.Min(1f, Main.screenWidth / 3840f + 0.4f);
-            }
-        }
-        private Vector2 BtnCancelPos
-        {
-            get
-            {
-                return new Vector2(Main.screenWidth / 2f - 92f * scale, GuiPosition.Y + 268f * scale);
-            }
-        }
-        private Vector2 BtnUpgradePos
-        {
-            get
-            {
-                return new Vector2(Main.screenWidth / 2f - 92f * scale, GuiPosition.Y + 208f * scale); 
-            }
-        }
-        private Vector2 BtnExperiencePos
-        {
-            get
-            {
-                return new Vector2(GuiPosition.X + 150f * scale, GuiPosition.Y - 76f * scale);
-            }
-        }
-        private Vector2 BtnPermanencePos
-        {
-            get
-            {
-                return new Vector2(GuiPosition.X + 150f * scale, GuiPosition.Y - 12f * scale);
-            }
-        }
-        private Vector2 BtnTranscendencePos
-        {
-            get
-            {
-                return new Vector2(GuiPosition.X + 150f * scale, GuiPosition.Y + 52f * scale);
-            }
-        }
+        private Vector2 GuiPosition => new Vector2(Main.screenWidth / 2f - 128f * scale, Main.screenHeight / 2f);
 
-        private int upgradeCost = 0;
+        private float scale => Math.Min(1f, Main.screenWidth / 3840f + 0.4f);
+
+        private Vector2 BtnCancelPos => new Vector2(Main.screenWidth / 2f - 92f * scale, GuiPosition.Y + 268f * scale);
+
+        private Vector2 BtnUpgradePos => new Vector2(Main.screenWidth / 2f - 92f * scale, GuiPosition.Y + 208f * scale);
+
+        private Vector2 BtnExperiencePos => new Vector2(GuiPosition.X + 150f * scale, GuiPosition.Y - 76f * scale);
+
+        private Vector2 BtnPermanencePos => new Vector2(GuiPosition.X + 150f * scale, GuiPosition.Y - 12f * scale);
+
+        private Vector2 BtnTranscendencePos => new Vector2(GuiPosition.X + 150f * scale, GuiPosition.Y + 52f * scale);
+
+        private int upgradeCost;
 
         //in percent:
         private int upgradeSuccess;
 
-        private bool guardianCrown = false;
-        private bool permanenceCrown = false;
-        private bool transcendenceCrown = false;
+        private bool guardianCrown;
+        private bool permanenceCrown;
+        private bool transcendenceCrown;
 
-        public AnvilGUI(Mod mod, PlayerCharacter character) : base()
+        public AnvilGUI(Mod mod, PlayerCharacter character)
         {
             this.character = character;
             this.mod = mod;
             krpg = (kRPG)mod;
-            
-            AddButton(delegate() { return new Rectangle((int)BtnCancelPos.X, (int)BtnCancelPos.Y, (int)(GFX.BTN_WIDTH * scale), (int)(GFX.BTN_HEIGHT * scale)); }, delegate (Player player)
-            {
-                Main.PlaySound(SoundID.MenuTick);
-                CloseGUI();
-            });
-            AddButton(delegate () { return new Rectangle((int)BtnExperiencePos.X, (int)BtnExperiencePos.Y, 48, 48); }, delegate (Player player)
-            {
-                guardianCrown = !guardianCrown;
-            });
-            AddButton(delegate () { return new Rectangle((int)BtnPermanencePos.X, (int)BtnPermanencePos.Y, 48, 48); }, delegate (Player player)
-            {
-                if (!permanenceCrown && character.permanence > 0)
-                    permanenceCrown = true;
-                else permanenceCrown = false;
-            });
-            AddButton(delegate () { return new Rectangle((int)BtnTranscendencePos.X, (int)BtnTranscendencePos.Y, 48, 48); }, delegate (Player player)
-            {
-                if (!transcendenceCrown && character.transcendence > 0)
-                    transcendenceCrown = true;
-                else transcendenceCrown = false;
-            });
+
+            AddButton(() => new Rectangle((int)BtnCancelPos.X, (int)BtnCancelPos.Y, (int)(GFX.BTN_WIDTH * scale), (int)(GFX.BTN_HEIGHT * scale)), delegate
+        {
+            Main.PlaySound(SoundID.MenuTick);
+            CloseGUI();
+        });
+            AddButton(() => new Rectangle((int)BtnExperiencePos.X, (int)BtnExperiencePos.Y, 48, 48), delegate
+          {
+              guardianCrown = !guardianCrown;
+          });
+            AddButton(() => new Rectangle((int)BtnPermanencePos.X, (int)BtnPermanencePos.Y, 48, 48), delegate
+          {
+              if (!permanenceCrown && character.permanence > 0)
+                  permanenceCrown = true;
+              else permanenceCrown = false;
+          });
+            AddButton(() => new Rectangle((int)BtnTranscendencePos.X, (int)BtnTranscendencePos.Y, 48, 48), delegate
+          {
+              if (!transcendenceCrown && character.transcendence > 0)
+                  transcendenceCrown = true;
+              else transcendenceCrown = false;
+          });
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
@@ -150,19 +114,22 @@ namespace kRPG.GUI
                     selected = false;
                 }
 
-                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Selected item: " + item.HoverName, new Vector2(GuiPosition.X - 192f * scale, GuiPosition.Y + 128f * scale), Color.White, scale);
+
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Selected item: " + (item != null ? item.HoverName : ""), new Vector2(GuiPosition.X - 192f * scale, GuiPosition.Y + 128f * scale), Color.White, scale);
 
                 int modifier = guardianCrown ? 4 : 1;
-                if (player.Wealth() >= upgradeCost*modifier)
+                if (player.Wealth() >= upgradeCost * modifier)
                 {
                     int bonusChance = guardianCrown ? 10 : 0;
 
-                    spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Upgrade Cost: " + API.MoneyToString(upgradeCost*modifier), new Vector2(GuiPosition.X - 192f * scale, GuiPosition.Y + 152f * scale), Color.White, scale);
+                    spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Upgrade Cost: " + API.MoneyToString(upgradeCost * modifier), new Vector2(GuiPosition.X - 192f * scale, GuiPosition.Y + 152f * scale), Color.White, scale);
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Chance to succeed: " + (upgradeSuccess + bonusChance).ToString() + "%", new Vector2(GuiPosition.X - 192f * scale, GuiPosition.Y + 176f * scale), bonusChance > 0 ? Color.Lime : Color.White, scale);
                     spriteBatch.Draw(GFX.button_upgrade, BtnUpgradePos, Color.White, scale);
                     if (new Rectangle((int)BtnUpgradePos.X, (int)BtnUpgradePos.Y, (int)(GFX.BTN_WIDTH * scale), (int)(GFX.BTN_HEIGHT * scale)).Contains(Main.mouseX, Main.mouseY) && Main.mouseLeft && Main.mouseLeftRelease)
                     {
                         Main.PlaySound(SoundID.MenuTick);
+                        if (ki == null)
+                            throw new Exception("Sanity Check, Ki is null.");
                         if (ki.upgradeLevel >= PlayerCharacter.defaultMaxUpgradeLevel)
                             character.transcendence -= 1;
 
@@ -181,67 +148,69 @@ namespace kRPG.GUI
                         if (permanenceCrown && bonusChance + upgradeSuccess < 100)
                             character.permanence -= 1;
 
-                        player.RemoveCoins(upgradeCost*modifier);
+                        player.RemoveCoins(upgradeCost * modifier);
                         if (!AttemptSelectItem(ki, item)) CloseGUI();
                     }
                 }
 
                 else
                 {
-                    spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Upgrade Cost: " + API.MoneyToString(upgradeCost*modifier), new Vector2(GuiPosition.X - 192f * scale, GuiPosition.Y + 152f * scale), Color.Red, scale);
+                    spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Upgrade Cost: " + API.MoneyToString(upgradeCost * modifier), new Vector2(GuiPosition.X - 192f * scale, GuiPosition.Y + 152f * scale), Color.Red, scale);
                 }
             }
 
-            if (position != null) if (Vector2.Distance(player.Center, position) > 128) CloseGUI();
+            //if (position != null) 
+            if (Vector2.Distance(player.Center, position) > 128)
+                CloseGUI();
         }
 
-        public bool AttemptSelectItem(kItem ki, Item item)
+        public bool AttemptSelectItem(kItem tKi, Item tItem)
         {
-            byte startLevel = ki.upgradeLevel;
+            byte startLevel = tKi.upgradeLevel;
 
             if (startLevel >= 7 && (startLevel >= 8 || !transcendenceCrown))
                 return false;
 
-            this.ki = ki;
-            this.item = item;
+            this.ki = tKi;
+            this.item = tItem;
             selected = true;
-            
+
             upgradeSuccess = 90 - startLevel * 10;
             if (startLevel == 0)
             {
-                upgradeCost = (int)(item.value / 20);
+                upgradeCost = (tItem.value / 20);
             }
             else if (startLevel == 1)
             {
-                upgradeCost = (int)(item.value / 15);
+                upgradeCost = (tItem.value / 15);
             }
             else if (startLevel == 2)
             {
-                upgradeCost = (int)(item.value / 10);
+                upgradeCost = (tItem.value / 10);
             }
             else if (startLevel == 3)
             {
-                upgradeCost = (int)(item.value / 8);
+                upgradeCost = (tItem.value / 8);
             }
             else if (startLevel == 4)
             {
-                upgradeCost = (int)(item.value / 5);
+                upgradeCost = (tItem.value / 5);
             }
             else if (startLevel == 5)
             {
-                upgradeCost = (int)(item.value / 3);
+                upgradeCost = (tItem.value / 3);
             }
             else if (startLevel == 6)
             {
-                upgradeCost = (int)(item.value / 2);
+                upgradeCost = (tItem.value / 2);
             }
             else if (startLevel == 7)
             {
-                upgradeCost = (int)(item.value);
+                upgradeCost = (tItem.value);
             }
             else if (startLevel == 8)
             {
-                upgradeCost = (int)(item.value * 1.5);
+                upgradeCost = (int)(tItem.value * 1.5);
             }
 
             return true;
@@ -265,4 +234,3 @@ namespace kRPG.GUI
         }
     }
 }
-    

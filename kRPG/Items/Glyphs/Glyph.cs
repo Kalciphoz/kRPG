@@ -428,7 +428,7 @@ namespace kRPG.Items.Glyphs
                 }
                 catch (SystemException e)
                 {
-                    ErrorLogger.Log(e.ToString());
+                    ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
                 }
             };
         }
@@ -447,7 +447,7 @@ namespace kRPG.Items.Glyphs
                 }
                 catch (SystemException e)
                 {
-                    ErrorLogger.Log(e.ToString());
+                    ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
                 }
             };
         }
@@ -465,7 +465,7 @@ namespace kRPG.Items.Glyphs
                 }
                 catch (SystemException e)
                 {
-                    ErrorLogger.Log(e.ToString());
+                    ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
                 }
             };
         }
@@ -694,7 +694,7 @@ namespace kRPG.Items.Glyphs
                     }
                     catch (SystemException e)
                     {
-                        ErrorLogger.Log(e.ToString());
+                        ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
                     }
                 }
             };
@@ -988,7 +988,7 @@ namespace kRPG.Items.Glyphs
                 }
                 catch (SystemException e)
                 {
-                    ErrorLogger.Log(e.ToString());
+                    ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
                 }
             };
         }

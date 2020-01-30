@@ -7,25 +7,13 @@ namespace kRPG.Commands
 {
     public class UpgradeCommand : ModCommand
     {
-        public override CommandType Type
-        {
-            get { return CommandType.Chat; }
-        }
+        public override CommandType Type => CommandType.Chat;
 
-        public override string Command
-        {
-            get { return "upgrade"; }
-        }
+        public override string Command => "upgrade";
 
-        public override string Usage
-        {
-            get { return "/upgrade <upgradelevel>"; }
-        }
+        public override string Usage => "/upgrade <upgradelevel>";
 
-        public override string Description
-        {
-	        get { return "Upgrades the mouse item to the specified level"; }
-        }
+        public override string Description => "Upgrades the mouse item to the specified level";
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {

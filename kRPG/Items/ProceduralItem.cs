@@ -10,6 +10,15 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using ReLogic.Graphics;
+using Terraria.GameContent.Dyes;
+using Terraria.GameContent.UI;
+using Terraria.Graphics.Effects;
+using Terraria.Graphics.Shaders;
+using Terraria.Localization;
+using Terraria.UI;
+using static Terraria.ModLoader.ModContent;
+
 
 namespace kRPG.Items
 {
@@ -203,7 +212,8 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                
             }
         }
 
@@ -225,7 +235,7 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
             return false;
         }
@@ -273,7 +283,7 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
         }
 
@@ -324,7 +334,7 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log("@NewTagCompound :: " + e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("@NewTagCompound :: " + e.ToString());
             }
             return new TagCompound();
         }
@@ -341,7 +351,7 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log("@Loading :: " + e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Loading :: " + e.ToString());
             }
             try
             {
@@ -349,7 +359,7 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log("@Initialize :: " + e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Initialize :: " + e.ToString());
             }
         }
 
@@ -484,8 +494,8 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
-                ErrorLogger.Log("Blade|Hilt|Accent" + (blade == null) + (hilt == null) + (accent == null));
+                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("Blade|Hilt|Accent" + (blade == null) + (hilt == null) + (accent == null));
             }
         }
 
@@ -514,7 +524,8 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+
+                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
         }
 
@@ -574,7 +585,7 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
             return false;
         }
@@ -647,7 +658,7 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
         }
 
@@ -698,8 +709,8 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log("@NewTagCompound :: " + e.ToString());
-                ErrorLogger.Log("Blade|Hilt|Accent" + (blade == null) + (hilt == null) + (accent == null));
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("@NewTagCompound :: " + e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("Blade|Hilt|Accent" + (blade == null) + (hilt == null) + (accent == null));
             }
 
             return new TagCompound();
@@ -717,7 +728,7 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log("@Loading :: " + e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Loading :: " + e.ToString());
             }
             try
             { 
@@ -725,7 +736,7 @@ namespace kRPG.Items
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log("@Initialize :: " + e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Initialize :: " + e.ToString());
             }
         }
 

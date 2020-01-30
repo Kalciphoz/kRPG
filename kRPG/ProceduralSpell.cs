@@ -83,7 +83,7 @@ namespace kRPG
             }
             catch (Exception e)
             {
-                ErrorLogger.Log(e.ToString());
+                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
         }
 

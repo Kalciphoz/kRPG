@@ -207,7 +207,7 @@ namespace kRPG
                         }
                         catch (SystemException e)
                         {
-                            ErrorLogger.Log("Source-assignment failed, aborting...");
+                            Logger.InfoFormat("Source-assignment failed, aborting...");
                             break;
                         }
                         ps.source.modifierOverride = modifiers;
@@ -258,7 +258,7 @@ namespace kRPG
                     }
                     catch (SystemException e)
                     {
-                        ErrorLogger.Log("Error handling packet: " + msg.ToString() + " on " + (Main.netMode == 2 ? "serverside" : "clientside") + ", full error trace: " + e.ToString());
+                        Logger.InfoFormat("Error handling packet: " + msg.ToString() + " on " + (Main.netMode == 2 ? "serverside" : "clientside") + ", full error trace: " + e.ToString());
                     }
                     break;
                 case Message.AddXP:
@@ -452,10 +452,12 @@ namespace kRPG
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                Logger.InfoFormat(e.ToString());
             }
             return true;
         }
+
+       
 
         #region UpdateCheck
         public class VersionInfo
