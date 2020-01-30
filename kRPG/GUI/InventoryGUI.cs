@@ -274,6 +274,7 @@ namespace kRPG.GUI
                     }
                     catch (SystemException e)
                     {
+                        
                         ErrorLogger.Log(e.ToString());
 
                         if (Main.LocalPlayer.inventory[id].modItem is ProceduralItem)

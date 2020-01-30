@@ -17,7 +17,7 @@ using Terraria.UI;
 
 namespace kRPG
 {
-	public enum STAT : byte { RESILIENCE, QUICKNESS, POTENCY, WITS };
+    public enum STAT : byte { RESILIENCE, QUICKNESS, POTENCY, WITS };
     public enum ELEMENT : byte { FIRE, COLD, LIGHTNING, SHADOW };
     public enum RITUAL : byte { DEMON_PACT, WARRIOR_OATH, ELAN_VITAL, STONE_ASPECT, ELDRITCH_FURY, MIND_FORTRESS, BLOOD_DRINKING };
 
@@ -66,9 +66,9 @@ namespace kRPG
 
     public class kRPG : Mod
     {
-		public static kRPG mod;
+        public static kRPG mod;
 
-		public static Mod overhaul;
+        public static Mod overhaul;
 
         public static Dictionary<Message, List<DataTag>> dataTags = new Dictionary<Message, List<DataTag>>()
         {
@@ -348,7 +348,7 @@ namespace kRPG
                 AutoloadGores = true,
                 AutoloadSounds = true
             };
-			mod = this;
+            mod = this;
         }
 
         public override void ModifyInterfaceLayers(List<Terraria.UI.GameInterfaceLayer> layers)
@@ -360,7 +360,7 @@ namespace kRPG
 
         public override void Load()
         {
-			overhaul = ModLoader.GetMod("TerrariaOverhaul");
+            overhaul = ModLoader.GetMod("TerrariaOverhaul");
 
             kConfig.Initialize();
             if (Main.netMode != 2)
@@ -457,45 +457,51 @@ namespace kRPG
             return true;
         }
 
-		#region UpdateCheck
-		public class VersionInfo
-		{
-			public string version;
-			public string summary;
-		}
-		//Mirsario's code in Mirsario's code style
-		public static void CheckForUpdates()
-		{
-			#pragma warning disable 162
-			try {
-				string url=				@"http://raw.githubusercontent.com/Kalciphoz/kRPG/master/kRPG_VersionInfo.json";
-				WebClient client=		new WebClient();
-				Version currentVersion=	mod.Version;
-				client.DownloadStringCompleted+= (sender,e) => { 
-					try {
-						string text=				e.Result;
-						VersionInfo versionInfo=	JsonConvert.DeserializeObject<VersionInfo>(text);
-						Version latestVersion=		new Version(versionInfo.version);
-						if(latestVersion>currentVersion) {
-							//Public update available
-							Main.NewText("[c/cccccc:New version of] [c/ffdb00:KRPG] [c/cccccc:available]");
-							Main.NewTextMultiline("[c/cccccc:Summary:] "+versionInfo.summary,WidthLimit:725);
-							Main.NewText("[c/cccccc:Get the update from Mod Browser]");
-						}else if(latestVersion==currentVersion && new Version(kConfig.stats.lastStartVersion)<currentVersion) {
-							//After installing a public update
-							Main.NewText("[c/cccccc:KRPG is now up to date!]");
-							Main.NewTextMultiline("[c/cccccc:Summary changes:] "+versionInfo.summary,WidthLimit:725);
-						}
-						kConfig.stats.lastStartVersion=	currentVersion.ToString();
-						kConfig.SaveStats();
-					}
-					catch {}
-				};
-				client.DownloadStringAsync(new Uri(url),url);
-			}
-			catch {}
-			#pragma warning restore 162
-		}
-		#endregion
-	}
+        #region UpdateCheck
+        public class VersionInfo
+        {
+            public string version;
+            public string summary;
+        }
+        //Mirsario's code in Mirsario's code style
+        public static void CheckForUpdates()
+        {
+#pragma warning disable 162
+            try
+            {
+                string url = @"http://raw.githubusercontent.com/FairfieldTekLLC/kRPG/master/kRPG_VersionInfo.json";
+                WebClient client = new WebClient();
+                Version currentVersion = mod.Version;
+                client.DownloadStringCompleted += (sender, e) =>
+                {
+                    try
+                    {
+                        string text = e.Result;
+                        VersionInfo versionInfo = JsonConvert.DeserializeObject<VersionInfo>(text);
+                        Version latestVersion = new Version(versionInfo.version);
+                        if (latestVersion > currentVersion)
+                        {
+                            //Public update available
+                            Main.NewText("[c/cccccc:New version of] [c/ffdb00:KRPG] [c/cccccc:available]");
+                            Main.NewTextMultiline("[c/cccccc:Summary:] " + versionInfo.summary, WidthLimit: 725);
+                            Main.NewText("[c/cccccc:Get the update from Mod Browser]");
+                        }
+                        else if (latestVersion == currentVersion && new Version(kConfig.stats.lastStartVersion) < currentVersion)
+                        {
+                            //After installing a public update
+                            Main.NewText("[c/cccccc:KRPG is now up to date!]");
+                            Main.NewTextMultiline("[c/cccccc:Summary changes:] " + versionInfo.summary, WidthLimit: 725);
+                        }
+                        kConfig.stats.lastStartVersion = currentVersion.ToString();
+                        kConfig.SaveStats();
+                    }
+                    catch { }
+                };
+                client.DownloadStringAsync(new Uri(url), url);
+            }
+            catch { }
+#pragma warning restore 162
+        }
+        #endregion
+    }
 }
