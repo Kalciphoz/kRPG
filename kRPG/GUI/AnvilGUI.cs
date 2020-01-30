@@ -11,7 +11,7 @@ namespace kRPG.GUI
     /// <summary>
     /// UI for the Anvil
     /// </summary>
-    public class AnvilGui : BaseGUI
+    public class AnvilGUI : BaseGUI
     {
         /// <summary>
         /// Player Character gui shown for
@@ -46,7 +46,7 @@ namespace kRPG.GUI
         private bool permanenceCrown;
         private bool transcendenceCrown;
 
-        public AnvilGui(PlayerCharacter playerCharacter)
+        public AnvilGUI(PlayerCharacter playerCharacter)
         {
             this.playerCharacter = playerCharacter;
 

@@ -118,12 +118,12 @@ namespace kRPG
         private int levelAnimation = 0;
 
         private bool initialized = false;
-        public AnvilGui anvilGUI;
+        public AnvilGUI anvilGUI;
         public StatusBar statusBar;
-        public LevelGui levelGUI;
-        public AbilitiesGui abilitiesGUI;
-        public SpellcraftingGui spellcraftingGUI;
-        public InventoryGui inventoryGUI;
+        public LevelGUI levelGUI;
+        public AbilitiesGUI abilitiesGUI;
+        public SpellcraftingGUI spellcraftingGUI;
+        public InventoryGUI inventoryGUI;
 
         public ProceduralSpell[] abilities = new ProceduralSpell[4];
         public ProceduralSpell selectedAbility = null;
@@ -1100,13 +1100,13 @@ namespace kRPG
         {
             if (Main.netMode == 2) return;
             BaseGUI.gui_elements.Clear();
-            anvilGUI = new AnvilGui(this);
-            levelGUI = new LevelGui(this, mod);
+            anvilGUI = new AnvilGUI(this);
+            levelGUI = new LevelGUI(this, mod);
             statusBar = new StatusBar(this, mod);
             statusBar.guiActive = true;
-            inventoryGUI = new InventoryGui(this, mod);
-            abilitiesGUI = new AbilitiesGui {guiActive = true};
-            spellcraftingGUI = new SpellcraftingGui(mod /*, glyphs, this*/);
+            inventoryGUI = new InventoryGUI(this, mod);
+            abilitiesGUI = new AbilitiesGUI {guiActive = true};
+            spellcraftingGUI = new SpellcraftingGUI(mod /*, glyphs, this*/);
         }
 
         public void CloseGUIs()

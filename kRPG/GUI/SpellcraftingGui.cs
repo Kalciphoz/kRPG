@@ -17,7 +17,7 @@ namespace kRPG.GUI
         MOON
     }
 
-    public class SpellcraftingGui : BaseGUI
+    public class SpellcraftingGUI : BaseGUI
     {
         private readonly Func<Vector2> guiPosition;
 
@@ -25,7 +25,7 @@ namespace kRPG.GUI
 
         private float Scale => Math.Min(1f, Main.screenWidth / 3840f + 0.4f);
 
-        public SpellcraftingGui(Mod mod)
+        public SpellcraftingGUI(Mod mod)
         {
             guiPosition = () => new Vector2(Main.screenWidth / 2f - 100f * Scale, 192f * Scale);
 

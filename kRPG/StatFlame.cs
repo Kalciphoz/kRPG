@@ -15,7 +15,7 @@ namespace kRPG
         private STAT id;
         private Func<Vector2> position;
         private Texture2D texture;
-        private LevelGui levelGUI;
+        private LevelGUI levelGUI;
 
         private int counter;
         private int frameNumber = 0;
@@ -27,7 +27,7 @@ namespace kRPG
             set => levelGUI.allocated[id] = value;
         }
 
-        public StatFlame(Mod mod, LevelGui levelGUI, STAT id, Func<Vector2> position, Texture2D texture)
+        public StatFlame(Mod mod, LevelGUI levelGUI, STAT id, Func<Vector2> position, Texture2D texture)
         {
             this.mod = mod;
             this.levelGUI = levelGUI;

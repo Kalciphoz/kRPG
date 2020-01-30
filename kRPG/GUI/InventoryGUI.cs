@@ -17,7 +17,7 @@ using Terraria.UI.Gamepad;
 
 namespace kRPG.GUI
 {
-    public class InventoryGui : BaseGUI
+    public class InventoryGUI : BaseGUI
     {
         public Vector2 origin => new Vector2(40f, 8f) * scale;
 
@@ -28,7 +28,7 @@ namespace kRPG.GUI
             return Main.playerInventory;
         }
 
-        public InventoryGui(PlayerCharacter character, Mod mod)
+        public InventoryGUI(PlayerCharacter character, Mod mod)
         {
             AddButton(
                 () => new Rectangle((int) (origin.X + 142f * scale), (int) (origin.Y + 102f * scale), (int) (GFX.button_stats.Width * scale),
