@@ -17,7 +17,7 @@ using Terraria.UI.Gamepad;
 
 namespace kRPG.GUI
 {
-    public class InventoryGUI : BaseGUI
+    public class InventoryGui : BaseGUI
     {
         public Vector2 origin => new Vector2(40f, 8f) * scale;
 
@@ -28,7 +28,7 @@ namespace kRPG.GUI
             return Main.playerInventory;
         }
 
-        public InventoryGUI(PlayerCharacter character, Mod mod)
+        public InventoryGui(PlayerCharacter character, Mod mod)
         {
             AddButton(
                 () => new Rectangle((int) (origin.X + 142f * scale), (int) (origin.Y + 102f * scale), (int) (GFX.button_stats.Width * scale),
@@ -81,7 +81,7 @@ namespace kRPG.GUI
 
         private Vector2 pointsOrigin => origin + new Vector2(538f, 76f) * scale;
         private const int BarLength = 192;
-        private float bar_x => 314f * scale;
+        private float barX => 314f * scale;
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
@@ -108,19 +108,19 @@ namespace kRPG.GUI
             StatusBar.DrawNumerals(spriteBatch, player.GetModPlayer<PlayerCharacter>().level, scale);
 
             int currentLifeLength = (int) Math.Round(player.statLife / (decimal) player.statLifeMax2 * BarLength);
-            spriteBatch.Draw(GFX.inventory_life, origin + new Vector2(bar_x, 70 * scale), new Rectangle(0, 0, currentLifeLength, 20), Color.White, 0f,
+            spriteBatch.Draw(GFX.inventory_life, origin + new Vector2(barX, 70 * scale), new Rectangle(0, 0, currentLifeLength, 20), Color.White, 0f,
                 Vector2.Zero, scale, SpriteEffects.None, 0f);
             int currentManaLength = (int) Math.Round(character.mana / (decimal) player.statManaMax2 * BarLength);
-            spriteBatch.Draw(GFX.inventory_mana, origin + new Vector2(bar_x, 98 * scale), new Rectangle(0, 0, currentManaLength, 16), Color.White, 0f,
+            spriteBatch.Draw(GFX.inventory_mana, origin + new Vector2(barX, 98 * scale), new Rectangle(0, 0, currentManaLength, 16), Color.White, 0f,
                 Vector2.Zero, scale, SpriteEffects.None, 0f);
             int currentXPLength = (int) Math.Round(BarLength * (decimal) character.xp / (decimal) character.ExperienceToLevel());
-            spriteBatch.Draw(GFX.inventory_xp, origin + new Vector2(bar_x, 126 * scale), new Rectangle(0, 0, currentXPLength, 8), Color.White, 0f, Vector2.Zero,
+            spriteBatch.Draw(GFX.inventory_xp, origin + new Vector2(barX, 126 * scale), new Rectangle(0, 0, currentXPLength, 8), Color.White, 0f, Vector2.Zero,
                 scale, SpriteEffects.None, 0f);
             spriteBatch.Draw(GFX.inventory_barCovers, origin + new Vector2(302, 68) * scale, Color.White, scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife.ToString() + " / " + player.statLifeMax2.ToString(),
-                origin + new Vector2(bar_x + 16f * scale, 72f * scale), Color.White, 0.8f * scale);
+                origin + new Vector2(barX + 16f * scale, 72f * scale), Color.White, 0.8f * scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.mana.ToString() + " / " + player.statManaMax2.ToString(),
-                origin + new Vector2(bar_x + 16f * scale, 100f * scale), Color.White, 0.6f * scale);
+                origin + new Vector2(barX + 16f * scale, 100f * scale), Color.White, 0.6f * scale);
 
             if (character.UnspentPoints())
                 spriteBatch.Draw(GFX.inventory_points, pointsOrigin, Color.White, scale);
@@ -141,7 +141,7 @@ namespace kRPG.GUI
         private static readonly FieldInfo mH = typeof(Main).GetField("mH", BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly FieldInfo mouseReforge = typeof(Main).GetField("mouseReforge", BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly FieldInfo ReforgeScale = typeof(Main).GetField("reforgeScale", BindingFlags.NonPublic | BindingFlags.Static);
-        private static readonly FieldInfo allChestStackHover = typeof(Main).GetField("allChestStackHover", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly FieldInfo AllChestStackHover = typeof(Main).GetField("allChestStackHover", BindingFlags.NonPublic | BindingFlags.Static);
 
         private static readonly FieldInfo InventorySortMouseOver =
             typeof(Main).GetField("inventorySortMouseOver", BindingFlags.NonPublic | BindingFlags.Static);
@@ -315,19 +315,20 @@ namespace kRPG.GUI
                 {
                     ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
 
-                    if (Main.LocalPlayer.inventory[id].modItem is ProceduralItem)
-                        try
-                        {
-                            var item = (ProceduralItem) Main.LocalPlayer.inventory[id].modItem;
-                            item.Initialize();
-                        }
-                        catch (SystemException e2)
-                        {
-                            ModLoader.GetMod("kRPG").Logger.InfoFormat("Failed to initialize: " + e2);
-                            spriteBatch.Draw(GFX.itemSlot_broken, new Vector2(x2, y2), Color.White, Main.inventoryScale);
-                            Main.LocalPlayer.inventory[id].SetDefaults();
-                            ModLoader.GetMod("kRPG").Logger.InfoFormat("ITEM " + id + " WAS DESTROYED.");
-                        }
+                    if (!(Main.LocalPlayer.inventory[id].modItem is ProceduralItem))
+                        continue;
+                    try
+                    {
+                        var item = (ProceduralItem) Main.LocalPlayer.inventory[id].modItem;
+                        item.Initialize();
+                    }
+                    catch (SystemException e2)
+                    {
+                        ModLoader.GetMod("kRPG").Logger.InfoFormat("Failed to initialize: " + e2);
+                        spriteBatch.Draw(GFX.itemSlot_broken, new Vector2(x2, y2), Color.White, Main.inventoryScale);
+                        Main.LocalPlayer.inventory[id].SetDefaults();
+                        ModLoader.GetMod("kRPG").Logger.InfoFormat("ITEM " + id + " WAS DESTROYED.");
+                    }
                 }
             }
 
@@ -1770,10 +1771,10 @@ namespace kRPG.GUI
                         !PlayerInput.IgnoreMouseInterface)
                     {
                         num121 = 1;
-                        if (!(bool) allChestStackHover.GetValue(null))
+                        if (!(bool) AllChestStackHover.GetValue(null))
                         {
                             Main.PlaySound(12, -1, -1, 1, 1f, 0f);
-                            allChestStackHover.SetValue(null, true);
+                            AllChestStackHover.SetValue(null, true);
                         }
 
                         if (Main.mouseLeft && Main.mouseLeftRelease)
@@ -1785,10 +1786,10 @@ namespace kRPG.GUI
 
                         Main.player[Main.myPlayer].mouseInterface = true;
                     }
-                    else if ((bool) allChestStackHover.GetValue(null))
+                    else if ((bool) AllChestStackHover.GetValue(null))
                     {
                         Main.PlaySound(12, -1, -1, 1, 1f, 0f);
-                        allChestStackHover.SetValue(null, false);
+                        AllChestStackHover.SetValue(null, false);
                     }
 
                     Main.spriteBatch.Draw(Main.chestStackTexture[num121], new Vector2(num122, num123),

@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace kRPG.GUI
 {
-    public class LevelGUI : BaseGUI
+    public class LevelGui : BaseGUI
     {
         private PlayerCharacter character;
 
@@ -31,7 +31,7 @@ namespace kRPG.GUI
 
         public Dictionary<STAT, int> allocated = new Dictionary<STAT, int>() {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}};
 
-        public LevelGUI(PlayerCharacter character, Mod mod)
+        public LevelGui(PlayerCharacter character, Mod mod)
         {
             this.character = character;
 

@@ -520,13 +520,13 @@ namespace kRPG.Projectiles
 
     //    public override void ModifyDamageHitbox(ref Rectangle hitbox)
     //    {
-    //        hitbox = new Rectangle((int)projectile.position.X - texture.Width / 2, (int)projectile.position.Y - texture.Height / 2, texture.Width, texture.Height);
+    //        hitbox = new Rectangle((int)projectile.playerPosition.X - texture.Width / 2, (int)projectile.playerPosition.Y - texture.Height / 2, texture.Width, texture.Height);
     //    }
 
     //    public override bool? CanHitNPC(NPC target)
     //    {
     //        Player owner = Main.player[projectile.owner];
-    //        if ((target.position.X - owner.position.X) * owner.direction > -1f)
+    //        if ((target.playerPosition.X - owner.playerPosition.X) * owner.direction > -1f)
     //            return base.CanHitNPC(target);
     //        else return false;
     //    }
@@ -536,14 +536,14 @@ namespace kRPG.Projectiles
     //        return new Point(blade.texture.Width - (int)blade.origin.X + (int)hilt.origin.X, (int)blade.origin.Y + hilt.texture.Height - (int)hilt.origin.Y);
     //    }
 
-    //    public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
+    //    public override void Draw(SpriteBatch spriteBatch, Vector2 playerPosition, Color color, float rotation, float scale)
     //    {
     //        if (texture == null)
     //        {
     //            Initialize();
     //            return;
     //        }
-    //        spriteBatch.Draw(texture, position + texture.Size() / 2f, null, blade.lighted ? Color.White : color, rotation, texture.Bounds.Center(), scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+    //        spriteBatch.Draw(texture, playerPosition + texture.Size() / 2f, null, blade.lighted ? Color.White : color, rotation, texture.Bounds.Center(), scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
     //    }
 
     //    public override void SetDefaults()
@@ -709,7 +709,7 @@ namespace kRPG.Projectiles
                 // Since we access the owner player instance so much, it's useful to create a helper local variable for this
                 // Sadly, Projectile/ModProjectile does not have its own
                 var projOwner = Main.player[projectile.owner];
-                // Here we set some of the projectile's owner properties, such as held item and itemtime, along with projectile directio and position based on the player
+                // Here we set some of the projectile's owner properties, such as held item and itemtime, along with projectile directio and playerPosition based on the player
                 //Vector2 ownerMountedCenter = projOwner.RotatedRelativePoint(projOwner.MountedCenter, true);
 
                 if (projectile.velocity.X > 0)

@@ -6,21 +6,15 @@ using Terraria.ModLoader;
 
 namespace kRPG.GUI
 {
-    public class AbilitiesGUI : BaseGUI
+    public class AbilitiesGui : BaseGUI
     {
-        private PlayerCharacter character;
-        private Mod mod;
-        private kRPG krpg;
-
         private Vector2 GuiPosition => new Vector2(Main.screenWidth - GFX.skillSlot.Width * 8 * scale, Main.screenHeight - GFX.skillSlot.Height * scale - 12);
 
         private float scale => Math.Min(1f, Main.screenWidth / 1920f);
 
-        public AbilitiesGUI(PlayerCharacter character, Mod mod) : base()
+        public AbilitiesGui() 
         {
-            this.character = character;
-            this.mod = mod;
-            krpg = (kRPG) mod;
+
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)

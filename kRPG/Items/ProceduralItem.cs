@@ -550,7 +550,7 @@ namespace kRPG.Items
 
         /*public override bool AltFunctionUse(Player player)
         {
-            Vector2 pos = player.position; //  + new Vector2(2f * player.direction, 4f)
+            Vector2 pos = player.playerPosition; //  + new Vector2(2f * player.direction, 4f)
             Vector2 unitVelocity = (Main.MouseWorld - pos);
             unitVelocity.Normalize();
             Vector2 velocity = unitVelocity * 8f;
