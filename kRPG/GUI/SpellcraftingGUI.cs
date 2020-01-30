@@ -34,9 +34,13 @@ namespace kRPG.GUI
             this.mod = mod;
             krpg = (kRPG)mod;
             guiposition = delegate () { return new Vector2((float)Main.screenWidth / 2f - 100f * Scale, 192f * Scale); };
+
             glyphs[0] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 36f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.STAR);
+            
             glyphs[1] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 70f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.CROSS);
+            
             glyphs[2] = new GlyphSlot(delegate () { return guiposition() + new Vector2(84f, 106f) * Scale; }, delegate () { return Scale; }, GLYPHTYPE.MOON);
+
             gui_elements.Add(this);
         }
 
