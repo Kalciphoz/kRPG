@@ -19,7 +19,7 @@ namespace kRPG.Modifiers
 
         public override void Apply()
         {
-            npc.damage = (int)Math.Round(npc.damage * this.damageModifier);
+            npc.damage = (int) Math.Round(npc.damage * damageModifier);
             npc.defense = 1;
         }
 
@@ -35,7 +35,7 @@ namespace kRPG.Modifiers
 
         public new static NPCModifier Random(kNPC kNPC, NPC npc)
         {
-            return new DamageModifier(kNPC, npc, 1f+ Main.rand.NextFloat(1));
+            return new DamageModifier(kNPC, npc, 1f + Main.rand.NextFloat(1));
         }
 
         public new static NPCModifier New(kNPC kNPC, NPC npc)

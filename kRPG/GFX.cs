@@ -137,21 +137,22 @@ namespace kRPG
 
         public static Texture2D CombineTextures(List<Texture2D> textures, List<Point> origins, Point final_size)
         {
-            Texture2D texture = new Texture2D(Main.spriteBatch.GraphicsDevice, final_size.X * 2, final_size.Y * 2);
-            Color[] combinedTexture = new Color[texture.Width * texture.Height];
+            var texture = new Texture2D(Main.spriteBatch.GraphicsDevice, final_size.X * 2, final_size.Y * 2);
+            var combinedTexture = new Color[texture.Width * texture.Height];
 
             for (int tex = 0; tex < textures.Count; tex += 1)
             {
                 if (textures[tex] == null) continue;
 
-                Color[] pixels = new Color[textures[tex].Width * textures[tex].Height];
+                var pixels = new Color[textures[tex].Width * textures[tex].Height];
                 textures[tex].GetData(pixels);
 
                 for (int x = 0; x < textures[tex].Width; x += 1)
-                    for (int y = 0; y < textures[tex].Height; y += 1)
-                        if (pixels[x + y * textures[tex].Width].A > 0)
-                            for (int i = 0; i < 4; i += 1)
-                                combinedTexture[origins[tex].X * 2 + x * 2 + i % 2 + (origins[tex].Y * 2 + y * 2 + (int)(i / 2)) * texture.Width] = pixels[x + y * textures[tex].Width];
+                for (int y = 0; y < textures[tex].Height; y += 1)
+                    if (pixels[x + y * textures[tex].Width].A > 0)
+                        for (int i = 0; i < 4; i += 1)
+                            combinedTexture[origins[tex].X * 2 + x * 2 + i % 2 + (origins[tex].Y * 2 + y * 2 + (int) (i / 2)) * texture.Width] =
+                                pixels[x + y * textures[tex].Width];
             }
 
             texture.SetData<Color>(combinedTexture);
@@ -161,7 +162,6 @@ namespace kRPG
         public static void LoadGFX()
         {
             var loader = ModLoader.GetMod("kRPG");
-
 
             button_confirm = loader.GetTexture(BUTTON_CONFIRM);
             button_upgrade = loader.GetTexture(BUTTON_UPGRADE);
@@ -193,14 +193,10 @@ namespace kRPG
             bubbles = loader.GetTexture(BUBBLES);
             bubbles_lava = loader.GetTexture(BUBBLES_LAVA);
             statusBars_BG = loader.GetTexture(STATUSBARS_BG);
-            for (int i = 0; i < 10; i++ )
-            {
+            for (int i = 0; i < 10; i++)
                 gothicNumeral[i] = loader.GetTexture(NUMERALS + i.ToString());
-            }
-            for (Keys k = Keys.A; k <= Keys.Z; k += 1)
-            {
+            for (var k = Keys.A; k <= Keys.Z; k += 1)
                 gothicLetter[k] = loader.GetTexture(LETTERS + k.ToString());
-            }
             unspentPoints = loader.GetTexture(UNSPENTPOINTS);
             itemSlot = loader.GetTexture(ITEMSLOT);
             itemSlot_broken = loader.GetTexture(ITEMSLOT_BROKEN);
@@ -265,7 +261,7 @@ namespace kRPG
             statusBars_BG = null;
             for (int i = 0; i < 10; i++)
                 gothicNumeral[i] = null;
-            for (Keys k = Keys.A; k <= Keys.Z; k += 1)
+            for (var k = Keys.A; k <= Keys.Z; k += 1)
                 gothicLetter[k] = null;
             unspentPoints = null;
             itemSlot = null;

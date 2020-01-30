@@ -15,7 +15,6 @@ namespace kRPG.GUI
     {
         private PlayerCharacter character;
 
-
         private static Vector2 GuiPosition => new Vector2(4f, 6f) * Scale;
 
         private static float Scale => Math.Min(1f, Main.screenWidth / 3840f + 0.4f);
@@ -28,8 +27,10 @@ namespace kRPG.GUI
 
         // ReSharper disable once IdentifierTypo
         private readonly Vector2 barManaOrigin;
+
         // ReSharper disable once IdentifierTypo
         private const int BarManaLength = 286;
+
         // ReSharper disable once IdentifierTypo
         private const int BarManaThickness = 18;
 
@@ -52,40 +53,50 @@ namespace kRPG.GUI
             bubblesOrigin = new Vector2(284, 134);
 
             AddButton(
-                () => new Rectangle((int) (pointsOrigin.X), (int) (pointsOrigin.Y), (int) (GFX.unspentPoints.Width * Scale),
-                    (int) (GFX.unspentPoints.Height * Scale)), delegate (Player player)
-            {
-                character.CloseGUIs();
-                Main.PlaySound(SoundID.MenuTick);
-                character.levelGUI.guiActive = player.GetModPlayer<PlayerCharacter>().UnspentPoints() && !Main.playerInventory;
-            }, delegate
+                () => new Rectangle((int) pointsOrigin.X, (int) pointsOrigin.Y, (int) (GFX.unspentPoints.Width * Scale),
+                    (int) (GFX.unspentPoints.Height * Scale)), delegate(Player player)
                 {
-                Main.LocalPlayer.mouseInterface = true;
-                string s = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>().UnspentPoints() ? "Click here to allocate stat points" : "You have no unspent stat points";
-                Main.instance.MouseText(s);
-            });
+                    character.CloseGUIs();
+                    Main.PlaySound(SoundID.MenuTick);
+                    character.levelGUI.guiActive = player.GetModPlayer<PlayerCharacter>().UnspentPoints() && !Main.playerInventory;
+                }, delegate
+                {
+                    Main.LocalPlayer.mouseInterface = true;
+                    string s = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>().UnspentPoints()
+                        ? "Click here to allocate stat points"
+                        : "You have no unspent stat points";
+                    Main.instance.MouseText(s);
+                });
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
             if (!Main.playerInventory && !Main.player[Main.myPlayer].ghost)
             {
-                this.character = player.GetModPlayer<PlayerCharacter>();
+                character = player.GetModPlayer<PlayerCharacter>();
 
                 DrawHotbar();
 
                 spriteBatch.Draw(GFX.statusBars_BG, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
-                int currentLifeLength = (int)Math.Round(player.statLife / (decimal)player.statLifeMax2 * BarLifeLength);
-                spriteBatch.Draw(GFX.statusBars, GuiPosition + barLifeOrigin * Scale, new Rectangle((int)(barLifeOrigin.X + BarLifeLength - currentLifeLength), (int)barLifeOrigin.Y, currentLifeLength, BarLifeThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-                int currentManaLength = (int)Math.Round(character.mana / (decimal)player.statManaMax2 * BarManaLength);
-                spriteBatch.Draw(GFX.statusBars, GuiPosition + barManaOrigin * Scale, new Rectangle((int)(barManaOrigin.X + BarManaLength - currentManaLength), (int)barManaOrigin.Y, currentManaLength, BarManaThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-                int currentXpLength = (int)Math.Round(BarXpLength * (decimal)character.xp / character.ExperienceToLevel());
-                spriteBatch.Draw(GFX.statusBars, GuiPosition + barXpOrigin * Scale, new Rectangle((int)barXpOrigin.X, (int)barXpOrigin.Y, currentXpLength, BarXpThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+                int currentLifeLength = (int) Math.Round(player.statLife / (decimal) player.statLifeMax2 * BarLifeLength);
+                spriteBatch.Draw(GFX.statusBars, GuiPosition + barLifeOrigin * Scale,
+                    new Rectangle((int) (barLifeOrigin.X + BarLifeLength - currentLifeLength), (int) barLifeOrigin.Y, currentLifeLength, BarLifeThickness),
+                    Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+                int currentManaLength = (int) Math.Round(character.mana / (decimal) player.statManaMax2 * BarManaLength);
+                spriteBatch.Draw(GFX.statusBars, GuiPosition + barManaOrigin * Scale,
+                    new Rectangle((int) (barManaOrigin.X + BarManaLength - currentManaLength), (int) barManaOrigin.Y, currentManaLength, BarManaThickness),
+                    Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+                int currentXpLength = (int) Math.Round(BarXpLength * (decimal) character.xp / character.ExperienceToLevel());
+                spriteBatch.Draw(GFX.statusBars, GuiPosition + barXpOrigin * Scale,
+                    new Rectangle((int) barXpOrigin.X, (int) barXpOrigin.Y, currentXpLength, BarXpThickness), Color.White, 0f, Vector2.Zero, Scale,
+                    SpriteEffects.None, 0f);
 
                 spriteBatch.Draw(GFX.characterFrame, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-                spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife.ToString() + " / " + player.statLifeMax2.ToString(), GuiPosition + new Vector2(barLifeOrigin.X * Scale + 24f * Scale, (barLifeOrigin.Y + 4f) * Scale), Color.White, Scale);
-                spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.mana.ToString() + " / " + player.statManaMax2.ToString(), GuiPosition + new Vector2(barManaOrigin.X * Scale + 24f * Scale, barManaOrigin.Y * Scale), Color.White, 0.8f * Scale);
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife.ToString() + " / " + player.statLifeMax2.ToString(),
+                    GuiPosition + new Vector2(barLifeOrigin.X * Scale + 24f * Scale, (barLifeOrigin.Y + 4f) * Scale), Color.White, Scale);
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.mana.ToString() + " / " + player.statManaMax2.ToString(),
+                    GuiPosition + new Vector2(barManaOrigin.X * Scale + 24f * Scale, barManaOrigin.Y * Scale), Color.White, 0.8f * Scale);
 
                 DrawNumerals(spriteBatch, character.level, Scale);
 
@@ -93,28 +104,32 @@ namespace kRPG.GUI
                     spriteBatch.Draw(GFX.unspentPoints, pointsOrigin, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
                 Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
+                    RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
 
                 if (player.lavaTime < player.lavaMax)
                 {
-                    int currentBubbles = (int)Math.Round((decimal)BubblesLength * player.lavaTime / player.lavaMax);
-                    spriteBatch.Draw(GFX.bubbles_lava, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White, Scale);
+                    int currentBubbles = (int) Math.Round((decimal) BubblesLength * player.lavaTime / player.lavaMax);
+                    spriteBatch.Draw(GFX.bubbles_lava, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White,
+                        Scale);
                 }
+
                 if (player.breath < player.breathMax)
                 {
-                    int currentBubbles = (int)Math.Round((decimal)BubblesLength * player.breath / player.breathMax);
-                    spriteBatch.Draw(GFX.bubbles, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White, Scale);
+                    int currentBubbles = (int) Math.Round((decimal) BubblesLength * player.breath / player.breathMax);
+                    spriteBatch.Draw(GFX.bubbles, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White,
+                        Scale);
                 }
 
                 Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
+                    RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
                 Main.buffString = "";
                 Main.bannerMouseOver = false;
-                if (!Main.recBigList) { Main.recStart = 0; }
+                if (!Main.recBigList)
+                    Main.recStart = 0;
                 if (!Main.ingameOptionsWindow && !Main.playerInventory && !Main.inFancyUI)
-                {
                     DrawBuffs();
-                }
             }
         }
 
@@ -125,7 +140,6 @@ namespace kRPG.GUI
             int num = -1;
             int num2 = 11;
             for (int i = 0; i < 22; i++)
-            {
                 if (Main.player[Main.myPlayer].buffType[i] > 0)
                 {
                     int b = Main.player[Main.myPlayer].buffType[i];
@@ -136,13 +150,13 @@ namespace kRPG.GUI
                         x = 32 + (i - num2) * 38;
                         num3 += 50;
                     }
-                    num = (int)DrawBuffIcon.Invoke(null, new object[] { num, i, b, x, num3 }); // Main.DrawBuffIcon(num, i, b, x, num3);
+
+                    num = (int) DrawBuffIcon.Invoke(null, new object[] {num, i, b, x, num3}); // Main.DrawBuffIcon(num, i, b, x, num3);
                 }
                 else
                 {
                     Main.buffAlpha[i] = 0.4f;
                 }
-            }
 
             if (num < 0)
                 return;
@@ -161,37 +175,41 @@ namespace kRPG.GUI
                     break;
                 case 94:
                 {
-                    int num5 = (int)(Main.player[Main.myPlayer].manaSickReduction * 100f) + 1;
+                    int num5 = (int) (Main.player[Main.myPlayer].manaSickReduction * 100f) + 1;
                     Main.buffString = Main.buffString + num5 + "%";
                     break;
                 }
             }
 
             if (Main.meleeBuff[num4])
-            {
                 itemRarity = -10;
-            }
             BuffLoader.ModifyBuffTip(num4, ref Main.buffString, ref itemRarity);
             Main.instance.MouseTextHackZoom(Lang.GetBuffName(num4), itemRarity);
         }
 
         public static void DrawNumerals(SpriteBatch spriteBatch, int level, float scale)
         {
-            Vector2 origin = Main.playerInventory ? new Vector2(132f, 60f) * scale : new Vector2(190f, 58f) * scale;
+            var origin = Main.playerInventory ? new Vector2(132f, 60f) * scale : new Vector2(190f, 58f) * scale;
             if (level < 10)
             {
-                spriteBatch.Draw(GFX.gothicNumeral[level], new Vector2(origin.X - 16f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.gothicNumeral[level], new Vector2(origin.X - 16f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
+                    SpriteEffects.None, 0f);
             }
             else if (level < 100)
             {
-                spriteBatch.Draw(GFX.gothicNumeral[level / 10], new Vector2(origin.X - 34f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
-                spriteBatch.Draw(GFX.gothicNumeral[level % 10], new Vector2(origin.X + 2f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.gothicNumeral[level / 10], new Vector2(origin.X - 34f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
+                    SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.gothicNumeral[level % 10], new Vector2(origin.X + 2f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
+                    SpriteEffects.None, 0f);
             }
             else if (level < 1000)
             {
-                spriteBatch.Draw(GFX.gothicNumeral[level / 100], new Vector2(origin.X - 52f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
-                spriteBatch.Draw(GFX.gothicNumeral[level % 100 / 10], new Vector2(origin.X - 16f, origin.Y), null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
-                spriteBatch.Draw(GFX.gothicNumeral[level % 10], new Vector2(origin.X + 20f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.gothicNumeral[level / 100], new Vector2(origin.X - 52f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
+                    SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.gothicNumeral[level % 100 / 10], new Vector2(origin.X - 16f, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
+                    SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.gothicNumeral[level % 10], new Vector2(origin.X + 20f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
+                    SpriteEffects.None, 0f);
             }
         }
 
@@ -199,64 +217,59 @@ namespace kRPG.GUI
         {
             string text = "";
             if (!string.IsNullOrEmpty(Main.player[Main.myPlayer].inventory[Main.player[Main.myPlayer].selectedItem].Name))
-            {
                 text = Main.player[Main.myPlayer].inventory[Main.player[Main.myPlayer].selectedItem].AffixName();
-            }
-            Vector2 vector = Main.fontMouseText.MeasureString(text) / 2;
-            Main.spriteBatch.DrawStringWithShadow(Main.fontMouseText, text, new Vector2(Main.screenWidth - 240 - vector.X - 16f, 0f), new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor));
+            var vector = Main.fontMouseText.MeasureString(text) / 2;
+            Main.spriteBatch.DrawStringWithShadow(Main.fontMouseText, text, new Vector2(Main.screenWidth - 240 - vector.X - 16f, 0f),
+                new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor));
             int posX = Main.screenWidth - 480;
             for (int i = 0; i < 10; i++)
             {
                 if (i == Main.player[Main.myPlayer].selectedItem)
                 {
                     if (Main.hotbarScale[i] < 1f)
-                    {
                         Main.hotbarScale[i] += 0.05f;
-                    }
                 }
                 else if (Main.hotbarScale[i] > 0.75)
                 {
                     Main.hotbarScale[i] -= 0.05f;
                 }
+
                 float num2 = Main.hotbarScale[i];
-                int num3 = (int)(20f + 22f * (1f - num2));
-                int a = (int)(75f + 150f * num2);
+                int num3 = (int) (20f + 22f * (1f - num2));
+                int a = (int) (75f + 150f * num2);
                 new Color(255, 255, 255, a);
-                if (!Main.player[Main.myPlayer].hbLocked && !PlayerInput.IgnoreMouseInterface && Main.mouseX >= posX && Main.mouseX <= posX + Main.inventoryBackTexture.Width * Main.hotbarScale[i] && Main.mouseY >= num3 && Main.mouseY <= num3 + Main.inventoryBackTexture.Height * Main.hotbarScale[i] && !Main.player[Main.myPlayer].channel)
+                if (!Main.player[Main.myPlayer].hbLocked && !PlayerInput.IgnoreMouseInterface && Main.mouseX >= posX &&
+                    Main.mouseX <= posX + Main.inventoryBackTexture.Width * Main.hotbarScale[i] && Main.mouseY >= num3 &&
+                    Main.mouseY <= num3 + Main.inventoryBackTexture.Height * Main.hotbarScale[i] && !Main.player[Main.myPlayer].channel)
                 {
                     Main.player[Main.myPlayer].mouseInterface = true;
                     Main.player[Main.myPlayer].showItemIcon = false;
                     if (Main.mouseLeft && !Main.player[Main.myPlayer].hbLocked && !Main.blockMouse)
-                    {
                         Main.player[Main.myPlayer].changeItem = i;
-                    }
                     Main.hoverItemName = Main.player[Main.myPlayer].inventory[i].AffixName();
                     if (Main.player[Main.myPlayer].inventory[i].stack > 1)
                     {
                         object obj = Main.hoverItemName;
-                        Main.hoverItemName = string.Concat(new object[]
-                        {
-                    obj,
-                    " (",
-                    Main.player[Main.myPlayer].inventory[i].stack,
-                    ")"
-                        });
+                        Main.hoverItemName = string.Concat(new object[] {obj, " (", Main.player[Main.myPlayer].inventory[i].stack, ")"});
                     }
+
                     Main.rare = Main.player[Main.myPlayer].inventory[i].rare;
                 }
+
                 float num4 = Main.inventoryScale;
                 Main.inventoryScale = num2;
                 ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 13, i, new Vector2(posX, num3), Color.White);
                 Main.inventoryScale = num4;
-                posX += (int)(Main.inventoryBackTexture.Width * Main.hotbarScale[i]) + 4;
+                posX += (int) (Main.inventoryBackTexture.Width * Main.hotbarScale[i]) + 4;
             }
+
             int selectedItem = Main.player[Main.myPlayer].selectedItem;
-            if (selectedItem < 10 || (selectedItem == 58 && Main.mouseItem.type <= 0))
+            if (selectedItem < 10 || selectedItem == 58 && Main.mouseItem.type <= 0)
                 return;
             float num5 = 1f;
-            int num6 = (int)(20f + 22f * (1f - num5));
-            int a2 = (int)(75f + 150f * num5);
-            Color lightColor2 = new Color(255, 255, 255, a2);
+            int num6 = (int) (20f + 22f * (1f - num5));
+            int a2 = (int) (75f + 150f * num5);
+            var lightColor2 = new Color(255, 255, 255, a2);
             float num7 = Main.inventoryScale;
             Main.inventoryScale = num5;
             ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 13, selectedItem, new Vector2(posX, num6), Color.White);

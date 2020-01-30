@@ -6,7 +6,7 @@ namespace kRPG.Modifiers
     public class LifeRegenModifier : NPCModifier
     {
         private float regenTimer;
-        
+
         public LifeRegenModifier(kNPC kNPC, NPC npc) : base(kNPC, npc)
         {
             this.npc = npc;
@@ -19,11 +19,10 @@ namespace kRPG.Modifiers
             int amount = npc.lifeMax / 20;
             if (!(regenTimer > 60f / amount))
                 return;
-            npc.life = Math.Min(npc.life + (int)(regenTimer / (60f / amount)), npc.lifeMax);
-            regenTimer %= (60f / amount);
+            npc.life = Math.Min(npc.life + (int) (regenTimer / (60f / amount)), npc.lifeMax);
+            regenTimer %= 60f / amount;
         }
-        
-        
+
         public new static NPCModifier Random(kNPC kNPC, NPC npc)
         {
             return new LifeRegenModifier(kNPC, npc);

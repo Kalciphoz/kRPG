@@ -62,18 +62,16 @@ namespace kRPG.Items.Weapons
 
         public Dictionary<ELEMENT, float> eleDamage = new Dictionary<ELEMENT, float>()
         {
-            { ELEMENT.FIRE, 0f },
-            { ELEMENT.COLD, 0f },
-            { ELEMENT.LIGHTNING, 0f },
-            { ELEMENT.SHADOW, 0f }
+            {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
         };
 
-        public SwordBlade(string texture, int origin_x, int origin_y, string name, int useTime, float knockBack, float dpsModifier = 1f, int critBonus = 0, bool autoswing = false, float scale = 0f, bool spearable = true, bool lighted = false, Action<Rectangle, Player> effect = null)
+        public SwordBlade(string texture, int origin_x, int origin_y, string name, int useTime, float knockBack, float dpsModifier = 1f, int critBonus = 0,
+            bool autoswing = false, float scale = 0f, bool spearable = true, bool lighted = false, Action<Rectangle, Player> effect = null)
         {
-            this.type = blades.Count() + 1;
+            type = blades.Count() + 1;
             if (Main.netMode != 2)
                 this.texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Blades/" + texture);
-            this.origin = new Vector2(origin_x, origin_y);
+            origin = new Vector2(origin_x, origin_y);
             this.name = name;
             this.useTime = useTime;
             this.knockBack = knockBack;
@@ -112,32 +110,20 @@ namespace kRPG.Items.Weapons
             fieldSword = new SwordBlade("ClaymoreBlade", 2, 17, "Field Sword", 41, 4f, 0.9f, 2, true);
             eyeMallet = new SwordBlade("EyeMallet", 2, 18, "Eye Mallet", 42, 6f, 0.9f, -1, false, 0f, false).SetEleDamage(new Dictionary<ELEMENT, float>()
             {
-                { ELEMENT.FIRE, 0f },
-                { ELEMENT.COLD, 0f },
-                { ELEMENT.LIGHTNING, 0f },
-                { ELEMENT.SHADOW, 0.25f }
+                {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0.25f}
             });
             broadswordVile = new SwordBlade("VileBroadsword", 1, 15, "Meatfang", 29, 4.5f).SetEleDamage(new Dictionary<ELEMENT, float>()
             {
-                { ELEMENT.FIRE, 0f },
-                { ELEMENT.COLD, 0f },
-                { ELEMENT.LIGHTNING, 0f },
-                { ELEMENT.SHADOW, 0.15f }
+                {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0.15f}
             });
             slumTwirl = new SwordBlade("SlumTwirl", 2, 18, "Twirlsword", 32, 3f, 1f, -3);
             broadswordBone = new SwordBlade("BoneBroadsword", 1, 15, "Bone Sword", 28, 4f, 0.95f, 0, true, 0f).SetEleDamage(new Dictionary<ELEMENT, float>()
             {
-                { ELEMENT.FIRE, 0f },
-                { ELEMENT.COLD, 0.2f },
-                { ELEMENT.LIGHTNING, 0f },
-                { ELEMENT.SHADOW, 0.1f }
+                {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0.2f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0.1f}
             });
             demonEye = new SwordBlade("EyeSword", 1, 17, "Eyes on a Stick", 22, 4f).SetEleDamage(new Dictionary<ELEMENT, float>()
             {
-                { ELEMENT.FIRE, 0f },
-                { ELEMENT.COLD, 0f },
-                { ELEMENT.LIGHTNING, 0f },
-                { ELEMENT.SHADOW, 0.2f }
+                {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0.2f}
             });
             wizardSword = new SwordBlade("WizardSword", 2, 18, "Wizard Sword", 19, 1f, 1.15f, 0, true, 0f, true, true);
             runicswordViolet = new SwordBlade("VioletRunicSword", 2, 13, "Sword", 28, 5f, 1f, 0, false, 0.1f, true, true);
@@ -146,76 +132,105 @@ namespace kRPG.Items.Weapons
             {
                 if (Main.rand.Next(7) >= 2)
                     return;
-                int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color());
+                int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f,
+                    player.velocity.Y * 0.2f, 63, new Color());
                 Main.dust[dust].noGravity = true;
-            }).SetEleDamage(new Dictionary<ELEMENT, float>()
-            {
-                { ELEMENT.FIRE, 0.4f },
-                { ELEMENT.COLD, 0f },
-                { ELEMENT.LIGHTNING, 0f },
-                { ELEMENT.SHADOW, 0.1f }
-            });
+            }).SetEleDamage(new Dictionary<ELEMENT, float>() {{ELEMENT.FIRE, 0.4f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0.1f}});
             executioner = new SwordBlade("ExecutionerBlade", 2, 20, "Execution Sword", 33, 7f, 1f, 0, false, 0.2f, false);
             obsidianBroadsword = new SwordBlade("ObsidianGreatsword", 2, 15, "Obsidian Sword", 26, 5.5f, 1.1f, 1, false, 0.1f);
             obsidianMaul = new SwordBlade("ObsidianMaul", 2, 18, "Obsidian Maul", 44, 8.5f, 0.95f, 0, false, 0.15f, false);
             hellstoneBroadsword = new SwordBlade("HellstoneBroadsword", 2, 13, "Hellstone Broadsword", 23, 4.5f, 1.1f, 2, true, 0.1f);
-            fieryBroadsword = new SwordBlade("FieryBroadsword", 2, 15, "Fiery Field Sword", 29, 4f, 0.92f, 0, true, 0.1f, true, true, delegate(Rectangle rect, Player player)
-            {
-                if (Main.rand.Next(2) != 0)
-                    return;
-                int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color(), 2f);
-                Main.dust[dust].noGravity = true;
-            }).SetEleDamage(new Dictionary<ELEMENT, float>()
-            {
-                { ELEMENT.FIRE, 0.5f },
-                { ELEMENT.COLD, 0f },
-                { ELEMENT.LIGHTNING, 0f },
-                { ELEMENT.SHADOW, 0f }
-            });
-            fieryGreatsword = new SwordBlade("FieryGreatsword", 2, 16, "Fiery Greatsword", 36, 6f, 0.96f, 0, false, 0.2f, true, true, delegate (Rectangle rect, Player player)
-            {
-                if (Main.rand.Next(2) != 0)
-                    return;
-                int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color(), 2f);
-                Main.dust[dust].noGravity = true;
-            }).SetEleDamage(new Dictionary<ELEMENT, float>()
-            {
-                { ELEMENT.FIRE, 0.5f },
-                { ELEMENT.COLD, 0f },
-                { ELEMENT.LIGHTNING, 0f },
-                { ELEMENT.SHADOW, 0f }
-            });
+            fieryBroadsword = new SwordBlade("FieryBroadsword", 2, 15, "Fiery Field Sword", 29, 4f, 0.92f, 0, true, 0.1f, true, true,
+                delegate(Rectangle rect, Player player)
+                {
+                    if (Main.rand.Next(2) != 0)
+                        return;
+                    int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f,
+                        player.velocity.Y * 0.2f, 63, new Color(), 2f);
+                    Main.dust[dust].noGravity = true;
+                }).SetEleDamage(new Dictionary<ELEMENT, float>() {{ELEMENT.FIRE, 0.5f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}});
+            fieryGreatsword = new SwordBlade("FieryGreatsword", 2, 16, "Fiery Greatsword", 36, 6f, 0.96f, 0, false, 0.2f, true, true,
+                delegate(Rectangle rect, Player player)
+                {
+                    if (Main.rand.Next(2) != 0)
+                        return;
+                    int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f,
+                        player.velocity.Y * 0.2f, 63, new Color(), 2f);
+                    Main.dust[dust].noGravity = true;
+                }).SetEleDamage(new Dictionary<ELEMENT, float>() {{ELEMENT.FIRE, 0.5f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}});
             clockSword = new SwordBlade("ClockSword", 6, 25, "Chronosword", 19, 4f, 1f, 0, true);
             grassBreaker = new SwordBlade("GrassBreaker", 3, 32, "Buster Claymore", 31, 7.5f).SetEleDamage(new Dictionary<ELEMENT, float>()
             {
-                { ELEMENT.FIRE, 0f },
-                { ELEMENT.COLD, 0f },
-                { ELEMENT.LIGHTNING, 0.2f },
-                { ELEMENT.SHADOW, 0f }
+                {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0.2f}, {ELEMENT.SHADOW, 0f}
             });
             lazerCutter = new SwordBlade("LazerCutter", 3, 33, "Laser Cutter", 40, 5f).SetEleDamage(new Dictionary<ELEMENT, float>()
             {
-                { ELEMENT.FIRE, 0f },
-                { ELEMENT.COLD, 0f },
-                { ELEMENT.LIGHTNING, 0.5f },
-                { ELEMENT.SHADOW, 0f }
+                {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0.5f}, {ELEMENT.SHADOW, 0f}
             });
-            phaseSword = new SwordBlade("PhaseSword", 2, 21, "Phase Sword", 25, 5f, 1.06f, 0, true, 0f, true, true).SetEleDamage(new Dictionary<ELEMENT, float>()
-            {
-                { ELEMENT.FIRE, 0f },
-                { ELEMENT.COLD, 0f },
-                { ELEMENT.LIGHTNING, 0.4f },
-                { ELEMENT.SHADOW, 0f }
-            });
+            phaseSword = new SwordBlade("PhaseSword", 2, 21, "Phase Sword", 25, 5f, 1.06f, 0, true, 0f, true, true).SetEleDamage(
+                new Dictionary<ELEMENT, float>() {{ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0.4f}, {ELEMENT.SHADOW, 0f}});
             terra = new SwordBlade("ElementalNeedle", 2, 21, "Elemental Needle", 15, 5f, 1.1f, 0);
 
             bladeByTheme = new Dictionary<SWORDTHEME, List<SwordBlade>>()
             {
-                {SWORDTHEME.GENERIC, new List<SwordBlade>(){ brutishDagger, chokuto, broadswordSilver, crescentSword, fieldGlaive, scimitar, stoneSword, fieldSword }},
-                {SWORDTHEME.MONSTROUS, new List<SwordBlade>(){ chokuto, broadswordSilver, eyeMallet, broadswordVile, slumTwirl, broadswordBone, demonEye }},
-                {SWORDTHEME.RUNIC, new List<SwordBlade>(){ wizardSword, runicswordViolet, runicDaiKatana, fieldGlaive, blazeSword }},
-                {SWORDTHEME.HELLISH, new List<SwordBlade>(){ executioner, obsidianBroadsword, obsidianMaul, hellstoneBroadsword, fieryBroadsword, fieryGreatsword, broadswordBone }},
-                {SWORDTHEME.HARDMODE, new List<SwordBlade>(){ clockSword, grassBreaker, lazerCutter, phaseSword, executioner, terra }}
+                {
+                    SWORDTHEME.GENERIC, new List<SwordBlade>()
+                    {
+                        brutishDagger,
+                        chokuto,
+                        broadswordSilver,
+                        crescentSword,
+                        fieldGlaive,
+                        scimitar,
+                        stoneSword,
+                        fieldSword
+                    }
+                },
+                {
+                    SWORDTHEME.MONSTROUS, new List<SwordBlade>()
+                    {
+                        chokuto,
+                        broadswordSilver,
+                        eyeMallet,
+                        broadswordVile,
+                        slumTwirl,
+                        broadswordBone,
+                        demonEye
+                    }
+                },
+                {
+                    SWORDTHEME.RUNIC, new List<SwordBlade>()
+                    {
+                        wizardSword,
+                        runicswordViolet,
+                        runicDaiKatana,
+                        fieldGlaive,
+                        blazeSword
+                    }
+                },
+                {
+                    SWORDTHEME.HELLISH, new List<SwordBlade>()
+                    {
+                        executioner,
+                        obsidianBroadsword,
+                        obsidianMaul,
+                        hellstoneBroadsword,
+                        fieryBroadsword,
+                        fieryGreatsword,
+                        broadswordBone
+                    }
+                },
+                {
+                    SWORDTHEME.HARDMODE, new List<SwordBlade>()
+                    {
+                        clockSword,
+                        grassBreaker,
+                        lazerCutter,
+                        phaseSword,
+                        executioner,
+                        terra
+                    }
+                }
             };
         }
 
@@ -226,7 +241,7 @@ namespace kRPG.Items.Weapons
 
         public static void Unload()
         {
-            foreach (SwordBlade blade in blades.Values)
+            foreach (var blade in blades.Values)
                 blade.texture = null;
         }
     }

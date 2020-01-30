@@ -20,16 +20,14 @@ namespace kRPG.GUI
         {
             this.character = character;
             this.mod = mod;
-            krpg = (kRPG)mod;
+            krpg = (kRPG) mod;
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
-            PlayerCharacter modPlayer = player.GetModPlayer<PlayerCharacter>();
+            var modPlayer = player.GetModPlayer<PlayerCharacter>();
             for (int i = 0; i < modPlayer.abilities.Length; i += 1)
-            {
                 modPlayer.abilities[i].Draw(spriteBatch, GuiPosition + new Vector2(i * (GFX.skillSlot.Width + 8f) * scale, 0), scale);
-            }
         }
     }
 }

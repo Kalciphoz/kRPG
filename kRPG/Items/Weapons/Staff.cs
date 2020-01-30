@@ -31,23 +31,21 @@ namespace kRPG.Items.Weapons
 
         public Dictionary<ELEMENT, float> eleDamage = new Dictionary<ELEMENT, float>()
         {
-            { ELEMENT.FIRE, 0f },
-            { ELEMENT.COLD, 0f },
-            { ELEMENT.LIGHTNING, 0f },
-            { ELEMENT.SHADOW, 0f }
+            {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
         };
 
-        public Staff(string texture, int origin_x, int origin_y, int useTime, float knockBack, string prefix, float shootSpeed = 8f, bool front = false, float manaMultiplier = 1f, int critBonus = 0, int iterations = 1, bool autoswing = true)
+        public Staff(string texture, int origin_x, int origin_y, int useTime, float knockBack, string prefix, float shootSpeed = 8f, bool front = false,
+            float manaMultiplier = 1f, int critBonus = 0, int iterations = 1, bool autoswing = true)
         {
-            this.type = staves.Count + 1;
+            type = staves.Count + 1;
             if (Main.netMode != 2)
                 this.texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Staves/" + texture);
-            this.origin = new Vector2(origin_x, origin_y);
+            origin = new Vector2(origin_x, origin_y);
             this.useTime = useTime;
             this.knockBack = knockBack;
             this.iterations = iterations;
             this.prefix = prefix;
-            this.mana = manaMultiplier;
+            mana = manaMultiplier;
             this.critBonus = critBonus;
             this.autoswing = autoswing;
             this.shootSpeed = shootSpeed;
@@ -77,9 +75,9 @@ namespace kRPG.Items.Weapons
 
             stavesByTheme = new Dictionary<STAFFTHEME, List<Staff>>()
             {
-                { STAFFTHEME.WOODEN, new List<Staff>() { carved, branch, ivy } },
-                { STAFFTHEME.DUNGEON, new List<Staff>() { arcane, gilded } },
-                { STAFFTHEME.UNDERWORLD, new List<Staff>() { hellstone, bone } }
+                {STAFFTHEME.WOODEN, new List<Staff>() {carved, branch, ivy}},
+                {STAFFTHEME.DUNGEON, new List<Staff>() {arcane, gilded}},
+                {STAFFTHEME.UNDERWORLD, new List<Staff>() {hellstone, bone}}
             };
         }
 
@@ -90,7 +88,7 @@ namespace kRPG.Items.Weapons
 
         public static void Unload()
         {
-            foreach (Staff staff in staves.Values)
+            foreach (var staff in staves.Values)
                 staff.texture = null;
         }
     }

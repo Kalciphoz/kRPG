@@ -37,7 +37,7 @@ namespace kRPG.Modifiers
 
         public new static NPCModifier Random(kNPC kNPC, NPC npc)
         {
-            return new ElusiveModifier(kNPC, npc, 1f+ Main.rand.NextFloat(.3f));
+            return new ElusiveModifier(kNPC, npc, 1f + Main.rand.NextFloat(.3f));
         }
 
         public new static NPCModifier New(kNPC kNPC, NPC npc)

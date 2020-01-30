@@ -19,11 +19,23 @@ using Terraria.Localization;
 using Terraria.UI;
 using static Terraria.ModLoader.ModContent;
 
-
 namespace kRPG.Items
 {
-    public enum SWORDTHEME : byte { GENERIC, MONSTROUS, RUNIC, HELLISH, HARDMODE };
-    public enum STAFFTHEME : byte { WOODEN, DUNGEON, UNDERWORLD };
+    public enum SWORDTHEME : byte
+    {
+        GENERIC,
+        MONSTROUS,
+        RUNIC,
+        HELLISH,
+        HARDMODE
+    };
+
+    public enum STAFFTHEME : byte
+    {
+        WOODEN,
+        DUNGEON,
+        UNDERWORLD
+    };
 
     public class ProceduralItem : ModItem
     {
@@ -34,12 +46,16 @@ namespace kRPG.Items
         public override bool CanPickup(Player player)
         {
             if (Main.netMode == 0) return true;
-             return item.value > 100;
+            return item.value > 100;
         }
 
-        public virtual void Initialize() { }
+        public virtual void Initialize()
+        {
+        }
 
-        public virtual void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale) { }
+        public virtual void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
+        {
+        }
 
         public override void SetDefaults()
         {
@@ -51,7 +67,7 @@ namespace kRPG.Items
 
         public override ModItem Clone(Item item)
         {
-            ProceduralItem copy = (ProceduralItem)base.Clone(item);
+            var copy = (ProceduralItem) base.Clone(item);
             copy.texture = texture;
             return copy;
         }
@@ -68,7 +84,8 @@ namespace kRPG.Items
             return false;
         }
 
-        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin,
+            float scale)
         {
             if (Main.netMode == 2 || texture == null) return false;
             if (Main.itemTexture[item.type] == null) Main.itemTexture[item.type] = texture;
@@ -79,7 +96,7 @@ namespace kRPG.Items
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int)Math.Round(dps / 2)));
+            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int) Math.Round(dps / 2)));
         }
     }
 
@@ -97,15 +114,12 @@ namespace kRPG.Items
 
         public Dictionary<ELEMENT, float> eleDamage = new Dictionary<ELEMENT, float>()
         {
-            { ELEMENT.FIRE, 0f },
-            { ELEMENT.COLD, 0f },
-            { ELEMENT.LIGHTNING, 0f },
-            { ELEMENT.SHADOW, 0f }
+            {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
         };
 
         public override ModItem Clone(Item item)
         {
-            ProceduralStaff copy = (ProceduralStaff)base.Clone(item);
+            var copy = (ProceduralStaff) base.Clone(item);
             copy.staff = staff;
             copy.gem = gem;
             copy.ornament = ornament;
@@ -167,21 +181,29 @@ namespace kRPG.Items
         public override void Initialize()
         {
             ResetStats();
-            List<StaffPart> parts = new List<StaffPart>();
+            var parts = new List<StaffPart>();
             if (!ornament.front) parts.Add(ornament);
             if (!staff.front && !gem.back) parts.Add(staff);
             parts.Add(gem);
             if (staff.front || gem.back) parts.Add(staff);
             if (ornament.front) parts.Add(ornament);
-            if (Main.netMode != 2) texture = GFX.CombineTextures(new List<Texture2D>() {
-                { parts[0].texture },
-                { parts[1].texture },
-                { parts[2].texture }
-            }, new List<Point>() {
-                { parts[0].GetDrawOrigin(new Point(staff.texture.Width, staff.texture.Height), new Point((int)staff.origin.X, (int)staff.origin.Y), CombinedTextureSize()) },
-                { parts[1].GetDrawOrigin(new Point(staff.texture.Width, staff.texture.Height), new Point((int)staff.origin.X, (int)staff.origin.Y), CombinedTextureSize()) },
-                { parts[2].GetDrawOrigin(new Point(staff.texture.Width, staff.texture.Height), new Point((int)staff.origin.X, (int)staff.origin.Y), CombinedTextureSize()) }
-            }, CombinedTextureSize());
+            if (Main.netMode != 2)
+                texture = GFX.CombineTextures(new List<Texture2D>() {{parts[0].texture}, {parts[1].texture}, {parts[2].texture}},
+                    new List<Point>()
+                    {
+                        {
+                            parts[0].GetDrawOrigin(new Point(staff.texture.Width, staff.texture.Height), new Point((int) staff.origin.X, (int) staff.origin.Y),
+                                CombinedTextureSize())
+                        },
+                        {
+                            parts[1].GetDrawOrigin(new Point(staff.texture.Width, staff.texture.Height), new Point((int) staff.origin.X, (int) staff.origin.Y),
+                                CombinedTextureSize())
+                        },
+                        {
+                            parts[2].GetDrawOrigin(new Point(staff.texture.Width, staff.texture.Height), new Point((int) staff.origin.X, (int) staff.origin.Y),
+                                CombinedTextureSize())
+                        }
+                    }, CombinedTextureSize());
             if (Main.netMode != 2) item.width = texture.Width;
             if (Main.netMode != 2) item.height = texture.Height;
             item.shoot = gem.shoot;
@@ -193,27 +215,24 @@ namespace kRPG.Items
         {
             try
             {
-                item.rare = (int)Math.Min(Math.Floor(dps / 18.0), 9);
-                item.useTime = (int)(staff.useTime / gem.speedModifier / ornament.speedModifier);
-                item.damage = (int)Math.Round(dps * gem.dpsModifier * ornament.dpsModifier * (float)item.useTime / 60f + (float)enemyDef);
-                item.useTime = (int)Math.Round(((float)item.damage - (float)enemyDef) * 60f / (dps * gem.dpsModifier * ornament.dpsModifier));
+                item.rare = (int) Math.Min(Math.Floor(dps / 18.0), 9);
+                item.useTime = (int) (staff.useTime / gem.speedModifier / ornament.speedModifier);
+                item.damage = (int) Math.Round(dps * gem.dpsModifier * ornament.dpsModifier * (float) item.useTime / 60f + (float) enemyDef);
+                item.useTime = (int) Math.Round(((float) item.damage - (float) enemyDef) * 60f / (dps * gem.dpsModifier * ornament.dpsModifier));
                 item.useAnimation = item.useTime * staff.iterations * (1 + ornament.repetitions) - 2;
                 item.knockBack = staff.knockBack + gem.knockBack + ornament.knockBack;
                 item.SetNameOverride(staff.prefix + gem.name + ornament.suffix);
                 item.autoReuse = true;
-                item.value = (int)(dps * 315);
+                item.value = (int) (dps * 315);
                 item.crit = staff.critBonus + gem.critBonus + ornament.critBonus;
-                item.mana = (int)Math.Round((item.damage * ornament.mana * staff.mana * gem.mana) / 5);
+                item.mana = (int) Math.Round(item.damage * ornament.mana * staff.mana * gem.mana / 5);
                 eleDamage = new Dictionary<ELEMENT, float>();
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                {
                     eleDamage[element] = staff.eleDamage[element] + gem.eleDamage[element] + ornament.eleDamage[element];
-                }
             }
             catch (SystemException e)
             {
                 ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
-                
             }
         }
 
@@ -237,6 +256,7 @@ namespace kRPG.Items
             {
                 ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
+
             return false;
         }
 
@@ -245,15 +265,16 @@ namespace kRPG.Items
             if (ornament.type == 0)
                 return new Point(gem.texture.Width - (int) gem.origin.X + (int) staff.origin.X,
                     (int) gem.origin.Y + staff.texture.Height - (int) staff.origin.Y);
-            return ornament.origin.Y > gem.origin.Y ? new Point(ornament.texture.Width - (int)ornament.origin.X + (int)staff.origin.X, (int)ornament.origin.Y + staff.texture.Height - (int)staff.origin.Y) : new Point(gem.texture.Width - (int)gem.origin.X + (int)staff.origin.X, (int)gem.origin.Y + staff.texture.Height - (int)staff.origin.Y);
+            return ornament.origin.Y > gem.origin.Y
+                ? new Point(ornament.texture.Width - (int) ornament.origin.X + (int) staff.origin.X,
+                    (int) ornament.origin.Y + staff.texture.Height - (int) staff.origin.Y)
+                : new Point(gem.texture.Width - (int) gem.origin.X + (int) staff.origin.X, (int) gem.origin.Y + staff.texture.Height - (int) staff.origin.Y);
         }
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
             if (texture == null)
-            {
-                item.SetDefaults(0,true);
-            }
+                item.SetDefaults(0, true);
             spriteBatch.Draw(texture, position, null, color, rotation, Vector2.Zero, scale, SpriteEffects.None, 0f);
         }
 
@@ -261,14 +282,13 @@ namespace kRPG.Items
         {
             try
             {
-                Player player = Main.player[Main.myPlayer];
-                Vector2 position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
+                var player = Main.player[Main.myPlayer];
+                var position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
                 if (texture == null)
-                {
                     item.SetDefaults(0, true);
-                }
-                SpriteEffects effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-                DrawData draw = new DrawData(texture, position, null, color, rotation, new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale, effects, 0);
+                var effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+                var draw = new DrawData(texture, position, null, color, rotation, new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale,
+                    effects, 0);
                 for (int i = 0; i < Main.playerDrawData.Count; i += 1)
                 {
                     if (Main.playerDrawData[i].texture != Main.itemTexture[player.inventory[player.selectedItem].type])
@@ -276,6 +296,7 @@ namespace kRPG.Items
                     Main.playerDrawData.Insert(i, draw);
                     return;
                 }
+
                 Main.playerDrawData.Add(draw);
             }
             catch (SystemException e)
@@ -287,14 +308,16 @@ namespace kRPG.Items
         public static Item GenerateStaff(Mod mod, Vector2 position, STAFFTHEME theme, float dps, int enemyDef)
         {
             ProceduralStaff staff;
-            staff = DropStaff(mod, position, Staff.RandomStaff(theme), StaffGem.RandomGem(theme), Main.rand.Next(3) < 2 ? StaffOrnament.RandomOrnament(theme) : StaffOrnament.none, dps, enemyDef);
+            staff = DropStaff(mod, position, Staff.RandomStaff(theme), StaffGem.RandomGem(theme),
+                Main.rand.Next(3) < 2 ? StaffOrnament.RandomOrnament(theme) : StaffOrnament.none, dps, enemyDef);
             return staff.item;
         }
 
-        public static ProceduralStaff DropStaff(Mod mod, Vector2 position, Staff staffstaff, StaffGem staffgem, StaffOrnament staffornament, float dps, int enemyDef)
+        public static ProceduralStaff DropStaff(Mod mod, Vector2 position, Staff staffstaff, StaffGem staffgem, StaffOrnament staffornament, float dps,
+            int enemyDef)
         {
             int id = Item.NewItem(position, mod.GetItem("ProceduralStaff").item.type);
-            ProceduralStaff staff = (ProceduralStaff)Main.item[id].modItem;
+            var staff = (ProceduralStaff) Main.item[id].modItem;
             staff.staff = staffstaff;
             staff.gem = staffgem;
             staff.ornament = staffornament;
@@ -303,8 +326,8 @@ namespace kRPG.Items
             staff.Initialize();
             if (Main.netMode != 2)
                 return staff;
-            ModPacket packet = mod.GetPacket();
-            packet.Write((byte)Message.StaffInit);
+            var packet = mod.GetPacket();
+            packet.Write((byte) Message.StaffInit);
             packet.Write(id);
             packet.Write(staffstaff.type);
             packet.Write(staffgem.type);
@@ -321,17 +344,18 @@ namespace kRPG.Items
             {
                 return new TagCompound
                 {
-                    { "staff_id", staff.type },
-                    { "gem_id", gem.type },
-                    { "ornament_id", ornament.type },
-                    { "dps", dps },
-                    { "enemy_defence", enemyDef }
+                    {"staff_id", staff.type},
+                    {"gem_id", gem.type},
+                    {"ornament_id", ornament.type},
+                    {"dps", dps},
+                    {"enemy_defence", enemyDef}
                 };
             }
             catch (SystemException e)
             {
                 ModLoader.GetMod("kRPG").Logger.InfoFormat("@NewTagCompound :: " + e.ToString());
             }
+
             return new TagCompound();
         }
 
@@ -349,6 +373,7 @@ namespace kRPG.Items
             {
                 ModLoader.GetMod("kRPG").Logger.InfoFormat("@Loading :: " + e.ToString());
             }
+
             try
             {
                 Initialize();
@@ -361,7 +386,7 @@ namespace kRPG.Items
 
         public bool? OverhaulHasTag(string tag)
         {
-            return tag == "magicWeapon" ? (bool?)true : null;
+            return tag == "magicWeapon" ? (bool?) true : null;
         }
 
         public Texture2D OverhaulGetTexture()
@@ -371,7 +396,7 @@ namespace kRPG.Items
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int)Math.Round(dps / 2.4f)));
+            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int) Math.Round(dps / 2.4f)));
         }
     }
 
@@ -391,15 +416,12 @@ namespace kRPG.Items
 
         public Dictionary<ELEMENT, float> eleDamage = new Dictionary<ELEMENT, float>()
         {
-            { ELEMENT.FIRE, 0f },
-            { ELEMENT.COLD, 0f },
-            { ELEMENT.LIGHTNING, 0f },
-            { ELEMENT.SHADOW, 0f }
+            {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
         };
 
         public override ModItem Clone(Item item)
         {
-            ProceduralSword copy = (ProceduralSword)base.Clone(item);
+            var copy = (ProceduralSword) base.Clone(item);
             copy.hilt = hilt;
             copy.blade = blade;
             copy.accent = accent;
@@ -462,15 +484,17 @@ namespace kRPG.Items
             try
             {
                 ResetStats();
-                if (Main.netMode != 2) texture = GFX.CombineTextures(new List<Texture2D>() {
-                    { blade.texture },
-                    { hilt.texture },
-                    { accent.texture }
-                }, new List<Point>() {
-                    { new Point(CombinedTextureSize().X - blade.texture.Width, 0) },
-                    { new Point(0, CombinedTextureSize().Y - hilt.texture.Height) },
-                    { new Point((int)hilt.origin.X + hilt.accentOffset.X - (int)accent.origin.X, hilt.accentOffset.Y + CombinedTextureSize().Y - hilt.texture.Height + (int)hilt.origin.Y - (int)accent.origin.Y) }
-                }, CombinedTextureSize());
+                if (Main.netMode != 2)
+                    texture = GFX.CombineTextures(new List<Texture2D>() {{blade.texture}, {hilt.texture}, {accent.texture}},
+                        new List<Point>()
+                        {
+                            {new Point(CombinedTextureSize().X - blade.texture.Width, 0)},
+                            {new Point(0, CombinedTextureSize().Y - hilt.texture.Height)},
+                            {
+                                new Point((int) hilt.origin.X + hilt.accentOffset.X - (int) accent.origin.X,
+                                    hilt.accentOffset.Y + CombinedTextureSize().Y - hilt.texture.Height + (int) hilt.origin.Y - (int) accent.origin.Y)
+                            }
+                        }, CombinedTextureSize());
                 if (Main.netMode != 2) item.width = texture.Width;
                 if (Main.netMode != 2) item.height = texture.Height;
                 if (accent.type == SwordAccent.gemPurple.type)
@@ -478,6 +502,7 @@ namespace kRPG.Items
                     item.melee = false;
                     item.magic = true;
                 }
+
                 lighted = blade.lighted;
                 spear = hilt.spear && blade.spearable;
                 if (spear)
@@ -486,6 +511,7 @@ namespace kRPG.Items
                     item.noUseGraphic = true;
                     item.useStyle = 5;
                 }
+
                 item.GetGlobalItem<kItem>().ApplyStats(item, true);
             }
             catch (SystemException e)
@@ -499,28 +525,25 @@ namespace kRPG.Items
         {
             try
             {
-                item.rare = (int)Math.Min(Math.Floor(dps / 15.0), 9);
-                item.useAnimation = (int)(blade.useTime / hilt.speedModifier);
-                item.damage = (int)Math.Round(dps * hilt.dpsModifier * accent.dpsModifier * (float)item.useAnimation / 60f + (float)enemyDef);
-                item.useAnimation = (int)Math.Round(((float)item.damage - (float)enemyDef) * 60f / (dps * hilt.dpsModifier * accent.dpsModifier));
+                item.rare = (int) Math.Min(Math.Floor(dps / 15.0), 9);
+                item.useAnimation = (int) (blade.useTime / hilt.speedModifier);
+                item.damage = (int) Math.Round(dps * hilt.dpsModifier * accent.dpsModifier * (float) item.useAnimation / 60f + (float) enemyDef);
+                item.useAnimation = (int) Math.Round(((float) item.damage - (float) enemyDef) * 60f / (dps * hilt.dpsModifier * accent.dpsModifier));
                 item.useTime = item.useAnimation;
                 item.knockBack = blade.knockBack + hilt.knockBack;
                 item.SetNameOverride(hilt.prefix + blade.name + accent.suffix);
                 item.autoReuse = hilt.autoswing || blade.autoswing;
                 item.useTurn = item.autoReuse;
-                item.value = (int)(dps * 315);
+                item.value = (int) (dps * 315);
                 item.crit = blade.critBonus + hilt.critBonus + accent.critBonus;
                 item.scale = 1f + blade.scale + hilt.scale;
                 item.mana = hilt.mana + accent.mana;
                 eleDamage = new Dictionary<ELEMENT, float>();
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                {
                     eleDamage[element] = blade.eleDamage[element] + accent.eleDamage[element];
-                }
             }
             catch (SystemException e)
             {
-
                 ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
         }
@@ -553,24 +576,27 @@ namespace kRPG.Items
         {
             try
             {
-                if (spear/* && player.altFunctionUse != 2*/)
+                if (spear /* && player.altFunctionUse != 2*/)
                 {
-                    Vector2 pos = player.position;
-                    Vector2 unitVelocity = (new Vector2(Main.mouseX - 12f, Main.mouseY - 24f) + Main.screenPosition - pos);
+                    var pos = player.position;
+                    var unitVelocity = new Vector2(Main.mouseX - 12f, Main.mouseY - 24f) + Main.screenPosition - pos;
                     unitVelocity.Normalize();
-                    Vector2 velocity = unitVelocity * 60f / item.useAnimation;
-                    Projectile projectile = Main.projectile[Projectile.NewProjectile(pos, velocity, ModContent.GetInstance < ProceduralSpear >().projectile.type, item.damage, item.knockBack, player.whoAmI)];
+                    var velocity = unitVelocity * 60f / item.useAnimation;
+                    var projectile =
+                        Main.projectile[
+                            Projectile.NewProjectile(pos, velocity, GetInstance<ProceduralSpear>().projectile.type, item.damage, item.knockBack,
+                                player.whoAmI)];
                     projectile.GetGlobalProjectile<kProjectile>().elementalDamage = item.GetGlobalItem<kItem>().elementalDamage;
                     projectile.scale = item.scale;
-                    ProceduralSpear ps = (ProceduralSpear)projectile.modProjectile;
+                    var ps = (ProceduralSpear) projectile.modProjectile;
                     ps.hilt = hilt;
                     ps.blade = blade;
                     ps.accent = accent;
                     if (Main.netMode != 2) ps.Initialize();
                     if (Main.netMode != 1)
                         return true;
-                    ModPacket packet = mod.GetPacket();
-                    packet.Write((byte)Message.SyncSpear);
+                    var packet = mod.GetPacket();
+                    packet.Write((byte) Message.SyncSpear);
                     packet.Write(blade.type);
                     packet.Write(hilt.type);
                     packet.Write(accent.type);
@@ -582,6 +608,7 @@ namespace kRPG.Items
             {
                 ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
+
             return false;
         }
 
@@ -599,26 +626,29 @@ namespace kRPG.Items
 
         public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)
         {
-            if (spear/* || player.altFunctionUse == 2*/)
+            if (spear /* || player.altFunctionUse == 2*/)
             {
                 noHitbox = true;
                 return;
             }
+
             noHitbox = false;
         }
 
         public Point CombinedTextureSize()
         {
-            return new Point(Math.Max(blade.texture.Width, blade.texture.Width - (int)blade.origin.X + (int)hilt.origin.X), Math.Max(blade.texture.Height, (int)blade.origin.Y + hilt.texture.Height - (int)hilt.origin.Y));
+            return new Point(Math.Max(blade.texture.Width, blade.texture.Width - (int) blade.origin.X + (int) hilt.origin.X),
+                Math.Max(blade.texture.Height, (int) blade.origin.Y + hilt.texture.Height - (int) hilt.origin.Y));
         }
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
             if (texture == null)
             {
-                item.SetDefaults(0,true);
+                item.SetDefaults(0, true);
                 return;
             }
+
             spriteBatch.Draw(texture, position, null, lighted ? Color.White : color, rotation, Vector2.Zero, scale, SpriteEffects.None, 0f);
         }
 
@@ -626,15 +656,17 @@ namespace kRPG.Items
         {
             try
             {
-                Player player = Main.player[Main.myPlayer];
-                Vector2 position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
+                var player = Main.player[Main.myPlayer];
+                var position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
                 if (texture == null)
                 {
                     item.SetDefaults(0);
                     return;
                 }
-                SpriteEffects effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-                DrawData draw = new DrawData(texture, position, null, lighted ? Color.White : color, rotation, new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale, effects, 0);
+
+                var effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+                var draw = new DrawData(texture, position, null, lighted ? Color.White : color, rotation,
+                    new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale, effects, 0);
                 for (int i = 0; i < Main.playerDrawData.Count; i += 1)
                 {
                     if (Main.playerDrawData[i].texture != Main.itemTexture[player.inventory[player.selectedItem].type])
@@ -642,6 +674,7 @@ namespace kRPG.Items
                     Main.playerDrawData.Insert(i, draw);
                     return;
                 }
+
                 Main.playerDrawData.Add(draw);
             }
             catch (SystemException e)
@@ -653,14 +686,15 @@ namespace kRPG.Items
         public static Item GenerateSword(Mod mod, Vector2 position, SWORDTHEME theme, float dps, int enemyDef)
         {
             ProceduralSword sword;
-            sword = NewSword(mod, position, SwordHilt.RandomHilt(theme), SwordBlade.RandomBlade(theme), Main.rand.Next(5) < 3 ? SwordAccent.RandomAccent() : SwordAccent.none, dps, enemyDef);
+            sword = NewSword(mod, position, SwordHilt.RandomHilt(theme), SwordBlade.RandomBlade(theme),
+                Main.rand.Next(5) < 3 ? SwordAccent.RandomAccent() : SwordAccent.none, dps, enemyDef);
             return sword.item;
         }
 
         public static ProceduralSword NewSword(Mod mod, Vector2 position, SwordHilt hilt, SwordBlade blade, SwordAccent accent, float dps, int enemyDef)
         {
             int id = Item.NewItem(position, mod.GetItem("ProceduralSword").item.type);
-            ProceduralSword sword = (ProceduralSword)Main.item[id].modItem;
+            var sword = (ProceduralSword) Main.item[id].modItem;
             sword.hilt = hilt;
             sword.blade = blade;
             sword.accent = accent;
@@ -669,8 +703,8 @@ namespace kRPG.Items
             sword.Initialize();
             if (Main.netMode != 2)
                 return sword;
-            ModPacket packet = mod.GetPacket();
-            packet.Write((byte)Message.SwordInit);
+            var packet = mod.GetPacket();
+            packet.Write((byte) Message.SwordInit);
             packet.Write(id);
             packet.Write(blade.type);
             packet.Write(hilt.type);
@@ -687,11 +721,11 @@ namespace kRPG.Items
             {
                 return new TagCompound
                 {
-                    { "hilt_id", hilt.type },
-                    { "blade_id", blade.type },
-                    { "accent_id", accent.type },
-                    { "dps", dps },
-                    { "enemy_defence", enemyDef }
+                    {"hilt_id", hilt.type},
+                    {"blade_id", blade.type},
+                    {"accent_id", accent.type},
+                    {"dps", dps},
+                    {"enemy_defence", enemyDef}
                 };
             }
             catch (SystemException e)
@@ -706,7 +740,7 @@ namespace kRPG.Items
         public override void Load(TagCompound tag)
         {
             try
-            { 
+            {
                 hilt = SwordHilt.hilts[tag.GetInt("hilt_id")];
                 blade = SwordBlade.blades[tag.GetInt("blade_id")];
                 accent = SwordAccent.accents[tag.GetInt("accent_id")];
@@ -717,8 +751,9 @@ namespace kRPG.Items
             {
                 ModLoader.GetMod("kRPG").Logger.InfoFormat("@Loading :: " + e.ToString());
             }
+
             try
-            { 
+            {
                 Initialize();
             }
             catch (SystemException e)
@@ -729,7 +764,7 @@ namespace kRPG.Items
 
         public bool? OverhaulHasTag(string tag)
         {
-            return (spear ? tag == "spear" : tag == "broadsword") ? (bool?)true : null;
+            return (spear ? tag == "spear" : tag == "broadsword") ? (bool?) true : null;
         }
 
         public Texture2D OverhaulGetTexture()

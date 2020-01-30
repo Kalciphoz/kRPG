@@ -11,7 +11,7 @@ namespace kRPG.Modifiers
     {
         private float lifeModifier = 0.5f;
         private kNPC kNPC;
-        
+
         public ExplosiveModifier(kNPC kNPC, NPC npc, float lifeModifier = 0.5f) : base(kNPC, npc)
         {
             this.npc = npc;
@@ -22,14 +22,15 @@ namespace kRPG.Modifiers
 
         public override void Apply()
         {
-            npc.lifeMax = (int)(npc.lifeMax * lifeModifier);
-            npc.life = (int)(npc.life * lifeModifier);
+            npc.lifeMax = (int) (npc.lifeMax * lifeModifier);
+            npc.life = (int) (npc.life * lifeModifier);
         }
 
         public override void NPCLoot(NPC npc)
         {
             Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), npc.Center);
-            Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<NPC_Explosion>(), npc.damage * 5 / 4, 0f)];
+            var proj = Main.projectile[
+                Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<NPC_Explosion>(), npc.damage * 5 / 4, 0f)];
         }
 
         public override void Write(ModPacket packet)

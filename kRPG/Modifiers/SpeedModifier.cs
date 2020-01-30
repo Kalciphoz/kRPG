@@ -8,7 +8,7 @@ namespace kRPG.Modifiers
     {
         private float speedModifier = 1f;
         private kNPC kn;
-        
+
         public SpeedModifier(kNPC kNPC, NPC npc, float speedModifier = 1.8f) : base(kNPC, npc)
         {
             this.npc = npc;
@@ -34,7 +34,7 @@ namespace kRPG.Modifiers
 
         public new static NPCModifier Random(kNPC kNPC, NPC npc)
         {
-            return new SpeedModifier(kNPC, npc, 1f+ Main.rand.NextFloat(2));
+            return new SpeedModifier(kNPC, npc, 1f + Main.rand.NextFloat(2));
         }
 
         public new static NPCModifier New(kNPC kNPC, NPC npc)

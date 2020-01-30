@@ -10,12 +10,15 @@ using Terraria.ModLoader;
 
 namespace kRPG.GUI
 {
-    public enum GLYPHTYPE : byte { STAR, CROSS, MOON }
+    public enum GLYPHTYPE : byte
+    {
+        STAR,
+        CROSS,
+        MOON
+    }
 
     public class SpellcraftingGUI : BaseGUI
     {
-
-
         private readonly Func<Vector2> guiPosition;
 
         public GlyphSlot[] glyphs = new GlyphSlot[3];
@@ -24,7 +27,6 @@ namespace kRPG.GUI
 
         public SpellcraftingGUI(Mod mod)
         {
-
             guiPosition = () => new Vector2(Main.screenWidth / 2f - 100f * Scale, 192f * Scale);
 
             glyphs[0] = new GlyphSlot(() => guiPosition() + new Vector2(84f, 36f) * Scale, () => Scale, GLYPHTYPE.STAR);
@@ -39,18 +41,20 @@ namespace kRPG.GUI
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
             spriteBatch.Draw(GFX.spellGui, guiPosition(), null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-            foreach (GlyphSlot slot in glyphs)
+            foreach (var slot in glyphs)
                 slot.Draw(spriteBatch);
 
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Place glyphs in all three slots to create a spell", new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 200f * Scale), Color.White, Scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Press a key while holding shift to bind it as a hotkey", new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 224f * Scale), Color.White, Scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Place glyphs in all three slots to create a spell",
+                new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 200f * Scale), Color.White, Scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Press a key while holding shift to bind it as a hotkey",
+                new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 224f * Scale), Color.White, Scale);
 
-            Vector2 buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
+            var buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
             spriteBatch.Draw(GFX.button_close, buttonPosition, Color.White, Scale);
 
             if (!(Main.mouseX >= buttonPosition.X) || !(Main.mouseY >= buttonPosition.Y) ||
-                !(Main.mouseX <= buttonPosition.X + (int)(GFX.button_confirm.Width * Scale)) ||
-                !(Main.mouseY <= buttonPosition.Y + (int)(GFX.button_confirm.Height * Scale)))
+                !(Main.mouseX <= buttonPosition.X + (int) (GFX.button_confirm.Width * Scale)) ||
+                !(Main.mouseY <= buttonPosition.Y + (int) (GFX.button_confirm.Height * Scale)))
                 return;
             Main.LocalPlayer.mouseInterface = true;
             if (!Main.mouseLeft || !Main.mouseLeftRelease)
@@ -73,13 +77,16 @@ namespace kRPG.GUI
     public class GlyphSlot
     {
         private readonly GLYPHTYPE type;
-        private Item Glyph {
-            get => Ability.glyphs[(byte)type];
-            set => Ability.glyphs[(byte)type] = value;
+
+        private Item Glyph
+        {
+            get => Ability.glyphs[(byte) type];
+            set => Ability.glyphs[(byte) type] = value;
         }
+
         private readonly Func<Vector2> position;
         private readonly Func<float> scale;
-        private Rectangle Bounds => new Rectangle((int)position().X, (int)position().Y, (int)(30 * scale()), (int)(30 * scale()));
+        private Rectangle Bounds => new Rectangle((int) position().X, (int) position().Y, (int) (30 * scale()), (int) (30 * scale()));
 
         private ProceduralSpell Ability => Main.LocalPlayer.GetModPlayer<PlayerCharacter>().selectedAbility;
 
@@ -105,31 +112,32 @@ namespace kRPG.GUI
                     check = item.modItem is Moon;
                     break;
             }
+
             return check || item.type == 0;
         }
 
-
         public bool AttemptPlace()
         {
-            PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
+            var character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
 
             if (!CanPlaceItem(Main.mouseItem))
                 return false;
 
-            foreach (ProceduralMinion minion in character.minions.Where(minion => minion.source == character.selectedAbility && minion.projectile.modProjectile is ProceduralMinion))
+            foreach (var minion in character.minions.Where(minion =>
+                minion.source == character.selectedAbility && minion.projectile.modProjectile is ProceduralMinion))
             {
-                foreach (ProceduralSpellProj psp in minion.circlingProtection)
+                foreach (var psp in minion.circlingProtection)
                     psp.projectile.Kill();
                 minion.circlingProtection.Clear();
                 minion.smallProt?.projectile.Kill();
                 minion.projectile.Kill();
             }
-            Item prevItem = Glyph;
+
+            var prevItem = Glyph;
             Glyph = Main.mouseItem;
             Main.mouseItem = prevItem;
             Main.PlaySound(SoundID.Item4, Main.screenPosition + Bounds.Center());
             return true;
-
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -140,8 +148,9 @@ namespace kRPG.GUI
                 Main.HoverItem = Glyph.Clone();
                 if (Main.mouseLeft && Main.mouseLeftRelease) AttemptPlace();
             }
+
             if (Glyph.type == 0) return;
-            Texture2D texture = Main.itemTexture[Glyph.type];
+            var texture = Main.itemTexture[Glyph.type];
             spriteBatch.Draw(texture, Bounds.TopLeft() + new Vector2(2f, 2f), Color.White, scale());
         }
     }

@@ -60,12 +60,13 @@ namespace kRPG.Items.Weapons
         public bool spear = false;
         public float scale = 0f;
 
-        public SwordHilt(string texture, int origin_x, int origin_y, string prefix, float dpsModifier, float speedModifier, float knockBack = 0f, int critBonus = 0, bool spear = false, bool autoswing = false, int mana = 0, float scale = 0f)
+        public SwordHilt(string texture, int origin_x, int origin_y, string prefix, float dpsModifier, float speedModifier, float knockBack = 0f,
+            int critBonus = 0, bool spear = false, bool autoswing = false, int mana = 0, float scale = 0f)
         {
-            this.type = hilts.Count + 1;
+            type = hilts.Count + 1;
             if (Main.netMode != 2)
                 this.texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Swordhilts/" + texture);
-            this.origin = new Vector2(origin_x, origin_y);
+            origin = new Vector2(origin_x, origin_y);
             this.dpsModifier = dpsModifier;
             this.speedModifier = speedModifier;
             this.knockBack = knockBack;
@@ -84,14 +85,14 @@ namespace kRPG.Items.Weapons
         public SwordHilt defineSpear(string texture, int origin_x, int origin_y)
         {
             if (Main.netMode != 2)
-                this.spearTexture = ModLoader.GetMod("kRPG").GetTexture("GFX/Projectiles/SpearMounts/" + texture);
-            this.spearOrigin = new Vector2(origin_x, origin_y);
+                spearTexture = ModLoader.GetMod("kRPG").GetTexture("GFX/Projectiles/SpearMounts/" + texture);
+            spearOrigin = new Vector2(origin_x, origin_y);
             return this;
         }
 
         public SwordHilt SetAccentOffset(Point offset)
         {
-            this.accentOffset = offset;
+            accentOffset = offset;
             return this;
         }
 
@@ -134,11 +135,62 @@ namespace kRPG.Items.Weapons
 
             hiltsByTheme = new Dictionary<SWORDTHEME, List<SwordHilt>>()
             {
-                {SWORDTHEME.GENERIC, new List<SwordHilt>(){ ceremonial, copperCrossguard, goldenKatana, blackKatana, wooden, lead, woodenMount, ceremonialMount, demoniteBat, stick }},
-                {SWORDTHEME.MONSTROUS, new List<SwordHilt>(){ eyes, coe, boneMount, boneCrest, demonEye }},
-                {SWORDTHEME.RUNIC, new List<SwordHilt>(){ purpleCrossguard, violetCrossguard, goldenRunicKatana, violetRunicKatana, arcaneMount }},
-                {SWORDTHEME.HELLISH, new List<SwordHilt>(){ hellstoneBasket, hellstoneCrossguard, torch, hellstoneMount, bone, boneMount }},
-                {SWORDTHEME.HARDMODE, new List<SwordHilt>(){ clock, carbon, thorns, chlorophyteMount, ominousHilt }}
+                {
+                    SWORDTHEME.GENERIC, new List<SwordHilt>()
+                    {
+                        ceremonial,
+                        copperCrossguard,
+                        goldenKatana,
+                        blackKatana,
+                        wooden,
+                        lead,
+                        woodenMount,
+                        ceremonialMount,
+                        demoniteBat,
+                        stick
+                    }
+                },
+                {
+                    SWORDTHEME.MONSTROUS, new List<SwordHilt>()
+                    {
+                        eyes,
+                        coe,
+                        boneMount,
+                        boneCrest,
+                        demonEye
+                    }
+                },
+                {
+                    SWORDTHEME.RUNIC, new List<SwordHilt>()
+                    {
+                        purpleCrossguard,
+                        violetCrossguard,
+                        goldenRunicKatana,
+                        violetRunicKatana,
+                        arcaneMount
+                    }
+                },
+                {
+                    SWORDTHEME.HELLISH, new List<SwordHilt>()
+                    {
+                        hellstoneBasket,
+                        hellstoneCrossguard,
+                        torch,
+                        hellstoneMount,
+                        bone,
+                        boneMount
+                    }
+                },
+                {
+                    SWORDTHEME.HARDMODE, new List<SwordHilt>()
+                    {
+                        clock,
+                        carbon,
+                        thorns,
+                        chlorophyteMount,
+                        ominousHilt
+                    }
+                }
             };
         }
 
@@ -149,7 +201,7 @@ namespace kRPG.Items.Weapons
 
         public static void Unload()
         {
-            foreach (SwordHilt hilt in hilts.Values)
+            foreach (var hilt in hilts.Values)
                 hilt.texture = null;
         }
     }

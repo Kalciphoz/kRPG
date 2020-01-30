@@ -25,7 +25,7 @@ namespace kRPG
         public int remaining = 0;
 
         public List<ProceduralSpellProj> circlingProtection = new List<ProceduralSpellProj>();
-        public bool minion => !(glyphs[(byte)GLYPHTYPE.STAR].modItem is Star_Blue);
+        public bool minion => !(glyphs[(byte) GLYPHTYPE.STAR].modItem is Star_Blue);
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position, float scale)
         {
@@ -39,8 +39,8 @@ namespace kRPG
                 if (remaining > 0)
                     remaining -= 1;
 
-                Rectangle bounds = new Rectangle((int)position.X, (int)position.Y, (int)(GFX.skillSlot.Width * scale), (int)(GFX.skillSlot.Height * scale));
-                PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
+                var bounds = new Rectangle((int) position.X, (int) position.Y, (int) (GFX.skillSlot.Width * scale), (int) (GFX.skillSlot.Height * scale));
+                var character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
 
                 if (spriteBatch == null || character == null) return;
 
@@ -60,7 +60,7 @@ namespace kRPG
                     if (character.selectedAbility.Equals(this))
                     {
                         spriteBatch.Draw(GFX.selectedSkillSlot, position, Color.White, scale);
-                        for (Keys k = Keys.A; k <= Keys.Z; k += 1)
+                        for (var k = Keys.A; k <= Keys.Z; k += 1)
                             if (Main.keyState.IsKeyDown(k) && (Main.keyState.IsKeyDown(Keys.LeftShift) || Main.keyState.IsKeyDown(Keys.RightShift)))
                             {
                                 for (int i = 0; i < character.abilities.Length; i += 1)
@@ -71,11 +71,15 @@ namespace kRPG
                             }
                     }
                     else
+                    {
                         spriteBatch.Draw(GFX.skillSlot, position, Color.White, scale);
+                    }
                 }
                 else
+                {
                     spriteBatch.Draw(GFX.skillSlot, position, Color.White, scale);
-                
+                }
+
                 if (full && remaining == 0 && character.mana >= ManaCost(character)) spriteBatch.Draw(GFX.gothicLetter[key], position, Color.White, scale);
                 else if (full || character.spellcraftingGUI.guiActive) spriteBatch.Draw(GFX.gothicLetter[key], position, new Color(143, 143, 151), scale);
             }
@@ -86,88 +90,85 @@ namespace kRPG
         }
 
         public Item[] glyphs = new Item[3];
+
         public List<GlyphModifier> modifiers
         {
             get
             {
                 if (modifierOverride != null) return modifierOverride;
-                List<GlyphModifier> list = new List<GlyphModifier>();
+                var list = new List<GlyphModifier>();
                 for (int i = 0; i < glyphs.Length; i += 1)
                 {
-                    Glyph glyph = (Glyph)glyphs[i].modItem;
+                    var glyph = (Glyph) glyphs[i].modItem;
                     for (int j = 0; j < glyph.modifiers.Count; j += 1)
                         list.Add(glyph.modifiers[j]);
                 }
+
                 return list;
             }
         }
+
         public List<GlyphModifier> modifierOverride = null;
-        public int projCount => projCountOverride == -1 ? ((Moon)glyphs[(byte)GLYPHTYPE.MOON].modItem).projCount : projCountOverride;
+        public int projCount => projCountOverride == -1 ? ((Moon) glyphs[(byte) GLYPHTYPE.MOON].modItem).projCount : projCountOverride;
         public int projCountOverride = -1;
 
         public ProceduralSpell(Mod mod)
         {
             this.mod = mod;
             for (int i = 0; i < glyphs.Length; i += 1)
-            {
                 glyphs[i] = new Item();
-            }
         }
 
         public Action<ProceduralSpell, Player, Vector2> useAction
         {
             get
             {
-                Glyph glyph = (Glyph)glyphs[(byte)GUI.GLYPHTYPE.STAR].modItem;
+                var glyph = (Glyph) glyphs[(byte) GLYPHTYPE.STAR].modItem;
                 return glyph.GetUseAbility();
             }
         }
+
         public void UseAbility(Player player, Vector2 target)
         {
             bool vanish = modifiers.Contains(GlyphModifier.vanish);
-            Vector2 oldCenter = player.Center;
+            var oldCenter = player.Center;
             if (vanish)
             {
                 Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), oldCenter);
                 Projectile.NewProjectile(oldCenter - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(), 2, 0f, player.whoAmI);
                 Vector2 vector32;
-                vector32.X = (float)Main.mouseX + Main.screenPosition.X;
+                vector32.X = (float) Main.mouseX + Main.screenPosition.X;
                 if (Math.Abs(player.gravDir - 1f) < .01)
-                {
-                    vector32.Y = (float)Main.mouseY + Main.screenPosition.Y - (float)player.height;
-                }
+                    vector32.Y = (float) Main.mouseY + Main.screenPosition.Y - (float) player.height;
                 else
+                    vector32.Y = Main.screenPosition.Y + (float) Main.screenHeight - (float) Main.mouseY;
+                vector32.X -= (float) (player.width / 2.0);
+                if (vector32.X > 50f && vector32.X < (float) (Main.maxTilesX * 16 - 50) && vector32.Y > 50f && vector32.Y < (float) (Main.maxTilesY * 16 - 50))
                 {
-                    vector32.Y = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY;
-                }
-                vector32.X -= (float)(player.width / 2.0);
-                if (vector32.X > 50f && vector32.X < (float)(Main.maxTilesX * 16 - 50) && vector32.Y > 50f && vector32.Y < (float)(Main.maxTilesY * 16 - 50))
-                {
-                    int num276 = (int)(vector32.X / 16f);
-                    int num277 = (int)(vector32.Y / 16f);
-                    if ((Main.tile[num276, num277].wall != 87 || (double)num277 <= Main.worldSurface || NPC.downedPlantBoss) && !Collision.SolidCollision(vector32, player.width, player.height))
+                    int num276 = (int) (vector32.X / 16f);
+                    int num277 = (int) (vector32.Y / 16f);
+                    if ((Main.tile[num276, num277].wall != 87 || (double) num277 <= Main.worldSurface || NPC.downedPlantBoss) &&
+                        !Collision.SolidCollision(vector32, player.width, player.height))
                     {
                         player.Teleport(vector32, 1, 0);
-                        NetMessage.SendData(65, -1, -1, null, 0, (float)player.whoAmI, vector32.X, vector32.Y, 1, 0, 0);
+                        NetMessage.SendData(65, -1, -1, null, 0, (float) player.whoAmI, vector32.X, vector32.Y, 1, 0, 0);
                         if (player.chaosState)
                         {
                             player.statLife -= player.statLifeMax2 / 7;
-                            PlayerDeathReason damageSource = PlayerDeathReason.ByOther(13);
+                            var damageSource = PlayerDeathReason.ByOther(13);
                             if (Main.rand.Next(2) == 0)
-                            {
                                 damageSource = PlayerDeathReason.ByOther(player.Male ? 14 : 15);
-                            }
                             if (player.statLife <= 0)
-                            {
                                 player.KillMe(damageSource, 1.0, 0, false);
-                            }
                             player.lifeRegenCount = 0;
                             player.lifeRegenTime = 0;
                         }
+
                         player.AddBuff(88, 360, true);
                     }
                 }
             }
+
             useAction(this, player, vanish ? oldCenter : target);
         }
 
@@ -175,13 +176,14 @@ namespace kRPG
         {
             get
             {
-                Glyph glyph = (Glyph)glyphs[(byte)GUI.GLYPHTYPE.MOON].modItem;
+                var glyph = (Glyph) glyphs[(byte) GLYPHTYPE.MOON].modItem;
                 return glyph.GetCastAction();
             }
         }
+
         public void CastSpell(Player player, Vector2 origin, Vector2 target, Entity caster)
         {
-            Main.PlaySound(Terraria.ID.SoundID.Item8, caster.position);
+            Main.PlaySound(SoundID.Item8, caster.position);
             castAction(this, player, origin, target, caster);
         }
 
@@ -189,12 +191,15 @@ namespace kRPG
         public ProceduralSpellProj CreateProjectile(Player player, Vector2 velocity, float angle = 0f, Vector2? position = null, Entity caster = null)
         {
             if (caster == null) caster = player;
-            Projectile projectile = Main.projectile[Projectile.NewProjectile(position == null ? caster.Center : (Vector2)position, velocity.RotatedBy(API.Tau * angle), ModContent.ProjectileType<ProceduralSpellProj>(), ProjectileDamage(player.GetModPlayer<PlayerCharacter>()), 3f, player.whoAmI)];
-            ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
+            var projectile =
+                Main.projectile[
+                    Projectile.NewProjectile(position == null ? caster.Center : (Vector2) position, velocity.RotatedBy(API.Tau * angle),
+                        ModContent.ProjectileType<ProceduralSpellProj>(), ProjectileDamage(player.GetModPlayer<PlayerCharacter>()), 3f, player.whoAmI)];
+            var ps = (ProceduralSpellProj) projectile.modProjectile;
             ps.origin = projectile.position;
-            foreach (Item item in glyphs)
+            foreach (var item in glyphs)
             {
-                Glyph glyph = (Glyph)item.modItem;
+                var glyph = (Glyph) item.modItem;
                 if (glyph.GetAIAction() != null)
                     ps.ai.Add(glyph.GetAIAction());
                 if (glyph.GetInitAction() != null)
@@ -204,7 +209,8 @@ namespace kRPG
                 if (glyph.GetKillAction() != null)
                     ps.kill.Add(glyph.GetKillAction());
             }
-            foreach (GlyphModifier modifier in modifiers)
+
+            foreach (var modifier in modifiers)
             {
                 if (modifier.impact != null)
                     ps.impact.Add(modifier.impact);
@@ -213,6 +219,7 @@ namespace kRPG
                 if (modifier.init != null)
                     ps.init.Add(modifier.init);
             }
+
             ps.caster = caster;
             ps.projectile.minion = minion;
             /*if (minion)
@@ -224,17 +231,17 @@ namespace kRPG
             ps.source = this;
             ps.Initialize();
             if (Main.netMode != 1) return ps;
-            ModPacket packet = mod.GetPacket();
-            packet.Write((byte)Message.CreateProjectile);
+            var packet = mod.GetPacket();
+            packet.Write((byte) Message.CreateProjectile);
             packet.Write(player.whoAmI);
             packet.Write(ps.projectile.whoAmI);
-            packet.Write(glyphs[(byte)GLYPHTYPE.STAR].type);
-            packet.Write(glyphs[(byte)GLYPHTYPE.CROSS].type);
-            packet.Write(glyphs[(byte)GLYPHTYPE.MOON].type);
+            packet.Write(glyphs[(byte) GLYPHTYPE.STAR].type);
+            packet.Write(glyphs[(byte) GLYPHTYPE.CROSS].type);
+            packet.Write(glyphs[(byte) GLYPHTYPE.MOON].type);
             packet.Write(ps.projectile.damage);
             packet.Write(minion);
             packet.Write(caster.whoAmI);
-            List<GlyphModifier> mods = modifiers;
+            var mods = modifiers;
             packet.Write(mods.Count);
             for (int j = 0; j < mods.Count; j += 1)
                 packet.Write(mods[j].id);
@@ -246,7 +253,8 @@ namespace kRPG
         {
             bool complete = true;
             for (int i = 0; i < glyphs.Length; i += 1)
-                if (glyphs[i].type == 0) complete = false;
+                if (glyphs[i].type == 0)
+                    complete = false;
 
             return complete;
         }
@@ -256,13 +264,13 @@ namespace kRPG
             int constant = Main.hardMode ? character.level / 3 : 5;
             float multiplier = Main.expertMode ? 1f : 0.65f;
             multiplier = glyphs.Aggregate(multiplier, (current, item) => current * ((Glyph) item.modItem).DamageModifier());
-            return (int)Math.Round(Math.Pow(1.04, Math.Min(130, character.level)) * 9f * multiplier) + constant; 
+            return (int) Math.Round(Math.Pow(1.04, Math.Min(130, character.level)) * 9f * multiplier) + constant;
         }
 
         public int ManaCost(PlayerCharacter character)
         {
             float multiplier = glyphs.Aggregate(0.4f, (current, item) => current * ((Glyph) item.modItem).ManaModifier());
-            return (int)Math.Round((20 + character.level) * multiplier);
+            return (int) Math.Round((20 + character.level) * multiplier);
         }
     }
 

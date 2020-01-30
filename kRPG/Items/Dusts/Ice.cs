@@ -17,11 +17,9 @@ namespace kRPG.Items.Dusts
             dust.position += dust.velocity;
             dust.scale -= 0.015f;
             float light = 0.4f * dust.scale;
-            Lighting.AddLight(dust.position, light*0.6f, light*0.9f, light);
+            Lighting.AddLight(dust.position, light * 0.6f, light * 0.9f, light);
             if (dust.scale < 0.6f)
-            {
                 dust.active = false;
-            }
             return false;
         }
     }

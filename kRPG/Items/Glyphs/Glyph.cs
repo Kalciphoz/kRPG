@@ -14,12 +14,35 @@ namespace kRPG.Items.Glyphs
 {
     public class Glyph : ModItem
     {
-        public virtual Action<ProceduralSpell, Player, Vector2> GetUseAbility() { return null; }
-        public virtual Action<ProceduralSpell, Player, Vector2, Vector2, Entity> GetCastAction() { return null; }
-        public virtual Action<ProceduralSpellProj> GetInitAction() { return null; }
-        public virtual Action<ProceduralSpellProj, NPC, int> GetImpactAction() { return null; }
-        public virtual Action<ProceduralSpellProj> GetAIAction() { return null; }
-        public virtual Action<ProceduralSpellProj> GetKillAction() { return null; }
+        public virtual Action<ProceduralSpell, Player, Vector2> GetUseAbility()
+        {
+            return null;
+        }
+
+        public virtual Action<ProceduralSpell, Player, Vector2, Vector2, Entity> GetCastAction()
+        {
+            return null;
+        }
+
+        public virtual Action<ProceduralSpellProj> GetInitAction()
+        {
+            return null;
+        }
+
+        public virtual Action<ProceduralSpellProj, NPC, int> GetImpactAction()
+        {
+            return null;
+        }
+
+        public virtual Action<ProceduralSpellProj> GetAIAction()
+        {
+            return null;
+        }
+
+        public virtual Action<ProceduralSpellProj> GetKillAction()
+        {
+            return null;
+        }
 
         public List<GlyphModifier> modifiers = new List<GlyphModifier>();
         public bool initialized = false;
@@ -44,11 +67,11 @@ namespace kRPG.Items.Glyphs
 
         public override ModItem Clone(Item item)
         {
-            Glyph copy = (Glyph)base.Clone(item);
+            var copy = (Glyph) base.Clone(item);
             copy.modifiers = new List<GlyphModifier>();
             if (modifiers == null)
                 return copy;
-            foreach (GlyphModifier modifier in modifiers)
+            foreach (var modifier in modifiers)
                 copy.modifiers.Add(modifier);
             return copy;
         }
@@ -156,16 +179,13 @@ namespace kRPG.Items.Glyphs
         {
             for (int i = 0; i < modifiers.Count; i += 1)
                 tooltips.Add(new TooltipLine(mod, "modifier" + i, modifiers[i].tooltip));
-            tooltips.Add(new TooltipLine(mod, "damage", ((int)Math.Round(DamageModifier()*100)).ToString()+ "% damage"));
-            tooltips.Add(new TooltipLine(mod, "mana", ((int)Math.Round(ManaModifier() * 100)).ToString() + "% mana cost"));
+            tooltips.Add(new TooltipLine(mod, "damage", ((int) Math.Round(DamageModifier() * 100)).ToString() + "% damage"));
+            tooltips.Add(new TooltipLine(mod, "mana", ((int) Math.Round(ManaModifier() * 100)).ToString() + "% mana cost"));
         }
 
         public override TagCompound Save()
         {
-            TagCompound compound = new TagCompound()
-            {
-                { "ModifierCount", modifiers.Count }
-            };
+            var compound = new TagCompound() {{"ModifierCount", modifiers.Count}};
             for (int i = 0; i < modifiers.Count; i += 1)
                 compound.Add("Modifier_" + i, modifiers[i].id);
             return compound;
@@ -204,6 +224,7 @@ namespace kRPG.Items.Glyphs
             DisplayName.SetDefault("Generic Star Glyph; Please Ignore");
         }
     }
+
     public class Cross : Glyph
     {
         public override void SetStaticDefaults()
@@ -212,14 +233,9 @@ namespace kRPG.Items.Glyphs
         }
 
         public virtual Dictionary<ELEMENT, float> eleDmg =>
-            new Dictionary<ELEMENT, float>()
-            {
-                {ELEMENT.FIRE, 0},
-                {ELEMENT.COLD, 0},
-                {ELEMENT.LIGHTNING, 0},
-                {ELEMENT.SHADOW, 0}
-            };
+            new Dictionary<ELEMENT, float>() {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
     }
+
     public class Moon : Glyph
     {
         public override void SetStaticDefaults()
@@ -231,7 +247,7 @@ namespace kRPG.Items.Glyphs
 
         public override TagCompound Save()
         {
-            TagCompound compound = base.Save();
+            var compound = base.Save();
             compound.Add("projCount", projCount);
             return compound;
         }
@@ -256,7 +272,7 @@ namespace kRPG.Items.Glyphs
 
         public override ModItem Clone(Item item)
         {
-            Moon copy = (Moon)base.Clone(item);
+            var copy = (Moon) base.Clone(item);
             copy.projCount = projCount;
             return copy;
         }
@@ -272,29 +288,29 @@ namespace kRPG.Items.Glyphs
     {
         public override Action<ProceduralSpell, Player, Vector2> GetUseAbility()
         {
-            return delegate (ProceduralSpell spell, Player player, Vector2 target)
+            return delegate(ProceduralSpell spell, Player player, Vector2 target)
             {
-                Main.PlaySound(Terraria.ID.SoundID.Item6, player.position);
+                Main.PlaySound(SoundID.Item6, player.position);
                 spell.remaining = spell.cooldown;
-                PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+                var character = player.GetModPlayer<PlayerCharacter>();
                 if (character.minions.Exists(minion => minion is WingedEyeball))
-                {
-                    foreach (ProceduralMinion eyeball in character.minions.Where(minion => minion.projectile.type == ModContent.ProjectileType<WingedEyeball>()))
+                    foreach (var eyeball in character.minions.Where(minion => minion.projectile.type == ModContent.ProjectileType<WingedEyeball>()))
                     {
-                        foreach (ProceduralSpellProj psp in eyeball.circlingProtection)
+                        foreach (var psp in eyeball.circlingProtection)
                             psp.projectile.Kill();
                         eyeball.circlingProtection.Clear();
                         eyeball.smallProt?.projectile.Kill();
                         eyeball.projectile.Kill();
                     }
-                }
-                Projectile eye = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<WingedEyeball>(), 0, 0f, player.whoAmI)];
+
+                var eye = Main.projectile[
+                    Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<WingedEyeball>(), 0, 0f, player.whoAmI)];
                 eye.Center = target;
-                WingedEyeball we = (WingedEyeball)eye.modProjectile;
+                var we = (WingedEyeball) eye.modProjectile;
                 we.source = spell;
                 foreach (var modifier in spell.modifiers.Where(modifier => modifier.minionAI != null))
                     we.glyphModifiers.Add(modifier.minionAI);
-                character.minions.Add((WingedEyeball)eye.modProjectile);
+                character.minions.Add((WingedEyeball) eye.modProjectile);
             };
         }
 
@@ -319,7 +335,7 @@ namespace kRPG.Items.Glyphs
     {
         public override Action<ProceduralSpell, Player, Vector2> GetUseAbility()
         {
-            return delegate (ProceduralSpell spell, Player player, Vector2 target)
+            return delegate(ProceduralSpell spell, Player player, Vector2 target)
             {
                 spell.remaining = spell.cooldown;
                 spell.CastSpell(player, player.Center, target, player);
@@ -342,16 +358,16 @@ namespace kRPG.Items.Glyphs
     {
         public override Action<ProceduralSpell, Player, Vector2> GetUseAbility()
         {
-            return delegate (ProceduralSpell spell, Player player, Vector2 target)
+            return delegate(ProceduralSpell spell, Player player, Vector2 target)
             {
                 Main.PlaySound(0, player.position);
                 spell.remaining = spell.cooldown;
                 int placementHeight = 0;
                 bool placeable = false;
-                for (int y = (int)(Main.screenPosition.Y / 16); y < (int)((Main.screenPosition.Y + Main.screenHeight) / 16); y += 1)
+                for (int y = (int) (Main.screenPosition.Y / 16); y < (int) ((Main.screenPosition.Y + Main.screenHeight) / 16); y += 1)
                 {
-                    int x = (int)(target.X / 16f);
-                    Tile tile = Main.tile[x, y];
+                    int x = (int) (target.X / 16f);
+                    var tile = Main.tile[x, y];
                     if ((!tile.active() || !Main.tileSolidTop[tile.type]) && (tile.collisionType != 1 || Main.tile[x, y - 1].collisionType == 1))
                         continue;
                     placeable = true;
@@ -359,23 +375,25 @@ namespace kRPG.Items.Glyphs
                     if (target.Y / 16 - 4 <= y)
                         break;
                 }
+
                 if (!placeable) return;
-                PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+                var character = player.GetModPlayer<PlayerCharacter>();
                 if (character.minions.Exists(minion => minion is Obelisk))
-                {
-                    foreach (ProceduralMinion obelisk in character.minions.Where(minions => minions.projectile.type == ModContent.ProjectileType<Obelisk>()))
+                    foreach (var obelisk in character.minions.Where(minions => minions.projectile.type == ModContent.ProjectileType<Obelisk>()))
                     {
-                        foreach (ProceduralSpellProj psp in obelisk.circlingProtection)
+                        foreach (var psp in obelisk.circlingProtection)
                             psp.projectile.Kill();
                         obelisk.circlingProtection.Clear();
                         obelisk.smallProt?.projectile.Kill();
                         obelisk.projectile.Kill();
                     }
-                }
-                Projectile totem = Main.projectile[Projectile.NewProjectile(new Vector2((int)(target.X / 16) * 16, placementHeight * 16) + new Vector2(8f, -32f), Vector2.Zero,ModContent.GetInstance<Obelisk>().projectile.type, 0, 0f, player.whoAmI)];
-                totem.position = new Vector2((int)(target.X / 16) * 16, placementHeight * 16) - new Vector2(8f, 62f);
-                ((Obelisk)totem.modProjectile).source = spell;
-                character.minions.Add((Obelisk)totem.modProjectile);
+
+                var totem = Main.projectile[
+                    Projectile.NewProjectile(new Vector2((int) (target.X / 16) * 16, placementHeight * 16) + new Vector2(8f, -32f), Vector2.Zero,
+                        ModContent.GetInstance<Obelisk>().projectile.type, 0, 0f, player.whoAmI)];
+                totem.position = new Vector2((int) (target.X / 16) * 16, placementHeight * 16) - new Vector2(8f, 62f);
+                ((Obelisk) totem.modProjectile).source = spell;
+                character.minions.Add((Obelisk) totem.modProjectile);
             };
         }
 
@@ -390,10 +408,10 @@ namespace kRPG.Items.Glyphs
     {
         public override Action<ProceduralSpellProj> GetInitAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 try
-                { 
+                {
                     spell.texture = GFX.projectile_fireball;
                     spell.projectile.width = spell.texture.Width;
                     spell.projectile.height = spell.texture.Height;
@@ -408,16 +426,18 @@ namespace kRPG.Items.Glyphs
                 }
             };
         }
+
         public override Action<ProceduralSpellProj> GetAIAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 try
                 {
                     ProceduralSpellProj.AI_RotateToVelocity(spell);
                     if (!(Main.rand.NextFloat(0f, 1.5f) <= spell.alpha))
                         return;
-                    int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Fire, spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 1f + spell.alpha * 2f);
+                    int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Fire,
+                        spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 1f + spell.alpha * 2f);
                     Main.dust[dust].noGravity = true;
                 }
                 catch (SystemException e)
@@ -429,14 +449,13 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetKillAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 try
-                { 
+                {
                     for (int k = 0; k < 20; k++)
-                    {
-                        Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, DustID.Fire, spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f, 0, default(Color), 1.5f);
-                    }
+                        Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, DustID.Fire,
+                            spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f, 0, default(Color), 1.5f);
                 }
                 catch (SystemException e)
                 {
@@ -452,31 +471,29 @@ namespace kRPG.Items.Glyphs
         }
 
         public override Dictionary<ELEMENT, float> eleDmg =>
-            new Dictionary<ELEMENT, float>()
-            {
-                {ELEMENT.FIRE, 1f},
-                {ELEMENT.COLD, 0},
-                {ELEMENT.LIGHTNING, 0},
-                {ELEMENT.SHADOW, 0}
-            };
+            new Dictionary<ELEMENT, float>() {{ELEMENT.FIRE, 1f}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
     }
 
     public class Cross_Orange : Cross
     {
         public override Action<ProceduralSpellProj> GetInitAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 if (Main.netMode != 2)
                 {
                     if (Main.netMode == 0 || spell.projectile.owner == Main.myPlayer)
                     {
-                        PlayerCharacter character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
+                        var character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
 
-                        spell.texture = character.lastSelectedWeapon.modItem is ProceduralSword ? ((ProceduralSword)character.lastSelectedWeapon.modItem).texture : Main.itemTexture[character.lastSelectedWeapon.type];
+                        spell.texture = character.lastSelectedWeapon.modItem is ProceduralSword
+                            ? ((ProceduralSword) character.lastSelectedWeapon.modItem).texture
+                            : Main.itemTexture[character.lastSelectedWeapon.type];
                     }
                     else
+                    {
                         spell.texture = GFX.projectile_boulder;
+                    }
 
                     spell.projectile.width = spell.texture.Width;
                     spell.projectile.height = spell.texture.Height;
@@ -486,6 +503,7 @@ namespace kRPG.Items.Glyphs
                     spell.projectile.width = 48;
                     spell.projectile.height = 48;
                 }
+
                 spell.projectile.melee = true;
                 spell.draw_trail = true;
                 spell.alpha = 1f;
@@ -496,22 +514,22 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetAIAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 if (spell.projectile.velocity.X < 0 && spell.basePosition == Vector2.Zero) spell.projectile.spriteDirection = -1;
-                Vector2 v = spell.basePosition != Vector2.Zero ? spell.basePosition : spell.origin;
+                var v = spell.basePosition != Vector2.Zero ? spell.basePosition : spell.origin;
                 if (spell.projectile.spriteDirection == -1)
-                    spell.projectile.rotation = (spell.projectile.Center - v).ToRotation() - (float)API.Tau * 5f / 8f;
+                    spell.projectile.rotation = (spell.projectile.Center - v).ToRotation() - (float) API.Tau * 5f / 8f;
                 else
-                    spell.projectile.rotation = (spell.projectile.Center - v).ToRotation() + (float)API.Tau / 8f;
+                    spell.projectile.rotation = (spell.projectile.Center - v).ToRotation() + (float) API.Tau / 8f;
             };
         }
 
         public override bool CanUse()
         {
-            Player owner = Main.player[Main.myPlayer];
-            PlayerCharacter character = owner.GetModPlayer<PlayerCharacter>();
-            Item item = character.lastSelectedWeapon;
+            var owner = Main.player[Main.myPlayer];
+            var character = owner.GetModPlayer<PlayerCharacter>();
+            var item = character.lastSelectedWeapon;
             return owner.inventory.Contains<Item>(item);
         }
 
@@ -536,7 +554,7 @@ namespace kRPG.Items.Glyphs
     {
         public override Action<ProceduralSpellProj> GetInitAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 spell.texture = GFX.projectile_boulder;
                 spell.projectile.width = spell.texture.Width;
@@ -551,12 +569,11 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetKillAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 for (int k = 0; k < 10; k++)
-                {
-                    Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, DustID.Stone, spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f, 0, default(Color), 2f);
-                }
+                    Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, DustID.Stone,
+                        spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f, 0, default(Color), 2f);
             };
         }
 
@@ -576,9 +593,9 @@ namespace kRPG.Items.Glyphs
     {
         public override Action<ProceduralSpellProj> GetInitAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
-                spell.texture = Main.itemTexture[Terraria.ID.ItemID.WoodenArrow];
+                spell.texture = Main.itemTexture[ItemID.WoodenArrow];
                 spell.projectile.width = spell.texture.Width;
                 spell.projectile.height = spell.texture.Height;
                 spell.projectile.ranged = true;
@@ -591,22 +608,21 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetAIAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 if (spell.projectile.velocity.X < 0 && spell.basePosition == Vector2.Zero) spell.projectile.spriteDirection = -1;
-                Vector2 v = spell.basePosition != Vector2.Zero ? spell.basePosition : spell.origin;
-                spell.projectile.rotation = (spell.projectile.Center - v).ToRotation() - (float)API.Tau / 4f;
+                var v = spell.basePosition != Vector2.Zero ? spell.basePosition : spell.origin;
+                spell.projectile.rotation = (spell.projectile.Center - v).ToRotation() - (float) API.Tau / 4f;
             };
         }
 
         public override Action<ProceduralSpellProj> GetKillAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 for (int k = 0; k < 5; k++)
-                {
-                    Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, DustID.Stone, spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f);
-                }
+                    Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, DustID.Stone,
+                        spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f);
             };
         }
 
@@ -626,7 +642,7 @@ namespace kRPG.Items.Glyphs
     {
         public override Action<ProceduralSpellProj> GetInitAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 spell.texture = GFX.projectile_frostbolt;
                 spell.projectile.width = spell.texture.Width;
@@ -638,32 +654,33 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetAIAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 if (Main.rand.NextFloat(0f, 2f) <= spell.alpha)
                 {
-                    int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height,ModContent.GetInstance<Ice>().Type, 0f, 0f, 100, Color.White, 0.5f + spell.alpha);
+                    int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, ModContent.GetInstance<Ice>().Type, 0f,
+                        0f, 100, Color.White, 0.5f + spell.alpha);
                     Main.dust[dust].noGravity = true;
                 }
+
                 Lighting.AddLight(spell.projectile.Center, 0f, 0.4f, 1f);
             };
         }
 
         public override Action<ProceduralSpellProj> GetKillAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 for (int k = 0; k < 8; k++)
-                {
                     try
                     {
-                        Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, ModContent.DustType<Ice>(), spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f);
+                        Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height,
+                            ModContent.DustType<Ice>(), spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f);
                     }
                     catch (SystemException e)
                     {
                         ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
                     }
-                }
             };
         }
 
@@ -679,20 +696,14 @@ namespace kRPG.Items.Glyphs
         }
 
         public override Dictionary<ELEMENT, float> eleDmg =>
-            new Dictionary<ELEMENT, float>()
-            {
-                {ELEMENT.FIRE, 0},
-                {ELEMENT.COLD, 1f},
-                {ELEMENT.LIGHTNING, 0},
-                {ELEMENT.SHADOW, 0}
-            };
+            new Dictionary<ELEMENT, float>() {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 1f}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
     }
 
     public class Cross_Violet : Cross
     {
         public override Action<ProceduralSpellProj> GetInitAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 spell.texture = GFX.projectile_shadowbolt;
                 spell.projectile.width = spell.texture.Width;
@@ -703,26 +714,27 @@ namespace kRPG.Items.Glyphs
                 spell.projectile.scale = spell.minion ? 0.7f : 1f;
             };
         }
+
         public override Action<ProceduralSpellProj> GetAIAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 ProceduralSpellProj.AI_RotateToVelocity(spell);
                 if (!(Main.rand.NextFloat(0f, 1.5f) <= spell.alpha))
                     return;
-                int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Shadowflame, spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 0.4f + spell.alpha * 1.2f);
+                int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Shadowflame,
+                    spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 0.4f + spell.alpha * 1.2f);
                 Main.dust[dust].noGravity = true;
             };
         }
 
         public override Action<ProceduralSpellProj> GetKillAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 for (int k = 0; k < 20; k++)
-                {
-                    Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, DustID.Shadowflame, spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f, 0, default(Color), 1.5f);
-                }
+                    Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, DustID.Shadowflame,
+                        spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f, 0, default(Color), 1.5f);
             };
         }
 
@@ -733,20 +745,14 @@ namespace kRPG.Items.Glyphs
         }
 
         public override Dictionary<ELEMENT, float> eleDmg =>
-            new Dictionary<ELEMENT, float>()
-            {
-                {ELEMENT.FIRE, 0},
-                {ELEMENT.COLD, 0},
-                {ELEMENT.LIGHTNING, 0},
-                {ELEMENT.SHADOW, 1f}
-            };
+            new Dictionary<ELEMENT, float>() {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 1f}};
     }
 
     public class Cross_Purple : Cross
     {
         public override Action<ProceduralSpellProj> GetInitAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 spell.texture = GFX.projectile_thunderbolt;
                 spell.projectile.width = spell.texture.Width;
@@ -755,26 +761,27 @@ namespace kRPG.Items.Glyphs
                 spell.lighted = true;
             };
         }
+
         public override Action<ProceduralSpellProj> GetAIAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 ProceduralSpellProj.AI_RotateToVelocity(spell);
                 if (!(Main.rand.NextFloat(0f, 2f) <= spell.alpha))
                     return;
-                int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Electric, spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 0.2f + spell.alpha);
+                int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Electric,
+                    spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 0.2f + spell.alpha);
                 Main.dust[dust].noGravity = true;
             };
         }
 
         public override Action<ProceduralSpellProj> GetKillAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 for (int k = 0; k < 8; k++)
-                {
-                    Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, DustID.Electric, spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f, 0, default(Color), 0.5f);
-                }
+                    Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, DustID.Electric,
+                        spell.projectile.oldVelocity.X * 0.5f, spell.projectile.oldVelocity.Y * 0.5f, 0, default(Color), 0.5f);
             };
         }
 
@@ -785,13 +792,7 @@ namespace kRPG.Items.Glyphs
         }
 
         public override Dictionary<ELEMENT, float> eleDmg =>
-            new Dictionary<ELEMENT, float>()
-            {
-                {ELEMENT.FIRE, 0},
-                {ELEMENT.COLD, 0},
-                {ELEMENT.LIGHTNING, 1f},
-                {ELEMENT.SHADOW, 0}
-            };
+            new Dictionary<ELEMENT, float>() {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 1f}, {ELEMENT.SHADOW, 0}};
     }
 
     public class Moon_Yellow : Moon
@@ -815,16 +816,16 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpell, Player, Vector2, Vector2, Entity> GetCastAction()
         {
-            return delegate (ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
+            return delegate(ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
             {
                 int rotDistance = spell.minion ? 32 : 48;
-                float spread =  GetSpread(spell.projCount);
+                float spread = GetSpread(spell.projCount);
                 for (int i = 0; i < spell.projCount; i += 1)
                 {
-                    float angle = (float)i * spread * (float)API.Tau;
-                    ProceduralSpellProj proj = spell.CreateProjectile(player, Vector2.Zero, spread * i, origin + new Vector2(0f, -rotDistance).RotatedBy(angle), caster);
+                    float angle = (float) i * spread * (float) API.Tau;
+                    var proj = spell.CreateProjectile(player, Vector2.Zero, spread * i, origin + new Vector2(0f, -rotDistance).RotatedBy(angle), caster);
                     proj.basePosition = origin;
-                    Vector2 unitVelocity = (target - origin);
+                    var unitVelocity = target - origin;
                     unitVelocity.Normalize();
                     proj.baseVelocity = unitVelocity * 8f;
                     proj.displacementAngle = angle;
@@ -835,18 +836,19 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetAIAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 int rotDistance = spell.minion ? 32 : 48;
                 spell.basePosition += spell.baseVelocity;
-                Vector2 unitRelativePos = spell.RelativePos(spell.basePosition);
+                var unitRelativePos = spell.RelativePos(spell.basePosition);
                 unitRelativePos.Normalize();
                 spell.projectile.Center = spell.basePosition + unitRelativePos * rotDistance;
-                spell.displacementVelocity = new Vector2(12f / spell.source.projCount, 0f).RotatedBy((spell.RelativePos(spell.basePosition)).ToRotation() + (float)API.Tau / 4f);
+                spell.displacementVelocity =
+                    new Vector2(12f / spell.source.projCount, 0f).RotatedBy(spell.RelativePos(spell.basePosition).ToRotation() + (float) API.Tau / 4f);
 
-                float angle = spell.displacementAngle + 0.24f * (- spell.projectile.timeLeft - rotDistance) / projCount;
+                float angle = spell.displacementAngle + 0.24f * (-spell.projectile.timeLeft - rotDistance) / projCount;
                 spell.projectile.Center = spell.basePosition + new Vector2(0f, -rotDistance).RotatedBy(angle);
-                
+
                 spell.projectile.velocity = spell.displacementVelocity + spell.baseVelocity;
             };
         }
@@ -874,13 +876,13 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpell, Player, Vector2, Vector2, Entity> GetCastAction()
         {
-            return delegate (ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
+            return delegate(ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
             {
                 switch (caster)
                 {
                     case Player p:
                     {
-                        PlayerCharacter character = p.GetModPlayer<PlayerCharacter>();
+                        var character = p.GetModPlayer<PlayerCharacter>();
                         foreach (var proj in character.circlingProtection.Where(proj => proj.projectile.modProjectile is ProceduralSpellProj))
                             proj.projectile.Kill();
                         character.circlingProtection.Clear();
@@ -888,28 +890,29 @@ namespace kRPG.Items.Glyphs
                     }
                     case Projectile pj:
                     {
-                        ProceduralMinion minion = (ProceduralMinion)pj.modProjectile;
+                        var minion = (ProceduralMinion) pj.modProjectile;
                         foreach (var proj in minion.circlingProtection.Where(proj => proj.projectile.modProjectile is ProceduralSpellProj))
                             proj.projectile.Kill();
                         minion.circlingProtection.Clear();
                         break;
                     }
                 }
+
                 float spread = GetSpread(spell.projCount);
-                Vector2 velocity = new Vector2(0f, -1.5f);
+                var velocity = new Vector2(0f, -1.5f);
                 for (int i = 0; i < spell.projCount; i += 1)
                 {
-                    ProceduralSpellProj proj = spell.CreateProjectile(player, Vector2.Zero, spread * i, origin, caster);
+                    var proj = spell.CreateProjectile(player, Vector2.Zero, spread * i, origin, caster);
                     proj.projectile.timeLeft = RotTimeLeft;
                     proj.displacementVelocity = velocity.RotatedBy(i * spread * API.Tau);
-                    proj.displacementAngle = i * spread * (float)API.Tau;
+                    proj.displacementAngle = i * spread * (float) API.Tau;
                     switch (caster)
                     {
                         case Player _:
                             player.GetModPlayer<PlayerCharacter>().circlingProtection.Add(proj);
                             break;
                         case Projectile pj:
-                            ((ProceduralMinion)pj.modProjectile).circlingProtection.Add(proj);
+                            ((ProceduralMinion) pj.modProjectile).circlingProtection.Add(proj);
                             break;
                     }
                 }
@@ -918,25 +921,28 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetAIAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 try
                 {
                     int rotDistance = spell.minion ? 72 : 96;
                     if (RotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
                     {
-                        Vector2 unitRelativePos = spell.RelativePos(spell.caster.Center);
+                        var unitRelativePos = spell.RelativePos(spell.caster.Center);
                         unitRelativePos.Normalize();
                         spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
-                        spell.displacementVelocity = new Vector2(1.5f, 0f).RotatedBy((spell.RelativePos(spell.caster.Center)).ToRotation() + (float)API.Tau / 4f);
+                        spell.displacementVelocity =
+                            new Vector2(1.5f, 0f).RotatedBy(spell.RelativePos(spell.caster.Center).ToRotation() + (float) API.Tau / 4f);
 
-                        float angle = spell.displacementAngle + 0.04f * (float)(RotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
+                        float angle = spell.displacementAngle + 0.04f * (float) (RotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
                         spell.projectile.Center = spell.caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
                     }
                     else
                     {
-                        spell.projectile.Center = spell.caster.Center + new Vector2(0f, -1.5f).RotatedBy(spell.displacementAngle) * (RotTimeLeft - spell.projectile.timeLeft);
+                        spell.projectile.Center = spell.caster.Center +
+                                                  new Vector2(0f, -1.5f).RotatedBy(spell.displacementAngle) * (RotTimeLeft - spell.projectile.timeLeft);
                     }
+
                     spell.projectile.velocity = spell.displacementVelocity + spell.caster.velocity;
                     spell.basePosition = spell.caster.position;
                 }
@@ -974,16 +980,14 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpell, Player, Vector2, Vector2, Entity> GetCastAction()
         {
-            return delegate (ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
+            return delegate(ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
             {
                 float spread = GetSpread(spell.projCount);
-                Vector2 unitVelocity = (target - origin);
+                var unitVelocity = target - origin;
                 unitVelocity.Normalize();
-                Vector2 velocity = unitVelocity * 6f;
+                var velocity = unitVelocity * 6f;
                 for (int i = 0; i < spell.projCount; i += 1)
-                {
                     spell.CreateProjectile(player, velocity, spell.projCount * -spread / 2f + i * spread + spread / 2f, origin, caster);
-                }
             };
         }
 
@@ -1016,13 +1020,14 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpell, Player, Vector2, Vector2, Entity> GetCastAction()
         {
-            return delegate (ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
+            return delegate(ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
             {
-                new SpellEffect(spell, target, projCount * 8, delegate (ProceduralSpell ability, int timeLeft)
+                new SpellEffect(spell, target, projCount * 8, delegate(ProceduralSpell ability, int timeLeft)
                 {
                     if (timeLeft % 8 != 0)
                         return;
-                    ProceduralSpellProj proj = spell.CreateProjectile(player, new Vector2(0f, 8f), 0f, new Vector2(target.X - area / 2f + Main.rand.NextFloat(area), target.Y - 240f), caster);
+                    var proj = spell.CreateProjectile(player, new Vector2(0f, 8f), 0f,
+                        new Vector2(target.X - area / 2f + Main.rand.NextFloat(area), target.Y - 240f), caster);
                     if (proj.alpha < 1f) proj.alpha = 0.5f;
                     proj.projectile.timeLeft = 60;
                 });
@@ -1051,13 +1056,14 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpell, Player, Vector2, Vector2, Entity> GetCastAction()
         {
-            return delegate (ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
+            return delegate(ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
             {
-                new SpellEffect(spell, target, projCount * 10, delegate (ProceduralSpell ability, int timeLeft)
+                new SpellEffect(spell, target, projCount * 10, delegate(ProceduralSpell ability, int timeLeft)
                 {
                     if (timeLeft % 10 != 0)
                         return;
-                    ProceduralSpellProj proj = spell.CreateProjectile(player, new Vector2(0, -9f), Main.rand.NextFloat(-0.07f, 0.07f), caster.Center + new Vector2(0, -16f), caster);
+                    var proj = spell.CreateProjectile(player, new Vector2(0, -9f), Main.rand.NextFloat(-0.07f, 0.07f), caster.Center + new Vector2(0, -16f),
+                        caster);
                     if (proj.alpha < 1f) proj.alpha = 0.5f;
                     proj.projectile.tileCollide = true;
                 });
@@ -1066,10 +1072,7 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetAIAction()
         {
-            return delegate (ProceduralSpellProj spell)
-            {
-                spell.projectile.velocity.Y += 0.3f;
-            };
+            return delegate(ProceduralSpellProj spell) { spell.projectile.velocity.Y += 0.3f; };
         }
 
         public override void SetStaticDefaults()

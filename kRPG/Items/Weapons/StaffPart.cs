@@ -10,7 +10,9 @@ namespace kRPG.Items.Weapons
 
         public Point GetDrawOrigin(Point staffSize, Point staffOrigin, Point combinedSize)
         {
-            return this is Staff ? new Point(0, combinedSize.Y - texture.Height) : new Point((int)(staffOrigin.X - origin.X), (int)(combinedSize.Y - staffSize.Y + staffOrigin.Y - origin.Y));
+            return this is Staff
+                ? new Point(0, combinedSize.Y - texture.Height)
+                : new Point((int) (staffOrigin.X - origin.X), (int) (combinedSize.Y - staffSize.Y + staffOrigin.Y - origin.Y));
         }
     }
 }

@@ -48,18 +48,18 @@ namespace kRPG.Items.Weapons.RangedDrops
         public virtual void SetStats()
         {
             item.SetNameOverride(name);
-            item.rare = (int)Math.Min(Math.Floor(dps / 15.0), 9);
+            item.rare = (int) Math.Min(Math.Floor(dps / 15.0), 9);
             item.useTime = UseTime();
-            item.damage = (int)Math.Round(dps * DPSModifier() * (float)item.useTime / 60f + enemyDef - 2);
+            item.damage = (int) Math.Round(dps * DPSModifier() * (float) item.useTime / 60f + enemyDef - 2);
             if (item.damage < 1) item.damage = 1;
-            item.useTime = (int)Math.Round(((float)item.damage - enemyDef + 2) * 60f / (dps * DPSModifier()));
+            item.useTime = (int) Math.Round(((float) item.damage - enemyDef + 2) * 60f / (dps * DPSModifier()));
             item.useAnimation = item.useTime * Iterations() - 1;
-            item.value = (int)(dps * 315);
+            item.value = (int) (dps * 315);
         }
 
         public override ModItem Clone(Item item)
         {
-            RangedWeapon copy = (RangedWeapon)base.Clone(item);
+            var copy = (RangedWeapon) base.Clone(item);
             copy.dps = dps;
             copy.name = name;
             copy.enemyDef = enemyDef;
@@ -89,12 +89,7 @@ namespace kRPG.Items.Weapons.RangedDrops
 
         public override TagCompound Save()
         {
-            return new TagCompound()
-            {
-                {"dps", dps },
-                {"enemyDef", enemyDef },
-                {"name", name }
-            };
+            return new TagCompound() {{"dps", dps}, {"enemyDef", enemyDef}, {"name", name}};
         }
 
         public override void NetSend(BinaryWriter writer)
@@ -130,8 +125,7 @@ namespace kRPG.Items.Weapons.RangedDrops
             int ammo = 0;
             string weapon = "";
             if (combined >= 35)
-            {
-                switch(Main.rand.Next(5))
+                switch (Main.rand.Next(5))
                 {
                     default:
                         weapon = "AngelBow";
@@ -154,10 +148,8 @@ namespace kRPG.Items.Weapons.RangedDrops
                         ammo = ItemID.MusketBall;
                         break;
                 }
-            }
             else
-            {
-                switch(Main.rand.Next(4))
+                switch (Main.rand.Next(4))
                 {
                     default:
                         weapon = "Longbow";
@@ -176,27 +168,27 @@ namespace kRPG.Items.Weapons.RangedDrops
                         ammo = ItemID.MusketBall;
                         break;
                 }
-            }
 
-            RangedWeapon item = (RangedWeapon)Main.item[Item.NewItem(position, mod.ItemType(weapon))].modItem;
+            var item = (RangedWeapon) Main.item[Item.NewItem(position, mod.ItemType(weapon))].modItem;
             item.dps = dps;
             item.enemyDef = enemyDef;
             item.Initialize();
             if (Main.netMode == 2)
             {
-                ModPacket packet = mod.GetPacket();
-                packet.Write((byte)Message.BowInit);
+                var packet = mod.GetPacket();
+                packet.Write((byte) Message.BowInit);
                 packet.Write(item.item.whoAmI);
                 packet.Write(item.dps);
                 packet.Write(item.enemyDef);
                 packet.Send();
             }
+
             return ammo;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int)Math.Round(dps / 2f)));
+            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int) Math.Round(dps / 2f)));
         }
     }
 
@@ -209,7 +201,7 @@ namespace kRPG.Items.Weapons.RangedDrops
 
         public override string RandomName()
         {
-            switch(Main.rand.Next(3))
+            switch (Main.rand.Next(3))
             {
                 default:
                     return "Golden Pistol";
@@ -305,7 +297,7 @@ namespace kRPG.Items.Weapons.RangedDrops
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
-            Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(6));
+            var perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(6));
             speedX = perturbedSpeed.X;
             speedY = perturbedSpeed.Y;
             return true;
@@ -513,7 +505,7 @@ namespace kRPG.Items.Weapons.RangedDrops
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
-            Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(12));
+            var perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(12));
             speedX = perturbedSpeed.X;
             speedY = perturbedSpeed.Y;
             return true;
@@ -584,7 +576,7 @@ namespace kRPG.Items.Weapons.RangedDrops
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
-            Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(6));
+            var perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(6));
             speedX = perturbedSpeed.X;
             speedY = perturbedSpeed.Y;
             return true;
@@ -650,7 +642,7 @@ namespace kRPG.Items.Weapons.RangedDrops
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
-            Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(2));
+            var perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(2));
             speedX = perturbedSpeed.X;
             speedY = perturbedSpeed.Y;
             return true;
@@ -723,7 +715,7 @@ namespace kRPG.Items.Weapons.RangedDrops
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
-            Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(9));
+            var perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(9));
             speedX = perturbedSpeed.X;
             speedY = perturbedSpeed.Y;
             return true;

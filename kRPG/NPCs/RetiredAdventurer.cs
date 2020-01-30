@@ -42,22 +42,23 @@ namespace kRPG.NPCs
         {
             for (int i = 0; i < 255; i += 1)
             {
-                Player player = Main.player[i];
+                var player = Main.player[i];
                 if (!player.active)
                     continue;
-                PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+                var character = player.GetModPlayer<PlayerCharacter>();
                 if (character.level >= 20)
                     return true;
             }
+
             return false;
         }
 
         public override void SetupShop(Chest shop, ref int nextSlot)
         {
-            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<ScintillatingBloodLacrima>(),true);
-            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<EyeOnAStick>(),true);
-            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<Scythe>(),true);
-            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<Arbalest>(),true);
+            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<ScintillatingBloodLacrima>(), true);
+            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<EyeOnAStick>(), true);
+            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<Scythe>(), true);
+            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<Arbalest>(), true);
         }
 
         public override string TownNPCName()
@@ -103,6 +104,7 @@ namespace kRPG.NPCs
                     return Main.npc[guide].GivenName + " is looking sharp today.";
                 return "You know, when I started adventuring, I didn't have a " + Main.npc[guide].GivenName + " around.";
             }
+
             switch (npc.GivenName)
             {
                 case "Brian Alvarez" when Main.rand.Next(4) == 0:
@@ -119,15 +121,21 @@ namespace kRPG.NPCs
                     break;
                 case "Dylan Alvarez" when Main.rand.Next(5) == 0:
                 {
-                    return Main.rand.Next(2) == 0 ? "I once fought four ritual archmagicians at the same time. I won." : "Oh, if you think you're the protagonist of this story, you're dead wrong.";
+                    return Main.rand.Next(2) == 0
+                        ? "I once fought four ritual archmagicians at the same time. I won."
+                        : "Oh, if you think you're the protagonist of this story, you're dead wrong.";
                 }
                 case "Grian" when Main.rand.Next(5) == 0:
                 {
-                    return Main.rand.Next(2) == 0 ? "This is a very nice place. Have you considered becoming an architect?" : "I've dabbled in architecture you know. I was quite skilled.";
+                    return Main.rand.Next(2) == 0
+                        ? "This is a very nice place. Have you considered becoming an architect?"
+                        : "I've dabbled in architecture you know. I was quite skilled.";
                 }
                 case "Colonel Zabini" when Main.rand.Next(5) == 0:
                 {
-                    return Main.rand.Next(2) == 0 ? "You lot are hopeless without me." : "It's just a game, really. And games are supposed to be fun. So how about if I just do whatever I feel like?";
+                    return Main.rand.Next(2) == 0
+                        ? "You lot are hopeless without me."
+                        : "It's just a game, really. And games are supposed to be fun. So how about if I just do whatever I feel like?";
                 }
                 case "General Raynor" when Main.rand.Next(9) == 0:
                     return "Do me a favor, don't shoot me this time.";
@@ -141,7 +149,9 @@ namespace kRPG.NPCs
                     return "I was a High Templar in Oriath. I was a god!";
                 case "Dentarthurdent" when Main.rand.Next(5) == 0:
                 {
-                    return Main.rand.Next(2) == 0 ? "It's a tough world. If you wanna survive out here, you gotta know where your cobweb is." : "I would never want to go anywhere without my wonderful grappling hook.";
+                    return Main.rand.Next(2) == 0
+                        ? "It's a tough world. If you wanna survive out here, you gotta know where your cobweb is."
+                        : "I would never want to go anywhere without my wonderful grappling hook.";
                 }
                 case "Harry" when Main.rand.Next(9) == 0:
                     return "I must not tell lies.";
@@ -174,13 +184,11 @@ namespace kRPG.NPCs
         {
             button = Lang.inter[28].Value;
         }
-        
+
         public override void OnChatButtonClicked(bool firstButton, ref bool shop)
         {
             if (firstButton)
-            {
                 shop = true;
-            }
         }
     }
 }

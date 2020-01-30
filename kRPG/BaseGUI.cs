@@ -29,24 +29,24 @@ namespace kRPG
         {
             PostDraw(spriteBatch, player);
 
-            foreach (InterfaceButton button in buttons)
-            {
+            foreach (var button in buttons)
                 button.Update(spriteBatch, player);
-            }
         }
 
-        public virtual void PostDraw(SpriteBatch spriteBatch, Player player) { }
+        public virtual void PostDraw(SpriteBatch spriteBatch, Player player)
+        {
+        }
 
         public InterfaceButton AddButton(Func<Rectangle> position, Action<Player> pressAction)
         {
-            InterfaceButton button = new InterfaceButton(position, pressAction);
+            var button = new InterfaceButton(position, pressAction);
             buttons.Add(button);
             return button;
         }
 
         public InterfaceButton AddButton(Func<Rectangle> position, Action<Player> pressAction, Action<Player, SpriteBatch> hoverAction)
         {
-            InterfaceButton button = new InterfaceButton(position, pressAction, hoverAction);
+            var button = new InterfaceButton(position, pressAction, hoverAction);
             buttons.Add(button);
             return button;
         }
@@ -65,7 +65,9 @@ namespace kRPG
             if (RemoveOnClose) gui_elements.Remove(this);
         }
 
-        public virtual void OnClose() { }
+        public virtual void OnClose()
+        {
+        }
 
         //public virtual void PostDraw(SpriteBatch spriteBatch, Player player) {}
     }

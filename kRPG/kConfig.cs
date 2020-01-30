@@ -16,6 +16,7 @@ namespace kRPG
 
         //Make this fancier?
         internal static Config _configLocal = new Config();
+
         public static Config configLocal
         {
             get
@@ -28,35 +29,38 @@ namespace kRPG
             }
             private set => _configLocal = value;
         }
+
         internal static Config _configServer = new Config();
+
         public static Config configServer
         {
-            get { return _configServer ?? (_configServer = new Config()); }
-            private set
-            {
-                _configServer = value;
-            }
+            get => _configServer ?? (_configServer = new Config());
+            private set => _configServer = value;
         }
-		internal static ConfigStats _stats=	new ConfigStats();
-		public static ConfigStats stats {
-			get {
-				if(_stats==null) {
-					_stats=	new ConfigStats();
-					LoadConfig(statsPath,ref _stats);
-				}
-				return _stats;
-			}
-			private set {
-				_stats=	value;
-			}
-		}
+
+        internal static ConfigStats _stats = new ConfigStats();
+
+        public static ConfigStats stats
+        {
+            get
+            {
+                if (_stats == null)
+                {
+                    _stats = new ConfigStats();
+                    LoadConfig(statsPath, ref _stats);
+                }
+
+                return _stats;
+            }
+            private set => _stats = value;
+        }
 
         public static void Initialize()
         {
             try
             {
                 configLocal = new Config();
-				stats = new ConfigStats();
+                stats = new ConfigStats();
                 Load();
             }
             catch (SystemException e)
@@ -64,6 +68,7 @@ namespace kRPG
                 ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
         }
+
         public static void Load()
         {
             try
@@ -75,23 +80,24 @@ namespace kRPG
                 if (_configLocal == null) _configLocal = new Config();
                 Save();
 
-				_stats = new ConfigStats();
-				LoadConfig(statsPath,ref _stats);
+                _stats = new ConfigStats();
+                LoadConfig(statsPath, ref _stats);
                 if (_stats == null) _stats = new ConfigStats();
-				SaveStats();
+                SaveStats();
             }
             catch (SystemException e)
             {
                 ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
         }
+
         private static void LoadConfig<T>(string path, ref T config) where T : class
         {
             try
             {
                 if (!File.Exists(path))
                     return;
-                using (StreamReader reader = new StreamReader(path))
+                using (var reader = new StreamReader(path))
                 {
                     config = JsonConvert.DeserializeObject<T>(reader.ReadToEnd());
                 }
@@ -101,6 +107,7 @@ namespace kRPG
                 ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
         }
+
         public static void Save()
         {
             try
@@ -113,25 +120,28 @@ namespace kRPG
                 ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
         }
-		public static void SaveStats()
-		{
-			Directory.CreateDirectory(Main.SavePath);
-			File.WriteAllText(statsPath,JsonConvert.SerializeObject(stats,Formatting.Indented).Replace("  ","\t"));
-		}
-        
+
+        public static void SaveStats()
+        {
+            Directory.CreateDirectory(Main.SavePath);
+            File.WriteAllText(statsPath, JsonConvert.SerializeObject(stats, Formatting.Indented).Replace("  ", "\t"));
+        }
+
         public class ClientConfig
         {
             public bool manualInventory = false;
             public bool arpgMinimap = false;
             public bool smartInventory = false;
         }
+
         public class Config
         {
             public ClientConfig clientside = new ClientConfig();
         }
-		public class ConfigStats
-		{
-			public string lastStartVersion=		"1.1.1";
-		}
+
+        public class ConfigStats
+        {
+            public string lastStartVersion = "1.1.1";
+        }
     }
 }

@@ -18,9 +18,13 @@ namespace kRPG.Projectiles
     {
         public Texture2D texture;
 
-        public virtual void Initialize() { }
+        public virtual void Initialize()
+        {
+        }
 
-        public virtual void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale) { }
+        public virtual void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
+        {
+        }
 
         public override void SetDefaults()
         {
@@ -71,13 +75,13 @@ namespace kRPG.Projectiles
         {
             if (source == null) return;
             writer.Write(projectile.owner);
-            writer.Write(source.glyphs[(byte)GLYPHTYPE.STAR].type);
-            writer.Write(source.glyphs[(byte)GLYPHTYPE.CROSS].type);
-            writer.Write(source.glyphs[(byte)GLYPHTYPE.MOON].type);
+            writer.Write(source.glyphs[(byte) GLYPHTYPE.STAR].type);
+            writer.Write(source.glyphs[(byte) GLYPHTYPE.CROSS].type);
+            writer.Write(source.glyphs[(byte) GLYPHTYPE.MOON].type);
             writer.Write(projectile.damage);
             writer.Write(minion);
             writer.Write(caster.whoAmI);
-            List<GlyphModifier> modifiers = source.modifiers;
+            var modifiers = source.modifiers;
             writer.Write(modifiers.Count);
             for (int j = 0; j < modifiers.Count; j += 1)
                 writer.Write(modifiers[j].id);
@@ -91,22 +95,23 @@ namespace kRPG.Projectiles
             int moontype = reader.ReadInt32();
             projectile.damage = reader.ReadInt32();
             bool minion_caster = reader.ReadBoolean();
-            caster = minion_caster ? (Entity)Main.projectile[reader.ReadInt32()] : (Entity)Main.player[reader.ReadInt32()];
-            List<GlyphModifier> modifiers = new List<GlyphModifier>();
+            caster = minion_caster ? (Entity) Main.projectile[reader.ReadInt32()] : (Entity) Main.player[reader.ReadInt32()];
+            var modifiers = new List<GlyphModifier>();
             int count = reader.ReadInt32();
             for (int i = 0; i < count; i += 1)
                 modifiers.Add(GlyphModifier.modifiers[reader.ReadInt32()]);
             if (source == null)
             {
                 source = new ProceduralSpell(mod);
-                source.glyphs[(byte)GLYPHTYPE.STAR].SetDefaults(startype,true);
-                source.glyphs[(byte)GLYPHTYPE.CROSS].SetDefaults(crosstype,true);
-                source.glyphs[(byte)GLYPHTYPE.MOON].SetDefaults(moontype,true);
+                source.glyphs[(byte) GLYPHTYPE.STAR].SetDefaults(startype, true);
+                source.glyphs[(byte) GLYPHTYPE.CROSS].SetDefaults(crosstype, true);
+                source.glyphs[(byte) GLYPHTYPE.MOON].SetDefaults(moontype, true);
                 source.modifierOverride = modifiers;
             }
-            foreach (Item item in source.glyphs)
+
+            foreach (var item in source.glyphs)
             {
-                Glyph glyph = (Glyph)item.modItem;
+                var glyph = (Glyph) item.modItem;
                 if (glyph.GetAIAction() != null)
                     ai.Add(glyph.GetAIAction());
                 if (glyph.GetInitAction() != null)
@@ -116,7 +121,8 @@ namespace kRPG.Projectiles
                 if (glyph.GetKillAction() != null)
                     kill.Add(glyph.GetKillAction());
             }
-            foreach (GlyphModifier modifier in modifiers)
+
+            foreach (var modifier in modifiers)
             {
                 if (modifier.impact != null)
                     impact.Add(modifier.impact);
@@ -125,19 +131,22 @@ namespace kRPG.Projectiles
                 if (modifier.init != null)
                     init.Add(modifier.init);
             }
+
             Initialize();
         }
 
         public static Action<ProceduralSpellProj> AI_RotateToVelocity = delegate(ProceduralSpellProj spell)
         {
-            spell.projectile.rotation = (float)Math.Atan2(spell.projectile.velocity.Y, spell.projectile.velocity.X) + (float)API.Tau / 8f;
+            spell.projectile.rotation = (float) Math.Atan2(spell.projectile.velocity.Y, spell.projectile.velocity.X) + (float) API.Tau / 8f;
         };
-        public static Action<ProceduralSpellProj> AI_Whirlcast = delegate (ProceduralSpellProj spell)
+
+        public static Action<ProceduralSpellProj> AI_Whirlcast = delegate(ProceduralSpellProj spell)
         {
-            Player owner = Main.player[spell.projectile.owner];
+            var owner = Main.player[spell.projectile.owner];
         };
 
         public List<Action<ProceduralSpellProj>> init = new List<Action<ProceduralSpellProj>>();
+
         public override void Initialize()
         {
             foreach (var action in init.Where(action => action != null))
@@ -150,6 +159,7 @@ namespace kRPG.Projectiles
         }
 
         public List<Action<ProceduralSpellProj, SpriteBatch, Color>> draw = new List<Action<ProceduralSpellProj, SpriteBatch, Color>>();
+
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
             foreach (var action in draw.Where(action => action != null))
@@ -159,11 +169,14 @@ namespace kRPG.Projectiles
                 Initialize();
                 return;
             }
+
             if (draw_trail)
             {
                 for (int i = 0; i < oldPositions.Count; i += 1)
-                    spriteBatch.Draw(texture, oldPositions.ElementAt(i) - Main.screenPosition + texture.Bounds.Center(), null, (lighted ? Color.White : color) * alpha * (0.04f + 0.09f * i), oldRotations.ElementAt(i), texture.Bounds.Center(), scale, projectile.spriteDirection >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
-                
+                    spriteBatch.Draw(texture, oldPositions.ElementAt(i) - Main.screenPosition + texture.Bounds.Center(), null,
+                        (lighted ? Color.White : color) * alpha * (0.04f + 0.09f * i), oldRotations.ElementAt(i), texture.Bounds.Center(), scale,
+                        projectile.spriteDirection >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+
                 oldPositions.Enqueue(position + Main.screenPosition);
                 oldRotations.Enqueue(rotation);
                 if (oldPositions.Count > 5)
@@ -172,7 +185,9 @@ namespace kRPG.Projectiles
                     oldRotations.Dequeue();
                 }
             }
-            spriteBatch.Draw(texture, position + texture.Bounds.Center(), null, (lighted ? Color.White : color)*alpha, rotation, texture.Bounds.Center(), scale, projectile.spriteDirection >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+
+            spriteBatch.Draw(texture, position + texture.Bounds.Center(), null, (lighted ? Color.White : color) * alpha, rotation, texture.Bounds.Center(),
+                scale, projectile.spriteDirection >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
         }
 
         public override void SetDefaults()
@@ -194,6 +209,7 @@ namespace kRPG.Projectiles
         }
 
         public List<Action<ProceduralSpellProj>> kill = new List<Action<ProceduralSpellProj>>();
+
         public override void Kill(int timeLeft)
         {
             foreach (var action in kill.Where(action => action != null))
@@ -208,6 +224,7 @@ namespace kRPG.Projectiles
         }
 
         public List<Action<ProceduralSpellProj, NPC, int>> impact = new List<Action<ProceduralSpellProj, NPC, int>>();
+
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             foreach (var action in impact.Where(action => action != null))
@@ -215,6 +232,7 @@ namespace kRPG.Projectiles
         }
 
         public List<Action<ProceduralSpellProj>> ai = new List<Action<ProceduralSpellProj>>(); // <=== Look here:
+
         public override void AI()
         {
             if (alpha < 1f) alpha += 0.02f;
@@ -241,15 +259,15 @@ namespace kRPG.Projectiles
 
         public override ModProjectile Clone()
         {
-            ProceduralSpellProj copy = (ProceduralSpellProj)MemberwiseClone();
+            var copy = (ProceduralSpellProj) MemberwiseClone();
             copy.ai = new List<Action<ProceduralSpellProj>>();
-            foreach (Action<ProceduralSpellProj> action in ai) copy.ai.Add(action);
+            foreach (var action in ai) copy.ai.Add(action);
             copy.impact = new List<Action<ProceduralSpellProj, NPC, int>>();
-            foreach (Action<ProceduralSpellProj, NPC, int> action in impact) copy.impact.Add(action);
+            foreach (var action in impact) copy.impact.Add(action);
             copy.init = new List<Action<ProceduralSpellProj>>();
-            foreach (Action<ProceduralSpellProj> action in init) copy.init.Add(action);
+            foreach (var action in init) copy.init.Add(action);
             copy.kill = new List<Action<ProceduralSpellProj>>();
-            foreach (Action<ProceduralSpellProj> action in kill) copy.kill.Add(action);
+            foreach (var action in kill) copy.kill.Add(action);
             return copy;
         }
     }
@@ -270,10 +288,10 @@ namespace kRPG.Projectiles
         {
             DisplayName.SetDefault("Procedurally Generated Minion; Please Ignore");
         }
-        
+
         public override void Kill(int timeLeft)
         {
-            foreach (ProceduralSpellProj spell in circlingProtection)
+            foreach (var spell in circlingProtection)
                 spell.projectile.Kill();
             circlingProtection.Clear();
             smallProt?.projectile.Kill();
@@ -286,7 +304,7 @@ namespace kRPG.Projectiles
 
         public override void PostAI()
         {
-            foreach (Action<ProceduralMinion> modifier in glyphModifiers)
+            foreach (var modifier in glyphModifiers)
                 modifier(this);
         }
 
@@ -294,9 +312,9 @@ namespace kRPG.Projectiles
         {
             attack = false;
             target = Main.npc.First<NPC>();
-            Player player = Main.player[projectile.owner];
+            var player = Main.player[projectile.owner];
             distance = Vector2.Distance(projectile.Center, target.Center);
-            foreach (NPC npc in Main.npc)
+            foreach (var npc in Main.npc)
             {
                 float f = Vector2.Distance(projectile.Center, npc.Center);
                 if (!(f < distance) || !npc.active || npc.life <= 0 || npc.friendly || npc.damage <= 0)
@@ -317,7 +335,7 @@ namespace kRPG.Projectiles
         public override void AI()
         {
             if (Main.netMode == 2) return;
-            bool self = source.glyphs[(byte)GLYPHTYPE.MOON].modItem is Moon_Green;
+            bool self = source.glyphs[(byte) GLYPHTYPE.MOON].modItem is Moon_Green;
             if ((!self || circlingProtection.Count(spell => spell.projectile.active) <= source.projCount - 3) && cooldown <= 0)
             {
                 if (!self)
@@ -327,11 +345,17 @@ namespace kRPG.Projectiles
                         if (this is ProceduralMinion)
                             source.CastSpell(Main.player[projectile.owner], projectile.Center, target.Center, projectile);
                 }
-                else if (this is ProceduralMinion) source.CastSpell(Main.player[projectile.owner], projectile.Center, projectile.Center, projectile);
+                else if (this is ProceduralMinion)
+                {
+                    source.CastSpell(Main.player[projectile.owner], projectile.Center, projectile.Center, projectile);
+                }
 
                 cooldown = source.cooldown * 2;
             }
-            else cooldown -= 1;
+            else
+            {
+                cooldown -= 1;
+            }
         }
     }
 
@@ -352,7 +376,7 @@ namespace kRPG.Projectiles
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            Texture2D t = Main.projectileTexture[ModContent.ProjectileType<Obelisk>()];
+            var t = Main.projectileTexture[ModContent.ProjectileType<Obelisk>()];
             spriteBatch.Draw(t, position + t.Bounds.Center(), null, Color.White, rotation, t.Bounds.Center(), scale, SpriteEffects.None, 0f);
         }
     }
@@ -378,88 +402,75 @@ namespace kRPG.Projectiles
         public override void AI()
         {
             base.AI();
-            Player player = Main.player[projectile.owner];
+            var player = Main.player[projectile.owner];
 
             float acceleration = 0.4f;
             projectile.tileCollide = false;
-            Vector2 v = player.Center - projectile.Center;
+            var v = player.Center - projectile.Center;
             v.X += Main.rand.Next(-10, 21);
             v.X += Main.rand.Next(-10, 21);
             v.X += 60f * -player.direction;
             v.Y -= 60f;
-            float someDist = (float)Math.Sqrt(v.X * v.X + v.Y * v.Y);
+            float someDist = (float) Math.Sqrt(v.X * v.X + v.Y * v.Y);
             float num22 = 14f;
 
-            if (someDist < 100 && Math.Abs(player.velocity.Y) < .01 && projectile.Bottom.Y <= player.Bottom.Y && !Collision.SolidCollision(projectile.position, projectile.width, projectile.height))
+            if (someDist < 100 && Math.Abs(player.velocity.Y) < .01 && projectile.Bottom.Y <= player.Bottom.Y &&
+                !Collision.SolidCollision(projectile.position, projectile.width, projectile.height))
             {
                 projectile.ai[0] = 0f;
                 if (projectile.velocity.Y < -6f)
-                {
                     projectile.velocity.Y = -6f;
-                }
             }
+
             if (someDist < 50f)
             {
                 if (Math.Abs(projectile.velocity.X) > 2f || Math.Abs(projectile.velocity.Y) > 2f)
-                {
                     projectile.velocity *= 0.99f;
-                }
                 acceleration = 0.01f;
             }
             else
             {
                 if (someDist < 100f)
-                {
                     acceleration = 0.1f;
-                }
                 if (someDist > 300f)
-                {
                     acceleration = 0.6f;
-                }
                 someDist = num22 / someDist;
                 v.X *= someDist;
                 v.Y *= someDist;
             }
+
             if (projectile.velocity.X < v.X)
             {
                 projectile.velocity.X = projectile.velocity.X + acceleration;
                 if (acceleration > 0.05f && projectile.velocity.X < 0f)
-                {
                     projectile.velocity.X = projectile.velocity.X + acceleration;
-                }
             }
+
             if (projectile.velocity.X > v.X)
             {
                 projectile.velocity.X = projectile.velocity.X - acceleration;
                 if (acceleration > 0.05f && projectile.velocity.X > 0f)
-                {
                     projectile.velocity.X = projectile.velocity.X - acceleration;
-                }
             }
+
             if (projectile.velocity.Y < v.Y)
             {
                 projectile.velocity.Y = projectile.velocity.Y + acceleration;
                 if (acceleration > 0.05f && projectile.velocity.Y < 0f)
-                {
                     projectile.velocity.Y = projectile.velocity.Y + acceleration * 2f;
-                }
             }
+
             if (projectile.velocity.Y > v.Y)
             {
                 projectile.velocity.Y = projectile.velocity.Y - acceleration;
                 if (acceleration > 0.05f && projectile.velocity.Y > 0f)
-                {
                     projectile.velocity.Y = projectile.velocity.Y - acceleration * 2f;
-                }
             }
+
             if (projectile.velocity.X > 0.25)
-            {
                 projectile.direction = -1;
-            }
             else if (projectile.velocity.X < -0.25)
-            {
                 projectile.direction = 1;
-            }
             projectile.spriteDirection = projectile.direction;
             projectile.rotation = projectile.velocity.X * 0.05f;
             int num9 = projectile.frameCounter;
@@ -479,8 +490,9 @@ namespace kRPG.Projectiles
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            Texture2D t = Main.projectileTexture[ModContent.ProjectileType<WingedEyeball>()];
-            spriteBatch.Draw(t, position + t.Bounds.Center(), new Rectangle(0, projectile.frame * 40, 90, 40), color, rotation, t.Bounds.Center(), scale, projectile.spriteDirection < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            var t = Main.projectileTexture[ModContent.ProjectileType<WingedEyeball>()];
+            spriteBatch.Draw(t, position + t.Bounds.Center(), new Rectangle(0, projectile.frame * 40, 90, 40), color, rotation, t.Bounds.Center(), scale,
+                projectile.spriteDirection < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
         }
     }
 
@@ -567,36 +579,39 @@ namespace kRPG.Projectiles
 
         public override void Initialize()
         {
-            this.texture = GFX.CombineTextures(new List<Texture2D>(){
-                { blade.texture },
-                { hilt.spearTexture },
-                { accent.texture }
-            }, new List<Point>(){
-                { new Point(CombinedTextureSize().X - blade.texture.Width, 0) },
-                { new Point(0, CombinedTextureSize().Y - hilt.spearTexture.Height) },
-                { new Point((int)hilt.spearOrigin.X - (int)accent.origin.X, CombinedTextureSize().Y - hilt.spearTexture.Height + (int)hilt.spearOrigin.Y - (int)accent.origin.Y) }
-            }, CombinedTextureSize());
+            texture = GFX.CombineTextures(new List<Texture2D>() {{blade.texture}, {hilt.spearTexture}, {accent.texture}},
+                new List<Point>()
+                {
+                    {new Point(CombinedTextureSize().X - blade.texture.Width, 0)},
+                    {new Point(0, CombinedTextureSize().Y - hilt.spearTexture.Height)},
+                    {
+                        new Point((int) hilt.spearOrigin.X - (int) accent.origin.X,
+                            CombinedTextureSize().Y - hilt.spearTexture.Height + (int) hilt.spearOrigin.Y - (int) accent.origin.Y)
+                    }
+                }, CombinedTextureSize());
             projectile.width = texture.Width;
             projectile.height = texture.Height;
         }
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
-            Player owner = Main.player[projectile.owner];
-            hitbox = new Rectangle((int)projectile.position.X-2, (int)projectile.position.Y-2, (int)(projectile.Right.X - projectile.Left.X)+2, (int)(projectile.Bottom.Y - projectile.Top.Y+2));
+            var owner = Main.player[projectile.owner];
+            hitbox = new Rectangle((int) projectile.position.X - 2, (int) projectile.position.Y - 2, (int) (projectile.Right.X - projectile.Left.X) + 2,
+                (int) (projectile.Bottom.Y - projectile.Top.Y + 2));
             if (owner.direction < 0) hitbox.X += hitbox.Width / 2;
             else hitbox.X -= hitbox.Width / 2;
         }
 
         public override bool? CanHitNPC(NPC target)
         {
-            Player owner = Main.player[projectile.owner];
+            var owner = Main.player[projectile.owner];
             return (target.position.X - owner.position.X) * owner.direction > -1f ? base.CanHitNPC(target) : false;
         }
 
         public Point CombinedTextureSize()
         {
-            return new Point(blade.texture.Width - (int)blade.origin.X + (int)hilt.spearOrigin.X, (int)blade.origin.Y + hilt.spearTexture.Height - (int)hilt.spearOrigin.Y);
+            return new Point(blade.texture.Width - (int) blade.origin.X + (int) hilt.spearOrigin.X,
+                (int) blade.origin.Y + hilt.spearTexture.Height - (int) hilt.spearOrigin.Y);
         }
 
         //public override void SendExtraAI(BinaryWriter writer)
@@ -625,12 +640,16 @@ namespace kRPG.Projectiles
             switch (Main.netMode)
             {
                 case 0:
-                    spriteBatch.Draw(texture, position + texture.Size() / 2f, null, blade.lighted ? Color.White : color, rotation, projectile.spriteDirection > 0 ? texture.Bounds.TopRight() : Vector2.Zero, scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+                    spriteBatch.Draw(texture, position + texture.Size() / 2f, null, blade.lighted ? Color.White : color, rotation,
+                        projectile.spriteDirection > 0 ? texture.Bounds.TopRight() : Vector2.Zero, scale,
+                        projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
                     break;
                 case 1:
                 {
-                    Texture2D t2d = Main.projectileTexture[projectile.type];
-                    spriteBatch.Draw(t2d, position + t2d.Size() / 2f, null, color, rotation, projectile.spriteDirection > 0 ? t2d.Bounds.TopRight() : Vector2.Zero, scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+                    var t2d = Main.projectileTexture[projectile.type];
+                    spriteBatch.Draw(t2d, position + t2d.Size() / 2f, null, color, rotation,
+                        projectile.spriteDirection > 0 ? t2d.Bounds.TopRight() : Vector2.Zero, scale,
+                        projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
                     break;
                 }
             }
@@ -639,7 +658,7 @@ namespace kRPG.Projectiles
         public override void SetDefaults()
         {
             try
-            { 
+            {
                 projectile.width = 40;
                 projectile.height = 40;
                 projectile.scale = 1f;
@@ -666,8 +685,8 @@ namespace kRPG.Projectiles
         {
             try
             {
-                Player owner = Main.player[projectile.owner];
-                accent.onHit?.Invoke(owner, target, (ProceduralSword)owner.inventory[owner.selectedItem].modItem, damage, crit);
+                var owner = Main.player[projectile.owner];
+                accent.onHit?.Invoke(owner, target, (ProceduralSword) owner.inventory[owner.selectedItem].modItem, damage, crit);
             }
             catch (SystemException e)
             {
@@ -689,7 +708,7 @@ namespace kRPG.Projectiles
             {
                 // Since we access the owner player instance so much, it's useful to create a helper local variable for this
                 // Sadly, Projectile/ModProjectile does not have its own
-                Player projOwner = Main.player[projectile.owner];
+                var projOwner = Main.player[projectile.owner];
                 // Here we set some of the projectile's owner properties, such as held item and itemtime, along with projectile directio and position based on the player
                 //Vector2 ownerMountedCenter = projOwner.RotatedRelativePoint(projOwner.MountedCenter, true);
 
@@ -702,8 +721,8 @@ namespace kRPG.Projectiles
                 projectile.spriteDirection = projectile.direction;
                 projOwner.heldProj = projectile.whoAmI;
                 projOwner.itemTime = projOwner.itemAnimation;
-                projectile.position.X = projOwner.Center.X - (float)(texture.Width / 2)/* + 2f*projOwner.direction*/;
-                projectile.position.Y = projOwner.Center.Y - (float)(texture.Height / 2)/* + 4f*/;
+                projectile.position.X = projOwner.Center.X - (float) (texture.Width / 2) /* + 2f*projOwner.direction*/;
+                projectile.position.Y = projOwner.Center.Y - (float) (texture.Height / 2) /* + 4f*/;
                 // As long as the player isn't frozen, the spear can move
                 if (!projOwner.frozen)
                 {
@@ -712,35 +731,28 @@ namespace kRPG.Projectiles
                         movementFactor = 3f;
                         projectile.netUpdate = true;
                     }
+
                     if (projOwner.itemAnimation < projOwner.itemAnimationMax / 3)
-                    {
                         movementFactor -= 2.4f;
-                    }
                     else
-                    {
                         movementFactor += 2.1f;
-                    }
                 }
 
                 projectile.position += projectile.velocity * movementFactor;
-                Vector2 unitVelocity = projectile.velocity;
+                var unitVelocity = projectile.velocity;
                 unitVelocity.Normalize();
                 projectile.position += unitVelocity * (blade.origin.Y * 2.8f + 8f);
 
                 if (projOwner.itemAnimation == 1)
-                {
                     projectile.Kill();
-                }
                 // Apply proper rotation, with an offset of 135 degrees due to the sprite's rotation, notice the usage of MathHelper, use this class!
                 // MathHelper.ToRadians(xx degrees here)
-                projectile.rotation = (float)Math.Atan2((double)projectile.velocity.Y, (double)projectile.velocity.X) + MathHelper.ToRadians(45f);
+                projectile.rotation = (float) Math.Atan2((double) projectile.velocity.Y, (double) projectile.velocity.X) + MathHelper.ToRadians(45f);
                 // Offset by 90 degrees here
                 if (projectile.spriteDirection == -1)
-                {
                     projectile.rotation += MathHelper.ToRadians(90f);
-                }
 
-                Rectangle rect = new Rectangle((int)projectile.position.X, (int)projectile.position.Y, texture.Width, texture.Height);
+                var rect = new Rectangle((int) projectile.position.X, (int) projectile.position.Y, texture.Width, texture.Height);
                 blade.effect?.Invoke(rect, projOwner);
                 accent.effect?.Invoke(rect, projOwner);
             }
