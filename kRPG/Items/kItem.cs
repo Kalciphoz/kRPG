@@ -1,16 +1,15 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using kRPG.Buffs;
+using kRPG.Items.Weapons;
+using kRPG.Items.Weapons.RangedDrops;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using System;
-using System.Collections.Generic;
-using kRPG.Items.Weapons;
-using Terraria.ID;
-using Terraria.Utilities;
-using kRPG.Buffs;
-using kRPG.Items.Weapons.RangedDrops;
 
 namespace kRPG.Items
 {

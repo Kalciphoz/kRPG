@@ -1,12 +1,9 @@
-﻿using kRPG.GUI;
+﻿using System;
+using System.Collections.Generic;
+using kRPG.GUI;
 using kRPG.Items;
 using kRPG.Items.Glyphs;
 using kRPG.Projectiles;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria;
 using Terraria.ModLoader;
 

@@ -1,193 +1,355 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\references\tModLoader.targets" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EEA5C16A-3B9A-499D-A5EB-0E21EE9938F7}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>kRPG</RootNamespace>
     <AssemblyName>kRPG</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TargetFramework>net45</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
+  <Target Name="BuildMod" AfterTargets="Build">
+    <Exec Command="&quot;$(tMLBuildServerPath)&quot; -build $(ProjectDir) -eac $(TargetPath) -define $(DefineConstants) -unsafe $(AllowUnsafeBlocks)" />
+  </Target>
   <ItemGroup>
-    <Reference Include="Ionic.Zip.Reduced, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\references\Ionic.Zip.Reduced.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\references\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553" />
-    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework.Graphics\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Graphics.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil, Version=0.11.1.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\references\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb, Version=0.11.1.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\references\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Version=0.11.1.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\references\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoMod.RuntimeDetour, Version=19.12.19.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\references\MonoMod.RuntimeDetour.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoMod.Utils, Version=19.12.19.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\references\MonoMod.Utils.dll</HintPath>
-    </Reference>
-    <Reference Include="MP3Sharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\references\MP3Sharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="ReLogic">
-      <HintPath>..\..\..\..\..\..\Downloads\ReLogic.dll</HintPath>
-    </Reference>
-    <Reference Include="Steamworks.NET, Version=9.1.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\references\Steamworks.NET.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.ValueTuple, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\references\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="TerrariaHooks, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\references\TerrariaHooks.dll</HintPath>
-    </Reference>
-    <Reference Include="tModLoaderServer, Version=1.3.5.1, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>F:\terraria - Mod\terraria - Mod\tModLoaderServer.exe</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="API.cs" />
-    <Compile Include="BaseGUI.cs" />
-    <Compile Include="Buffs\ManaCooldown.cs" />
-    <Compile Include="Buffs\Physical.cs" />
-    <Compile Include="Buffs\Shadow.cs" />
-    <Compile Include="Buffs\Lightning.cs" />
-    <Compile Include="Buffs\Cold.cs" />
-    <Compile Include="Buffs\Fire.cs" />
-    <Compile Include="Commands\LevelCommand.cs" />
-    <Compile Include="Commands\UpgradeCommand.cs" />
-    <Compile Include="Commands\RitualsCommand.cs" />
-    <Compile Include="Dusts\Ice.cs" />
-    <Compile Include="GFX.cs" />
-    <Compile Include="GUI\AbilitiesGUI.cs" />
-    <Compile Include="GUI\AnvilGUI.cs" />
-    <Compile Include="GUI\InventoryGUI.cs" />
-    <Compile Include="GUI\LevelGUI.cs" />
-    <Compile Include="GUI\SpellcraftingGUI.cs" />
-    <Compile Include="GUI\StatusBar.cs" />
-    <Compile Include="InterfaceButton.cs" />
-    <Compile Include="Items\Glyphs\Glyph.cs" />
-    <Compile Include="Items\Glyphs\GlyphModifier.cs" />
-    <Compile Include="Items\ProceduralItem.cs" />
-    <Compile Include="Items\ScintillatingBloodLacrima.cs" />
-    <Compile Include="Items\Weapons\RangedDrops\RangedWeapon.cs" />
-    <Compile Include="Items\Weapons\Staff.cs" />
-    <Compile Include="Items\Weapons\StaffGem.cs" />
-    <Compile Include="Items\Weapons\StaffOrnament.cs" />
-    <Compile Include="Items\Weapons\StaffPart.cs" />
-    <Compile Include="Items\Weapons\SwordAccent.cs" />
-    <Compile Include="Items\BlacksmithCrown.cs" />
-    <Compile Include="Items\Weapons\Arbalest.cs" />
-    <Compile Include="Items\Weapons\EyeOnAStick.cs" />
-    <Compile Include="Items\kItem.cs" />
-    <Compile Include="Items\PermanenceCrown.cs" />
-    <Compile Include="Items\Weapons\Scythe.cs" />
-    <Compile Include="Items\Weapons\SwordBlade.cs" />
-    <Compile Include="Items\Weapons\SwordHilt.cs" />
-    <Compile Include="kConfig.cs" />
-    <Compile Include="kNPC.cs" />
-    <Compile Include="kProjectile.cs" />
-    <Compile Include="kRPG.cs" />
-    <Compile Include="kTile.cs" />
-    <Compile Include="Modifiers\DamageModifier.cs" />
-    <Compile Include="Modifiers\ElusiveModifier.cs" />
-    <Compile Include="Modifiers\ExplosiveModifier.cs" />
-    <Compile Include="Modifiers\LifeRegenModifier.cs" />
-    <Compile Include="Modifiers\NPCModifier.cs" />
-    <Compile Include="Modifiers\SageModifier.cs" />
-    <Compile Include="Modifiers\SizeModifier.cs" />
-    <Compile Include="Modifiers\SpeedModifier.cs" />
-    <Compile Include="NPCs\RetiredAdventurer.cs" />
-    <Compile Include="PlayerCharacter.cs" />
-    <Compile Include="ProceduralSpell.cs" />
-    <Compile Include="Projectiles\ChainHook.cs" />
-    <Compile Include="Projectiles\ProceduralProjectile.cs" />
-    <Compile Include="Projectiles\Explosion.cs" />
-    <Compile Include="Projectiles\SmokePellets.cs" />
-    <Compile Include="StatFlame.cs" />
-    <Compile Include="Trail.cs" />
+    <None Remove="Buffs\Cold.png" />
+    <None Remove="Buffs\Fire.png" />
+    <None Remove="Buffs\Lightning.png" />
+    <None Remove="Buffs\ManaCooldown.png" />
+    <None Remove="Buffs\Physical.png" />
+    <None Remove="Buffs\Shadow.png" />
+    <None Remove="GFX\GUI\Anvil.png" />
+    <None Remove="GFX\GUI\Button_Accept.png" />
+    <None Remove="GFX\GUI\Button_Cancel.png" />
+    <None Remove="GFX\GUI\Button_Close.png" />
+    <None Remove="GFX\GUI\Button_Confirm.png" />
+    <None Remove="GFX\GUI\Button_Crown.png" />
+    <None Remove="GFX\GUI\Button_Crown_Pressed.png" />
+    <None Remove="GFX\GUI\Button_Page1.png" />
+    <None Remove="GFX\GUI\Button_Page1_Pressed.png" />
+    <None Remove="GFX\GUI\Button_Page2.png" />
+    <None Remove="GFX\GUI\Button_Page2_Pressed.png" />
+    <None Remove="GFX\GUI\Button_Page3.png" />
+    <None Remove="GFX\GUI\Button_Page3_Pressed.png" />
+    <None Remove="GFX\GUI\Button_Refuse.png" />
+    <None Remove="GFX\GUI\Button_Stats.png" />
+    <None Remove="GFX\GUI\Button_Stats_Pressed.png" />
+    <None Remove="GFX\GUI\Button_Upgrade.png" />
+    <None Remove="GFX\GUI\CharacterFrame.png" />
+    <None Remove="GFX\GUI\CharacterFrame_Bars.png" />
+    <None Remove="GFX\GUI\CharacterFrame_Bars_Background.png" />
+    <None Remove="GFX\GUI\CharacterFrame_Bubbles.png" />
+    <None Remove="GFX\GUI\CharacterFrame_Bubbles_Lava.png" />
+    <None Remove="GFX\GUI\Char\Gothic_A.png" />
+    <None Remove="GFX\GUI\Char\Gothic_B.png" />
+    <None Remove="GFX\GUI\Char\Gothic_C.png" />
+    <None Remove="GFX\GUI\Char\Gothic_D.png" />
+    <None Remove="GFX\GUI\Char\Gothic_E.png" />
+    <None Remove="GFX\GUI\Char\Gothic_F.png" />
+    <None Remove="GFX\GUI\Char\Gothic_G.png" />
+    <None Remove="GFX\GUI\Char\Gothic_H.png" />
+    <None Remove="GFX\GUI\Char\Gothic_I.png" />
+    <None Remove="GFX\GUI\Char\Gothic_J.png" />
+    <None Remove="GFX\GUI\Char\Gothic_K.png" />
+    <None Remove="GFX\GUI\Char\Gothic_L.png" />
+    <None Remove="GFX\GUI\Char\Gothic_M.png" />
+    <None Remove="GFX\GUI\Char\Gothic_N.png" />
+    <None Remove="GFX\GUI\Char\Gothic_O.png" />
+    <None Remove="GFX\GUI\Char\Gothic_P.png" />
+    <None Remove="GFX\GUI\Char\Gothic_Q.png" />
+    <None Remove="GFX\GUI\Char\Gothic_R.png" />
+    <None Remove="GFX\GUI\Char\Gothic_S.png" />
+    <None Remove="GFX\GUI\Char\Gothic_T.png" />
+    <None Remove="GFX\GUI\Char\Gothic_U.png" />
+    <None Remove="GFX\GUI\Char\Gothic_V.png" />
+    <None Remove="GFX\GUI\Char\Gothic_W.png" />
+    <None Remove="GFX\GUI\Char\Gothic_X.png" />
+    <None Remove="GFX\GUI\Char\Gothic_Y.png" />
+    <None Remove="GFX\GUI\Char\Gothic_Z.png" />
+    <None Remove="GFX\GUI\Craft.png" />
+    <None Remove="GFX\GUI\DeerSkull.png" />
+    <None Remove="GFX\GUI\DeerSkull_Eyes_Potency.png" />
+    <None Remove="GFX\GUI\DeerSkull_Eyes_Quickness.png" />
+    <None Remove="GFX\GUI\DeerSkull_Eyes_Resilience.png" />
+    <None Remove="GFX\GUI\FavouritedSlot.png" />
+    <None Remove="GFX\GUI\Flames_Converted.png" />
+    <None Remove="GFX\GUI\Flames_Potency.png" />
+    <None Remove="GFX\GUI\Flames_Quickness.png" />
+    <None Remove="GFX\GUI\Flames_Resilience.png" />
+    <None Remove="GFX\GUI\GuardianCrown.png" />
+    <None Remove="GFX\GUI\Inventory_BarCovers.png" />
+    <None Remove="GFX\GUI\Inventory_Frame.png" />
+    <None Remove="GFX\GUI\Inventory_Life.png" />
+    <None Remove="GFX\GUI\Inventory_Mana.png" />
+    <None Remove="GFX\GUI\Inventory_Panel.png" />
+    <None Remove="GFX\GUI\Inventory_Points.png" />
+    <None Remove="GFX\GUI\Inventory_Separator.png" />
+    <None Remove="GFX\GUI\Inventory_XP.png" />
+    <None Remove="GFX\GUI\ItemSlot.png" />
+    <None Remove="GFX\GUI\ItemSlot_Broken.png" />
+    <None Remove="GFX\GUI\Num\Gothic_0.png" />
+    <None Remove="GFX\GUI\Num\Gothic_1.png" />
+    <None Remove="GFX\GUI\Num\Gothic_2.png" />
+    <None Remove="GFX\GUI\Num\Gothic_3.png" />
+    <None Remove="GFX\GUI\Num\Gothic_4.png" />
+    <None Remove="GFX\GUI\Num\Gothic_5.png" />
+    <None Remove="GFX\GUI\Num\Gothic_6.png" />
+    <None Remove="GFX\GUI\Num\Gothic_7.png" />
+    <None Remove="GFX\GUI\Num\Gothic_8.png" />
+    <None Remove="GFX\GUI\Num\Gothic_9.png" />
+    <None Remove="GFX\GUI\SelectedSkillSlot.png" />
+    <None Remove="GFX\GUI\SelectedSlot.png" />
+    <None Remove="GFX\GUI\SkillSlot.png" />
+    <None Remove="GFX\GUI\SkillSlot_alt.png" />
+    <None Remove="GFX\GUI\SpellGUI.png" />
+    <None Remove="GFX\GUI\UnspentPoints.png" />
+    <None Remove="GFX\Items\Accents\Flame.png" />
+    <None Remove="GFX\Items\Accents\GemBlue.png" />
+    <None Remove="GFX\Items\Accents\GemGreen.png" />
+    <None Remove="GFX\Items\Accents\GemPurple.png" />
+    <None Remove="GFX\Items\Accents\GemRed.png" />
+    <None Remove="GFX\Items\Blades\BlazeSword.png" />
+    <None Remove="GFX\Items\Blades\BlueSlimeBlade.png" />
+    <None Remove="GFX\Items\Blades\BoneBroadsword.png" />
+    <None Remove="GFX\Items\Blades\BrutishDagger.png" />
+    <None Remove="GFX\Items\Blades\Chokuto.png" />
+    <None Remove="GFX\Items\Blades\ClaymoreBlade.png" />
+    <None Remove="GFX\Items\Blades\ClockSword.png" />
+    <None Remove="GFX\Items\Blades\CrescentSword.png" />
+    <None Remove="GFX\Items\Blades\ElementalNeedle.png" />
+    <None Remove="GFX\Items\Blades\ExecutionerBlade.png" />
+    <None Remove="GFX\Items\Blades\EyeMallet.png" />
+    <None Remove="GFX\Items\Blades\EyeSword.png" />
+    <None Remove="GFX\Items\Blades\FieldGlaive.png" />
+    <None Remove="GFX\Items\Blades\FieryBroadsword.png" />
+    <None Remove="GFX\Items\Blades\FieryGreatsword.png" />
+    <None Remove="GFX\Items\Blades\GrassBreaker.png" />
+    <None Remove="GFX\Items\Blades\GreenSlimeBlade.png" />
+    <None Remove="GFX\Items\Blades\HellstoneBroadsword.png" />
+    <None Remove="GFX\Items\Blades\LazerCutter.png" />
+    <None Remove="GFX\Items\Blades\ObsidianGreatsword.png" />
+    <None Remove="GFX\Items\Blades\ObsidianMaul.png" />
+    <None Remove="GFX\Items\Blades\PhaseSword.png" />
+    <None Remove="GFX\Items\Blades\RunicDaiKatana.png" />
+    <None Remove="GFX\Items\Blades\Scimitar.png" />
+    <None Remove="GFX\Items\Blades\SilverBroadsword.png" />
+    <None Remove="GFX\Items\Blades\SlumTwirl.png" />
+    <None Remove="GFX\Items\Blades\StoneSword.png" />
+    <None Remove="GFX\Items\Blades\VileBroadsword.png" />
+    <None Remove="GFX\Items\Blades\VioletRunicSword.png" />
+    <None Remove="GFX\Items\Blades\WizardSword.png" />
+    <None Remove="GFX\Items\Gemstones\Amber.png" />
+    <None Remove="GFX\Items\Gemstones\BrightAmethyst.png" />
+    <None Remove="GFX\Items\Gemstones\DarkAmethyst.png" />
+    <None Remove="GFX\Items\Gemstones\DarkCrystal.png" />
+    <None Remove="GFX\Items\Gemstones\Diamond.png" />
+    <None Remove="GFX\Items\Gemstones\Emerald.png" />
+    <None Remove="GFX\Items\Gemstones\FireCrystal.png" />
+    <None Remove="GFX\Items\Gemstones\FireOrb.png" />
+    <None Remove="GFX\Items\Gemstones\GreenCrystal.png" />
+    <None Remove="GFX\Items\Gemstones\LargeAmber.png" />
+    <None Remove="GFX\Items\Gemstones\Ruby.png" />
+    <None Remove="GFX\Items\Gemstones\Sapphire.png" />
+    <None Remove="GFX\Items\Gemstones\Shatter.png" />
+    <None Remove="GFX\Items\Ornaments\ArcaneCage.png" />
+    <None Remove="GFX\Items\Ornaments\ArcaneSpider.png" />
+    <None Remove="GFX\Items\Ornaments\Bow.png" />
+    <None Remove="GFX\Items\Ornaments\Demonic.png" />
+    <None Remove="GFX\Items\Ornaments\Explosive.png" />
+    <None Remove="GFX\Items\Ornaments\Loop.png" />
+    <None Remove="GFX\Items\Ornaments\Twig.png" />
+    <None Remove="GFX\Items\Staves\Arcane.png" />
+    <None Remove="GFX\Items\Staves\Bone.png" />
+    <None Remove="GFX\Items\Staves\Branch.png" />
+    <None Remove="GFX\Items\Staves\Carved.png" />
+    <None Remove="GFX\Items\Staves\Gilded.png" />
+    <None Remove="GFX\Items\Staves\Hellstone.png" />
+    <None Remove="GFX\Items\Staves\Ivy.png" />
+    <None Remove="GFX\Items\Swordhilts\ArcaneMount.png" />
+    <None Remove="GFX\Items\Swordhilts\BoneCrest.png" />
+    <None Remove="GFX\Items\Swordhilts\BoneHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\BoneMount.png" />
+    <None Remove="GFX\Items\Swordhilts\CarbonHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\CeremonialHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\CeremonialMount.png" />
+    <None Remove="GFX\Items\Swordhilts\ChlorophyteMount.png" />
+    <None Remove="GFX\Items\Swordhilts\ClockHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\CopperCrossHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\CrownOfEyesHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\DemonEyeHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\DemoniteBatHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\EyesHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\GoldenKatanaHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\GoldenRunicKatanaHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\HellstoneBasketHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\HellstoneCrossHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\HellstoneMount.png" />
+    <None Remove="GFX\Items\Swordhilts\IronBasketHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\KatanaHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\LeadHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\OminousHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\PurpleRunicCrossHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\StickHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\ThornHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\TorchHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\VioletRunicCrossHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\VioletRunicKatanaHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\WoodenHilt.png" />
+    <None Remove="GFX\Items\Swordhilts\WoodenMount.png" />
+    <None Remove="GFX\LevelUP.png" />
+    <None Remove="GFX\Projectiles\Boulder.png" />
+    <None Remove="GFX\Projectiles\Fireball.png" />
+    <None Remove="GFX\Projectiles\Frostbolt.png" />
+    <None Remove="GFX\Projectiles\Heart.png" />
+    <None Remove="GFX\Projectiles\Shadowbolt.png" />
+    <None Remove="GFX\Projectiles\SpearMounts\ArcaneMount.png" />
+    <None Remove="GFX\Projectiles\SpearMounts\BoneMount.png" />
+    <None Remove="GFX\Projectiles\SpearMounts\CeremonialMount.png" />
+    <None Remove="GFX\Projectiles\SpearMounts\ChlorophyteMount.png" />
+    <None Remove="GFX\Projectiles\SpearMounts\HellstoneMount.png" />
+    <None Remove="GFX\Projectiles\SpearMounts\WoodenMount.png" />
+    <None Remove="GFX\Projectiles\Star.png" />
+    <None Remove="GFX\Projectiles\ThornChain.png" />
+    <None Remove="GFX\Projectiles\Thunderbolt.png" />
+    <None Remove="icon.png" />
+    <None Remove="Items\BlacksmithCrown.png" />
+    <None Remove="Items\Dusts\Ice.png" />
+    <None Remove="Items\Dusts\Smoke.png" />
+    <None Remove="Items\Glyphs\Bow_Red.png" />
+    <None Remove="Items\Glyphs\Cross.png" />
+    <None Remove="Items\Glyphs\Cross_Blue.png" />
+    <None Remove="Items\Glyphs\Cross_Green.png" />
+    <None Remove="Items\Glyphs\Cross_Orange.png" />
+    <None Remove="Items\Glyphs\Cross_Purple.png" />
+    <None Remove="Items\Glyphs\Cross_Red.png" />
+    <None Remove="Items\Glyphs\Cross_Violet.png" />
+    <None Remove="Items\Glyphs\Cross_Yellow.png" />
+    <None Remove="Items\Glyphs\Glyph.png" />
+    <None Remove="Items\Glyphs\Moon.png" />
+    <None Remove="Items\Glyphs\Moon_Blue.png" />
+    <None Remove="Items\Glyphs\Moon_Green.png" />
+    <None Remove="Items\Glyphs\Moon_Purple.png" />
+    <None Remove="Items\Glyphs\Moon_Red.png" />
+    <None Remove="Items\Glyphs\Moon_Violet.png" />
+    <None Remove="Items\Glyphs\Moon_Yellow.png" />
+    <None Remove="Items\Glyphs\Star.png" />
+    <None Remove="Items\Glyphs\Star_Blue.png" />
+    <None Remove="Items\Glyphs\Star_Green.png" />
+    <None Remove="Items\Glyphs\Star_Orange.png" />
+    <None Remove="Items\Glyphs\Star_Purple.png" />
+    <None Remove="Items\Glyphs\Star_Red.png" />
+    <None Remove="Items\Glyphs\Star_Violet.png" />
+    <None Remove="Items\Glyphs\Star_Yellow.png" />
+    <None Remove="Items\PermanenceCrown.png" />
+    <None Remove="Items\ProceduralItem.png" />
+    <None Remove="Items\ProceduralStaff.png" />
+    <None Remove="Items\ProceduralSword.png" />
+    <None Remove="Items\ScintillatingBloodLacrima.png" />
+    <None Remove="Items\Weapons\Arbalest.png" />
+    <None Remove="Items\Weapons\EyeOnAStick.png" />
+    <None Remove="Items\Weapons\RangedDrops\AngelBow.png" />
+    <None Remove="Items\Weapons\RangedDrops\DemonBow.png" />
+    <None Remove="Items\Weapons\RangedDrops\GoldenPistol.png" />
+    <None Remove="Items\Weapons\RangedDrops\Kalashnikov.png" />
+    <None Remove="Items\Weapons\RangedDrops\Longbow.png" />
+    <None Remove="Items\Weapons\RangedDrops\M16.png" />
+    <None Remove="Items\Weapons\RangedDrops\Microgun.png" />
+    <None Remove="Items\Weapons\RangedDrops\NambuPistol.png" />
+    <None Remove="Items\Weapons\RangedDrops\P90.png" />
+    <None Remove="Items\Weapons\RangedDrops\RangedWeapon.png" />
+    <None Remove="Items\Weapons\RangedDrops\WoodenBow.png" />
+    <None Remove="Items\Weapons\Scythe.png" />
+    <None Remove="NPCs\RetiredAdventurer.png" />
+    <None Remove="NPCs\RetiredAdventurer_Head.png" />
+    <None Remove="Projectiles\ChainHook.png" />
+    <None Remove="Projectiles\Explosion.png" />
+    <None Remove="Projectiles\NPC_Explosion.png" />
+    <None Remove="Projectiles\Obelisk.png" />
+    <None Remove="Projectiles\ProceduralMinion.png" />
+    <None Remove="Projectiles\ProceduralProjectile.png" />
+    <None Remove="Projectiles\ProceduralSpear.png" />
+    <None Remove="Projectiles\ProceduralSpellProj.png" />
+    <None Remove="Projectiles\ProceduralSwordThrow.png" />
+    <None Remove="Projectiles\SmokePellets.png" />
+    <None Remove="Projectiles\WingedEyeball.png" />
+    <None Remove="RetiredAdventurer.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Buffs\Cold.png" />
     <Content Include="Buffs\Fire.png" />
     <Content Include="Buffs\Lightning.png" />
+    <Content Include="Buffs\ManaCooldown.png" />
     <Content Include="Buffs\Physical.png" />
     <Content Include="Buffs\Shadow.png" />
-    <Content Include="build.txt" />
-    <Content Include="Dusts\Ice.png" />
     <Content Include="GFX\GUI\Anvil.png" />
+    <Content Include="GFX\GUI\Button_Accept.png" />
     <Content Include="GFX\GUI\Button_Cancel.png" />
+    <Content Include="GFX\GUI\Button_Close.png" />
     <Content Include="GFX\GUI\Button_Confirm.png" />
+    <Content Include="GFX\GUI\Button_Crown.png" />
+    <Content Include="GFX\GUI\Button_Crown_Pressed.png" />
+    <Content Include="GFX\GUI\Button_Page1.png" />
+    <Content Include="GFX\GUI\Button_Page1_Pressed.png" />
+    <Content Include="GFX\GUI\Button_Page2.png" />
+    <Content Include="GFX\GUI\Button_Page2_Pressed.png" />
+    <Content Include="GFX\GUI\Button_Page3.png" />
+    <Content Include="GFX\GUI\Button_Page3_Pressed.png" />
+    <Content Include="GFX\GUI\Button_Refuse.png" />
+    <Content Include="GFX\GUI\Button_Stats.png" />
+    <Content Include="GFX\GUI\Button_Stats_Pressed.png" />
     <Content Include="GFX\GUI\Button_Upgrade.png" />
     <Content Include="GFX\GUI\CharacterFrame.png" />
     <Content Include="GFX\GUI\CharacterFrame_Bars.png" />
     <Content Include="GFX\GUI\CharacterFrame_Bars_Background.png" />
+    <Content Include="GFX\GUI\CharacterFrame_Bubbles.png" />
+    <Content Include="GFX\GUI\CharacterFrame_Bubbles_Lava.png" />
+    <Content Include="GFX\GUI\Char\Gothic_A.png" />
+    <Content Include="GFX\GUI\Char\Gothic_B.png" />
+    <Content Include="GFX\GUI\Char\Gothic_C.png" />
+    <Content Include="GFX\GUI\Char\Gothic_D.png" />
+    <Content Include="GFX\GUI\Char\Gothic_E.png" />
+    <Content Include="GFX\GUI\Char\Gothic_F.png" />
+    <Content Include="GFX\GUI\Char\Gothic_G.png" />
+    <Content Include="GFX\GUI\Char\Gothic_H.png" />
+    <Content Include="GFX\GUI\Char\Gothic_I.png" />
+    <Content Include="GFX\GUI\Char\Gothic_J.png" />
+    <Content Include="GFX\GUI\Char\Gothic_K.png" />
+    <Content Include="GFX\GUI\Char\Gothic_L.png" />
+    <Content Include="GFX\GUI\Char\Gothic_M.png" />
+    <Content Include="GFX\GUI\Char\Gothic_N.png" />
+    <Content Include="GFX\GUI\Char\Gothic_O.png" />
+    <Content Include="GFX\GUI\Char\Gothic_P.png" />
+    <Content Include="GFX\GUI\Char\Gothic_Q.png" />
+    <Content Include="GFX\GUI\Char\Gothic_R.png" />
+    <Content Include="GFX\GUI\Char\Gothic_S.png" />
+    <Content Include="GFX\GUI\Char\Gothic_T.png" />
+    <Content Include="GFX\GUI\Char\Gothic_U.png" />
+    <Content Include="GFX\GUI\Char\Gothic_V.png" />
+    <Content Include="GFX\GUI\Char\Gothic_W.png" />
+    <Content Include="GFX\GUI\Char\Gothic_X.png" />
+    <Content Include="GFX\GUI\Char\Gothic_Y.png" />
+    <Content Include="GFX\GUI\Char\Gothic_Z.png" />
+    <Content Include="GFX\GUI\Craft.png" />
     <Content Include="GFX\GUI\DeerSkull.png" />
     <Content Include="GFX\GUI\DeerSkull_Eyes_Potency.png" />
     <Content Include="GFX\GUI\DeerSkull_Eyes_Quickness.png" />
     <Content Include="GFX\GUI\DeerSkull_Eyes_Resilience.png" />
+    <Content Include="GFX\GUI\FavouritedSlot.png" />
+    <Content Include="GFX\GUI\Flames_Converted.png" />
     <Content Include="GFX\GUI\Flames_Potency.png" />
     <Content Include="GFX\GUI\Flames_Quickness.png" />
     <Content Include="GFX\GUI\Flames_Resilience.png" />
+    <Content Include="GFX\GUI\GuardianCrown.png" />
+    <Content Include="GFX\GUI\Inventory_BarCovers.png" />
+    <Content Include="GFX\GUI\Inventory_Frame.png" />
+    <Content Include="GFX\GUI\Inventory_Life.png" />
+    <Content Include="GFX\GUI\Inventory_Mana.png" />
+    <Content Include="GFX\GUI\Inventory_Panel.png" />
+    <Content Include="GFX\GUI\Inventory_Points.png" />
+    <Content Include="GFX\GUI\Inventory_Separator.png" />
+    <Content Include="GFX\GUI\Inventory_XP.png" />
+    <Content Include="GFX\GUI\ItemSlot.png" />
+    <Content Include="GFX\GUI\ItemSlot_Broken.png" />
     <Content Include="GFX\GUI\Num\Gothic_0.png" />
     <Content Include="GFX\GUI\Num\Gothic_1.png" />
     <Content Include="GFX\GUI\Num\Gothic_2.png" />
@@ -198,22 +360,39 @@
     <Content Include="GFX\GUI\Num\Gothic_7.png" />
     <Content Include="GFX\GUI\Num\Gothic_8.png" />
     <Content Include="GFX\GUI\Num\Gothic_9.png" />
+    <Content Include="GFX\GUI\SelectedSkillSlot.png" />
+    <Content Include="GFX\GUI\SelectedSlot.png" />
+    <Content Include="GFX\GUI\SkillSlot.png" />
+    <Content Include="GFX\GUI\SkillSlot_alt.png" />
+    <Content Include="GFX\GUI\SpellGUI.png" />
     <Content Include="GFX\GUI\UnspentPoints.png" />
     <Content Include="GFX\Items\Accents\Flame.png" />
     <Content Include="GFX\Items\Accents\GemBlue.png" />
     <Content Include="GFX\Items\Accents\GemGreen.png" />
     <Content Include="GFX\Items\Accents\GemPurple.png" />
     <Content Include="GFX\Items\Accents\GemRed.png" />
+    <Content Include="GFX\Items\Blades\BlazeSword.png" />
     <Content Include="GFX\Items\Blades\BlueSlimeBlade.png" />
     <Content Include="GFX\Items\Blades\BoneBroadsword.png" />
     <Content Include="GFX\Items\Blades\BrutishDagger.png" />
     <Content Include="GFX\Items\Blades\Chokuto.png" />
     <Content Include="GFX\Items\Blades\ClaymoreBlade.png" />
+    <Content Include="GFX\Items\Blades\ClockSword.png" />
     <Content Include="GFX\Items\Blades\CrescentSword.png" />
+    <Content Include="GFX\Items\Blades\ElementalNeedle.png" />
+    <Content Include="GFX\Items\Blades\ExecutionerBlade.png" />
     <Content Include="GFX\Items\Blades\EyeMallet.png" />
     <Content Include="GFX\Items\Blades\EyeSword.png" />
     <Content Include="GFX\Items\Blades\FieldGlaive.png" />
+    <Content Include="GFX\Items\Blades\FieryBroadsword.png" />
+    <Content Include="GFX\Items\Blades\FieryGreatsword.png" />
+    <Content Include="GFX\Items\Blades\GrassBreaker.png" />
     <Content Include="GFX\Items\Blades\GreenSlimeBlade.png" />
+    <Content Include="GFX\Items\Blades\HellstoneBroadsword.png" />
+    <Content Include="GFX\Items\Blades\LazerCutter.png" />
+    <Content Include="GFX\Items\Blades\ObsidianGreatsword.png" />
+    <Content Include="GFX\Items\Blades\ObsidianMaul.png" />
+    <Content Include="GFX\Items\Blades\PhaseSword.png" />
     <Content Include="GFX\Items\Blades\RunicDaiKatana.png" />
     <Content Include="GFX\Items\Blades\Scimitar.png" />
     <Content Include="GFX\Items\Blades\SilverBroadsword.png" />
@@ -222,7 +401,44 @@
     <Content Include="GFX\Items\Blades\VileBroadsword.png" />
     <Content Include="GFX\Items\Blades\VioletRunicSword.png" />
     <Content Include="GFX\Items\Blades\WizardSword.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GFX\Items\Gemstones\Amber.png" />
+    <Content Include="GFX\Items\Gemstones\BrightAmethyst.png" />
+    <Content Include="GFX\Items\Gemstones\DarkAmethyst.png" />
+    <Content Include="GFX\Items\Gemstones\DarkCrystal.png" />
+    <Content Include="GFX\Items\Gemstones\Diamond.png" />
+    <Content Include="GFX\Items\Gemstones\Emerald.png" />
+    <Content Include="GFX\Items\Gemstones\FireCrystal.png" />
+    <Content Include="GFX\Items\Gemstones\FireOrb.png" />
+    <Content Include="GFX\Items\Gemstones\GreenCrystal.png" />
+    <Content Include="GFX\Items\Gemstones\LargeAmber.png" />
+    <Content Include="GFX\Items\Gemstones\Ruby.png" />
+    <Content Include="GFX\Items\Gemstones\Sapphire.png" />
+    <Content Include="GFX\Items\Gemstones\Shatter.png" />
+    <Content Include="GFX\Items\Ornaments\ArcaneCage.png" />
+    <Content Include="GFX\Items\Ornaments\ArcaneSpider.png" />
+    <Content Include="GFX\Items\Ornaments\Bow.png" />
+    <Content Include="GFX\Items\Ornaments\Demonic.png" />
+    <Content Include="GFX\Items\Ornaments\Explosive.png" />
+    <Content Include="GFX\Items\Ornaments\Loop.png" />
+    <Content Include="GFX\Items\Ornaments\Twig.png" />
+    <Content Include="GFX\Items\Staves\Arcane.png" />
+    <Content Include="GFX\Items\Staves\Bone.png" />
+    <Content Include="GFX\Items\Staves\Branch.png" />
+    <Content Include="GFX\Items\Staves\Carved.png" />
+    <Content Include="GFX\Items\Staves\Gilded.png" />
+    <Content Include="GFX\Items\Staves\Hellstone.png" />
+    <Content Include="GFX\Items\Staves\Ivy.png" />
+    <Content Include="GFX\Items\Swordhilts\ArcaneMount.png" />
+    <Content Include="GFX\Items\Swordhilts\BoneCrest.png" />
+    <Content Include="GFX\Items\Swordhilts\BoneHilt.png" />
+    <Content Include="GFX\Items\Swordhilts\BoneMount.png" />
+    <Content Include="GFX\Items\Swordhilts\CarbonHilt.png" />
     <Content Include="GFX\Items\Swordhilts\CeremonialHilt.png" />
+    <Content Include="GFX\Items\Swordhilts\CeremonialMount.png" />
+    <Content Include="GFX\Items\Swordhilts\ChlorophyteMount.png" />
+    <Content Include="GFX\Items\Swordhilts\ClockHilt.png" />
     <Content Include="GFX\Items\Swordhilts\CopperCrossHilt.png" />
     <Content Include="GFX\Items\Swordhilts\CrownOfEyesHilt.png" />
     <Content Include="GFX\Items\Swordhilts\DemonEyeHilt.png" />
@@ -230,28 +446,72 @@
     <Content Include="GFX\Items\Swordhilts\EyesHilt.png" />
     <Content Include="GFX\Items\Swordhilts\GoldenKatanaHilt.png" />
     <Content Include="GFX\Items\Swordhilts\GoldenRunicKatanaHilt.png" />
+    <Content Include="GFX\Items\Swordhilts\HellstoneBasketHilt.png" />
+    <Content Include="GFX\Items\Swordhilts\HellstoneCrossHilt.png" />
+    <Content Include="GFX\Items\Swordhilts\HellstoneMount.png" />
     <Content Include="GFX\Items\Swordhilts\IronBasketHilt.png" />
     <Content Include="GFX\Items\Swordhilts\KatanaHilt.png" />
     <Content Include="GFX\Items\Swordhilts\LeadHilt.png" />
+    <Content Include="GFX\Items\Swordhilts\OminousHilt.png" />
     <Content Include="GFX\Items\Swordhilts\PurpleRunicCrossHilt.png" />
+    <Content Include="GFX\Items\Swordhilts\StickHilt.png" />
+    <Content Include="GFX\Items\Swordhilts\ThornHilt.png" />
+    <Content Include="GFX\Items\Swordhilts\TorchHilt.png" />
     <Content Include="GFX\Items\Swordhilts\VioletRunicCrossHilt.png" />
     <Content Include="GFX\Items\Swordhilts\VioletRunicKatanaHilt.png" />
     <Content Include="GFX\Items\Swordhilts\WoodenHilt.png" />
+    <Content Include="GFX\Items\Swordhilts\WoodenMount.png" />
+    <Content Include="GFX\LevelUP.png" />
+    <Content Include="GFX\Projectiles\Boulder.png" />
+    <Content Include="GFX\Projectiles\Fireball.png" />
+    <Content Include="GFX\Projectiles\Frostbolt.png" />
+    <Content Include="GFX\Projectiles\Heart.png" />
+    <Content Include="GFX\Projectiles\Shadowbolt.png" />
+    <Content Include="GFX\Projectiles\SpearMounts\ArcaneMount.png" />
+    <Content Include="GFX\Projectiles\SpearMounts\BoneMount.png" />
     <Content Include="GFX\Projectiles\SpearMounts\CeremonialMount.png" />
+    <Content Include="GFX\Projectiles\SpearMounts\ChlorophyteMount.png" />
+    <Content Include="GFX\Projectiles\SpearMounts\HellstoneMount.png" />
     <Content Include="GFX\Projectiles\SpearMounts\WoodenMount.png" />
+    <Content Include="GFX\Projectiles\Star.png" />
+    <Content Include="GFX\Projectiles\ThornChain.png" />
+    <Content Include="GFX\Projectiles\Thunderbolt.png" />
+    <Content Include="icon.png" />
+    <Content Include="Items\BlacksmithCrown.png" />
+    <Content Include="Items\Dusts\Ice.png" />
+    <Content Include="Items\Dusts\Smoke.png" />
     <Content Include="Items\Glyphs\Bow_Red.png" />
+    <Content Include="Items\Glyphs\Cross.png" />
+    <Content Include="Items\Glyphs\Cross_Blue.png" />
+    <Content Include="Items\Glyphs\Cross_Green.png" />
+    <Content Include="Items\Glyphs\Cross_Orange.png" />
+    <Content Include="Items\Glyphs\Cross_Purple.png" />
     <Content Include="Items\Glyphs\Cross_Red.png" />
+    <Content Include="Items\Glyphs\Cross_Violet.png" />
+    <Content Include="Items\Glyphs\Cross_Yellow.png" />
+    <Content Include="Items\Glyphs\Glyph.png" />
+    <Content Include="Items\Glyphs\Moon.png" />
+    <Content Include="Items\Glyphs\Moon_Blue.png" />
+    <Content Include="Items\Glyphs\Moon_Green.png" />
+    <Content Include="Items\Glyphs\Moon_Purple.png" />
     <Content Include="Items\Glyphs\Moon_Red.png" />
+    <Content Include="Items\Glyphs\Moon_Violet.png" />
+    <Content Include="Items\Glyphs\Moon_Yellow.png" />
+    <Content Include="Items\Glyphs\Star.png" />
     <Content Include="Items\Glyphs\Star_Blue.png" />
     <Content Include="Items\Glyphs\Star_Green.png" />
+    <Content Include="Items\Glyphs\Star_Orange.png" />
     <Content Include="Items\Glyphs\Star_Purple.png" />
     <Content Include="Items\Glyphs\Star_Red.png" />
     <Content Include="Items\Glyphs\Star_Violet.png" />
     <Content Include="Items\Glyphs\Star_Yellow.png" />
-    <Content Include="Items\Weapons\Arbalest.png" />
-    <Content Include="Items\BlacksmithCrown.png" />
-    <Content Include="Items\Weapons\EyeOnAStick.png" />
     <Content Include="Items\PermanenceCrown.png" />
+    <Content Include="Items\ProceduralItem.png" />
+    <Content Include="Items\ProceduralStaff.png" />
+    <Content Include="Items\ProceduralSword.png" />
+    <Content Include="Items\ScintillatingBloodLacrima.png" />
+    <Content Include="Items\Weapons\Arbalest.png" />
+    <Content Include="Items\Weapons\EyeOnAStick.png" />
     <Content Include="Items\Weapons\RangedDrops\AngelBow.png" />
     <Content Include="Items\Weapons\RangedDrops\DemonBow.png" />
     <Content Include="Items\Weapons\RangedDrops\GoldenPistol.png" />
@@ -261,30 +521,22 @@
     <Content Include="Items\Weapons\RangedDrops\Microgun.png" />
     <Content Include="Items\Weapons\RangedDrops\NambuPistol.png" />
     <Content Include="Items\Weapons\RangedDrops\P90.png" />
+    <Content Include="Items\Weapons\RangedDrops\RangedWeapon.png" />
     <Content Include="Items\Weapons\RangedDrops\WoodenBow.png" />
     <Content Include="Items\Weapons\Scythe.png" />
+    <Content Include="NPCs\RetiredAdventurer.png" />
+    <Content Include="NPCs\RetiredAdventurer_Head.png" />
     <Content Include="Projectiles\ChainHook.png" />
-    <Content Include="SFX\LevelUP.wav" />
+    <Content Include="Projectiles\Explosion.png" />
+    <Content Include="Projectiles\NPC_Explosion.png" />
+    <Content Include="Projectiles\Obelisk.png" />
+    <Content Include="Projectiles\ProceduralMinion.png" />
+    <Content Include="Projectiles\ProceduralProjectile.png" />
+    <Content Include="Projectiles\ProceduralSpear.png" />
+    <Content Include="Projectiles\ProceduralSpellProj.png" />
+    <Content Include="Projectiles\ProceduralSwordThrow.png" />
+    <Content Include="Projectiles\SmokePellets.png" />
+    <Content Include="Projectiles\WingedEyeball.png" />
+    <Content Include="RetiredAdventurer.png" />
   </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

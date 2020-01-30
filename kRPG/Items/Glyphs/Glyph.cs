@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria;
-using Terraria.ModLoader;
-using kRPG.Projectiles;
-using Terraria.ModLoader.IO;
-using kRPG.Buffs;
-using Microsoft.Xna.Framework;
-using Terraria.ID;
 using System.IO;
-using Dusts;
+using System.Linq;
+using kRPG.Items.Dusts;
+using kRPG.Projectiles;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace kRPG.Items.Glyphs
 {

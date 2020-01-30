@@ -1,25 +1,23 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
+using kRPG.Items;
+using kRPG.Items.Glyphs;
+using kRPG.Items.Weapons.RangedDrops;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent.Achievements;
+using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.Reflection;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria.UI;
-using Terraria.GameInput;
-using Terraria.UI.Gamepad;
 using Terraria.UI.Chat;
-using ReLogic.Graphics;
-using Terraria.GameContent.Achievements;
-using kRPG.Items.Glyphs;
-using kRPG.Items;
-using kRPG.Items.Weapons.RangedDrops;
-using Terraria.Audio;
+using Terraria.UI.Gamepad;
 
 namespace kRPG
 {

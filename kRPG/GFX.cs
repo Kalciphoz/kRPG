@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using Terraria.ModLoader;
-using Terraria;
-using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace kRPG
 {
@@ -158,75 +158,78 @@ namespace kRPG
             return texture;
         }
 
-        public static void LoadGFX(Mod mod)
+        public static void LoadGFX()
         {
-            button_confirm = mod.GetTexture(BUTTON_CONFIRM);
-            button_upgrade = mod.GetTexture(BUTTON_UPGRADE);
-            button_cancel = mod.GetTexture(BUTTON_CANCEL);
-            button_close = mod.GetTexture(BUTTON_CLOSE);
-            button_stats = mod.GetTexture(BUTTON_STATS);
-            button_page1 = mod.GetTexture(BUTTON_PAGE1);
-            button_page2 = mod.GetTexture(BUTTON_PAGE2);
-            button_page3 = mod.GetTexture(BUTTON_PAGE3);
-            button_stats_pressed = mod.GetTexture(BUTTON_STATS_PRESSED);
-            button_page1_pressed = mod.GetTexture(BUTTON_PAGE1_PRESSED);
-            button_page2_pressed = mod.GetTexture(BUTTON_PAGE2_PRESSED);
-            button_page3_pressed = mod.GetTexture(BUTTON_PAGE3_PRESSED);
-            button_crown = mod.GetTexture(BUTTON_CROWN);
-            button_crown_pressed = mod.GetTexture(BUTTON_CROWN_PRESSED);
-            guardianCrown = mod.GetTexture(GUARDIAN_CROWN);
+            var loader = ModLoader.GetMod("kRPG");
 
-            deerskull = mod.GetTexture(DEERSKULL);
-            flames[STAT.RESILIENCE] = mod.GetTexture(FLAMES_RED);
-            flames[STAT.QUICKNESS] = mod.GetTexture(FLAMES_GREEN);
-            flames[STAT.POTENCY] = mod.GetTexture(FLAMES_BLUE);
-            flames_converted = mod.GetTexture(FLAMES_CONVERTED);
-            deerskull_eyes[STAT.RESILIENCE] = mod.GetTexture(EYES_RED);
-            deerskull_eyes[STAT.QUICKNESS] = mod.GetTexture(EYES_GREEN);
-            deerskull_eyes[STAT.POTENCY] = mod.GetTexture(EYES_BLUE);
-            anvil = mod.GetTexture(ANVIL);
-            characterFrame = mod.GetTexture(CHARACTERFRAME);
-            statusBars = mod.GetTexture(STATUSBARS);
-            bubbles = mod.GetTexture(BUBBLES);
-            bubbles_lava = mod.GetTexture(BUBBLES_LAVA);
-            statusBars_BG = mod.GetTexture(STATUSBARS_BG);
+
+            button_confirm = loader.GetTexture(BUTTON_CONFIRM);
+            button_upgrade = loader.GetTexture(BUTTON_UPGRADE);
+            button_cancel = loader.GetTexture(BUTTON_CANCEL);
+            button_close = loader.GetTexture(BUTTON_CLOSE);
+            button_stats = loader.GetTexture(BUTTON_STATS);
+            button_page1 = loader.GetTexture(BUTTON_PAGE1);
+            button_page2 = loader.GetTexture(BUTTON_PAGE2);
+            button_page3 = loader.GetTexture(BUTTON_PAGE3);
+            button_stats_pressed = loader.GetTexture(BUTTON_STATS_PRESSED);
+            button_page1_pressed = loader.GetTexture(BUTTON_PAGE1_PRESSED);
+            button_page2_pressed = loader.GetTexture(BUTTON_PAGE2_PRESSED);
+            button_page3_pressed = loader.GetTexture(BUTTON_PAGE3_PRESSED);
+            button_crown = loader.GetTexture(BUTTON_CROWN);
+            button_crown_pressed = loader.GetTexture(BUTTON_CROWN_PRESSED);
+            guardianCrown = loader.GetTexture(GUARDIAN_CROWN);
+
+            deerskull = loader.GetTexture(DEERSKULL);
+            flames[STAT.RESILIENCE] = loader.GetTexture(FLAMES_RED);
+            flames[STAT.QUICKNESS] = loader.GetTexture(FLAMES_GREEN);
+            flames[STAT.POTENCY] = loader.GetTexture(FLAMES_BLUE);
+            flames_converted = loader.GetTexture(FLAMES_CONVERTED);
+            deerskull_eyes[STAT.RESILIENCE] = loader.GetTexture(EYES_RED);
+            deerskull_eyes[STAT.QUICKNESS] = loader.GetTexture(EYES_GREEN);
+            deerskull_eyes[STAT.POTENCY] = loader.GetTexture(EYES_BLUE);
+            anvil = loader.GetTexture(ANVIL);
+            characterFrame = loader.GetTexture(CHARACTERFRAME);
+            statusBars = loader.GetTexture(STATUSBARS);
+            bubbles = loader.GetTexture(BUBBLES);
+            bubbles_lava = loader.GetTexture(BUBBLES_LAVA);
+            statusBars_BG = loader.GetTexture(STATUSBARS_BG);
             for (int i = 0; i < 10; i++ )
             {
-                gothicNumeral[i] = mod.GetTexture(NUMERALS + i.ToString());
+                gothicNumeral[i] = loader.GetTexture(NUMERALS + i.ToString());
             }
             for (Keys k = Keys.A; k <= Keys.Z; k += 1)
             {
-                gothicLetter[k] = mod.GetTexture(LETTERS + k.ToString());
+                gothicLetter[k] = loader.GetTexture(LETTERS + k.ToString());
             }
-            unspentPoints = mod.GetTexture(UNSPENTPOINTS);
-            itemSlot = mod.GetTexture(ITEMSLOT);
-            itemSlot_broken = mod.GetTexture(ITEMSLOT_BROKEN);
-            favouritedSlot = mod.GetTexture(FAVOURITEDSLOT);
-            selectedSlot = mod.GetTexture(SELECTEDSLOT);
-            skillSlot = mod.GetTexture(SKILLSLOT);
-            selectedSkillSlot = mod.GetTexture(SELECTEDSKILLSLOT);
-            spellGui = mod.GetTexture(SPELLGUI);
-            inventoryFrame = mod.GetTexture(INVENTORYFRAME);
-            inventory_separator = mod.GetTexture(INVENTORY_SEPARATOR);
-            inventory_life = mod.GetTexture(INVENTORY_LIFE);
-            inventory_mana = mod.GetTexture(INVENTORY_MANA);
-            inventory_xp = mod.GetTexture(INVENTORY_XP);
-            inventory_barCovers = mod.GetTexture(INVENTORY_BARCOVERS);
-            inventory_points = mod.GetTexture(INVENTORY_POINTS);
-            inventory_panel = mod.GetTexture(INVENTORY_PANEL);
+            unspentPoints = loader.GetTexture(UNSPENTPOINTS);
+            itemSlot = loader.GetTexture(ITEMSLOT);
+            itemSlot_broken = loader.GetTexture(ITEMSLOT_BROKEN);
+            favouritedSlot = loader.GetTexture(FAVOURITEDSLOT);
+            selectedSlot = loader.GetTexture(SELECTEDSLOT);
+            skillSlot = loader.GetTexture(SKILLSLOT);
+            selectedSkillSlot = loader.GetTexture(SELECTEDSKILLSLOT);
+            spellGui = loader.GetTexture(SPELLGUI);
+            inventoryFrame = loader.GetTexture(INVENTORYFRAME);
+            inventory_separator = loader.GetTexture(INVENTORY_SEPARATOR);
+            inventory_life = loader.GetTexture(INVENTORY_LIFE);
+            inventory_mana = loader.GetTexture(INVENTORY_MANA);
+            inventory_xp = loader.GetTexture(INVENTORY_XP);
+            inventory_barCovers = loader.GetTexture(INVENTORY_BARCOVERS);
+            inventory_points = loader.GetTexture(INVENTORY_POINTS);
+            inventory_panel = loader.GetTexture(INVENTORY_PANEL);
 
-            projectile_fireball = mod.GetTexture(PROJECTILE_FIREBALL);
-            projectile_frostbolt = mod.GetTexture(PROJECTILE_FROSTBOLT);
-            projectile_boulder = mod.GetTexture(PROJECTILE_BOULDER);
-            projectile_shadowbolt = mod.GetTexture(PROJECTILE_SHADOWBOLT);
-            projectile_thunderbolt = mod.GetTexture(PROJECTILE_THUNDERBOLT);
-            heart = mod.GetTexture(HEART);
-            star = mod.GetTexture(STAR);
-            thornChain = mod.GetTexture(THORNCHAIN);
+            projectile_fireball = loader.GetTexture(PROJECTILE_FIREBALL);
+            projectile_frostbolt = loader.GetTexture(PROJECTILE_FROSTBOLT);
+            projectile_boulder = loader.GetTexture(PROJECTILE_BOULDER);
+            projectile_shadowbolt = loader.GetTexture(PROJECTILE_SHADOWBOLT);
+            projectile_thunderbolt = loader.GetTexture(PROJECTILE_THUNDERBOLT);
+            heart = loader.GetTexture(HEART);
+            star = loader.GetTexture(STAR);
+            thornChain = loader.GetTexture(THORNCHAIN);
 
-            levelUp = mod.GetTexture(LEVELUP);
+            levelUp = loader.GetTexture(LEVELUP);
 
-            sfx_levelUp = mod.GetSound(LEVELUPSOUND);
+            sfx_levelUp = loader.GetSound(LEVELUPSOUND);
         }
 
         public static void UnloadGFX()

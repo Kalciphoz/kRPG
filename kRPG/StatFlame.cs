@@ -1,12 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using Terraria;
-using Terraria.ModLoader;
+﻿using System;
 using kRPG.GUI;
-using ReLogic;
-using ReLogic.Graphics;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace kRPG
 {

@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
+using System.IO;
+using kRPG.Items.Weapons;
+using kRPG.Projectiles;
 using Microsoft.Xna.Framework;
-
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-
-using kRPG.Projectiles;
-using kRPG.Items.Weapons;
-using System.IO;
 
 namespace kRPG.Items
 {

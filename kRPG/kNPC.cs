@@ -1,21 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using kRPG.Items;
+using kRPG.Items.Dusts;
+using kRPG.Items.Glyphs;
+using kRPG.Items.Weapons;
+using kRPG.Items.Weapons.RangedDrops;
+using kRPG.Modifiers;
+using kRPG.Projectiles;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using kRPG.Items;
-using kRPG.Items.Weapons;
-
-using kRPG.Buffs;
-using System.Collections.Generic;
-using System.Runtime.Remoting;
-using Dusts;
-using kRPG.Items.Glyphs;
-using kRPG.Projectiles;
-using kRPG.Items.Weapons.RangedDrops;
-using kRPG.Modifiers;
-using Terraria.Audio;
-using Terraria.ModLoader.IO;
 
 namespace kRPG
 {

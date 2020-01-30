@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using Microsoft.Xna.Framework;
+﻿using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 

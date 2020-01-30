@@ -1,13 +1,9 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using kRPG.Items.Dusts;
 using kRPG.Projectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dusts;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;

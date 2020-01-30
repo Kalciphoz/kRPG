@@ -1,23 +1,19 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Reflection;
+using kRPG.Items;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Graphics;
 using Terraria;
+using Terraria.GameContent.UI.States;
+using Terraria.GameInput;
 using Terraria.ID;
+using Terraria.Localization;
+using Terraria.Map;
 using Terraria.ModLoader;
 using Terraria.UI;
-using ReLogic.Graphics;
-using Terraria.GameInput;
-using Terraria.UI.Gamepad;
-using Terraria.Localization;
 using Terraria.UI.Chat;
-using Terraria.Map;
-using Terraria.GameContent.UI.States;
-using kRPG.Items;
+using Terraria.UI.Gamepad;
 
 namespace kRPG.GUI
 {

@@ -1,11 +1,10 @@
-﻿using Terraria;
-using Terraria.ModLoader;
+﻿using System;
 using kRPG.Items;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using ReLogic.Graphics;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 using Terraria.ID;
-using System;
+using Terraria.ModLoader;
 
 namespace kRPG.GUI
 {

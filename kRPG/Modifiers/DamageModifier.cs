@@ -1,7 +1,7 @@
 ﻿using System;
+using System.IO;
 using Terraria;
 using Terraria.ModLoader;
-using System.IO;
 
 namespace kRPG.Modifiers
 {

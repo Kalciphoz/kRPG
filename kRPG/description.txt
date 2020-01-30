@@ -1,11 +1,1 @@
-This mod aims to overhaul Terraria by adding RPG elements, and includes a leveling system, an item upgrade system, an elemental damage system, procedurally generated weapons, and much more. For more detailed information, see the wiki at krpgmod.wikidot.com
-
-**Features**
-
-The mod features a leveling system with XP and level display, and rewards you with stat points when leveling up. In order to compensate for gradually increasing player strength, enemies have seen a drastic power increase, especially later in the game.
-
-To further emphasize these changes, I have added prefixes to armour and overhauled accessory prefixes to provide these new stats, including accuracy, leech, critical strike damage multiplier, evasion, and more.
-
-Enemies drop weapons, many of which are procedurally generated. To compensate for the consumption of inventory space, you now have two additional pages of inventory, giving you 80 extra slots. Weapons and enemies now deal elemental damage, which has a chance to inflict elemental status ailments - powerful combat-related debuffs.
-
-I have also added an item system to upgrade weapons. It primarily serves as an item sink, since in a modded playthrough, it is very common for the player to have more weapons than needed. The upgrade system gambles your weapon at a risk of destruction and at a cost. Rare upgrade crowns make this process less painful and protect weapons you hold dear.
+vRPG is a pretty cool mod, it does...this. Modify this file with a description of your mod.

@@ -1,23 +1,20 @@
 ﻿using System;
-using System.IO;
-using Terraria;
-using kRPG.GUI;
-using Terraria.ModLoader.IO;
 using System.Collections.Generic;
-using Dusts;
-using kRPG.Items;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 using kRPG.Buffs;
-
-using kRPG.Projectiles;
-using Microsoft.Xna.Framework.Input;
+using kRPG.GUI;
+using kRPG.Items;
+using kRPG.Items.Dusts;
 using kRPG.Items.Glyphs;
-using Terraria.ID;
-using Terraria.DataStructures;
-using Microsoft.Xna.Framework.Audio;
+using kRPG.Projectiles;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameInput;
+using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace kRPG
 {

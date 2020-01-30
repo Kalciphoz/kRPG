@@ -1,4 +1,8 @@
-﻿using kRPG.GUI;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using kRPG.GUI;
 using kRPG.Items;
 using kRPG.Items.Glyphs;
 using kRPG.Items.Weapons;
@@ -7,10 +11,6 @@ using kRPG.Modifiers;
 using kRPG.Projectiles;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
@@ -365,7 +365,7 @@ namespace kRPG
             kConfig.Initialize();
             if (Main.netMode != 2)
             {
-                GFX.LoadGFX(ModLoader.GetMod("kRPG"));
+                GFX.LoadGFX();
                 invslot[0] = Main.inventoryBackTexture;
                 invslot[1] = Main.inventoryBack2Texture;
                 invslot[2] = Main.inventoryBack3Texture;
