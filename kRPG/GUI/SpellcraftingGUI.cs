@@ -92,15 +92,22 @@ namespace kRPG.GUI
 
         private bool CanPlaceItem(Item item)
         {
-            var check = type switch
+            bool check = false;
+            switch (type)
             {
-                GLYPHTYPE.STAR => (item.modItem is Items.Glyphs.Star),
-                GLYPHTYPE.CROSS => (item.modItem is Cross),
-                GLYPHTYPE.MOON => (item.modItem is Moon),
-                _ => false
-            };
+                case GLYPHTYPE.STAR:
+                    check = item.modItem is Items.Glyphs.Star;
+                    break;
+                case GLYPHTYPE.CROSS:
+                    check = item.modItem is Cross;
+                    break;
+                case GLYPHTYPE.MOON:
+                    check = item.modItem is Moon;
+                    break;
+            }
             return check || item.type == 0;
         }
+
 
         public bool AttemptPlace()
         {
