@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,7 @@ using kRPG.Projectiles;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 
@@ -373,6 +375,15 @@ namespace kRPG
         {
             Properties = new ModProperties() { Autoload = true, AutoloadGores = true, AutoloadSounds = true };
             mod = this;
+
+
+            //for (int i = 0; i < Lang.inter.Length;i++)
+            //{
+            //    var t = Lang.inter[i];
+            //    Debug.WriteLine($"{i} -- {t.Key} -- {t.Value}");
+            //}
+
+            
         }
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)

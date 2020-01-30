@@ -2,6 +2,7 @@
 using kRPG.Items.Weapons;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace kRPG.NPCs
@@ -118,7 +119,7 @@ namespace kRPG.NPCs
                             return "My son Emil tells me to move to a retirement home, but I feel like I'm not old enough for that.";
                     }
 
-                    break;
+
                 case "Dylan Alvarez" when Main.rand.Next(5) == 0:
                 {
                     return Main.rand.Next(2) == 0
@@ -182,7 +183,7 @@ namespace kRPG.NPCs
 
         public override void SetChatButtons(ref string button, ref string button2)
         {
-            button = Lang.inter[28].Value;
+            button = Language.GetTextValue("LegacyInterface.28");
         }
 
         public override void OnChatButtonClicked(bool firstButton, ref bool shop)

@@ -15,6 +15,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.UI.Chat;
 using Terraria.UI.Gamepad;
+using LanguageManager = On.Terraria.Localization.LanguageManager;
 
 namespace kRPG.GUI
 {
@@ -390,12 +391,14 @@ namespace kRPG.GUI
                         Main.player[Main.myPlayer].mouseInterface = true;
                         if (!Main.player[Main.myPlayer].hbLocked)
                         {
-                            main.MouseText(Lang.inter[5].Value, 0, 0, -1, -1, -1, -1);
+                            //main.MouseText(Lang.inter[5].Value, 0, 0, -1, -1, -1, -1);
+                            main.MouseText(Language.GetTextValue("LegacyInterface.5"), 0, 0, -1, -1, -1, -1);
                             Main.mouseText = true;
                         }
                         else
                         {
-                            main.MouseText(Lang.inter[6].Value, 0, 0, -1, -1, -1, -1);
+                            //main.MouseText(Lang.inter[6].Value, 0, 0, -1, -1, -1, -1);
+                            main.MouseText(Language.GetTextValue("LegacyInterface.6"), 0, 0, -1, -1, -1, -1);
                             Main.mouseText = true;
                         }
 
@@ -503,13 +506,14 @@ namespace kRPG.GUI
                     switch (num17)
                     {
                         case 1:
-                            Main.hoverItemName = Lang.inter[80].Value;
+                            Main.hoverItemName = Language.GetTextValue("LegacyInterface.80");// Lang.inter[80].Value;
                             break;
                         case 2:
-                            Main.hoverItemName = Lang.inter[79].Value;
+                            Main.hoverItemName = Language.GetTextValue("LegacyInterface.79");// Lang.inter[79].Value;
                             break;
                         case 3:
-                            Main.hoverItemName = Main.CaptureModeDisabled ? Lang.inter[115].Value : Lang.inter[81].Value;
+                            //Main.hoverItemName = Main.CaptureModeDisabled ? Lang.inter[115].Value : Lang.inter[81].Value;
+                            Main.hoverItemName = Main.CaptureModeDisabled ? Language.GetTextValue("LegacyInterface.115") : Language.GetTextValue("LegacyInterface.81");
                             break;
                     }
                 }
@@ -567,7 +571,7 @@ namespace kRPG.GUI
                                 texture2D = Main.inventoryTickOffTexture;
 
                             var r2 = new Rectangle(r.Left + 34, r.Top - 2, texture2D.Width, texture2D.Height);
-                            int num21 = 0;
+                            int hiddenVisible = 0;
                             bool flag2 = false;
                             if (r2.Contains(value) && !PlayerInput.IgnoreMouseInterface)
                             {
@@ -591,7 +595,7 @@ namespace kRPG.GUI
                                         NetMessage.SendData(4, -1, -1, null, Main.myPlayer, 0f, 0f, 0f, 0, 0, 0);
                                 }
 
-                                num21 = Main.player[Main.myPlayer].hideMisc[num20] ? 2 : 1;
+                                hiddenVisible = Main.player[Main.myPlayer].hideMisc[num20] ? 2 : 1;
                             }
 
                             if (r.Contains(value) && !flag2 && !PlayerInput.IgnoreMouseInterface)
@@ -605,10 +609,13 @@ namespace kRPG.GUI
                             if (num20 == -1)
                                 continue;
                             Main.spriteBatch.Draw(texture2D, r2.TopLeft(), Color.White * 0.7f);
-                            if (num21 <= 0)
+                            if (hiddenVisible <= 0)
                                 continue;
                             Main.HoverItem = new Item();
-                            Main.hoverItemName = Lang.inter[58 + num21].Value;
+
+                            Main.hoverItemName = Language.GetTextValue("LegacyInterface." + (58 + hiddenVisible));
+
+                            //Main.hoverItemName = Lang.inter[58 + num21].Value;
                         }
                     }
 
@@ -720,7 +727,11 @@ namespace kRPG.GUI
                             {
                                 UILinkPointNavigator.Shortcuts.NPCS_LastHovered = num36;
                                 Main.mouseText = true;
-                                text = num35 == 0 ? Lang.inter[8].Value : Main.npc[num36].FullName;
+                                
+                                //text = num35 == 0 ? Lang.inter[8].Value: Main.npc[num36].FullName;
+                                text = num35 == 0 ? Language.GetTextValue("LegacyInterface.8") : Main.npc[num36].FullName;
+
+
                                 if (!PlayerInput.IgnoreMouseInterface)
                                 {
                                     Main.player[Main.myPlayer].mouseInterface = true;
@@ -817,7 +828,10 @@ namespace kRPG.GUI
                                 !PlayerInput.IgnoreMouseInterface)
                             {
                                 Main.player[Main.myPlayer].mouseInterface = true;
-                                string value3 = Main.player[Main.myPlayer].statDefense + " " + Lang.inter[10].Value;
+                                //string value3 = Main.player[Main.myPlayer].statDefense + " " + Lang.inter[10].Value;
+
+                                string value3 = Main.player[Main.myPlayer].statDefense + " " + Language.GetTextValue("LegacyInterface.10");
+
                                 if (!string.IsNullOrEmpty(value3))
                                     Main.hoverItemName = value3;
                             }
@@ -875,7 +889,9 @@ namespace kRPG.GUI
                         if (num51 <= 0)
                             continue;
                         Main.HoverItem = new Item();
-                        Main.hoverItemName = Lang.inter[58 + num51].Value;
+                        //Main.hoverItemName = Lang.inter[58 + num51].Value;
+                        Main.hoverItemName = Language.GetTextValue("LegacyInterface." + (58 + num51));
+                            
                     }
 
                     Main.inventoryBack = color;
@@ -1013,7 +1029,8 @@ namespace kRPG.GUI
                     {
                         int num60 = 50;
                         int num61 = 448;
-                        string text2 = Lang.inter[46].Value + ": ";
+                        //string text2 = Lang.inter[46].Value + ": ";
+                        string text2 = Language.GetTextValue("LegacyInterface.46") + ": ";
                         if (Main.reforgeItem.type > 0)
                         {
                             int num62 = Main.reforgeItem.value;
@@ -1056,7 +1073,8 @@ namespace kRPG.GUI
                                 object obj = text3;
                                 text3 = string.Concat(new object[]
                                 {
-                                    obj, "[c/", Colors.AlphaDarken(Colors.CoinPlatinum).Hex3(), ":", num63, " ", Lang.inter[15].Value, "] "
+                                    //obj, "[c/", Colors.AlphaDarken(Colors.CoinPlatinum).Hex3(), ":", num63, " ", Lang.inter[15].Value, "] "
+                                    obj, "[c/", Colors.AlphaDarken(Colors.CoinPlatinum).Hex3(), ":", num63, " ",Language.GetTextValue("LegacyInterface.15"), "] "
                                 });
                             }
 
@@ -1065,7 +1083,8 @@ namespace kRPG.GUI
                                 object obj2 = text3;
                                 text3 = string.Concat(new object[]
                                 {
-                                    obj2, "[c/", Colors.AlphaDarken(Colors.CoinGold).Hex3(), ":", num64, " ", Lang.inter[16].Value, "] "
+                                    //obj2, "[c/", Colors.AlphaDarken(Colors.CoinGold).Hex3(), ":", num64, " ", Lang.inter[16].Value, "] "
+                                    obj2, "[c/", Colors.AlphaDarken(Colors.CoinGold).Hex3(), ":", num64, " ", Language.GetTextValue("LegacyInterface.16"), "] "
                                 });
                             }
 
@@ -1074,7 +1093,9 @@ namespace kRPG.GUI
                                 object obj3 = text3;
                                 text3 = string.Concat(new object[]
                                 {
-                                    obj3, "[c/", Colors.AlphaDarken(Colors.CoinSilver).Hex3(), ":", num65, " ", Lang.inter[17].Value, "] "
+                                    //obj3, "[c/", Colors.AlphaDarken(Colors.CoinSilver).Hex3(), ":", num65, " ", Lang.inter[17].Value, "] "
+                                    obj3, "[c/", Colors.AlphaDarken(Colors.CoinSilver).Hex3(), ":", num65, " ",Language.GetTextValue("LegacyInterface.17"), "] "
+
                                 });
                             }
 
@@ -1083,7 +1104,8 @@ namespace kRPG.GUI
                                 object obj4 = text3;
                                 text3 = string.Concat(new object[]
                                 {
-                                    obj4, "[c/", Colors.AlphaDarken(Colors.CoinCopper).Hex3(), ":", num66, " ", Lang.inter[18].Value, "] "
+                                    //obj4, "[c/", Colors.AlphaDarken(Colors.CoinCopper).Hex3(), ":", num66, " ", Lang.inter[18].Value, "] "
+                                    obj4, "[c/", Colors.AlphaDarken(Colors.CoinCopper).Hex3(), ":", num66, " ",Language.GetTextValue("LegacyInterface.18"), "] "
                                 });
                             }
 
@@ -1104,7 +1126,8 @@ namespace kRPG.GUI
                             UILinkPointNavigator.SetPosition(304, new Vector2((float) num68, (float) num69) + texture2D3.Size() / 4f);
                             if (flag8)
                             {
-                                Main.hoverItemName = Lang.inter[19].Value;
+                                //Main.hoverItemName = Lang.inter[19].Value;
+                                Main.hoverItemName = Language.GetTextValue("LegacyInterface.19");
                                 if (!(bool) mouseReforge.GetValue(null))
                                     Main.PlaySound(12, -1, -1, 1, 1f, 0f);
 
@@ -1128,7 +1151,8 @@ namespace kRPG.GUI
                         }
                         else
                         {
-                            text2 = Lang.inter[20].Value;
+                            text2 = Language.GetTextValue("LegacyInterface.20");
+                            //Lang.inter[20].Value;
                         }
 
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, text2, new Vector2(num60 + 50, num61),
@@ -1171,8 +1195,12 @@ namespace kRPG.GUI
                         string text4;
                         if (Main.guideItem.type > 0)
                         {
-                            text4 = Lang.inter[21].Value + " " + Main.guideItem.Name;
-                            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[22].Value,
+                            //text4 = Lang.inter[21].Value + " " + Main.guideItem.Name;
+                            text4 = Language.GetTextValue("LegacyInterface.21") + " " + Main.guideItem.Name;
+
+
+                            //DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[22].Value,
+                            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.22"),
                                 new Vector2(num70, num71 + 118), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
                             int num72 = Main.focusRecipe;
                             int num73 = 0;
@@ -1186,54 +1214,52 @@ namespace kRPG.GUI
                                         !Main.recipe[Main.availableRecipe[num72]].needHoney && !Main.recipe[Main.availableRecipe[num72]].needLava &&
                                         !Main.recipe[Main.availableRecipe[num72]].needSnowBiome)
                                     {
-                                        DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[23].Value,
+                                        DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.23"),
                                             new Vector2(num70, num71 + 118 + num75), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
                                         break;
                                     }
 
                                     break;
                                 }
-                                else
-                                {
-                                    num73++;
-                                    DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText,
-                                        Lang.GetMapObjectName(MapHelper.TileToLookup(Main.recipe[Main.availableRecipe[num72]].requiredTile[num74], 0)),
-                                        new Vector2(num70, num71 + 118 + num75), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                                    num74++;
-                                }
+
+                                num73++;
+                                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText,
+                                    Lang.GetMapObjectName(MapHelper.TileToLookup(Main.recipe[Main.availableRecipe[num72]].requiredTile[num74], 0)),
+                                    new Vector2(num70, num71 + 118 + num75), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                                num74++;
                             }
 
                             if (Main.recipe[Main.availableRecipe[num72]].needWater)
                             {
                                 int num76 = (num73 + 1) * 26;
-                                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[53].Value,
+                                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.53"),
                                     new Vector2(num70, num71 + 118 + num76), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
                             }
 
                             if (Main.recipe[Main.availableRecipe[num72]].needHoney)
                             {
                                 int num77 = (num73 + 1) * 26;
-                                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[58].Value,
+                                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.58"),
                                     new Vector2(num70, num71 + 118 + num77), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
                             }
 
                             if (Main.recipe[Main.availableRecipe[num72]].needLava)
                             {
                                 int num78 = (num73 + 1) * 26;
-                                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[56].Value,
+                                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.56"),
                                     new Vector2(num70, num71 + 118 + num78), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
                             }
 
                             if (Main.recipe[Main.availableRecipe[num72]].needSnowBiome)
                             {
                                 int num79 = (num73 + 1) * 26;
-                                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[123].Value,
+                                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.123"),
                                     new Vector2(num70, num71 + 118 + num79), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
                             }
                         }
                         else
                         {
-                            text4 = Lang.inter[24].Value;
+                            text4 = Language.GetTextValue("LegacyInterface.24") ;
                         }
 
                         DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, text4, new Vector2(num70 + 50, num71 + 12),
@@ -1267,7 +1293,7 @@ namespace kRPG.GUI
                     UILinkPointNavigator.Shortcuts.CRAFT_CurrentRecipeBig = -1;
                     UILinkPointNavigator.Shortcuts.CRAFT_CurrentRecipeSmall = -1;
                     if (Main.numAvailableRecipes > 0)
-                        DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[25].Value, new Vector2(76f, 414 + num58),
+                        DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.25"), new Vector2(76f, 414 + num58),
                             color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
 
                     for (int num80 = 0; num80 < Recipe.maxRecipes; num80++)
@@ -1430,19 +1456,19 @@ namespace kRPG.GUI
 
                                 if (Main.recipe[Main.availableRecipe[Main.focusRecipe]].anyIronBar &&
                                     Main.recipe[Main.availableRecipe[Main.focusRecipe]].requiredItem[num85].type == 22)
-                                    Main.HoverItem.SetNameOverride(Lang.misc[37].Value + " " + Lang.GetItemNameValue(22));
+                                    Main.HoverItem.SetNameOverride(Language.GetTextValue("LegacyInterface.37") + " " + Lang.GetItemNameValue(22));
                                 else if (Main.recipe[Main.availableRecipe[Main.focusRecipe]].anyWood &&
                                          Main.recipe[Main.availableRecipe[Main.focusRecipe]].requiredItem[num85].type == 9)
-                                    Main.HoverItem.SetNameOverride(Lang.misc[37].Value + " " + Lang.GetItemNameValue(9));
+                                    Main.HoverItem.SetNameOverride(Language.GetTextValue("LegacyInterface.37") + " " + Lang.GetItemNameValue(9));
                                 else if (Main.recipe[Main.availableRecipe[Main.focusRecipe]].anySand &&
                                          Main.recipe[Main.availableRecipe[Main.focusRecipe]].requiredItem[num85].type == 169)
-                                    Main.HoverItem.SetNameOverride(Lang.misc[37].Value + " " + Lang.GetItemNameValue(169));
+                                    Main.HoverItem.SetNameOverride(Language.GetTextValue("LegacyInterface.37") + " " + Lang.GetItemNameValue(169));
                                 else if (Main.recipe[Main.availableRecipe[Main.focusRecipe]].anyFragment &&
                                          Main.recipe[Main.availableRecipe[Main.focusRecipe]].requiredItem[num85].type == 3458)
-                                    Main.HoverItem.SetNameOverride(Lang.misc[37].Value + " " + Lang.misc[51].Value);
+                                    Main.HoverItem.SetNameOverride(Language.GetTextValue("LegacyInterface.37") + " " + Language.GetTextValue("LegacyInterface.51"));
                                 else if (Main.recipe[Main.availableRecipe[Main.focusRecipe]].anyPressurePlate &&
                                          Main.recipe[Main.availableRecipe[Main.focusRecipe]].requiredItem[num85].type == 542)
-                                    Main.HoverItem.SetNameOverride(Lang.misc[37].Value + " " + Lang.misc[38].Value);
+                                    Main.HoverItem.SetNameOverride(Language.GetTextValue("LegacyInterface.37") + " " + Language.GetTextValue("LegacyInterface.38"));
 
                                 if (Main.recipe[Main.availableRecipe[Main.focusRecipe]].requiredItem[num85].stack > 1)
                                 {
@@ -1641,9 +1667,9 @@ namespace kRPG.GUI
                 }
 
                 var vector2 = Main.fontMouseText.MeasureString("Coins");
-                var vector3 = Main.fontMouseText.MeasureString(Lang.inter[26].Value);
+                var vector3 = Main.fontMouseText.MeasureString(Language.GetTextValue("LegacyInterface.26"));
                 float num109 = vector2.X / vector3.X;
-                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[26].Value,
+                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.26"),
                     new Vector2(39 + (int) (600 * scale), 140f + (vector2.Y - vector2.Y * num109) / 2f),
                     new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, default(Vector2), 0.75f * num109,
                     SpriteEffects.None, 0f);
@@ -1676,9 +1702,9 @@ namespace kRPG.GUI
                 }
 
                 var vector4 = Main.fontMouseText.MeasureString("Ammo");
-                var vector5 = Main.fontMouseText.MeasureString(Lang.inter[27].Value);
+                var vector5 = Main.fontMouseText.MeasureString(Language.GetTextValue("LegacyInterface.27"));
                 float num113 = vector4.X / vector5.X;
-                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[27].Value,
+                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.27"),
                     new Vector2(76 + (int) (600 * scale), 140f + (vector4.Y - vector4.Y * num113) / 2f),
                     new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, default(Vector2), 0.75f * num113,
                     SpriteEffects.None, 0f);
@@ -1716,7 +1742,7 @@ namespace kRPG.GUI
 
                 if (Main.npcShop > 0 && !Main.recBigList)
                 {
-                    Utils.DrawBorderStringFourWay(Main.spriteBatch, Main.fontMouseText, Lang.inter[28].Value, 504f, (float) main.invBottom,
+                    Utils.DrawBorderStringFourWay(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.28"), 504f, (float) main.invBottom,
                         Color.White * ((float) Main.mouseTextColor / 255f), Color.Black, Vector2.Zero, 1f);
                     ItemSlot.DrawSavings(Main.spriteBatch, 504f, main.invBottom, false);
                     Main.inventoryScale = 0.755f;
