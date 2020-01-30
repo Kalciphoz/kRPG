@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kRPG.Enums;
 using kRPG.GUI;
 using kRPG.Items.Glyphs;
 using kRPG.Projectiles;
@@ -50,7 +51,7 @@ namespace kRPG
                     if (Main.mouseLeft && Main.mouseLeftRelease)
                     {
                         Main.PlaySound(SoundID.MenuTick);
-                        character.CloseGUIs();
+                        character.CloseGuIs();
                         character.selectedAbility = this;
                     }
                 }
@@ -134,24 +135,24 @@ namespace kRPG
             var oldCenter = player.Center;
             if (vanish)
             {
-                Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), oldCenter);
+                Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), oldCenter);
                 Projectile.NewProjectile(oldCenter - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(), 2, 0f, player.whoAmI);
                 Vector2 vector32;
-                vector32.X = (float) Main.mouseX + Main.screenPosition.X;
+                vector32.X = Main.mouseX + Main.screenPosition.X;
                 if (Math.Abs(player.gravDir - 1f) < .01)
-                    vector32.Y = (float) Main.mouseY + Main.screenPosition.Y - (float) player.height;
+                    vector32.Y = Main.mouseY + Main.screenPosition.Y - player.height;
                 else
-                    vector32.Y = Main.screenPosition.Y + (float) Main.screenHeight - (float) Main.mouseY;
+                    vector32.Y = Main.screenPosition.Y + Main.screenHeight - Main.mouseY;
                 vector32.X -= (float) (player.width / 2.0);
-                if (vector32.X > 50f && vector32.X < (float) (Main.maxTilesX * 16 - 50) && vector32.Y > 50f && vector32.Y < (float) (Main.maxTilesY * 16 - 50))
+                if (vector32.X > 50f && vector32.X < Main.maxTilesX * 16 - 50 && vector32.Y > 50f && vector32.Y < Main.maxTilesY * 16 - 50)
                 {
                     int num276 = (int) (vector32.X / 16f);
                     int num277 = (int) (vector32.Y / 16f);
-                    if ((Main.tile[num276, num277].wall != 87 || (double) num277 <= Main.worldSurface || NPC.downedPlantBoss) &&
+                    if ((Main.tile[num276, num277].wall != 87 || num277 <= Main.worldSurface || NPC.downedPlantBoss) &&
                         !Collision.SolidCollision(vector32, player.width, player.height))
                     {
-                        player.Teleport(vector32, 1, 0);
-                        NetMessage.SendData(65, -1, -1, null, 0, (float) player.whoAmI, vector32.X, vector32.Y, 1, 0, 0);
+                        player.Teleport(vector32, 1);
+                        NetMessage.SendData(65, -1, -1, null, 0, player.whoAmI, vector32.X, vector32.Y, 1);
                         if (player.chaosState)
                         {
                             player.statLife -= player.statLifeMax2 / 7;
@@ -159,12 +160,12 @@ namespace kRPG
                             if (Main.rand.Next(2) == 0)
                                 damageSource = PlayerDeathReason.ByOther(player.Male ? 14 : 15);
                             if (player.statLife <= 0)
-                                player.KillMe(damageSource, 1.0, 0, false);
+                                player.KillMe(damageSource, 1.0, 0);
                             player.lifeRegenCount = 0;
                             player.lifeRegenTime = 0;
                         }
 
-                        player.AddBuff(88, 360, true);
+                        player.AddBuff(88, 360);
                     }
                 }
             }
@@ -193,7 +194,7 @@ namespace kRPG
             if (caster == null) caster = player;
             var projectile =
                 Main.projectile[
-                    Projectile.NewProjectile(position == null ? caster.Center : (Vector2) position, velocity.RotatedBy(API.Tau * angle),
+                    Projectile.NewProjectile(position ?? caster.Center, velocity.RotatedBy(API.Tau * angle),
                         ModContent.ProjectileType<ProceduralSpellProj>(), ProjectileDamage(player.GetModPlayer<PlayerCharacter>()), 3f, player.whoAmI)];
             var ps = (ProceduralSpellProj) projectile.modProjectile;
             ps.origin = projectile.position;
@@ -267,6 +268,7 @@ namespace kRPG
             return (int) Math.Round(Math.Pow(1.04, Math.Min(130, character.level)) * 9f * multiplier) + constant;
         }
 
+        // ReSharper disable once IdentifierTypo
         public int ManaCost(PlayerCharacter character)
         {
             float multiplier = glyphs.Aggregate(0.4f, (current, item) => current * ((Glyph) item.modItem).ManaModifier());
@@ -276,10 +278,10 @@ namespace kRPG
 
     public class SpellEffect
     {
-        private ProceduralSpell ability;
+        private readonly ProceduralSpell ability;
         private Vector2 target;
         private int timeLeft;
-        private Action<ProceduralSpell, int> update;
+        private readonly Action<ProceduralSpell, int> update;
 
         public SpellEffect(ProceduralSpell ability, Vector2 target, int timeLeft, Action<ProceduralSpell, int> update)
         {

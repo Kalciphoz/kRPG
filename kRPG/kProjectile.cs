@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kRPG.Enums;
 using kRPG.GUI;
 using kRPG.Items;
 using kRPG.Items.Glyphs;
@@ -58,7 +59,7 @@ namespace kRPG
                         }
                     };
                     int count = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => haselement[element]);
-                    int portionsize = (int) Math.Round((double) projectile.damage * kNPC.ELE_DMG_MODIFIER / 3.0 / count);
+                    int portionsize = (int) Math.Round(projectile.damage * kNPC.ELE_DMG_MODIFIER / 3.0 / count);
                     foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                         if (haselement[element])
                             elementalDamage[element] = Math.Max(1, portionsize);

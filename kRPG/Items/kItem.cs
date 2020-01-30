@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using kRPG.Buffs;
+using kRPG.Enums;
 using kRPG.Items.Weapons;
 using kRPG.Items.Weapons.RangedDrops;
 using Microsoft.Xna.Framework;
@@ -1129,7 +1130,7 @@ namespace kRPG.Items
                     var item = character.inventories[i][j];
                     if ((item.type == 0 || item.stack == 0) && (!kConfig.configLocal.clientside.manualInventory || i == 0) ||
                         item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
-                        //Main.NewText((!kConfig.configLocal.clientside.manualInventory) + "||" + (i == 0));
+                        //Main.NewText((!kConfig.configLocal.clientSide.manualInventory) + "||" + (i == 0));
                         return true;
                 }
             }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using kRPG.Enums;
 using kRPG.Items.Dusts;
 using kRPG.Projectiles;
 using Microsoft.Xna.Framework;
@@ -412,7 +413,7 @@ namespace kRPG.Items.Glyphs
             {
                 try
                 {
-                    spell.texture = GFX.projectile_fireball;
+                    spell.texture = GFX.projectileFireball;
                     spell.projectile.width = spell.texture.Width;
                     spell.projectile.height = spell.texture.Height;
                     spell.projectile.magic = true;
@@ -492,7 +493,7 @@ namespace kRPG.Items.Glyphs
                     }
                     else
                     {
-                        spell.texture = GFX.projectile_boulder;
+                        spell.texture = GFX.projectileBoulder;
                     }
 
                     spell.projectile.width = spell.texture.Width;
@@ -556,7 +557,7 @@ namespace kRPG.Items.Glyphs
         {
             return delegate(ProceduralSpellProj spell)
             {
-                spell.texture = GFX.projectile_boulder;
+                spell.texture = GFX.projectileBoulder;
                 spell.projectile.width = spell.texture.Width;
                 spell.projectile.height = spell.texture.Height;
                 spell.projectile.magic = true;
@@ -644,7 +645,7 @@ namespace kRPG.Items.Glyphs
         {
             return delegate(ProceduralSpellProj spell)
             {
-                spell.texture = GFX.projectile_frostbolt;
+                spell.texture = GFX.projectileFrostbolt;
                 spell.projectile.width = spell.texture.Width;
                 spell.projectile.height = spell.texture.Height;
                 spell.projectile.magic = true;
@@ -705,7 +706,7 @@ namespace kRPG.Items.Glyphs
         {
             return delegate(ProceduralSpellProj spell)
             {
-                spell.texture = GFX.projectile_shadowbolt;
+                spell.texture = GFX.projectileShadowbolt;
                 spell.projectile.width = spell.texture.Width;
                 spell.projectile.height = spell.texture.Height;
                 spell.projectile.magic = true;
@@ -754,7 +755,7 @@ namespace kRPG.Items.Glyphs
         {
             return delegate(ProceduralSpellProj spell)
             {
-                spell.texture = GFX.projectile_thunderbolt;
+                spell.texture = GFX.projectileThunderbolt;
                 spell.projectile.width = spell.texture.Width;
                 spell.projectile.height = spell.texture.Height;
                 spell.projectile.magic = true;

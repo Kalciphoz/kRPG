@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kRPG.Enums;
 using kRPG.Items;
 using kRPG.Items.Dusts;
 using kRPG.Items.Glyphs;
@@ -389,7 +390,7 @@ namespace kRPG
             }
             else
             {
-                character.AddXP(scaled);
+                character.AddXp(scaled);
             }
 
             if (level < Math.Min(character.level - 17, 70)) return;

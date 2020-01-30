@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kRPG.Enums;
 using kRPG.Items.Dusts;
 using kRPG.Projectiles;
 using Microsoft.Xna.Framework;

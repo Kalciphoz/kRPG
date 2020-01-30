@@ -8,7 +8,7 @@ namespace kRPG
 {
     public class kConfig
     {
-        public static ClientConfig clientside => configLocal.clientside;
+        public static ClientConfig clientSide => configLocal.clientside;
 
         public static string configPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Settings.json";
 
@@ -44,11 +44,10 @@ namespace kRPG
         {
             get
             {
-                if (_stats == null)
-                {
-                    _stats = new ConfigStats();
-                    LoadConfig(statsPath, ref _stats);
-                }
+                if (_stats != null)
+                    return _stats;
+                _stats = new ConfigStats();
+                LoadConfig(statsPath, ref _stats);
 
                 return _stats;
             }

@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using kRPG.Enums;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace kRPG.Buffs

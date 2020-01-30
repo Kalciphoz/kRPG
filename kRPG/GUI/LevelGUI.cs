@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kRPG.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -47,7 +48,7 @@ namespace kRPG.GUI
         {
             character = player.GetModPlayer<PlayerCharacter>();
 
-            spriteBatch.Draw(GFX.deerskull, GuiPosition, Color.White, Scale);
+            spriteBatch.Draw(GFX.deerSkull, GuiPosition, Color.White, Scale);
 
             int remaining = character.level - character.pointsAllocated - 1;
             remaining = allocated.Keys.Aggregate(remaining, (current, stat) => current - allocated[stat]);
@@ -57,10 +58,10 @@ namespace kRPG.GUI
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, text, GuiPosition - new Vector2(width / 2f - 200f, 38f * Scale + 38f), Color.White, Scale);
 
             var buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 320f * Scale);
-            spriteBatch.Draw(GFX.button_cancel, buttonPosition, Color.White, Scale);
+            spriteBatch.Draw(GFX.buttonCancel, buttonPosition, Color.White, Scale);
 
-            if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.button_confirm.Width * Scale &&
-                Main.mouseY <= buttonPosition.Y + GFX.button_confirm.Height * Scale)
+            if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.buttonConfirm.Width * Scale &&
+                Main.mouseY <= buttonPosition.Y + GFX.buttonConfirm.Height * Scale)
             {
                 Main.LocalPlayer.mouseInterface = true;
                 if (Main.mouseLeft && Main.mouseLeftRelease)
@@ -79,10 +80,10 @@ namespace kRPG.GUI
             statFlame[STAT.POTENCY].Update(spriteBatch, player);
 
             buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
-            spriteBatch.Draw(GFX.button_confirm, buttonPosition, Color.White, Scale);
+            spriteBatch.Draw(GFX.buttonConfirm, buttonPosition, Color.White, Scale);
 
-            if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.button_confirm.Width &&
-                Main.mouseY <= buttonPosition.Y + GFX.button_confirm.Height)
+            if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.buttonConfirm.Width &&
+                Main.mouseY <= buttonPosition.Y + GFX.buttonConfirm.Height)
             {
                 Main.LocalPlayer.mouseInterface = true;
                 if (Main.mouseLeft && Main.mouseLeftRelease)
@@ -95,7 +96,7 @@ namespace kRPG.GUI
                             allocated[stat] = 0;
 
                         guiActive = false;
-                        GFX.sfx_levelUp.Play(0.2f * Main.soundVolume, -0.6f, -0.2f);
+                        GFX.sfxLevelUp.Play(0.2f * Main.soundVolume, -0.6f, -0.2f);
                         return;
                     }
                     catch (SystemException e)

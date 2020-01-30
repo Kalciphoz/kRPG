@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kRPG.Enums;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

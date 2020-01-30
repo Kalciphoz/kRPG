@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kRPG.Buffs;
+using kRPG.Enums;
 using kRPG.GUI;
 using kRPG.Items;
 using kRPG.Items.Dusts;
@@ -315,10 +316,10 @@ namespace kRPG
                     }));
         }
 
-        public void LevelUP()
+        public void LevelUp()
         {
             level += 1;
-            if (!Main.gameMenu) GFX.sfx_levelUp.Play(0.5f * Main.soundVolume, 0f, 0f);
+            if (!Main.gameMenu) GFX.sfxLevelUp.Play(0.5f * Main.soundVolume, 0f, 0f);
             if (Main.netMode == 1)
             {
                 var packet = mod.GetPacket();
@@ -359,18 +360,17 @@ namespace kRPG
                 hasAilment[element] = false;
             }
 
-            if (Main.netMode == 1 && (int) Main.time % 300 == 0)
-            {
-                var packet = mod.GetPacket();
-                packet.Write((byte) Message.SyncStats);
-                packet.Write(player.whoAmI);
-                packet.Write(level);
-                packet.Write(baseStats[STAT.RESILIENCE]);
-                packet.Write(baseStats[STAT.QUICKNESS]);
-                packet.Write(baseStats[STAT.POTENCY]);
-                packet.Write(baseStats[STAT.WITS]);
-                packet.Send();
-            }
+            if (Main.netMode != 1 || (int) Main.time % 300 != 0)
+                return;
+            var packet = mod.GetPacket();
+            packet.Write((byte) Message.SyncStats);
+            packet.Write(player.whoAmI);
+            packet.Write(level);
+            packet.Write(baseStats[STAT.RESILIENCE]);
+            packet.Write(baseStats[STAT.QUICKNESS]);
+            packet.Write(baseStats[STAT.POTENCY]);
+            packet.Write(baseStats[STAT.WITS]);
+            packet.Send();
         }
 
         public override void DrawEffects(PlayerDrawInfo drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)
@@ -431,22 +431,21 @@ namespace kRPG
             foreach (var trail in trails.ToArray())
                 trail.Draw(spriteBatch, player);
 
-            if (levelAnimation < 60)
+            if (levelAnimation >= 60)
+                return;
+            if (levelAnimation < 24)
             {
-                if (levelAnimation < 24)
-                {
-                    fullBright = true;
-                    Lighting.AddLight(player.position, 0.9f, 0.9f, 0.9f);
-                }
-                else
-                {
-                    Lighting.AddLight(player.position, 0.4f, 0.4f, 0.4f);
-                }
-
-                spriteBatch.Draw(GFX.levelUp, player.Bottom - new Vector2(48, 108) - Main.screenPosition,
-                    new Rectangle(0, (int) (levelAnimation / 3) * 96, 96, 96), Color.White);
-                levelAnimation += 1;
+                fullBright = true;
+                Lighting.AddLight(player.position, 0.9f, 0.9f, 0.9f);
             }
+            else
+            {
+                Lighting.AddLight(player.position, 0.4f, 0.4f, 0.4f);
+            }
+
+            spriteBatch.Draw(GFX.levelUp, player.Bottom - new Vector2(48, 108) - Main.screenPosition,
+                new Rectangle(0, (int) (levelAnimation / 3) * 96, 96, 96), Color.White);
+            levelAnimation += 1;
         }
 
         public override void PreUpdate()
@@ -502,7 +501,7 @@ namespace kRPG
         {
             if (!initialized)
             {
-                InitializeGUI();
+                InitializeGui();
                 initialized = true;
             }
 
@@ -539,13 +538,12 @@ namespace kRPG
                             if (!glyph.CanUse()) useable = false;
                         }
 
-                        if (Main.keyState.IsKeyDown(abilities[i].key) && Main.keyState.IsKeyUp(Keys.LeftShift) && abilities[i].remaining == 0 && useable &&
-                            player.statMana >= abilities[i].ManaCost(this))
-                        {
-                            if (Main.netMode != 2)
-                                abilities[i].UseAbility(player, Main.MouseWorld);
-                            player.statMana -= abilities[i].ManaCost(this);
-                        }
+                        if (!Main.keyState.IsKeyDown(abilities[i].key) || !Main.keyState.IsKeyUp(Keys.LeftShift) || abilities[i].remaining != 0 || !useable ||
+                            player.statMana < abilities[i].ManaCost(this))
+                            continue;
+                        if (Main.netMode != 2)
+                            abilities[i].UseAbility(player, Main.MouseWorld);
+                        player.statMana -= abilities[i].ManaCost(this);
                     }
 
             for (int i = 0; i < spellEffects.Count; i += 1)
@@ -971,7 +969,7 @@ namespace kRPG
             return dmgModifier;
         }
 
-        public void AddXP(int xp)
+        public void AddXp(int xp)
         {
             if (Main.gameMenu) return;
             if (xp == 0) return;
@@ -981,7 +979,7 @@ namespace kRPG
             if (this.xp >= ExperienceToLevel())
             {
                 this.xp -= ExperienceToLevel();
-                LevelUP();
+                LevelUp();
                 goto Check;
             }
 
@@ -1096,20 +1094,19 @@ namespace kRPG
             abilities[3].key = Keys.V;
         }
 
-        public void InitializeGUI()
+        public void InitializeGui()
         {
             if (Main.netMode == 2) return;
             BaseGui.guiElements.Clear();
             anvilGUI = new AnvilGUI(this);
             levelGUI = new LevelGUI(this, mod);
-            statusBar = new StatusBar(this, mod);
-            statusBar.guiActive = true;
+            statusBar = new StatusBar(this, mod) {guiActive = true};
             inventoryGUI = new InventoryGUI(this, mod);
             abilitiesGUI = new AbilitiesGUI {guiActive = true};
             spellcraftingGUI = new SpellcraftingGUI(mod /*, glyphs, this*/);
         }
 
-        public void CloseGUIs()
+        public void CloseGuIs()
         {
             anvilGUI.CloseGui();
             levelGUI.CloseGui();
@@ -1118,7 +1115,7 @@ namespace kRPG
 
         public override void OnEnterWorld(Player player)
         {
-            InitializeGUI();
+            InitializeGui();
 
             if (player.whoAmI == Main.myPlayer)
                 kRPG.CheckForUpdates();

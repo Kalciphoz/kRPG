@@ -1339,7 +1339,7 @@ namespace kRPG
                     return new Item();
                 }
 
-            if ((newItem.modItem is Glyph || newItem.modItem is ProceduralItem || newItem.modItem is RangedWeapon) && kConfig.clientside.smartInventory)
+            if ((newItem.modItem is Glyph || newItem.modItem is ProceduralItem || newItem.modItem is RangedWeapon) && kConfig.clientSide.smartInventory)
             {
                 if (character.activeInvPage == 2)
                     for (int i = 10; i < 50; i += 1)
@@ -1369,7 +1369,7 @@ namespace kRPG
             {
                 for (int k = 0; k < num; k++)
                 {
-                    if (player.inventory[k].type != 0 || kConfig.clientside.manualInventory && character.activeInvPage != 0)
+                    if (player.inventory[k].type != 0 || kConfig.clientSide.manualInventory && character.activeInvPage != 0)
                         continue;
                     player.inventory[k] = item;
                     ItemText.NewText(newItem, newItem.stack);
@@ -1385,7 +1385,7 @@ namespace kRPG
             {
                 for (int l = num - 1; l >= 0; l--)
                 {
-                    if (player.inventory[l].type != 0 || kConfig.clientside.manualInventory && character.activeInvPage != 0 && !flag)
+                    if (player.inventory[l].type != 0 || kConfig.clientSide.manualInventory && character.activeInvPage != 0 && !flag)
                         continue;
                     player.inventory[l] = item;
                     ItemText.NewText(newItem, newItem.stack);

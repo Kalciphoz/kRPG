@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kRPG.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -77,7 +78,7 @@ namespace kRPG
 
         private const string LEVELUPSOUND = "SFX/LevelUP";
 
-        public static Texture2D deerskull;
+        public static Texture2D deerSkull;
         public static Dictionary<STAT, Texture2D> flames = new Dictionary<STAT, Texture2D>();
         public static Texture2D flames_converted;
         public static Dictionary<STAT, Texture2D> deerskull_eyes = new Dictionary<STAT, Texture2D>();
@@ -91,49 +92,51 @@ namespace kRPG
         public static Dictionary<Keys, Texture2D> gothicLetter = new Dictionary<Keys, Texture2D>();
         public static Texture2D unspentPoints;
         public static Texture2D itemSlot;
-        public static Texture2D itemSlot_broken;
+        public static Texture2D itemSlotBroken;
         public static Texture2D favouritedSlot;
         public static Texture2D selectedSlot;
         public static Texture2D skillSlot;
         public static Texture2D selectedSkillSlot;
         public static Texture2D spellGui;
         public static Texture2D inventoryFrame;
-        public static Texture2D inventory_separator;
-        public static Texture2D inventory_life;
-        public static Texture2D inventory_mana;
-        public static Texture2D inventory_xp;
-        public static Texture2D inventory_barCovers;
-        public static Texture2D inventory_points;
-        public static Texture2D inventory_panel;
+        public static Texture2D inventorySeparator;
+        public static Texture2D inventoryLife;
+        public static Texture2D inventoryMana;
+        public static Texture2D inventoryXp;
+        public static Texture2D inventoryBarCovers;
+        public static Texture2D inventoryPoints;
+        public static Texture2D inventoryPanel;
 
-        public static Texture2D button_confirm;
-        public static Texture2D button_upgrade;
-        public static Texture2D button_cancel;
-        public static Texture2D button_close;
-        public static Texture2D button_stats;
-        public static Texture2D button_stats_pressed;
-        public static Texture2D button_page1;
-        public static Texture2D button_page1_pressed;
-        public static Texture2D button_page2;
-        public static Texture2D button_page2_pressed;
-        public static Texture2D button_page3;
-        public static Texture2D button_page3_pressed;
-        public static Texture2D button_crown;
-        public static Texture2D button_crown_pressed;
+        public static Texture2D buttonConfirm;
+        public static Texture2D buttonUpgrade;
+        public static Texture2D buttonCancel;
+        public static Texture2D buttonClose;
+        public static Texture2D buttonStats;
+        public static Texture2D buttonStatsPressed;
+        public static Texture2D buttonPage1;
+        public static Texture2D buttonPage1Pressed;
+        public static Texture2D buttonPage2;
+        public static Texture2D buttonPage2Pressed;
+        public static Texture2D buttonPage3;
+        public static Texture2D buttonPage3Pressed;
+        public static Texture2D buttonCrown;
+        public static Texture2D buttonCrownPressed;
         public static Texture2D guardianCrown;
 
-        public static Texture2D projectile_fireball;
-        public static Texture2D projectile_frostbolt;
-        public static Texture2D projectile_boulder;
-        public static Texture2D projectile_shadowbolt;
-        public static Texture2D projectile_thunderbolt;
+        public static Texture2D projectileFireball;
+        // ReSharper disable once IdentifierTypo
+        public static Texture2D projectileFrostbolt;
+        public static Texture2D projectileBoulder;
+        // ReSharper disable once IdentifierTypo
+        public static Texture2D projectileShadowbolt;
+        public static Texture2D projectileThunderbolt;
         public static Texture2D heart;
         public static Texture2D star;
         public static Texture2D thornChain;
 
         public static Texture2D levelUp;
 
-        public static SoundEffect sfx_levelUp;
+        public static SoundEffect sfxLevelUp;
 
         public static Texture2D CombineTextures(List<Texture2D> textures, List<Point> origins, Point final_size)
         {
@@ -151,35 +154,35 @@ namespace kRPG
                 for (int y = 0; y < textures[tex].Height; y += 1)
                     if (pixels[x + y * textures[tex].Width].A > 0)
                         for (int i = 0; i < 4; i += 1)
-                            combinedTexture[origins[tex].X * 2 + x * 2 + i % 2 + (origins[tex].Y * 2 + y * 2 + (int) (i / 2)) * texture.Width] =
+                            combinedTexture[origins[tex].X * 2 + x * 2 + i % 2 + (origins[tex].Y * 2 + y * 2 + i / 2) * texture.Width] =
                                 pixels[x + y * textures[tex].Width];
             }
 
-            texture.SetData<Color>(combinedTexture);
+            texture.SetData(combinedTexture);
             return texture;
         }
 
-        public static void LoadGFX()
+        public static void LoadGfx()
         {
             var loader = ModLoader.GetMod("kRPG");
 
-            button_confirm = loader.GetTexture(BUTTON_CONFIRM);
-            button_upgrade = loader.GetTexture(BUTTON_UPGRADE);
-            button_cancel = loader.GetTexture(BUTTON_CANCEL);
-            button_close = loader.GetTexture(BUTTON_CLOSE);
-            button_stats = loader.GetTexture(BUTTON_STATS);
-            button_page1 = loader.GetTexture(BUTTON_PAGE1);
-            button_page2 = loader.GetTexture(BUTTON_PAGE2);
-            button_page3 = loader.GetTexture(BUTTON_PAGE3);
-            button_stats_pressed = loader.GetTexture(BUTTON_STATS_PRESSED);
-            button_page1_pressed = loader.GetTexture(BUTTON_PAGE1_PRESSED);
-            button_page2_pressed = loader.GetTexture(BUTTON_PAGE2_PRESSED);
-            button_page3_pressed = loader.GetTexture(BUTTON_PAGE3_PRESSED);
-            button_crown = loader.GetTexture(BUTTON_CROWN);
-            button_crown_pressed = loader.GetTexture(BUTTON_CROWN_PRESSED);
+            buttonConfirm = loader.GetTexture(BUTTON_CONFIRM);
+            buttonUpgrade = loader.GetTexture(BUTTON_UPGRADE);
+            buttonCancel = loader.GetTexture(BUTTON_CANCEL);
+            buttonClose = loader.GetTexture(BUTTON_CLOSE);
+            buttonStats = loader.GetTexture(BUTTON_STATS);
+            buttonPage1 = loader.GetTexture(BUTTON_PAGE1);
+            buttonPage2 = loader.GetTexture(BUTTON_PAGE2);
+            buttonPage3 = loader.GetTexture(BUTTON_PAGE3);
+            buttonStatsPressed = loader.GetTexture(BUTTON_STATS_PRESSED);
+            buttonPage1Pressed = loader.GetTexture(BUTTON_PAGE1_PRESSED);
+            buttonPage2Pressed = loader.GetTexture(BUTTON_PAGE2_PRESSED);
+            buttonPage3Pressed = loader.GetTexture(BUTTON_PAGE3_PRESSED);
+            buttonCrown = loader.GetTexture(BUTTON_CROWN);
+            buttonCrownPressed = loader.GetTexture(BUTTON_CROWN_PRESSED);
             guardianCrown = loader.GetTexture(GUARDIAN_CROWN);
 
-            deerskull = loader.GetTexture(DEERSKULL);
+            deerSkull = loader.GetTexture(DEERSKULL);
             flames[STAT.RESILIENCE] = loader.GetTexture(FLAMES_RED);
             flames[STAT.QUICKNESS] = loader.GetTexture(FLAMES_GREEN);
             flames[STAT.POTENCY] = loader.GetTexture(FLAMES_BLUE);
@@ -199,53 +202,53 @@ namespace kRPG
                 gothicLetter[k] = loader.GetTexture(LETTERS + k.ToString());
             unspentPoints = loader.GetTexture(UNSPENTPOINTS);
             itemSlot = loader.GetTexture(ITEMSLOT);
-            itemSlot_broken = loader.GetTexture(ITEMSLOT_BROKEN);
+            itemSlotBroken = loader.GetTexture(ITEMSLOT_BROKEN);
             favouritedSlot = loader.GetTexture(FAVOURITEDSLOT);
             selectedSlot = loader.GetTexture(SELECTEDSLOT);
             skillSlot = loader.GetTexture(SKILLSLOT);
             selectedSkillSlot = loader.GetTexture(SELECTEDSKILLSLOT);
             spellGui = loader.GetTexture(SPELLGUI);
             inventoryFrame = loader.GetTexture(INVENTORYFRAME);
-            inventory_separator = loader.GetTexture(INVENTORY_SEPARATOR);
-            inventory_life = loader.GetTexture(INVENTORY_LIFE);
-            inventory_mana = loader.GetTexture(INVENTORY_MANA);
-            inventory_xp = loader.GetTexture(INVENTORY_XP);
-            inventory_barCovers = loader.GetTexture(INVENTORY_BARCOVERS);
-            inventory_points = loader.GetTexture(INVENTORY_POINTS);
-            inventory_panel = loader.GetTexture(INVENTORY_PANEL);
+            inventorySeparator = loader.GetTexture(INVENTORY_SEPARATOR);
+            inventoryLife = loader.GetTexture(INVENTORY_LIFE);
+            inventoryMana = loader.GetTexture(INVENTORY_MANA);
+            inventoryXp = loader.GetTexture(INVENTORY_XP);
+            inventoryBarCovers = loader.GetTexture(INVENTORY_BARCOVERS);
+            inventoryPoints = loader.GetTexture(INVENTORY_POINTS);
+            inventoryPanel = loader.GetTexture(INVENTORY_PANEL);
 
-            projectile_fireball = loader.GetTexture(PROJECTILE_FIREBALL);
-            projectile_frostbolt = loader.GetTexture(PROJECTILE_FROSTBOLT);
-            projectile_boulder = loader.GetTexture(PROJECTILE_BOULDER);
-            projectile_shadowbolt = loader.GetTexture(PROJECTILE_SHADOWBOLT);
-            projectile_thunderbolt = loader.GetTexture(PROJECTILE_THUNDERBOLT);
+            projectileFireball = loader.GetTexture(PROJECTILE_FIREBALL);
+            projectileFrostbolt = loader.GetTexture(PROJECTILE_FROSTBOLT);
+            projectileBoulder = loader.GetTexture(PROJECTILE_BOULDER);
+            projectileShadowbolt = loader.GetTexture(PROJECTILE_SHADOWBOLT);
+            projectileThunderbolt = loader.GetTexture(PROJECTILE_THUNDERBOLT);
             heart = loader.GetTexture(HEART);
             star = loader.GetTexture(STAR);
             thornChain = loader.GetTexture(THORNCHAIN);
 
             levelUp = loader.GetTexture(LEVELUP);
 
-            sfx_levelUp = loader.GetSound(LEVELUPSOUND);
+            sfxLevelUp = loader.GetSound(LEVELUPSOUND);
         }
 
-        public static void UnloadGFX()
+        public static void UnloadGfx()
         {
-            button_confirm = null;
-            button_upgrade = null;
-            button_cancel = null;
-            button_close = null;
-            button_stats = null;
-            button_page1 = null;
-            button_page2 = null;
-            button_page3 = null;
-            button_stats_pressed = null;
-            button_page1_pressed = null;
-            button_page2_pressed = null;
-            button_page3_pressed = null;
-            button_crown = null;
-            button_crown_pressed = null;
+            buttonConfirm = null;
+            buttonUpgrade = null;
+            buttonCancel = null;
+            buttonClose = null;
+            buttonStats = null;
+            buttonPage1 = null;
+            buttonPage2 = null;
+            buttonPage3 = null;
+            buttonStatsPressed = null;
+            buttonPage1Pressed = null;
+            buttonPage2Pressed = null;
+            buttonPage3Pressed = null;
+            buttonCrown = null;
+            buttonCrownPressed = null;
 
-            deerskull = null;
+            deerSkull = null;
             flames[STAT.RESILIENCE] = null;
             flames[STAT.QUICKNESS] = null;
             flames[STAT.POTENCY] = null;
@@ -265,33 +268,33 @@ namespace kRPG
                 gothicLetter[k] = null;
             unspentPoints = null;
             itemSlot = null;
-            itemSlot_broken = null;
+            itemSlotBroken = null;
             favouritedSlot = null;
             selectedSlot = null;
             skillSlot = null;
             selectedSkillSlot = null;
             spellGui = null;
             inventoryFrame = null;
-            inventory_separator = null;
-            inventory_life = null;
-            inventory_mana = null;
-            inventory_xp = null;
-            inventory_barCovers = null;
-            inventory_points = null;
-            inventory_panel = null;
+            inventorySeparator = null;
+            inventoryLife = null;
+            inventoryMana = null;
+            inventoryXp = null;
+            inventoryBarCovers = null;
+            inventoryPoints = null;
+            inventoryPanel = null;
 
-            projectile_fireball = null;
-            projectile_frostbolt = null;
-            projectile_boulder = null;
-            projectile_shadowbolt = null;
-            projectile_thunderbolt = null;
+            projectileFireball = null;
+            projectileFrostbolt = null;
+            projectileBoulder = null;
+            projectileShadowbolt = null;
+            projectileThunderbolt = null;
             heart = null;
             star = null;
             thornChain = null;
 
             levelUp = null;
 
-            sfx_levelUp = null;
+            sfxLevelUp = null;
         }
     }
 }

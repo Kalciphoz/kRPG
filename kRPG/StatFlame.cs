@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using kRPG.Enums;
 using kRPG.GUI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,9 +14,9 @@ namespace kRPG
     {
         private Mod mod;
         private STAT id;
-        private Func<Vector2> position;
-        private Texture2D texture;
-        private LevelGUI levelGUI;
+        private readonly Func<Vector2> position;
+        private readonly Texture2D texture;
+        private readonly LevelGUI levelGUI;
 
         private int counter;
         private int frameNumber = 0;

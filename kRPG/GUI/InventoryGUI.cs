@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using kRPG.Enums;
 using kRPG.Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -31,42 +32,42 @@ namespace kRPG.GUI
         public InventoryGUI(PlayerCharacter character, Mod mod)
         {
             AddButton(
-                () => new Rectangle((int) (origin.X + 142f * scale), (int) (origin.Y + 102f * scale), (int) (GFX.button_stats.Width * scale),
-                    (int) (GFX.button_stats.Height * scale)), delegate(Player player)
+                () => new Rectangle((int) (origin.X + 142f * scale), (int) (origin.Y + 102f * scale), (int) (GFX.buttonStats.Width * scale),
+                    (int) (GFX.buttonStats.Height * scale)), delegate(Player player)
                 {
                     Main.PlaySound(SoundID.MenuTick);
                     var pc = player.GetModPlayer<PlayerCharacter>();
                     pc.statPage = !pc.statPage;
                 });
             AddButton(
-                () => new Rectangle((int) (origin.X + 174f * scale), (int) (origin.Y + 102f * scale), (int) (GFX.button_page1.Width * scale),
-                    (int) (GFX.button_page1.Height * scale)), delegate(Player player)
+                () => new Rectangle((int) (origin.X + 174f * scale), (int) (origin.Y + 102f * scale), (int) (GFX.buttonPage1.Width * scale),
+                    (int) (GFX.buttonPage1.Height * scale)), delegate(Player player)
                 {
                     Main.PlaySound(SoundID.MenuTick);
                     var pc = player.GetModPlayer<PlayerCharacter>();
                     pc.OpenInventoryPage(0);
                 });
             AddButton(
-                () => new Rectangle((int) (origin.X + 206f * scale), (int) (origin.Y + 102f * scale), (int) (GFX.button_page2.Width * scale),
-                    (int) (GFX.button_page2.Height * scale)), delegate(Player player)
+                () => new Rectangle((int) (origin.X + 206f * scale), (int) (origin.Y + 102f * scale), (int) (GFX.buttonPage2.Width * scale),
+                    (int) (GFX.buttonPage2.Height * scale)), delegate(Player player)
                 {
                     Main.PlaySound(SoundID.MenuTick);
                     var pc = player.GetModPlayer<PlayerCharacter>();
                     pc.OpenInventoryPage(1);
                 });
             AddButton(
-                () => new Rectangle((int) (origin.X + 238f * scale), (int) (origin.Y + 102f * scale), (int) (GFX.button_page3.Width * scale),
-                    (int) (GFX.button_page3.Height * scale)), delegate(Player player)
+                () => new Rectangle((int) (origin.X + 238f * scale), (int) (origin.Y + 102f * scale), (int) (GFX.buttonPage3.Width * scale),
+                    (int) (GFX.buttonPage3.Height * scale)), delegate(Player player)
                 {
                     Main.PlaySound(SoundID.MenuTick);
                     var pc = player.GetModPlayer<PlayerCharacter>();
                     pc.OpenInventoryPage(2);
                 });
             AddButton(
-                () => new Rectangle((int) pointsOrigin.X, (int) pointsOrigin.Y, (int) (GFX.inventory_points.Width * scale),
-                    (int) (GFX.inventory_points.Height * scale)), delegate(Player player)
+                () => new Rectangle((int) pointsOrigin.X, (int) pointsOrigin.Y, (int) (GFX.inventoryPoints.Width * scale),
+                    (int) (GFX.inventoryPoints.Height * scale)), delegate(Player player)
                 {
-                    character.CloseGUIs();
+                    character.CloseGuIs();
                     Main.PlaySound(SoundID.MenuTick);
                     character.levelGUI.guiActive = player.GetModPlayer<PlayerCharacter>().UnspentPoints();
                 }, delegate(Player player, SpriteBatch spriteBatch)
@@ -96,34 +97,34 @@ namespace kRPG.GUI
             Vanilla(!character.statPage);
             if (character.statPage) DrawStatPage(spriteBatch, character);
             spriteBatch.Draw(GFX.inventoryFrame, new Vector2((int) origin.X, (int) origin.Y), Color.White, scale);
-            if (!character.statPage) spriteBatch.Draw(GFX.inventory_separator, new Vector2(origin.X + 56 * scale, origin.Y + 354 * scale), Color.White, scale);
+            if (!character.statPage) spriteBatch.Draw(GFX.inventorySeparator, new Vector2(origin.X + 56 * scale, origin.Y + 354 * scale), Color.White, scale);
             DrawHotbar(spriteBatch);
-            spriteBatch.Draw(character.statPage ? GFX.button_stats_pressed : GFX.button_stats, origin + new Vector2(142f, 102f) * scale, Color.White, scale);
-            spriteBatch.Draw(character.activeInvPage == 0 && !character.statPage ? GFX.button_page1_pressed : GFX.button_page1,
+            spriteBatch.Draw(character.statPage ? GFX.buttonStatsPressed : GFX.buttonStats, origin + new Vector2(142f, 102f) * scale, Color.White, scale);
+            spriteBatch.Draw(character.activeInvPage == 0 && !character.statPage ? GFX.buttonPage1Pressed : GFX.buttonPage1,
                 origin + new Vector2(174f, 102f) * scale, Color.White, scale);
-            spriteBatch.Draw(character.activeInvPage == 1 && !character.statPage ? GFX.button_page2_pressed : GFX.button_page2,
+            spriteBatch.Draw(character.activeInvPage == 1 && !character.statPage ? GFX.buttonPage2Pressed : GFX.buttonPage2,
                 origin + new Vector2(206f, 102f) * scale, Color.White, scale);
-            spriteBatch.Draw(character.activeInvPage == 2 && !character.statPage ? GFX.button_page3_pressed : GFX.button_page3,
+            spriteBatch.Draw(character.activeInvPage == 2 && !character.statPage ? GFX.buttonPage3Pressed : GFX.buttonPage3,
                 origin + new Vector2(238f, 102f) * scale, Color.White, scale);
             StatusBar.DrawNumerals(spriteBatch, player.GetModPlayer<PlayerCharacter>().level, scale);
 
             int currentLifeLength = (int) Math.Round(player.statLife / (decimal) player.statLifeMax2 * BarLength);
-            spriteBatch.Draw(GFX.inventory_life, origin + new Vector2(barX, 70 * scale), new Rectangle(0, 0, currentLifeLength, 20), Color.White, 0f,
+            spriteBatch.Draw(GFX.inventoryLife, origin + new Vector2(barX, 70 * scale), new Rectangle(0, 0, currentLifeLength, 20), Color.White, 0f,
                 Vector2.Zero, scale, SpriteEffects.None, 0f);
             int currentManaLength = (int) Math.Round(character.mana / (decimal) player.statManaMax2 * BarLength);
-            spriteBatch.Draw(GFX.inventory_mana, origin + new Vector2(barX, 98 * scale), new Rectangle(0, 0, currentManaLength, 16), Color.White, 0f,
+            spriteBatch.Draw(GFX.inventoryMana, origin + new Vector2(barX, 98 * scale), new Rectangle(0, 0, currentManaLength, 16), Color.White, 0f,
                 Vector2.Zero, scale, SpriteEffects.None, 0f);
             int currentXPLength = (int) Math.Round(BarLength * (decimal) character.xp / (decimal) character.ExperienceToLevel());
-            spriteBatch.Draw(GFX.inventory_xp, origin + new Vector2(barX, 126 * scale), new Rectangle(0, 0, currentXPLength, 8), Color.White, 0f, Vector2.Zero,
+            spriteBatch.Draw(GFX.inventoryXp, origin + new Vector2(barX, 126 * scale), new Rectangle(0, 0, currentXPLength, 8), Color.White, 0f, Vector2.Zero,
                 scale, SpriteEffects.None, 0f);
-            spriteBatch.Draw(GFX.inventory_barCovers, origin + new Vector2(302, 68) * scale, Color.White, scale);
+            spriteBatch.Draw(GFX.inventoryBarCovers, origin + new Vector2(302, 68) * scale, Color.White, scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife.ToString() + " / " + player.statLifeMax2.ToString(),
                 origin + new Vector2(barX + 16f * scale, 72f * scale), Color.White, 0.8f * scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.mana.ToString() + " / " + player.statManaMax2.ToString(),
                 origin + new Vector2(barX + 16f * scale, 100f * scale), Color.White, 0.6f * scale);
 
             if (character.UnspentPoints())
-                spriteBatch.Draw(GFX.inventory_points, pointsOrigin, Color.White, scale);
+                spriteBatch.Draw(GFX.inventoryPoints, pointsOrigin, Color.White, scale);
 
             //Mod mod = ModLoader.GetMod("kRPG");
             spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<PermanenceCrown>()], origin + new Vector2(600f, 68f) * scale, Color.White, scale);
@@ -149,7 +150,7 @@ namespace kRPG.GUI
         private void DrawStatPage(SpriteBatch spriteBatch, PlayerCharacter character)
         {
             var panelOrigin = origin + new Vector2(56, 146) * scale;
-            spriteBatch.Draw(GFX.inventory_panel, panelOrigin, Color.White, scale);
+            spriteBatch.Draw(GFX.inventoryPanel, panelOrigin, Color.White, scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.ExperienceToLevel() - character.xp + " XP to level",
                 panelOrigin + new Vector2(24f, 24f) * scale, Color.White, 0.8f * scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Resilience:", panelOrigin + new Vector2(24f, 42f) * scale, new Color(223, 0, 0),
@@ -325,7 +326,7 @@ namespace kRPG.GUI
                     catch (SystemException e2)
                     {
                         ModLoader.GetMod("kRPG").Logger.InfoFormat("Failed to initialize: " + e2);
-                        spriteBatch.Draw(GFX.itemSlot_broken, new Vector2(x2, y2), Color.White, Main.inventoryScale);
+                        spriteBatch.Draw(GFX.itemSlotBroken, new Vector2(x2, y2), Color.White, Main.inventoryScale);
                         Main.LocalPlayer.inventory[id].SetDefaults();
                         ModLoader.GetMod("kRPG").Logger.InfoFormat("ITEM " + id + " WAS DESTROYED.");
                     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using kRPG.Enums;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

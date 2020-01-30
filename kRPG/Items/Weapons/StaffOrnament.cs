@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kRPG.Enums;
 using kRPG.Projectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

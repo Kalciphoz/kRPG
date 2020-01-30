@@ -56,7 +56,7 @@ namespace kRPG.GUI
                 () => new Rectangle((int) pointsOrigin.X, (int) pointsOrigin.Y, (int) (GFX.unspentPoints.Width * Scale),
                     (int) (GFX.unspentPoints.Height * Scale)), delegate(Player player)
                 {
-                    character.CloseGUIs();
+                    character.CloseGuIs();
                     Main.PlaySound(SoundID.MenuTick);
                     character.levelGUI.guiActive = player.GetModPlayer<PlayerCharacter>().UnspentPoints() && !Main.playerInventory;
                 }, delegate

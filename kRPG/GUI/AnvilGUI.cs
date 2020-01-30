@@ -87,13 +87,13 @@ namespace kRPG.GUI
                 spriteBatch.DrawStringWithShadow(Main.fontMouseText, "If the upgrade fails, the item will be destroyed.",
                     new Vector2(GuiPosition.X - 176f * Scale, GuiPosition.Y - 124 * Scale), Color.Red, Scale);
 
-            spriteBatch.Draw(guardianCrown ? GFX.button_crown_pressed : GFX.button_crown, BtnExperiencePos, Color.White, Scale);
+            spriteBatch.Draw(guardianCrown ? GFX.buttonCrownPressed : GFX.buttonCrown, BtnExperiencePos, Color.White, Scale);
             spriteBatch.Draw(GFX.guardianCrown, BtnExperiencePos + new Vector2(9f, 10f) * Scale, guardianCrown ? Color.Gray : Color.White, Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Increases success chance of upgrades by 10%", BtnExperiencePos + new Vector2(64f, 4f) * Scale,
                 Color.White, Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "at the cost of a much higher price in currency",
                 BtnExperiencePos + new Vector2(64f, 28f) * Scale, Color.White, Scale);
-            spriteBatch.Draw(permanenceCrown ? GFX.button_crown_pressed : GFX.button_crown, BtnPermanencePos, Color.White, Scale);
+            spriteBatch.Draw(permanenceCrown ? GFX.buttonCrownPressed : GFX.buttonCrown, BtnPermanencePos, Color.White, Scale);
             spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<PermanenceCrown>()], BtnPermanencePos + new Vector2(9f, 10f) * Scale,
                 permanenceCrown ? Color.Gray : Color.White, Scale);
             spriteBatch.DrawStringWithShadow(Main.fontItemStack, playerCharacter.permanence.ToString(), BtnPermanencePos + new Vector2(8f, 24f) * Scale, Color.White,
@@ -103,7 +103,7 @@ namespace kRPG.GUI
             spriteBatch.DrawStringWithShadow(Main.fontMouseText,
                 "instead of being destroyed. " + (playerCharacter.permanence == 1 ? "1 crown left." : playerCharacter.permanence + " crowns left."),
                 BtnPermanencePos + new Vector2(64f, 28f) * Scale, Color.White, Scale);
-            spriteBatch.Draw(transcendenceCrown ? GFX.button_crown_pressed : GFX.button_crown, BtnTranscendencePos, Color.White, Scale);
+            spriteBatch.Draw(transcendenceCrown ? GFX.buttonCrownPressed : GFX.buttonCrown, BtnTranscendencePos, Color.White, Scale);
             spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<BlacksmithCrown>()], BtnTranscendencePos + new Vector2(9f, 10f) * Scale,
                 transcendenceCrown ? Color.Gray : Color.White, Scale);
             spriteBatch.DrawStringWithShadow(Main.fontItemStack, playerCharacter.transcendence.ToString(), BtnTranscendencePos + new Vector2(8f, 24f) * Scale,
@@ -113,7 +113,7 @@ namespace kRPG.GUI
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, playerCharacter.transcendence == 1 ? "1 crown left." : playerCharacter.transcendence + " crowns left.",
                 BtnTranscendencePos + new Vector2(64f, 28f) * Scale, Color.White, Scale);
 
-            spriteBatch.Draw(GFX.button_close, BtnCancelPos, Color.White, Scale);
+            spriteBatch.Draw(GFX.buttonClose, BtnCancelPos, Color.White, Scale);
 
             if (!selected)
             {
@@ -142,7 +142,7 @@ namespace kRPG.GUI
                         new Vector2(GuiPosition.X - 192f * Scale, GuiPosition.Y + 152f * Scale), Color.White, Scale);
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Chance to succeed: " + (upgradeSuccess + bonusChance).ToString() + "%",
                         new Vector2(GuiPosition.X - 192f * Scale, GuiPosition.Y + 176f * Scale), bonusChance > 0 ? Color.Lime : Color.White, Scale);
-                    spriteBatch.Draw(GFX.button_upgrade, BtnUpgradePos, Color.White, Scale);
+                    spriteBatch.Draw(GFX.buttonUpgrade, BtnUpgradePos, Color.White, Scale);
                     if (new Rectangle((int)BtnUpgradePos.X, (int)BtnUpgradePos.Y, (int)(GFX.BTN_WIDTH * Scale), (int)(GFX.BTN_HEIGHT * Scale)).Contains(
                             Main.mouseX, Main.mouseY) && Main.mouseLeft && Main.mouseLeftRelease)
                     {
