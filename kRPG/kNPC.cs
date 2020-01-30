@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kRPG.Items;
 using kRPG.Items.Dusts;
 using kRPG.Items.Glyphs;
@@ -18,13 +19,7 @@ namespace kRPG
     {
         public const double ELE_DMG_MODIFIER = 1.2;
 
-        public override bool InstancePerEntity
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool InstancePerEntity => true;
         private bool initialized = false;
         public Dictionary<ProceduralSpell, int> invincibilityTime = new Dictionary<ProceduralSpell, int>();
         public int immuneTime = 0;
@@ -112,19 +107,18 @@ namespace kRPG
 
         public override void UpdateLifeRegen(NPC npc, ref int damage)
         {
-            if (hasAilment[ELEMENT.FIRE])
-            {
-                if (npc.lifeRegen > 0) npc.lifeRegen = 0;
-                npc.lifeRegen -= ailmentIntensity[ELEMENT.FIRE] * 2;
-                damage = ailmentIntensity[ELEMENT.FIRE] / 3;
-            }
+            if (!hasAilment[ELEMENT.FIRE])
+                return;
+            if (npc.lifeRegen > 0) npc.lifeRegen = 0;
+            npc.lifeRegen -= ailmentIntensity[ELEMENT.FIRE] * 2;
+            damage = ailmentIntensity[ELEMENT.FIRE] / 3;
         }
 
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
-            for (var i = 0; i < modifiers.Count; i++)
+            foreach (var t in modifiers)
             {
-                modifiers[i].DrawEffects(npc, ref drawColor);
+                t.DrawEffects(npc, ref drawColor);
             }
             
             if (hasAilment[ELEMENT.FIRE])
@@ -161,38 +155,38 @@ namespace kRPG
 
             if (hasAilment[ELEMENT.SHADOW])
             {
-                if (Main.rand.Next(3) < 2)
-                {
-                    int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width + 4, npc.height + 4, DustID.Shadowflame, npc.velocity.X, npc.velocity.Y, 100, default(Color), 1.5f);
-                    Main.dust[dust].noGravity = true;
-                }
+                if (Main.rand.Next(3) >= 2)
+                    return;
+                int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width + 4, npc.height + 4, DustID.Shadowflame, npc.velocity.X, npc.velocity.Y, 100, default(Color), 1.5f);
+                Main.dust[dust].noGravity = true;
             }
         }
 
         public override void ModifyHitPlayer(NPC npc, Player target, ref int damage, ref bool crit)
         {
-            for (var i = 0; i < modifiers.Count; i++)
+            foreach (var t in modifiers)
             {
-                modifiers[i].ModifyHitPlayer(npc, target, ref damage, ref crit);
+                t.ModifyHitPlayer(npc, target, ref damage, ref crit);
             }
+
             if (hasAilment[ELEMENT.SHADOW])
                 damage = damage * (20 + 9360 / (130 + ailmentIntensity[ELEMENT.SHADOW])) / 100;
         }
 
         public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
         {
-            for (var i = 0; i < modifiers.Count; i++)
+            foreach (var t in modifiers)
             {
-                modifiers[i].OnHitByProjectile(npc, projectile, damage, knockback, crit);
+                t.OnHitByProjectile(npc, projectile, damage, knockback, crit);
             }
-            if (projectile.modProjectile is ProceduralSpellProj)
-            {
-                ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
-                if (invincibilityTime.ContainsKey(ps.source))
-                    invincibilityTime[ps.source] = 30;
-                else
-                    invincibilityTime.Add(ps.source, 30);
-            }
+
+            if (!(projectile.modProjectile is ProceduralSpellProj))
+                return;
+            ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
+            if (invincibilityTime.ContainsKey(ps.source))
+                invincibilityTime[ps.source] = 30;
+            else
+                invincibilityTime.Add(ps.source, 30);
         }
 
         public override bool StrikeNPC(NPC npc, ref double damage, int defense, ref float knockback, int hitDirection, ref bool crit)
@@ -203,9 +197,9 @@ namespace kRPG
 
             float dodgeChanceModifier = 1f;
             
-            for (var i = 0; i < modifiers.Count; i++)
+            foreach (var t in modifiers)
             {
-                dodgeChanceModifier *= modifiers[i].StrikeNPC(npc, damage, defense, knockback, hitDirection, crit);
+                dodgeChanceModifier *= t.StrikeNPC(npc, damage, defense, knockback, hitDirection, crit);
             }
 
             if (character.accuracyCounter < 1 * dodgeChanceModifier && !character.rituals[RITUAL.WARRIOR_OATH])
@@ -224,8 +218,8 @@ namespace kRPG
                 SyncCounters(npc.target, character, false);
                 return false;
             }
-            else
-                character.accuracyCounter -= 1 * dodgeChanceModifier;
+
+            character.accuracyCounter -= 1 * dodgeChanceModifier;
             SyncCounters(npc.target, character, false);
             character.critAccuracyCounter += character.critHitChance;
             if (crit)
@@ -253,27 +247,26 @@ namespace kRPG
         public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
         {
             if (immuneTime > 0) return false;
-            if (projectile.modProjectile is ProceduralSpellProj)
-            {
-                ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
-                if (ps.source != null)
-                    if (invincibilityTime.ContainsKey(ps.source))
-                        if (invincibilityTime[ps.source] > 0) return false;
-            }
+            ProceduralSpellProj ps = projectile.modProjectile as ProceduralSpellProj;
+            if (ps?.source == null)
+                return null;
+            if (!invincibilityTime.ContainsKey(ps.source))
+                return null;
+            if (invincibilityTime[ps.source] > 0) return false;
             return null;
         }
 
         public override bool? CanBeHitByItem(NPC npc, Player player, Item item)
         {
             if (immuneTime > 0) return false;
-            else return null;
+            return null;
         }
 
         public override void PostAI(NPC npc)
         {
-            for (var i = 0; i < modifiers.Count; i++)
+            foreach (var t in modifiers)
             {
-                modifiers[i].PostAI(npc);
+                t.PostAI(npc);
             }
             
             List<ProceduralSpell> keys = new List<ProceduralSpell>(invincibilityTime.Keys);
@@ -306,9 +299,7 @@ namespace kRPG
                     { ELEMENT.LIGHTNING, player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneTowerStardust || player.ZoneMeteor || player.ZoneHoly || Main.rand.Next(10) == 0 && Main.netMode == 0 },
                     { ELEMENT.SHADOW, player.ZoneCorrupt || player.ZoneCrimson || player.ZoneUnderworldHeight || player.ZoneTowerNebula || !Main.dayTime && (Main.rand.Next(10) == 0 && Main.netMode == 0 && player.ZoneOverworldHeight) }
                 };
-                int count = 0;
-                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                    if (haselement[element]) count += 1;
+                int count = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => haselement[element]);
                 int portionsize = (int)Math.Round((double)npc.damage * ELE_DMG_MODIFIER / 2.0 / count);
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                     if (haselement[element]) elementalDamage[element] = Math.Max(1, portionsize);
@@ -329,20 +320,20 @@ namespace kRPG
 
         public void Update(NPC npc)
         {
-            if (npc.aiStyle == 3 && npc.velocity.Y == 0f)
+            if (npc.aiStyle == 3 && Math.Abs(npc.velocity.Y) < .01)
                 npc.velocity.X = MathHelper.Lerp(npc.velocity.X, npc.direction * Math.Max(Math.Abs(npc.velocity.X), 8f), 1f * speedModifier / 20f);
 
-            for (var i = 0; i < modifiers.Count; i++)
+            foreach (var t in modifiers)
             {
-                modifiers[i].Update(npc);
+                t.Update(npc);
             }
         }
 
         public override void NPCLoot(NPC npc)
         {
-            for (var i = 0; i < modifiers.Count; i++)
+            foreach (var t in modifiers)
             {
-                modifiers[i].NPCLoot(npc);
+                t.NPCLoot(npc);
             }
             
             if (npc.lifeMax < 10) return;
@@ -351,10 +342,7 @@ namespace kRPG
 
             if (Main.rand.Next(2500) < GetLevel(npc.type))
             {
-                if (Main.rand.Next(8) == 0)
-                    Item.NewItem(npc.position, ModContent.ItemType<BlacksmithCrown>());
-                else
-                    Item.NewItem(npc.position, ModContent.ItemType<PermanenceCrown>());
+                Item.NewItem(npc.position, Main.rand.Next(8) == 0 ? ModContent.ItemType<BlacksmithCrown>() : ModContent.ItemType<PermanenceCrown>());
             }
 
             int level = GetLevel(npc.netID);

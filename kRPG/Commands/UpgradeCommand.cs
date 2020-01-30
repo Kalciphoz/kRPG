@@ -17,7 +17,7 @@ namespace kRPG.Commands
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {
-            byte upgrade = Byte.Parse(args[0]);
+            byte upgrade = byte.Parse(args[0]);
             mod.GetGlobalItem<kItem>().SetUpgradeLevel(Main.mouseItem, upgrade);
         }
     }

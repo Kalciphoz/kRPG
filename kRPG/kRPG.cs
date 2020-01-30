@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using kRPG.GUI;
 using kRPG.Items;
@@ -92,9 +93,7 @@ namespace kRPG
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
             Message msg = (Message)reader.ReadByte();
-            Dictionary<DataTag, object> tags = new Dictionary<DataTag, object>();
-            foreach (DataTag tag in dataTags[msg])
-                tags.Add(tag, tag.read(reader));
+            Dictionary<DataTag, object> tags = dataTags[msg].ToDictionary(tag => tag, tag => tag.read(reader));
             switch (msg)
             {
                 //case Message.InitProjEleDmg:
@@ -128,9 +127,7 @@ namespace kRPG
                             { ELEMENT.LIGHTNING, (bool)tags[DataTag.flag3] },
                             { ELEMENT.SHADOW, (bool)tags[DataTag.flag4] }
                         };
-                        int count = 0;
-                        foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                            if (haselement[element]) count += 1;
+                        int count = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => haselement[element]);
                         int portionsize = (int)Math.Round((double)npc.damage * kNPC.ELE_DMG_MODIFIER / 2.0 / count);
                         foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                             if (haselement[element]) kn.elementalDamage[element] = Math.Max(1, portionsize);
@@ -213,18 +210,17 @@ namespace kRPG
                         ps.source.modifierOverride = modifiers;
                         foreach (Item item in ps.source.glyphs)
                         {
-                            if (item != null)
-                            {
-                                Glyph glyph = (Glyph)item.modItem;
-                                if (glyph.GetAIAction() != null)
-                                    ps.ai.Add(glyph.GetAIAction());
-                                if (glyph.GetInitAction() != null)
-                                    ps.init.Add(glyph.GetInitAction());
-                                if (glyph.GetImpactAction() != null)
-                                    ps.impact.Add(glyph.GetImpactAction());
-                                if (glyph.GetKillAction() != null)
-                                    ps.kill.Add(glyph.GetKillAction());
-                            }
+                            if (item == null)
+                                continue;
+                            Glyph glyph = (Glyph)item.modItem;
+                            if (glyph.GetAIAction() != null)
+                                ps.ai.Add(glyph.GetAIAction());
+                            if (glyph.GetInitAction() != null)
+                                ps.init.Add(glyph.GetInitAction());
+                            if (glyph.GetImpactAction() != null)
+                                ps.impact.Add(glyph.GetImpactAction());
+                            if (glyph.GetKillAction() != null)
+                                ps.kill.Add(glyph.GetKillAction());
                         }
                         foreach (GlyphModifier modifier in modifiers)
                         {

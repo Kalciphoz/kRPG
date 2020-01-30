@@ -144,11 +144,10 @@ namespace kRPG.Items.Weapons
             runicDaiKatana = new SwordBlade("RunicDaiKatana", 2, 17, "Dai-Katana", 33, 4f, 0.95f, 5, true, 0f, true, true);
             blazeSword = new SwordBlade("BlazeSword", 4, 14, "Lantern", 26, 3f, 1.05f, 0, false, 0f, true, true, delegate(Rectangle rect, Player player)
             {
-                if (Main.rand.Next(7) < 2)
-                {
-                    int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color());
-                    Main.dust[dust].noGravity = true;
-                }
+                if (Main.rand.Next(7) >= 2)
+                    return;
+                int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color());
+                Main.dust[dust].noGravity = true;
             }).SetEleDamage(new Dictionary<ELEMENT, float>()
             {
                 { ELEMENT.FIRE, 0.4f },
@@ -162,11 +161,10 @@ namespace kRPG.Items.Weapons
             hellstoneBroadsword = new SwordBlade("HellstoneBroadsword", 2, 13, "Hellstone Broadsword", 23, 4.5f, 1.1f, 2, true, 0.1f);
             fieryBroadsword = new SwordBlade("FieryBroadsword", 2, 15, "Fiery Field Sword", 29, 4f, 0.92f, 0, true, 0.1f, true, true, delegate(Rectangle rect, Player player)
             {
-                if (Main.rand.Next(2) == 0)
-                {
-                    int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color(), 2f);
-                    Main.dust[dust].noGravity = true;
-                }
+                if (Main.rand.Next(2) != 0)
+                    return;
+                int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color(), 2f);
+                Main.dust[dust].noGravity = true;
             }).SetEleDamage(new Dictionary<ELEMENT, float>()
             {
                 { ELEMENT.FIRE, 0.5f },
@@ -176,11 +174,10 @@ namespace kRPG.Items.Weapons
             });
             fieryGreatsword = new SwordBlade("FieryGreatsword", 2, 16, "Fiery Greatsword", 36, 6f, 0.96f, 0, false, 0.2f, true, true, delegate (Rectangle rect, Player player)
             {
-                if (Main.rand.Next(2) == 0)
-                {
-                    int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color(), 2f);
-                    Main.dust[dust].noGravity = true;
-                }
+                if (Main.rand.Next(2) != 0)
+                    return;
+                int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color(), 2f);
+                Main.dust[dust].noGravity = true;
             }).SetEleDamage(new Dictionary<ELEMENT, float>()
             {
                 { ELEMENT.FIRE, 0.5f },

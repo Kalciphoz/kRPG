@@ -8,27 +8,11 @@ namespace kRPG
 {
     public class kConfig
     {
-        public static ClientConfig clientside
-        {
-            get
-            {
-                return configLocal.clientside;
-            }
-        }
-		public static string configPath
-        {
-            get
-            {
-                return Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Settings.json";
-            }
-        }
-		public static string statsPath
-        {
-            get
-            {
-                return Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Stats.json";
-            }
-        }
+        public static ClientConfig clientside => configLocal.clientside;
+
+        public static string configPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Settings.json";
+
+        public static string statsPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Stats.json";
 
         //Make this fancier?
         internal static Config _configLocal = new Config();
@@ -36,29 +20,18 @@ namespace kRPG
         {
             get
             {
-                if (_configLocal == null)
-                {
-                    _configLocal = new Config();
-                    LoadConfig(configPath, ref _configLocal);
-                }
+                if (_configLocal != null)
+                    return _configLocal;
+                _configLocal = new Config();
+                LoadConfig(configPath, ref _configLocal);
                 return _configLocal;
             }
-            private set
-            {
-                _configLocal = value;
-            }
+            private set => _configLocal = value;
         }
         internal static Config _configServer = new Config();
         public static Config configServer
         {
-            get
-            {
-                if (_configServer == null)
-                {
-                    _configServer = new Config();
-                }
-                return _configServer;
-            }
+            get { return _configServer ?? (_configServer = new Config()); }
             private set
             {
                 _configServer = value;
@@ -116,12 +89,11 @@ namespace kRPG
         {
             try
             {
-                if (File.Exists(path))
+                if (!File.Exists(path))
+                    return;
+                using (StreamReader reader = new StreamReader(path))
                 {
-                    using (StreamReader reader = new StreamReader(path))
-                    {
-                        config = JsonConvert.DeserializeObject<T>(reader.ReadToEnd());
-                    }
+                    config = JsonConvert.DeserializeObject<T>(reader.ReadToEnd());
                 }
             }
             catch (SystemException e)

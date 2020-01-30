@@ -29,16 +29,15 @@ namespace kRPG
 
         public virtual void Update(SpriteBatch spriteBatch, Player player)
         {
-            if (position().Contains(Main.mouseX, Main.mouseY))
-            {
-                Main.LocalPlayer.mouseInterface = true;
+            if (!position().Contains(Main.mouseX, Main.mouseY))
+                return;
+            Main.LocalPlayer.mouseInterface = true;
 
-                if (hoverActionSet)
-                    hoverAction(player, spriteBatch);
+            if (hoverActionSet)
+                hoverAction(player, spriteBatch);
 
-                if (Main.mouseLeft && Main.mouseLeftRelease)
-                    pressAction(player);
-            }
+            if (Main.mouseLeft && Main.mouseLeftRelease)
+                pressAction(player);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace kRPG.Items
         public override bool CanPickup(Player player)
         {
             if (Main.netMode == 0) return true;
-            else return item.value > 100;
+             return item.value > 100;
         }
 
         public virtual void Initialize() { }
@@ -242,12 +242,10 @@ namespace kRPG.Items
 
         public Point CombinedTextureSize()
         {
-            if (ornament.type != 0)
-            {
-                if (ornament.origin.Y > gem.origin.Y)
-                    return new Point(ornament.texture.Width - (int)ornament.origin.X + (int)staff.origin.X, (int)ornament.origin.Y + staff.texture.Height - (int)staff.origin.Y);
-            }
-            return new Point(gem.texture.Width - (int)gem.origin.X + (int)staff.origin.X, (int)gem.origin.Y + staff.texture.Height - (int)staff.origin.Y);
+            if (ornament.type == 0)
+                return new Point(gem.texture.Width - (int) gem.origin.X + (int) staff.origin.X,
+                    (int) gem.origin.Y + staff.texture.Height - (int) staff.origin.Y);
+            return ornament.origin.Y > gem.origin.Y ? new Point(ornament.texture.Width - (int)ornament.origin.X + (int)staff.origin.X, (int)ornament.origin.Y + staff.texture.Height - (int)staff.origin.Y) : new Point(gem.texture.Width - (int)gem.origin.X + (int)staff.origin.X, (int)gem.origin.Y + staff.texture.Height - (int)staff.origin.Y);
         }
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
@@ -273,11 +271,10 @@ namespace kRPG.Items
                 DrawData draw = new DrawData(texture, position, null, color, rotation, new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale, effects, 0);
                 for (int i = 0; i < Main.playerDrawData.Count; i += 1)
                 {
-                    if (Main.playerDrawData[i].texture == Main.itemTexture[player.inventory[player.selectedItem].type])
-                    {
-                        Main.playerDrawData.Insert(i, draw);
-                        return;
-                    }
+                    if (Main.playerDrawData[i].texture != Main.itemTexture[player.inventory[player.selectedItem].type])
+                        continue;
+                    Main.playerDrawData.Insert(i, draw);
+                    return;
                 }
                 Main.playerDrawData.Add(draw);
             }
@@ -304,18 +301,17 @@ namespace kRPG.Items
             staff.dps = dps;
             staff.enemyDef = enemyDef;
             staff.Initialize();
-            if (Main.netMode == 2)
-            {
-                ModPacket packet = mod.GetPacket();
-                packet.Write((byte)Message.StaffInit);
-                packet.Write(id);
-                packet.Write(staffstaff.type);
-                packet.Write(staffgem.type);
-                packet.Write(staffornament.type);
-                packet.Write(dps);
-                packet.Write(enemyDef);
-                packet.Send();
-            }
+            if (Main.netMode != 2)
+                return staff;
+            ModPacket packet = mod.GetPacket();
+            packet.Write((byte)Message.StaffInit);
+            packet.Write(id);
+            packet.Write(staffstaff.type);
+            packet.Write(staffgem.type);
+            packet.Write(staffornament.type);
+            packet.Write(dps);
+            packet.Write(enemyDef);
+            packet.Send();
             return staff;
         }
 
@@ -571,15 +567,14 @@ namespace kRPG.Items
                     ps.blade = blade;
                     ps.accent = accent;
                     if (Main.netMode != 2) ps.Initialize();
-                    if (Main.netMode == 1)
-                    {
-                        ModPacket packet = mod.GetPacket();
-                        packet.Write((byte)Message.SyncSpear);
-                        packet.Write(blade.type);
-                        packet.Write(hilt.type);
-                        packet.Write(accent.type);
-                        packet.Send();
-                    }
+                    if (Main.netMode != 1)
+                        return true;
+                    ModPacket packet = mod.GetPacket();
+                    packet.Write((byte)Message.SyncSpear);
+                    packet.Write(blade.type);
+                    packet.Write(hilt.type);
+                    packet.Write(accent.type);
+                    packet.Send();
                     return true;
                 }
             }
@@ -592,20 +587,14 @@ namespace kRPG.Items
 
         public override void OnHitNPC(Player player, NPC target, int damage, float knockBack, bool crit)
         {
-            if (accent.onHit != null) accent.onHit(player, target, this, damage, crit);
+            accent.onHit?.Invoke(player, target, this, damage, crit);
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
-            if (blade.effect != null)
-            {
-                blade.effect(hitbox, player);
-            }
+            blade.effect?.Invoke(hitbox, player);
 
-            if (accent.effect != null)
-            {
-                accent.effect(hitbox, player);
-            }
+            accent.effect?.Invoke(hitbox, player);
         }
 
         public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)
@@ -648,11 +637,10 @@ namespace kRPG.Items
                 DrawData draw = new DrawData(texture, position, null, lighted ? Color.White : color, rotation, new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale, effects, 0);
                 for (int i = 0; i < Main.playerDrawData.Count; i += 1)
                 {
-                    if (Main.playerDrawData[i].texture == Main.itemTexture[player.inventory[player.selectedItem].type])
-                    {
-                        Main.playerDrawData.Insert(i, draw);
-                        return;
-                    }
+                    if (Main.playerDrawData[i].texture != Main.itemTexture[player.inventory[player.selectedItem].type])
+                        continue;
+                    Main.playerDrawData.Insert(i, draw);
+                    return;
                 }
                 Main.playerDrawData.Add(draw);
             }
@@ -679,18 +667,17 @@ namespace kRPG.Items
             sword.dps = dps;
             sword.enemyDef = enemyDef;
             sword.Initialize();
-            if (Main.netMode == 2)
-            {
-                ModPacket packet = mod.GetPacket();
-                packet.Write((byte)Message.SwordInit);
-                packet.Write(id);
-                packet.Write(blade.type);
-                packet.Write(hilt.type);
-                packet.Write(accent.type);
-                packet.Write(dps);
-                packet.Write(enemyDef);
-                packet.Send();
-            }
+            if (Main.netMode != 2)
+                return sword;
+            ModPacket packet = mod.GetPacket();
+            packet.Write((byte)Message.SwordInit);
+            packet.Write(id);
+            packet.Write(blade.type);
+            packet.Write(hilt.type);
+            packet.Write(accent.type);
+            packet.Write(dps);
+            packet.Write(enemyDef);
+            packet.Send();
             return sword;
         }
 

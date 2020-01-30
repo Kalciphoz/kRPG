@@ -82,15 +82,15 @@ namespace kRPG.Items.Weapons
                     PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
                     float distance = Vector2.Distance(npc.Center, character.player.Center);
                     int count = (int)(distance / 20);
-                    Trail trail = new Trail(npc.Center, 60, delegate (SpriteBatch spriteBatch, Player p, Vector2 end, Vector2[] displacement, float scale)
+                    Trail trail = new Trail(npc.Center, 60, delegate(SpriteBatch spriteBatch, Player p, Vector2 end, Vector2[] displacement, float scale)
                     {
                         for (int i = 0; i < count; i += 1)
                         {
                             Vector2 position = (npc.position - p.Center) * i / count + p.Center;
-                            spriteBatch.Draw(GFX.heart, position - Main.screenPosition + displacement[i], null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+                            spriteBatch.Draw(GFX.heart, position - Main.screenPosition + displacement[i], null, Color.White, 0f, Vector2.Zero, scale,
+                                SpriteEffects.None, 0f);
                         }
-                    });
-                    trail.displacement = new Vector2[count];
+                    }) {displacement = new Vector2[count]};
                     for (int i = 0; i < count; i += 1)
                         trail.displacement[i] = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f));
                     character.trails.Add(trail);
@@ -111,11 +111,10 @@ namespace kRPG.Items.Weapons
                 { ELEMENT.SHADOW, 0f }
             }).setEffect(delegate(Rectangle rect, Player player)
             {
-                if (Main.rand.Next(2) == 0)
-                {
-                    int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color(), 1.5f);
-                    Main.dust[dust].noGravity = true;
-                }
+                if (Main.rand.Next(2) != 0)
+                    return;
+                int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color(), 1.5f);
+                Main.dust[dust].noGravity = true;
             });
             gemGreen = new SwordAccent("GemGreen", " of Thunder", 2, 2, 2, delegate (Player player, NPC npc, ProceduralSword sword, int damage, bool crit)
             {
@@ -129,11 +128,10 @@ namespace kRPG.Items.Weapons
                 { ELEMENT.SHADOW, 0f }
             }).setEffect(delegate(Rectangle rect, Player player)
             {
-                if (Main.rand.Next(2) == 0)
-                {
-                    int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Electric, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color(), 0.5f);
-                    Main.dust[dust].noGravity = true;
-                }
+                if (Main.rand.Next(2) != 0)
+                    return;
+                int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Electric, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color(), 0.5f);
+                Main.dust[dust].noGravity = true;
             });
             gemBlue = new SwordAccent("GemBlue", " of Everest", 2, 2, 0, null, 1.15f, 0, delegate(Rectangle rect, Player player)
             {
@@ -152,11 +150,10 @@ namespace kRPG.Items.Weapons
             });
             gemPurple = new SwordAccent("GemPurple", " of Starlight", 2, 1, 3, null, 1.1f).setEffect(delegate(Rectangle rect, Player player)
             {
-                if (Main.rand.Next(2) == 0)
-                {
-                    int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, 27, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color(), 1.5f);
-                    Main.dust[dust].noGravity = true;
-                }
+                if (Main.rand.Next(2) != 0)
+                    return;
+                int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, 27, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color(), 1.5f);
+                Main.dust[dust].noGravity = true;
             });
         }
 

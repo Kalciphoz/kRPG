@@ -90,106 +90,69 @@ namespace kRPG
                 {
                     item.hairDye = GameShaders.Hair.GetShaderIdFromItemId(item.type);
                 }
-                if (item.type == 2015)
+                switch (item.type)
                 {
-                    item.value = Item.sellPrice(0, 0, 5, 0);
+                    case 2015:
+                        item.value = Item.sellPrice(0, 0, 5, 0);
+                        break;
+                    case 2016:
+                    case 2017:
+                        item.value = Item.sellPrice(0, 0, 7, 50);
+                        break;
+                    case 2019:
+                    case 2018:
+                    case 3563:
+                        item.value = Item.sellPrice(0, 0, 5, 0);
+                        break;
+                    case 261:
+                        item.value = Item.sellPrice(0, 0, 7, 50);
+                        break;
+                    case 2205:
+                        item.value = Item.sellPrice(0, 0, 12, 50);
+                        break;
+                    case 2123:
+                    case 2122:
+                        item.value = Item.sellPrice(0, 0, 7, 50);
+                        break;
+                    case 2003:
+                        item.value = Item.sellPrice(0, 0, 20, 0);
+                        break;
+                    case 2156:
+                    case 2157:
+                    case 2121:
+                        item.value = Item.sellPrice(0, 0, 15, 0);
+                        break;
+                    case 1992:
+                        item.value = Item.sellPrice(0, 0, 3, 0);
+                        break;
+                    case 2004:
+                    case 2002:
+                        item.value = Item.sellPrice(0, 0, 5, 0);
+                        break;
+                    case 2740:
+                        item.value = Item.sellPrice(0, 0, 2, 50);
+                        break;
+                    case 2006:
+                    case 3191:
+                        item.value = Item.sellPrice(0, 0, 20, 0);
+                        break;
+                    case 3192:
+                        item.value = Item.sellPrice(0, 0, 2, 50);
+                        break;
+                    case 3193:
+                        item.value = Item.sellPrice(0, 0, 5, 0);
+                        break;
+                    case 3194:
+                        item.value = Item.sellPrice(0, 0, 10, 0);
+                        break;
+                    case 2007:
+                        item.value = Item.sellPrice(0, 0, 50, 0);
+                        break;
+                    case 2673:
+                        item.value = Item.sellPrice(0, 10, 0, 0);
+                        break;
                 }
-                if (item.type == 2016)
-                {
-                    item.value = Item.sellPrice(0, 0, 7, 50);
-                }
-                if (item.type == 2017)
-                {
-                    item.value = Item.sellPrice(0, 0, 7, 50);
-                }
-                if (item.type == 2019)
-                {
-                    item.value = Item.sellPrice(0, 0, 5, 0);
-                }
-                if (item.type == 2018)
-                {
-                    item.value = Item.sellPrice(0, 0, 5, 0);
-                }
-                if (item.type == 3563)
-                {
-                    item.value = Item.sellPrice(0, 0, 5, 0);
-                }
-                if (item.type == 261)
-                {
-                    item.value = Item.sellPrice(0, 0, 7, 50);
-                }
-                if (item.type == 2205)
-                {
-                    item.value = Item.sellPrice(0, 0, 12, 50);
-                }
-                if (item.type == 2123)
-                {
-                    item.value = Item.sellPrice(0, 0, 7, 50);
-                }
-                if (item.type == 2122)
-                {
-                    item.value = Item.sellPrice(0, 0, 7, 50);
-                }
-                if (item.type == 2003)
-                {
-                    item.value = Item.sellPrice(0, 0, 20, 0);
-                }
-                if (item.type == 2156)
-                {
-                    item.value = Item.sellPrice(0, 0, 15, 0);
-                }
-                if (item.type == 2157)
-                {
-                    item.value = Item.sellPrice(0, 0, 15, 0);
-                }
-                if (item.type == 2121)
-                {
-                    item.value = Item.sellPrice(0, 0, 15, 0);
-                }
-                if (item.type == 1992)
-                {
-                    item.value = Item.sellPrice(0, 0, 3, 0);
-                }
-                if (item.type == 2004)
-                {
-                    item.value = Item.sellPrice(0, 0, 5, 0);
-                }
-                if (item.type == 2002)
-                {
-                    item.value = Item.sellPrice(0, 0, 5, 0);
-                }
-                if (item.type == 2740)
-                {
-                    item.value = Item.sellPrice(0, 0, 2, 50);
-                }
-                if (item.type == 2006)
-                {
-                    item.value = Item.sellPrice(0, 0, 20, 0);
-                }
-                if (item.type == 3191)
-                {
-                    item.value = Item.sellPrice(0, 0, 20, 0);
-                }
-                if (item.type == 3192)
-                {
-                    item.value = Item.sellPrice(0, 0, 2, 50);
-                }
-                if (item.type == 3193)
-                {
-                    item.value = Item.sellPrice(0, 0, 5, 0);
-                }
-                if (item.type == 3194)
-                {
-                    item.value = Item.sellPrice(0, 0, 10, 0);
-                }
-                if (item.type == 2007)
-                {
-                    item.value = Item.sellPrice(0, 0, 50, 0);
-                }
-                if (item.type == 2673)
-                {
-                    item.value = Item.sellPrice(0, 10, 0, 0);
-                }
+
                 if (item.bait > 0)
                 {
                     if (item.bait >= 50)
@@ -208,48 +171,64 @@ namespace kRPG
                 if (item.type >= 1994 && item.type <= 2001)
                 {
                     int num = item.type - 1994;
-                    if (num == 0)
+                    switch (num)
                     {
-                        item.value = Item.sellPrice(0, 0, 5, 0);
-                    }
-                    if (num == 4)
-                    {
-                        item.value = Item.sellPrice(0, 0, 10, 0);
-                    }
-                    if (num == 6)
-                    {
-                        item.value = Item.sellPrice(0, 0, 15, 0);
-                    }
-                    if (num == 3)
-                    {
-                        item.value = Item.sellPrice(0, 0, 20, 0);
-                    }
-                    if (num == 7)
-                    {
-                        item.value = Item.sellPrice(0, 0, 30, 0);
-                    }
-                    if (num == 2)
-                    {
-                        item.value = Item.sellPrice(0, 0, 40, 0);
-                    }
-                    if (num == 1)
-                    {
-                        item.value = Item.sellPrice(0, 0, 75, 0);
-                    }
-                    if (num == 5)
-                    {
-                        item.value = Item.sellPrice(0, 1, 0, 0);
+                        case 0:
+                            item.value = Item.sellPrice(0, 0, 5, 0);
+                            break;
+                        case 4:
+                            item.value = Item.sellPrice(0, 0, 10, 0);
+                            break;
+                        case 6:
+                            item.value = Item.sellPrice(0, 0, 15, 0);
+                            break;
+                        case 3:
+                            item.value = Item.sellPrice(0, 0, 20, 0);
+                            break;
+                        case 7:
+                            item.value = Item.sellPrice(0, 0, 30, 0);
+                            break;
+                        case 2:
+                            item.value = Item.sellPrice(0, 0, 40, 0);
+                            break;
+                        case 1:
+                            item.value = Item.sellPrice(0, 0, 75, 0);
+                            break;
+                        case 5:
+                            item.value = Item.sellPrice(0, 1, 0, 0);
+                            break;
                     }
                 }
-                if (item.type == 483 || item.type == 1192 || item.type == 482 || item.type == 1185 || item.type == 484 || item.type == 1199 || item.type == 368)
+                switch (item.type)
                 {
-                    item.autoReuse = true;
-                    item.damage = (int)((double)item.damage * 1.15);
+                    case 483:
+                    case 1192:
+                    case 482:
+                    case 1185:
+                    case 484:
+                    case 1199:
+                    case 368:
+                        item.autoReuse = true;
+                        item.damage = (int)((double)item.damage * 1.15);
+                        break;
+                    case 2663:
+                    case 1720:
+                    case 2137:
+                    case 2155:
+                    case 2151:
+                    case 1704:
+                    case 2143:
+                    case 1710:
+                    case 2238:
+                    case 2133:
+                    case 2147:
+                    case 2405:
+                    case 1716:
+                    case 1705:
+                        item.value = Item.sellPrice(0, 2, 0, 0);
+                        break;
                 }
-                if (item.type == 2663 || item.type == 1720 || item.type == 2137 || item.type == 2155 || item.type == 2151 || item.type == 1704 || item.type == 2143 || item.type == 1710 || item.type == 2238 || item.type == 2133 || item.type == 2147 || item.type == 2405 || item.type == 1716 || item.type == 1705)
-                {
-                    item.value = Item.sellPrice(0, 2, 0, 0);
-                }
+
                 if (Main.projHook[item.shoot])
                 {
                     item.useStyle = 0;
@@ -274,14 +253,9 @@ namespace kRPG
                 {
                     modItem.SetValue(item, ItemLoader.GetItem(item.type).NewInstance(item));
                 }
-                if (item.modItem != null)
-                {
-                    item.modItem.AutoDefaults();
-                }
-                if (item.modItem != null)
-                {
-                    item.modItem.SetDefaults();
-                }
+
+                item.modItem?.AutoDefaults();
+                item.modItem?.SetDefaults();
 
                 if (!noMatCheck)
                 {
@@ -303,10 +277,7 @@ namespace kRPG
         }
 
 
-        public static double Tau
-        {
-            get { return Math.PI * 2; }
-        }
+        public static double Tau => Math.PI * 2;
 
         public const double Phi = 1.61803398874989484820458683436;
 
@@ -355,26 +326,19 @@ namespace kRPG
 
         public static int Wealth(this Player player)
         {
-            int coins = 0;
-
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
 
-            foreach (Item item in player.inventory)
-                coins += CoinStackValue(item);
+            int coins = player.inventory.Sum(CoinStackValue);
 
             for (int i = 0; i < character.inventories.Length; i += 1)
                 if (character.activeInvPage != i)
-                    foreach (Item item in character.inventories[i])
-                        coins += CoinStackValue(item);
+                    coins += character.inventories[i].Sum(CoinStackValue);
 
-            foreach (Item i in player.bank.item)
-                coins += CoinStackValue(i);
+            coins += player.bank.item.Sum(CoinStackValue);
 
-            foreach (Item i in player.bank2.item)
-                coins += CoinStackValue(i);
+            coins += player.bank2.item.Sum(CoinStackValue);
 
-            foreach (Item i in player.bank3.item)
-                coins += CoinStackValue(i);
+            coins += player.bank3.item.Sum(CoinStackValue);
 
             return coins;
         }
@@ -382,21 +346,20 @@ namespace kRPG
         public static int CoinStackValue(Item i)
         {
             int coins = 0;
-            if (i.type == ItemID.CopperCoin)
+            switch (i.type)
             {
-                coins += i.stack;
-            }
-            else if (i.type == ItemID.SilverCoin)
-            {
-                coins += i.stack * 100;
-            }
-            else if (i.type == ItemID.GoldCoin)
-            {
-                coins += i.stack * 10000;
-            }
-            else if (i.type == ItemID.PlatinumCoin)
-            {
-                coins += i.stack * 1000000;
+                case ItemID.CopperCoin:
+                    coins += i.stack;
+                    break;
+                case ItemID.SilverCoin:
+                    coins += i.stack * 100;
+                    break;
+                case ItemID.GoldCoin:
+                    coins += i.stack * 10000;
+                    break;
+                case ItemID.PlatinumCoin:
+                    coins += i.stack * 1000000;
+                    break;
             }
             return coins;
         }
@@ -464,18 +427,17 @@ namespace kRPG
         public static int RemoveCoins(Item item, int cointype, ref int amount)
         {
             int stacksize = item.stack;
-            if (item.type == cointype)
+            if (item.type != cointype)
+                return stacksize;
+            if (stacksize >= amount)
             {
-                if (stacksize >= amount)
-                {
-                    stacksize -= amount;
-                    amount = 0;
-                }
-                else
-                {
-                    amount -= item.stack;
-                    stacksize = 0;
-                }
+                stacksize -= amount;
+                amount = 0;
+            }
+            else
+            {
+                amount -= item.stack;
+                stacksize = 0;
             }
             return stacksize;
         }
@@ -483,21 +445,20 @@ namespace kRPG
         public static int[] CountCoins(Item i)
         {
             int[] coins = new int[4];
-            if (i.type == 71)
+            switch (i.type)
             {
-                coins[c] += i.stack;
-            }
-            else if (i.type == 72)
-            {
-                coins[s] += i.stack * 100;
-            }
-            else if (i.type == 73)
-            {
-                coins[g] += i.stack * 10000;
-            }
-            else if (i.type == 74)
-            {
-                coins[p] += i.stack * 1000000;
+                case 71:
+                    coins[c] += i.stack;
+                    break;
+                case 72:
+                    coins[s] += i.stack * 100;
+                    break;
+                case 73:
+                    coins[g] += i.stack * 10000;
+                    break;
+                case 74:
+                    coins[p] += i.stack * 1000000;
+                    break;
             }
             return coins;
         }
@@ -532,11 +493,10 @@ namespace kRPG
                 Main.dust[num].velocity *= 0.4f;
                 Main.dust[num].scale *= 0.8f + (float)Main.rand.Next(40) * 0.01f;
                 Main.dust[num].shader = GameShaders.Armor.GetSecondaryShader(player.cWaist, player);
-                if (Main.rand.Next(2) == 0)
-                {
-                    Main.dust[num].scale *= 1f + (float)Main.rand.Next(40) * 0.01f;
-                    Main.dust[num].noGravity = true;
-                }
+                if (Main.rand.Next(2) != 0)
+                    continue;
+                Main.dust[num].scale *= 1f + (float)Main.rand.Next(40) * 0.01f;
+                Main.dust[num].noGravity = true;
             }
             int num2 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2) - 24f, player.position.Y + (float)(player.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
             //Main.gore[num2].scale = 1.5f;
@@ -581,11 +541,10 @@ namespace kRPG
                 dust2.position.Y = dust2.position.Y + (float)Main.rand.Next(-20, 21);
                 Main.dust[num].velocity *= 0.4f;
                 Main.dust[num].scale *= 0.7f + (float)Main.rand.Next(30) * 0.01f;
-                if (Main.rand.Next(2) == 0)
-                {
-                    Main.dust[num].scale *= 1f + (float)Main.rand.Next(40) * 0.01f;
-                    Main.dust[num].noGravity = true;
-                }
+                if (Main.rand.Next(2) != 0)
+                    continue;
+                Main.dust[num].scale *= 1f + (float)Main.rand.Next(40) * 0.01f;
+                Main.dust[num].noGravity = true;
             }
             int num2 = Gore.NewGore(new Vector2(dustpos.position.X + (float)(dustpos.width / 2) - 24f, dustpos.position.Y + (float)(dustpos.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
             Main.gore[num2].scale = 0.8f;
@@ -614,10 +573,10 @@ namespace kRPG
             Main.gore[num2].velocity *= 0.4f;
         }
 
-        static FieldInfo inventoryGlowTime = typeof(ItemSlot).GetField("inventoryGlowTime", BindingFlags.NonPublic | BindingFlags.Static);
-        static FieldInfo inventoryGlowHue = typeof(ItemSlot).GetField("inventoryGlowHue", BindingFlags.NonPublic | BindingFlags.Static);
-        static FieldInfo inventoryGlowTimeChest = typeof(ItemSlot).GetField("inventoryGlowTimeChest", BindingFlags.NonPublic | BindingFlags.Static);
-        static FieldInfo inventoryGlowHueChest = typeof(ItemSlot).GetField("inventoryGlowHueChest", BindingFlags.NonPublic | BindingFlags.Static);
+        static readonly FieldInfo InventoryGlowTime = typeof(ItemSlot).GetField("inventoryGlowTime", BindingFlags.NonPublic | BindingFlags.Static);
+        static readonly FieldInfo InventoryGlowHue = typeof(ItemSlot).GetField("inventoryGlowHue", BindingFlags.NonPublic | BindingFlags.Static);
+        static readonly FieldInfo InventoryGlowTimeChest = typeof(ItemSlot).GetField("inventoryGlowTimeChest", BindingFlags.NonPublic | BindingFlags.Static);
+        static FieldInfo _inventoryGlowHueChest = typeof(ItemSlot).GetField("inventoryGlowHueChest", BindingFlags.NonPublic | BindingFlags.Static);
 
         public static void DrawStringWithShadow(this SpriteBatch spriteBatch, DynamicSpriteFont font, string text, Vector2 position, Color color, float scale = 1f)
         {
@@ -744,80 +703,75 @@ namespace kRPG
                 texture2D = Main.inventoryBack15Texture;
                 float num4 = (float)Main.mouseTextColor / 255f;
                 num4 = num4 * 0.2f + 0.8f;
-                if (num2 == 1)
+                color2 = color2.MultiplyRGBA(num2 == 1 ? new Color(num4, num4 / 2f, num4 / 2f) : new Color(num4 / 2f, num4, num4 / 2f));
+            }
+            else switch (context)
+            {
+                case 0 when slot < 10:
+                    texture2D = Main.inventoryBack9Texture;
+                    break;
+                case 10:
+                case 8:
+                case 16:
+                case 17:
+                case 19:
+                case 18:
+                case 20:
+                    texture2D = Main.inventoryBack3Texture;
+                    break;
+                case 11:
+                case 9:
+                    texture2D = Main.inventoryBack8Texture;
+                    break;
+                case 12:
+                    texture2D = Main.inventoryBack12Texture;
+                    break;
+                case 3:
+                    texture2D = Main.inventoryBack5Texture;
+                    break;
+                case 4:
+                    texture2D = Main.inventoryBack2Texture;
+                    break;
+                case 7:
+                case 5:
+                    texture2D = Main.inventoryBack4Texture;
+                    break;
+                case 6:
+                    texture2D = Main.inventoryBack7Texture;
+                    break;
+                case 13:
                 {
-                    color2 = color2.MultiplyRGBA(new Color(num4, num4 / 2f, num4 / 2f));
+                    byte b = 200;
+                    if (slot == Main.player[Main.myPlayer].selectedItem)
+                    {
+                        texture2D = Main.inventoryBack14Texture;
+                        b = 255;
+                    }
+                    color2 = new Color((int)b, (int)b, (int)b, (int)b);
+                    break;
                 }
-                else
-                {
-                    color2 = color2.MultiplyRGBA(new Color(num4 / 2f, num4, num4 / 2f));
-                }
+                case 14:
+                case 21:
+                    flag2 = true;
+                    break;
+                case 15:
+                    texture2D = Main.inventoryBack6Texture;
+                    break;
+                case 22:
+                    texture2D = Main.inventoryBack4Texture;
+                    break;
             }
-            else if (context == 0 && slot < 10)
-            {
-                texture2D = Main.inventoryBack9Texture;
-            }
-            else if (context == 10 || context == 8 || context == 16 || context == 17 || context == 19 || context == 18 || context == 20)
-            {
-                texture2D = Main.inventoryBack3Texture;
-            }
-            else if (context == 11 || context == 9)
-            {
-                texture2D = Main.inventoryBack8Texture;
-            }
-            else if (context == 12)
-            {
-                texture2D = Main.inventoryBack12Texture;
-            }
-            else if (context == 3)
-            {
-                texture2D = Main.inventoryBack5Texture;
-            }
-            else if (context == 4)
-            {
-                texture2D = Main.inventoryBack2Texture;
-            }
-            else if (context == 7 || context == 5)
-            {
-                texture2D = Main.inventoryBack4Texture;
-            }
-            else if (context == 6)
-            {
-                texture2D = Main.inventoryBack7Texture;
-            }
-            else if (context == 13)
-            {
-                byte b = 200;
-                if (slot == Main.player[Main.myPlayer].selectedItem)
-                {
-                    texture2D = Main.inventoryBack14Texture;
-                    b = 255;
-                }
-                color2 = new Color((int)b, (int)b, (int)b, (int)b);
-            }
-            else if (context == 14 || context == 21)
-            {
-                flag2 = true;
-            }
-            else if (context == 15)
-            {
-                texture2D = Main.inventoryBack6Texture;
-            }
-            else if (context == 22)
-            {
-                texture2D = Main.inventoryBack4Texture;
-            }
-            if (context == 0 && ((int[])inventoryGlowTime.GetValue(null))[slot] > 0 && !inv[slot].favorited)
+            if (context == 0 && ((int[])InventoryGlowTime.GetValue(null))[slot] > 0 && !inv[slot].favorited)
             {
                 float scale = Main.invAlpha / 255f;
                 Color value = new Color(63, 65, 151, 255) * scale;
-                Color value2 = Main.hslToRgb(((float[])inventoryGlowHue.GetValue(null))[slot], 1f, 0.5f) * scale;
-                float num5 = (float)((int[])inventoryGlowTime.GetValue(null))[slot] / 300f;
+                Color value2 = Main.hslToRgb(((float[])InventoryGlowHue.GetValue(null))[slot], 1f, 0.5f) * scale;
+                float num5 = (float)((int[])InventoryGlowTime.GetValue(null))[slot] / 300f;
                 num5 *= num5;
                 color2 = Color.Lerp(value, value2, num5 / 2f);
                 texture2D = Main.inventoryBack13Texture;
             }
-            if ((context == 4 || context == 3) && ((int[])inventoryGlowTimeChest.GetValue(null))[slot] > 0 && !inv[slot].favorited)
+            if ((context == 4 || context == 3) && ((int[])InventoryGlowTimeChest.GetValue(null))[slot] > 0 && !inv[slot].favorited)
             {
                 float scale2 = Main.invAlpha / 255f;
                 Color value3 = new Color(130, 62, 102, 255) * scale2;
@@ -825,8 +779,8 @@ namespace kRPG
                 {
                     value3 = new Color(104, 52, 52, 255) * scale2;
                 }
-                Color value4 = Main.hslToRgb(((float[])inventoryGlowHue.GetValue(null))[slot], 1f, 0.5f) * scale2;
-                float num6 = (float)((int[])inventoryGlowTimeChest.GetValue(null))[slot] / 300f;
+                Color value4 = Main.hslToRgb(((float[])InventoryGlowHue.GetValue(null))[slot], 1f, 0.5f) * scale2;
+                float num6 = (float)((int[])InventoryGlowTimeChest.GetValue(null))[slot] / 300f;
                 num6 *= num6;
                 color2 = Color.Lerp(value3, value4, num6 / 2f);
                 texture2D = Main.inventoryBack13Texture;
@@ -909,14 +863,7 @@ namespace kRPG
             {
                 Texture2D texture2D3 = item.modItem is ProceduralItem ? ((ProceduralItem)item.modItem).texture : Main.itemTexture[item.type];
                 Rectangle rectangle2;
-                if (Main.itemAnimations[item.type] != null)
-                {
-                    rectangle2 = Main.itemAnimations[item.type].GetFrame(texture2D3);
-                }
-                else
-                {
-                    rectangle2 = texture2D3.Frame(1, 1, 0, 0);
-                }
+                rectangle2 = Main.itemAnimations[item.type] != null ? Main.itemAnimations[item.type].GetFrame(texture2D3) : texture2D3.Frame(1, 1, 0, 0);
                 Color newColor = color;
                 float num8 = 1f;
                 ItemSlot.GetItemLight(ref newColor, ref num8, item, false);
@@ -1145,22 +1092,20 @@ namespace kRPG
             for (int i = 0; i < 58; i++)
             {
                 Item item = player.inventory[i];
-                if (item.stack > 0 && item.type > 0 && item.potion && item.healLife > 0 && ItemLoader.CanUseItem(item, player))
+                if (item.stack <= 0 || item.type <= 0 || !item.potion || item.healLife <= 0 || !ItemLoader.CanUseItem(item, player))
+                    continue;
+                int num3 = item.healLife - num;
+                if (num2 < 0)
                 {
-                    int num3 = item.healLife - num;
-                    if (num2 < 0)
-                    {
-                        if (num3 > num2)
-                        {
-                            result = item;
-                            num2 = num3;
-                        }
-                    }
-                    else if (num3 < num2 && num3 >= 0)
-                    {
-                        result = item;
-                        num2 = num3;
-                    }
+                    if (num3 <= num2)
+                        continue;
+                    result = item;
+                    num2 = num3;
+                }
+                else if (num3 < num2 && num3 >= 0)
+                {
+                    result = item;
+                    num2 = num3;
                 }
             }
 
@@ -1170,22 +1115,20 @@ namespace kRPG
                     for (int j = 0; j < character.inventories[i].Length; j += 1)
                     {
                         Item item = character.inventories[i][j];
-                        if (item.stack > 0 && item.type > 0 && item.potion && item.healLife > 0 && ItemLoader.CanUseItem(item, player))
+                        if (item.stack <= 0 || item.type <= 0 || !item.potion || item.healLife <= 0 || !ItemLoader.CanUseItem(item, player))
+                            continue;
+                        int num3 = item.healLife - num;
+                        if (num2 < 0)
                         {
-                            int num3 = item.healLife - num;
-                            if (num2 < 0)
-                            {
-                                if (num3 > num2)
-                                {
-                                    result = item;
-                                    num2 = num3;
-                                }
-                            }
-                            else if (num3 < num2 && num3 >= 0)
-                            {
-                                result = item;
-                                num2 = num3;
-                            }
+                            if (num3 <= num2)
+                                continue;
+                            result = item;
+                            num2 = num3;
+                        }
+                        else if (num3 < num2 && num3 >= 0)
+                        {
+                            result = item;
+                            num2 = num3;
                         }
                     }
 
@@ -1216,56 +1159,55 @@ namespace kRPG
 
         private static void APIQuickMana_TryItem(Player player, Item item)
         {
-            if (item.stack > 0 && item.type > 0 && item.healMana > 0 && (player.potionDelay == 0 || !item.potion) && ItemLoader.CanUseItem(item, player))
-            {
-                Main.PlaySound(item.UseSound, player.position);
-                if (item.potion)
-                {
-                    if (item.type == 227)
-                    {
-                        player.potionDelay = player.restorationDelayTime;
-                        player.AddBuff(21, player.potionDelay, true);
-                    }
-                    else
-                    {
-                        player.potionDelay = player.potionDelayTime;
-                        player.AddBuff(21, player.potionDelay, true);
-                    }
-                }
-                ItemLoader.UseItem(item, player);
-                player.statLife += item.healLife;
-                player.statMana += item.healMana;
-                if (player.statLife > player.statLifeMax2)
-                {
-                    player.statLife = player.statLifeMax2;
-                }
-                if (player.statMana > player.statManaMax2)
-                {
-                    player.statMana = player.statManaMax2;
-                }
-                if (item.healLife > 0 && Main.myPlayer == player.whoAmI)
-                {
-                    player.HealEffect(item.healLife, true);
-                }
-                if (item.healMana > 0)
-                {
-                    player.AddBuff(94, Player.manaSickTime, true);
-                    if (Main.myPlayer == player.whoAmI)
-                    {
-                        player.ManaEffect(item.healMana);
-                    }
-                }
-                if (ItemLoader.ConsumeItem(item, player))
-                {
-                    item.stack--;
-                }
-                if (item.stack <= 0)
-                {
-                    item.TurnToAir();
-                }
-                API.FindRecipes();
+            if (item.stack <= 0 || item.type <= 0 || item.healMana <= 0 || (player.potionDelay != 0 && item.potion) || !ItemLoader.CanUseItem(item, player))
                 return;
+            Main.PlaySound(item.UseSound, player.position);
+            if (item.potion)
+            {
+                if (item.type == 227)
+                {
+                    player.potionDelay = player.restorationDelayTime;
+                    player.AddBuff(21, player.potionDelay, true);
+                }
+                else
+                {
+                    player.potionDelay = player.potionDelayTime;
+                    player.AddBuff(21, player.potionDelay, true);
+                }
             }
+            ItemLoader.UseItem(item, player);
+            player.statLife += item.healLife;
+            player.statMana += item.healMana;
+            if (player.statLife > player.statLifeMax2)
+            {
+                player.statLife = player.statLifeMax2;
+            }
+            if (player.statMana > player.statManaMax2)
+            {
+                player.statMana = player.statManaMax2;
+            }
+            if (item.healLife > 0 && Main.myPlayer == player.whoAmI)
+            {
+                player.HealEffect(item.healLife, true);
+            }
+            if (item.healMana > 0)
+            {
+                player.AddBuff(94, Player.manaSickTime, true);
+                if (Main.myPlayer == player.whoAmI)
+                {
+                    player.ManaEffect(item.healMana);
+                }
+            }
+            if (ItemLoader.ConsumeItem(item, player))
+            {
+                item.stack--;
+            }
+            if (item.stack <= 0)
+            {
+                item.TurnToAir();
+            }
+            API.FindRecipes();
+            return;
         }
 
         public static void APIQuickBuff(this Player player)
@@ -1289,12 +1231,13 @@ namespace kRPG
 
             for (int i = 0; i < character.inventories.Length; i += 1)
             {
-                if (character.activeInvPage != i)
-                    for (int j = 0; j < character.inventories[i].Length; j += 1)
-                    {
-                        Item item = character.inventories[i][j];
-                        APIQuickBuff_TryItem(player, item);
-                    }
+                if (character.activeInvPage == i)
+                    continue;
+                for (int j = 0; j < character.inventories[i].Length; j += 1)
+                {
+                    Item item = character.inventories[i][j];
+                    APIQuickBuff_TryItem(player, item);
+                }
             }
         }
 
@@ -1318,11 +1261,11 @@ namespace kRPG
                         flag = false;
                         break;
                     }
-                    if (Main.meleeBuff[num] && Main.meleeBuff[player.buffType[b]])
-                    {
-                        flag = false;
-                        break;
-                    }
+
+                    if (!Main.meleeBuff[num] || !Main.meleeBuff[player.buffType[b]])
+                        continue;
+                    flag = false;
+                    break;
                 }
                 if (Main.lightPet[item.buffType] || Main.vanityPet[item.buffType])
                 {
@@ -1394,11 +1337,10 @@ namespace kRPG
                 }
             }
 
-            if (legacySoundStyle != null)
-            {
-                Main.PlaySound(legacySoundStyle, player.position);
-                API.FindRecipes();
-            }
+            if (legacySoundStyle == null)
+                return;
+            Main.PlaySound(legacySoundStyle, player.position);
+            API.FindRecipes();
         }
 
         public static Item GetItem(this Player player, Item newItem)
@@ -1438,8 +1380,47 @@ namespace kRPG
                     num3 = 54 + i;
                 }
                 Item x = player.inventory[num3];
-                if (x.type > 0 && x.stack > 0 && x.stack < x.maxStack && item.IsTheSameAs(x))
+                if (x.type <= 0 || x.stack <= 0 || x.stack >= x.maxStack || !item.IsTheSameAs(x))
+                    continue;
+                if (flag)
                 {
+                    Main.PlaySound(38, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
+                }
+                else
+                {
+                    Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
+                }
+                if (item.stack + x.stack <= x.maxStack)
+                {
+                    x.stack += item.stack;
+                    ItemText.NewText(newItem, item.stack);
+                    player.DoCoins(num3);
+                    if (plr == Main.myPlayer)
+                    {
+                        API.FindRecipes();
+                    }
+                    AchievementsHelper.NotifyItemPickup(player, item);
+                    return new Item();
+                }
+                AchievementsHelper.NotifyItemPickup(player, item, x.maxStack - x.stack);
+                item.stack -= x.maxStack - x.stack;
+                ItemText.NewText(newItem, x.maxStack - x.stack);
+                x.stack = x.maxStack;
+                player.DoCoins(num3);
+                if (plr == Main.myPlayer)
+                {
+                    API.FindRecipes();
+                }
+            }
+            for (int i = 0; i < character.inventories.Length; i += 1)
+            {
+                if (character.activeInvPage == i)
+                    continue;
+                for (int j = 0; j < character.inventories[i].Length; j += 1)
+                {
+                    Item x = character.inventories[i][j];
+                    if (x.type <= 0 || x.stack >= x.maxStack || !item.IsTheSameAs(x))
+                        continue;
                     if (flag)
                     {
                         Main.PlaySound(38, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
@@ -1452,11 +1433,6 @@ namespace kRPG
                     {
                         x.stack += item.stack;
                         ItemText.NewText(newItem, item.stack);
-                        player.DoCoins(num3);
-                        if (plr == Main.myPlayer)
-                        {
-                            API.FindRecipes();
-                        }
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
                     }
@@ -1464,71 +1440,28 @@ namespace kRPG
                     item.stack -= x.maxStack - x.stack;
                     ItemText.NewText(newItem, x.maxStack - x.stack);
                     x.stack = x.maxStack;
-                    player.DoCoins(num3);
                     if (plr == Main.myPlayer)
                     {
                         API.FindRecipes();
                     }
                 }
             }
-            for (int i = 0; i < character.inventories.Length; i += 1)
-            {
-                if (character.activeInvPage != i)
-                    for (int j = 0; j < character.inventories[i].Length; j += 1)
-                    {
-                        Item x = character.inventories[i][j];
-                        if (x.type > 0 && x.stack < x.maxStack && item.IsTheSameAs(x))
-                        {
-                            if (flag)
-                            {
-                                Main.PlaySound(38, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                            }
-                            else
-                            {
-                                Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                            }
-                            if (item.stack + x.stack <= x.maxStack)
-                            {
-                                x.stack += item.stack;
-                                ItemText.NewText(newItem, item.stack);
-                                AchievementsHelper.NotifyItemPickup(player, item);
-                                return new Item();
-                            }
-                            AchievementsHelper.NotifyItemPickup(player, item, x.maxStack - x.stack);
-                            item.stack -= x.maxStack - x.stack;
-                            ItemText.NewText(newItem, x.maxStack - x.stack);
-                            x.stack = x.maxStack;
-                            if (plr == Main.myPlayer)
-                            {
-                                API.FindRecipes();
-                            }
-                        }
-                    }
-            }
             if (newItem.type != 71 && newItem.type != 72 && newItem.type != 73 && newItem.type != 74 && newItem.useStyle > 0)
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    if (player.inventory[j].type == 0)
+                    if (player.inventory[j].type != 0)
+                        continue;
+                    player.inventory[j] = item;
+                    ItemText.NewText(newItem, newItem.stack);
+                    player.DoCoins(j);
+                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y, 1, 1f, 0f);
+                    if (plr == Main.myPlayer)
                     {
-                        player.inventory[j] = item;
-                        ItemText.NewText(newItem, newItem.stack);
-                        player.DoCoins(j);
-                        if (flag)
-                        {
-                            Main.PlaySound(38, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                        }
-                        else
-                        {
-                            Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                        }
-                        if (plr == Main.myPlayer)
-                        {
-                            API.FindRecipes();
-                        }
-                        AchievementsHelper.NotifyItemPickup(player, item);
-                        return new Item();
+                        API.FindRecipes();
                     }
+                    AchievementsHelper.NotifyItemPickup(player, item);
+                    return new Item();
                 }
             }
             if ((newItem.modItem is Glyph || newItem.modItem is ProceduralItem || newItem.modItem is RangedWeapon) && kConfig.clientside.smartInventory)
@@ -1537,116 +1470,77 @@ namespace kRPG
                 {
                     for (int i = 10; i < 50; i += 1)
                     {
-                        if (player.inventory[i].type == 0)
-                        {
-                            player.inventory[i] = item;
-                            ItemText.NewText(newItem, newItem.stack);
-                            if (flag)
-                            {
-                                Main.PlaySound(38, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                            }
-                            else
-                            {
-                                Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                            }
-                            AchievementsHelper.NotifyItemPickup(player, item);
-                            return new Item();
-                        }
+                        if (player.inventory[i].type != 0)
+                            continue;
+                        player.inventory[i] = item;
+                        ItemText.NewText(newItem, newItem.stack);
+                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y, 1, 1f, 0f);
+                        AchievementsHelper.NotifyItemPickup(player, item);
+                        return new Item();
                     }
                 }
                 else
                     for (int i = 0; i < character.inventories[2].Length; i += 1)
                     {
-                        if (character.inventories[2][i].type == 0)
-                        {
-                            character.inventories[2][i] = item;
-                            ItemText.NewText(newItem, newItem.stack);
-                            if (flag)
-                            {
-                                Main.PlaySound(38, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                            }
-                            else
-                            {
-                                Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                            }
-                            AchievementsHelper.NotifyItemPickup(player, item);
-                            return new Item();
-                        }
+                        if (character.inventories[2][i].type != 0)
+                            continue;
+                        character.inventories[2][i] = item;
+                        ItemText.NewText(newItem, newItem.stack);
+                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y, 1, 1f, 0f);
+                        AchievementsHelper.NotifyItemPickup(player, item);
+                        return new Item();
                     }
             }
             if (newItem.favorited)
             {
                 for (int k = 0; k < num; k++)
                 {
-                    if (player.inventory[k].type == 0 && (!kConfig.clientside.manualInventory || character.activeInvPage == 0))
+                    if (player.inventory[k].type != 0 || (kConfig.clientside.manualInventory && character.activeInvPage != 0))
+                        continue;
+                    player.inventory[k] = item;
+                    ItemText.NewText(newItem, newItem.stack);
+                    player.DoCoins(k);
+                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y, 1, 1f, 0f);
+                    if (plr == Main.myPlayer)
                     {
-                        player.inventory[k] = item;
-                        ItemText.NewText(newItem, newItem.stack);
-                        player.DoCoins(k);
-                        if (flag)
-                        {
-                            Main.PlaySound(38, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                        }
-                        else
-                        {
-                            Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                        }
-                        if (plr == Main.myPlayer)
-                        {
-                            API.FindRecipes();
-                        }
-                        AchievementsHelper.NotifyItemPickup(player, item);
-                        return new Item();
+                        API.FindRecipes();
                     }
+                    AchievementsHelper.NotifyItemPickup(player, item);
+                    return new Item();
                 }
             }
             else
             {
                 for (int l = num - 1; l >= 0; l--)
                 {
-                    if (player.inventory[l].type == 0 && (!kConfig.clientside.manualInventory || character.activeInvPage == 0 || flag))
+                    if (player.inventory[l].type != 0 || (kConfig.clientside.manualInventory && character.activeInvPage != 0 && !flag))
+                        continue;
+                    player.inventory[l] = item;
+                    ItemText.NewText(newItem, newItem.stack);
+                    player.DoCoins(l);
+                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y, 1, 1f, 0f);
+                    if (plr == Main.myPlayer)
                     {
-                        player.inventory[l] = item;
-                        ItemText.NewText(newItem, newItem.stack);
-                        player.DoCoins(l);
-                        if (flag)
-                        {
-                            Main.PlaySound(38, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                        }
-                        else
-                        {
-                            Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                        }
-                        if (plr == Main.myPlayer)
-                        {
-                            API.FindRecipes();
-                        }
-                        AchievementsHelper.NotifyItemPickup(player, item);
-                        return new Item();
+                        API.FindRecipes();
                     }
+                    AchievementsHelper.NotifyItemPickup(player, item);
+                    return new Item();
                 }
 
                 for (int i = 0; i < character.inventories.Length; i += 1)
                 {
-                    if (character.activeInvPage != i)
-                        for (int j = 0; j < character.inventories[i].Length; j += 1)
-                        {
-                            if (character.inventories[i][j].type == 0)
-                            {
-                                character.inventories[i][j] = item;
-                                ItemText.NewText(newItem, newItem.stack);
-                                if (flag)
-                                {
-                                    Main.PlaySound(38, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                                }
-                                else
-                                {
-                                    Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                                }
-                                AchievementsHelper.NotifyItemPickup(player, item);
-                                return new Item();
-                            }
-                        }
+                    if (character.activeInvPage == i)
+                        continue;
+                    for (int j = 0; j < character.inventories[i].Length; j += 1)
+                    {
+                        if (character.inventories[i][j].type != 0)
+                            continue;
+                        character.inventories[i][j] = item;
+                        ItemText.NewText(newItem, newItem.stack);
+                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y, 1, 1f, 0f);
+                        AchievementsHelper.NotifyItemPickup(player, item);
+                        return new Item();
+                    }
                 }
             }
             return item;
@@ -1692,18 +1586,17 @@ namespace kRPG
                 for (int k = 0; k < inv.Length; k++)
                 {
                     item = inv[k];
-                    if (item.stack > 0)
+                    if (item.stack <= 0)
+                        continue;
+                    if (dictionary.ContainsKey(item.netID))
                     {
-                        if (dictionary.ContainsKey(item.netID))
-                        {
-                            Dictionary<int, int> dictionary2;
-                            int netID;
-                            (dictionary2 = dictionary)[netID = item.netID] = dictionary2[netID] + item.stack;
-                        }
-                        else
-                        {
-                            dictionary[item.netID] = item.stack;
-                        }
+                        Dictionary<int, int> dictionary2;
+                        int netID;
+                        (dictionary2 = dictionary)[netID = item.netID] = dictionary2[netID] + item.stack;
+                    }
+                    else
+                    {
+                        dictionary[item.netID] = item.stack;
                     }
                 }
                 if (Main.player[Main.myPlayer].active)
@@ -1730,33 +1623,32 @@ namespace kRPG
                     {
                         array = Main.chest[Main.player[Main.myPlayer].chest].item;
                     }
-                    else if (Main.player[Main.myPlayer].chest == -2)
+                    else switch (Main.player[Main.myPlayer].chest)
                     {
-                        array = Main.player[Main.myPlayer].bank.item;
-                    }
-                    else if (Main.player[Main.myPlayer].chest == -3)
-                    {
-                        array = Main.player[Main.myPlayer].bank2.item;
-                    }
-                    else if (Main.player[Main.myPlayer].chest == -4)
-                    {
-                        array = Main.player[Main.myPlayer].bank3.item;
+                        case -2:
+                            array = Main.player[Main.myPlayer].bank.item;
+                            break;
+                        case -3:
+                            array = Main.player[Main.myPlayer].bank2.item;
+                            break;
+                        case -4:
+                            array = Main.player[Main.myPlayer].bank3.item;
+                            break;
                     }
                     for (int l = 0; l < 40; l++)
                     {
                         item = array[l];
-                        if (item.stack > 0)
+                        if (item.stack <= 0)
+                            continue;
+                        if (dictionary.ContainsKey(item.netID))
                         {
-                            if (dictionary.ContainsKey(item.netID))
-                            {
-                                Dictionary<int, int> dictionary3;
-                                int netID2;
-                                (dictionary3 = dictionary)[netID2 = item.netID] = dictionary3[netID2] + item.stack;
-                            }
-                            else
-                            {
-                                dictionary[item.netID] = item.stack;
-                            }
+                            Dictionary<int, int> dictionary3;
+                            int netID2;
+                            (dictionary3 = dictionary)[netID2 = item.netID] = dictionary3[netID2] + item.stack;
+                        }
+                        else
+                        {
+                            dictionary[item.netID] = item.stack;
                         }
                     }
                 }
@@ -1788,23 +1680,20 @@ namespace kRPG
                             }
                             int num6 = item.stack;
                             bool flag3 = false;
-                            foreach (int current in dictionary.Keys)
+                            foreach (int current in dictionary.Keys.Where(current => Main.recipe[num4].useWood(current, item.type) || Main.recipe[num4].useSand(current, item.type) || Main.recipe[num4].useIronBar(current, item.type) || Main.recipe[num4].useFragment(current, item.type) || Main.recipe[num4].AcceptedByItemGroups(current, item.type) || Main.recipe[num4].usePressurePlate(current, item.type)))
                             {
-                                if (Main.recipe[num4].useWood(current, item.type) || Main.recipe[num4].useSand(current, item.type) || Main.recipe[num4].useIronBar(current, item.type) || Main.recipe[num4].useFragment(current, item.type) || Main.recipe[num4].AcceptedByItemGroups(current, item.type) || Main.recipe[num4].usePressurePlate(current, item.type))
-                                {
-                                    num6 -= dictionary[current];
-                                    flag3 = true;
-                                }
+                                num6 -= dictionary[current];
+                                flag3 = true;
                             }
                             if (!flag3 && dictionary.ContainsKey(item.netID))
                             {
                                 num6 -= dictionary[item.netID];
                             }
-                            if (num6 > 0)
-                            {
-                                flag2 = false;
-                                break;
-                            }
+
+                            if (num6 <= 0)
+                                continue;
+                            flag2 = false;
+                            break;
                         }
                     }
                     if (flag2)
@@ -1828,11 +1717,10 @@ namespace kRPG
             }
             for (int n = 0; n < Main.numAvailableRecipes; n++)
             {
-                if (num == Main.availableRecipe[n])
-                {
-                    Main.focusRecipe = n;
-                    break;
-                }
+                if (num != Main.availableRecipe[n])
+                    continue;
+                Main.focusRecipe = n;
+                break;
             }
             if (Main.focusRecipe >= Main.numAvailableRecipes)
             {
@@ -1862,12 +1750,11 @@ namespace kRPG
             Main.mouseItem.position.Y = Main.player[Main.myPlayer].position.Y + (float)(Main.player[Main.myPlayer].height / 2) - (float)(Main.mouseItem.height / 2);
             ItemText.NewText(Main.mouseItem, r.createItem.stack, false, false);
             r.APICreate();
-            if (Main.mouseItem.type > 0 || r.createItem.type > 0)
-            {
-                RecipeHooks.OnCraft(Main.mouseItem, r);
-                ItemLoader.OnCraft(Main.mouseItem, r);
-                Main.PlaySound(7, -1, -1, 1, 1f, 0f);
-            }
+            if (Main.mouseItem.type <= 0 && r.createItem.type <= 0)
+                return;
+            RecipeHooks.OnCraft(Main.mouseItem, r);
+            ItemLoader.OnCraft(Main.mouseItem, r);
+            Main.PlaySound(7, -1, -1, 1, 1f, 0f);
         }
 
         public static void APICreate(this Recipe recipe)
@@ -1904,7 +1791,9 @@ namespace kRPG
                         requiredAmount = 0;
                     }
                 }
-                if (requiredAmount > 0)
+
+                if (requiredAmount <= 0)
+                    continue;
                 {
                     Item[] array = Main.player[Main.myPlayer].inventory;
                     InvLogic(recipe, array, requiredItem, requiredAmount);
@@ -1917,51 +1806,54 @@ namespace kRPG
                             InvLogic(recipe, array, requiredItem, requiredAmount);
                         }
                     }
-                    if (Main.player[Main.myPlayer].chest != -1)
+
+                    if (Main.player[Main.myPlayer].chest == -1)
+                        continue;
+                    if (Main.player[Main.myPlayer].chest > -1)
                     {
-                        if (Main.player[Main.myPlayer].chest > -1)
-                        {
-                            array = Main.chest[Main.player[Main.myPlayer].chest].item;
-                        }
-                        else if (Main.player[Main.myPlayer].chest == -2)
-                        {
+                        array = Main.chest[Main.player[Main.myPlayer].chest].item;
+                    }
+                    else switch (Main.player[Main.myPlayer].chest)
+                    {
+                        case -2:
                             array = Main.player[Main.myPlayer].bank.item;
-                        }
-                        else if (Main.player[Main.myPlayer].chest == -3)
-                        {
+                            break;
+                        case -3:
                             array = Main.player[Main.myPlayer].bank2.item;
-                        }
-                        else if (Main.player[Main.myPlayer].chest == -4)
-                        {
+                            break;
+                        case -4:
                             array = Main.player[Main.myPlayer].bank3.item;
-                        }
-                        for (int l = 0; l < 40; l++)
+                            break;
+                    }
+                    for (int l = 0; l < 40; l++)
+                    {
+                        Item item3 = array[l];
+                        if (requiredAmount <= 0)
                         {
-                            Item item3 = array[l];
-                            if (requiredAmount <= 0)
+                            break;
+                        }
+
+                        if (!item3.IsTheSameAs(requiredItem) && !recipe.useWood(item3.type, requiredItem.type) &&
+                            !recipe.useSand(item3.type, requiredItem.type) && !recipe.useIronBar(item3.type, requiredItem.type) &&
+                            !recipe.usePressurePlate(item3.type, requiredItem.type) && !recipe.useFragment(item3.type, requiredItem.type) &&
+                            !recipe.AcceptedByItemGroups(item3.type, requiredItem.type))
+                            continue;
+                        if (item3.stack > requiredAmount)
+                        {
+                            item3.stack -= requiredAmount;
+                            if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
                             {
-                                break;
+                                NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, (float)l, 0f, 0f, 0, 0, 0);
                             }
-                            if (item3.IsTheSameAs(requiredItem) || recipe.useWood(item3.type, requiredItem.type) || recipe.useSand(item3.type, requiredItem.type) || recipe.useIronBar(item3.type, requiredItem.type) || recipe.usePressurePlate(item3.type, requiredItem.type) || recipe.useFragment(item3.type, requiredItem.type) || recipe.AcceptedByItemGroups(item3.type, requiredItem.type))
+                            requiredAmount = 0;
+                        }
+                        else
+                        {
+                            requiredAmount -= item3.stack;
+                            array[l] = new Item();
+                            if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
                             {
-                                if (item3.stack > requiredAmount)
-                                {
-                                    item3.stack -= requiredAmount;
-                                    if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
-                                    {
-                                        NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, (float)l, 0f, 0f, 0, 0, 0);
-                                    }
-                                    requiredAmount = 0;
-                                }
-                                else
-                                {
-                                    requiredAmount -= item3.stack;
-                                    array[l] = new Item();
-                                    if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
-                                    {
-                                        NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, (float)l, 0f, 0f, 0, 0, 0);
-                                    }
-                                }
+                                NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, (float)l, 0f, 0f, 0, 0, 0);
                             }
                         }
                     }
@@ -1981,18 +1873,20 @@ namespace kRPG
                 {
                     break;
                 }
-                if (item2.IsTheSameAs(requiredItem) || recipe.useWood(item2.type, requiredItem.type) || recipe.useSand(item2.type, requiredItem.type) || recipe.useFragment(item2.type, requiredItem.type) || recipe.useIronBar(item2.type, requiredItem.type) || recipe.usePressurePlate(item2.type, requiredItem.type) || recipe.AcceptedByItemGroups(item2.type, requiredItem.type))
+
+                if (!item2.IsTheSameAs(requiredItem) && !recipe.useWood(item2.type, requiredItem.type) && !recipe.useSand(item2.type, requiredItem.type) &&
+                    !recipe.useFragment(item2.type, requiredItem.type) && !recipe.useIronBar(item2.type, requiredItem.type) &&
+                    !recipe.usePressurePlate(item2.type, requiredItem.type) && !recipe.AcceptedByItemGroups(item2.type, requiredItem.type))
+                    continue;
+                if (item2.stack > requiredAmount)
                 {
-                    if (item2.stack > requiredAmount)
-                    {
-                        item2.stack -= requiredAmount;
-                        requiredAmount = 0;
-                    }
-                    else
-                    {
-                        requiredAmount -= item2.stack;
-                        array[k] = new Item();
-                    }
+                    item2.stack -= requiredAmount;
+                    requiredAmount = 0;
+                }
+                else
+                {
+                    requiredAmount -= item2.stack;
+                    array[k] = new Item();
                 }
             }
         }

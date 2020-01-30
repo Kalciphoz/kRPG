@@ -17,11 +17,10 @@ namespace kRPG.Modifiers
         {
             regenTimer += 1;
             int amount = npc.lifeMax / 20;
-            if (regenTimer > 60f / amount)
-            {
-                npc.life = Math.Min(npc.life + (int)(regenTimer / (60f / amount)), npc.lifeMax);
-                regenTimer = regenTimer % (60 / amount);
-            }
+            if (!(regenTimer > 60f / amount))
+                return;
+            npc.life = Math.Min(npc.life + (int)(regenTimer / (60f / amount)), npc.lifeMax);
+            regenTimer %= (60f / amount);
         }
         
         

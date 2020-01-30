@@ -7,10 +7,7 @@ namespace kRPG.Items
 {
     public class PermanenceCrown : ModItem
     {
-        public override bool CloneNewInstances
-        {
-            get { return true;  }
-        }
+        public override bool CloneNewInstances => true;
 
         public override void SetDefaults()
         {

@@ -12,13 +12,13 @@ namespace kRPG.Modifiers
         public ProceduralSpellProj rotMissile = null;
         public ProceduralSpellProj rotSecondary = null;
 
-        private kNPC kNPC;
+        
 
         public SageModifier(kNPC kNPC, NPC npc) : base(kNPC, npc)
         {
             this.npc = npc;
             npc.GivenName = "Sagely " + npc.GivenName;
-            this.kNPC = kNPC;
+            
         }
 
         public override void Update(NPC npc)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kRPG.Buffs;
 using kRPG.GUI;
 using kRPG.Items;
@@ -25,13 +26,9 @@ namespace kRPG
         public int level = 1;
         public int xp = 0;
         public int pointsAllocated {
-            get {
-                int points = 0;
-                foreach (STAT stat in Enum.GetValues(typeof(STAT)))
-                {
-                    points += baseStats[stat];
-                }
-                return points;
+            get
+            {
+                return Enum.GetValues(typeof(STAT)).Cast<STAT>().Sum(stat => baseStats[stat]);
             }
         }
 
@@ -84,11 +81,8 @@ namespace kRPG
         public float critMultiplier = 1f;
         public int evasion = 2;
         public int accuracy = 0;
-        public float damageMultiplier {
-            get {
-                return (1f + TotalStats(STAT.POTENCY) * 0.05f + Math.Min(0.09f, TotalStats(STAT.POTENCY) * 0.06f));
-            }
-        }
+        public float damageMultiplier => (1f + TotalStats(STAT.POTENCY) * 0.05f + Math.Min(0.09f, TotalStats(STAT.POTENCY) * 0.06f));
+
         public float hitChance {
             get {
                 float diff = 7f + level / 40f;
@@ -297,31 +291,30 @@ namespace kRPG
                 if (layers[i].Name.Contains("Held"))
                 {
                     layers.Insert(i + 2, new PlayerLayer("kRPG", "ProceduralItem", (drawinfo) =>
-                      {
-                          if (player.itemAnimation > 0)
-                          {
-                              if (player.HeldItem.type == mod.GetItem("ProceduralStaff").item.type)
-                              {
-                                  if (Main.gameMenu) return;
+                    {
+                        if (player.itemAnimation <= 0)
+                            return;
+                        if (player.HeldItem.type == mod.GetItem("ProceduralStaff").item.type)
+                        {
+                            if (Main.gameMenu) return;
 
-                                  ProceduralStaff staff = (ProceduralStaff)player.HeldItem.modItem;
+                            ProceduralStaff staff = (ProceduralStaff)player.HeldItem.modItem;
 
-                                  Vector2 pos = player.Center - Main.screenPosition;
-                                  staff.DrawHeld(drawinfo, Lighting.GetColor((int)(player.Center.X / 16f), (int)(player.Center.Y / 16f)), (float)player.itemRotation + (float)API.Tau * player.direction / 8, staff.item.scale, pos);
-                              }
-                              else if (player.HeldItem.type == mod.GetItem("ProceduralSword").item.type)
-                              {
-                                  if (Main.gameMenu) return;
+                            Vector2 pos = player.Center - Main.screenPosition;
+                            staff.DrawHeld(drawinfo, Lighting.GetColor((int)(player.Center.X / 16f), (int)(player.Center.Y / 16f)), (float)player.itemRotation + (float)API.Tau * player.direction / 8, staff.item.scale, pos);
+                        }
+                        else if (player.HeldItem.type == mod.GetItem("ProceduralSword").item.type)
+                        {
+                            if (Main.gameMenu) return;
 
-                                  ProceduralSword sword = (ProceduralSword)player.HeldItem.modItem;
+                            ProceduralSword sword = (ProceduralSword)player.HeldItem.modItem;
 
-                                  if (sword.spear) return;
+                            if (sword.spear) return;
 
-                                  Vector2 pos = player.Center - Main.screenPosition;
-                                  sword.DrawHeld(drawinfo, Lighting.GetColor((int)(player.Center.X / 16f), (int)(player.Center.Y / 16f)), (float)player.itemRotation + (float)API.Tau, sword.item.scale, pos);
-                              }
-                          }
-                      }));
+                            Vector2 pos = player.Center - Main.screenPosition;
+                            sword.DrawHeld(drawinfo, Lighting.GetColor((int)(player.Center.X / 16f), (int)(player.Center.Y / 16f)), (float)player.itemRotation + (float)API.Tau, sword.item.scale, pos);
+                        }
+                    }));
                 }
             }
         }
@@ -477,22 +470,24 @@ namespace kRPG
 
             int selectedBinding3 = player.QuicksRadial.SelectedBinding;
             player.QuicksRadial.Update();
-            if (player.QuicksRadial.SelectedBinding != -1 && PlayerInput.Triggers.JustReleased.RadialQuickbar && !PlayerInput.MiscSettingsTEMP.HotbarRadialShouldBeUsed)
+
+            if (player.QuicksRadial.SelectedBinding == -1 || !PlayerInput.Triggers.JustReleased.RadialQuickbar ||
+                PlayerInput.MiscSettingsTEMP.HotbarRadialShouldBeUsed)
+                return;
+
+            switch (player.QuicksRadial.SelectedBinding)
             {
-                switch (player.QuicksRadial.SelectedBinding)
-                {
-                    case 0:
-                        player.APIQuickHeal();
-                        break;
-                    case 1:
-                        player.APIQuickBuff();
-                        break;
-                    case 2:
-                        player.APIQuickMana();
-                        break;
-                }
-                PlayerInput.Triggers.JustReleased.RadialQuickbar = false;
+                case 0:
+                    player.APIQuickHeal();
+                    break;
+                case 1:
+                    player.APIQuickBuff();
+                    break;
+                case 2:
+                    player.APIQuickMana();
+                    break;
             }
+            PlayerInput.Triggers.JustReleased.RadialQuickbar = false;
         }
 
         public override void PostUpdateEquips()
@@ -598,20 +593,32 @@ namespace kRPG
 
         public override void PostUpdate()
         {
-            if (Main.netMode == 2) return;
-            if (Main.netMode == 1 && Main.myPlayer != player.whoAmI) return;
+            switch (Main.netMode)
+            {
+                case 2:
+                case 1 when Main.myPlayer != player.whoAmI:
+                    return;
+            }
 
             Item item = player.inventory[player.selectedItem];
             if (item.damage > 0 && (item.melee || !item.noMelee || item.modItem is ProceduralSword))
                 lastSelectedWeapon = item;
 
-            if (item.modItem is ProceduralSword)
-                if (Main.itemTexture[item.type] != ((ProceduralSword)item.modItem).texture)
-                    Main.itemTexture[item.type] = ((ProceduralSword)item.modItem).texture;
-
-            if (item.modItem is ProceduralStaff)
-                if (Main.itemTexture[ModContent.ItemType<ProceduralStaff>()] != ((ProceduralStaff)item.modItem).texture)
-                    Main.itemTexture[ModContent.ItemType<ProceduralStaff>()] = ((ProceduralStaff)item.modItem).texture;
+            switch (item.modItem)
+            {
+                case ProceduralSword s:
+                {
+                    if (Main.itemTexture[item.type] != s.texture)
+                        Main.itemTexture[item.type] = s.texture;
+                    break;
+                }
+                case ProceduralStaff st:
+                {
+                    if (Main.itemTexture[ModContent.ItemType<ProceduralStaff>()] != st.texture)
+                        Main.itemTexture[ModContent.ItemType<ProceduralStaff>()] = st.texture;
+                    break;
+                }
+            }
 
             //for (int i = 0; i < 40; i += 1)
             //    inventories[activeInvPage][i] = player.inventory[i + 10];
@@ -820,33 +827,29 @@ namespace kRPG
             foreach (NPC n in Main.npc)
                 if (n.active)
                     if (n.boss) bossfight = true;
-            int elecount = 0;
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                if (eleDmg[element] > 0) elecount += 1;
+            int elecount = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => eleDmg[element] > 0);
             if (elecount > 0) damage = (int)Math.Round(damage * (kNPC.ELE_DMG_MODIFIER + 1) / 2);
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
             {
                 damage -= Math.Min(resistance[element], eleDmg[element] * 3 / 5);
-                if (Main.rand.Next(player.statLifeMax2 + resistance[element] * 20) < 15 + eleDmg[element] * (bossfight ? 2 : 8) && Main.netMode != 2)
-                {
-                    if (eleDmg[element] > 0)
-                    {
-                        Type t = ailments[element];
-                        ModBuff buff;
-                        if (ailments[element] == typeof(Fire))
-                            buff = ModContent.GetInstance<Fire>();
-                        else if (ailments[element] == typeof(Cold))
-                            buff = ModContent.GetInstance<Cold>();
-                        else if (ailments[element] == typeof(Lightning))
-                            buff = ModContent.GetInstance<Lightning>();
-                        else
-                            buff = ModContent.GetInstance<Shadow>();
-                        player.AddBuff(buff.Type, bossfight ? 90 : 210);
-                        int intensity = eleDmg[element] * 3 / 2;
-                        ailmentIntensity[element] = Main.expertMode ? intensity * 2 / 3 : intensity;
-                        hasAilment[element] = true;
-                    }
-                }
+                if (Main.rand.Next(player.statLifeMax2 + resistance[element] * 20) >= 15 + eleDmg[element] * (bossfight ? 2 : 8) || Main.netMode == 2)
+                    continue;
+                if (eleDmg[element] <= 0)
+                    continue;
+                Type t = ailments[element];
+                ModBuff buff;
+                if (ailments[element] == typeof(Fire))
+                    buff = ModContent.GetInstance<Fire>();
+                else if (ailments[element] == typeof(Cold))
+                    buff = ModContent.GetInstance<Cold>();
+                else if (ailments[element] == typeof(Lightning))
+                    buff = ModContent.GetInstance<Lightning>();
+                else
+                    buff = ModContent.GetInstance<Shadow>();
+                player.AddBuff(buff.Type, bossfight ? 90 : 210);
+                int intensity = eleDmg[element] * 3 / 2;
+                ailmentIntensity[element] = Main.expertMode ? intensity * 2 / 3 : intensity;
+                hasAilment[element] = true;
             }
             if (Main.rand.Next(player.statLifeMax2 + player.statDefense) < damage * 3)
                 player.AddBuff(ModContent.BuffType<Physical>(), 15 + Math.Min(30, damage * 30 / player.statLifeMax2));
@@ -919,25 +922,23 @@ namespace kRPG
 
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
             {
-                if (Main.rand.Next(target.boss ? 500 : 200) < 30 + eleDmg[element])
-                {
-                    if (eleDmg[element] > 0)
-                    {
-                        Type t = ailments[element];
-                        ModBuff buff;
-                        if (ailments[element] == typeof(Fire))
-                            buff = ModContent.GetInstance<Fire>();
-                        else if (ailments[element] == typeof(Cold))
-                            buff = ModContent.GetInstance<Cold>();
-                        else if (ailments[element] == typeof(Lightning))
-                            buff = ModContent.GetInstance<Lightning>();
-                        else
-                            buff = ModContent.GetInstance<Shadow>();
-                        target.AddBuff(buff.Type, target.boss ? 30 + Math.Min(eleDmg[element], 30) * 3 : 120 + Math.Min(eleDmg[element], 15) * 12);
-                        victim.ailmentIntensity[element] = target.boss ? eleDmg[element] / 2 : eleDmg[element];
-                        victim.hasAilment[element] = true;
-                    }
-                }
+                if (Main.rand.Next(target.boss ? 500 : 200) >= 30 + eleDmg[element])
+                    continue;
+                if (eleDmg[element] <= 0)
+                    continue;
+                Type t = ailments[element];
+                ModBuff buff;
+                if (ailments[element] == typeof(Fire))
+                    buff = ModContent.GetInstance<Fire>();
+                else if (ailments[element] == typeof(Cold))
+                    buff = ModContent.GetInstance<Cold>();
+                else if (ailments[element] == typeof(Lightning))
+                    buff = ModContent.GetInstance<Lightning>();
+                else
+                    buff = ModContent.GetInstance<Shadow>();
+                target.AddBuff(buff.Type, target.boss ? 30 + Math.Min(eleDmg[element], 30) * 3 : 120 + Math.Min(eleDmg[element], 15) * 12);
+                victim.ailmentIntensity[element] = target.boss ? eleDmg[element] / 2 : eleDmg[element];
+                victim.hasAilment[element] = true;
             }
         }
 
@@ -965,20 +966,19 @@ namespace kRPG
                 LevelUP();
                 goto Check;
             }
-            else
-                CombatText.NewText(player.getRect(), new Color(127, 159, 255), xp + " XP");
+
+            CombatText.NewText(player.getRect(), new Color(127, 159, 255), xp + " XP");
         }
 
         public int ExperienceToLevel()
         {
             if (level < 5)
                 return 80 + level * 20;
-            else if (level < 10)
+            if (level < 10)
                 return level * 40;
-            else if (level < 163)
+            if (level < 163)
                 return (int)(280 * Math.Pow(1.09, level - 5) + 3 * level);
-            else
-                return (int)(2000000000 - 288500000000 / level);
+            return (int)(2000000000 - 288500000000 / level);
         }
 
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
@@ -998,37 +998,36 @@ namespace kRPG
                     proceed = true;
                 else if (proj.type == ModContent.ProjectileType<ProceduralSpellProj>())
                     proceed = ((ProceduralSpellProj)proj.modProjectile).source == null;
-                if (proceed && staff.ornament != null)
-                    if (staff.ornament.onHit != null) staff.ornament.onHit(player, target, item, damage, crit);
-
+                if (proceed)
+                {
+                    staff.ornament?.onHit?.Invoke(player, target, item, damage, crit);
+                }
             }
             else if (proj.type == ModContent.ProjectileType<ProceduralSpear>() && item.type == ModContent.ItemType<ProceduralSword>())
             {
                 ProceduralSword spear = (ProceduralSword)item.modItem;
-                if (spear.accent != null)
-                    if (spear.accent.onHit != null) spear.accent.onHit(player, target, spear, damage, crit);
+                spear.accent?.onHit?.Invoke(player, target, spear, damage, crit);
             }
         }
 
         private void LeechLife(Item item, int damage)
         {
-            if (leechCooldown == 0)
+            if (leechCooldown != 0)
+                return;
+            int leechAmount = Math.Min((int)(damage * lifeLeech), (int)(player.inventory[player.selectedItem].damage / 2 * (1 + lifeLeech)));
+            leechAmount = Math.Min(leechAmount, (int)(player.statLifeMax2 * lifeLeech * 0.2));
+            if (leechAmount > 1)
             {
-                int leechAmount = Math.Min((int)(damage * lifeLeech), (int)(player.inventory[player.selectedItem].damage / 2 * (1 + lifeLeech)));
-                leechAmount = Math.Min(leechAmount, (int)(player.statLifeMax2 * lifeLeech * 0.2));
-                if (leechAmount > 1)
-                {
-                    player.statLife += leechAmount;
-                    player.HealEffect((int)(leechAmount));
-                    leechCooldown = item.useAnimation * 3;
-                }
+                player.statLife += leechAmount;
+                player.HealEffect((int)(leechAmount));
+                leechCooldown = item.useAnimation * 3;
+            }
 
-                else if (lifeLeech > 0f)
-                {
-                    player.statLife += 1;
-                    player.HealEffect(1);
-                    leechCooldown = (int)(item.useAnimation * (3 - Math.Min(1.4f, lifeLeech * 10f)));
-                }
+            else if (lifeLeech > 0f)
+            {
+                player.statLife += 1;
+                player.HealEffect(1);
+                leechCooldown = (int)(item.useAnimation * (3 - Math.Min(1.4f, lifeLeech * 10f)));
             }
         }
 

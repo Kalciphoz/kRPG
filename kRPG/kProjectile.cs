@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kRPG.GUI;
 using kRPG.Items;
 using kRPG.Items.Glyphs;
@@ -14,76 +15,69 @@ namespace kRPG
         public Dictionary<ELEMENT, int> elementalDamage;
         private Item item;
 
-        public override bool InstancePerEntity
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool InstancePerEntity => true;
 
         public override void AI(Projectile projectile)
         {
-            if (elementalDamage == null && Main.netMode != 1)
+            if (elementalDamage != null || Main.netMode == 1)
+                return;
+            elementalDamage = new Dictionary<ELEMENT, int>()
             {
-                elementalDamage = new Dictionary<ELEMENT, int>()
-                {
-                    {ELEMENT.FIRE, 0},
-                    {ELEMENT.COLD, 0},
-                    {ELEMENT.LIGHTNING, 0},
-                    {ELEMENT.SHADOW, 0}
-                };
+                {ELEMENT.FIRE, 0},
+                {ELEMENT.COLD, 0},
+                {ELEMENT.LIGHTNING, 0},
+                {ELEMENT.SHADOW, 0}
+            };
 
-                if (Main.npc.GetUpperBound(0) >= projectile.owner)
+            if (Main.npc.GetUpperBound(0) >= projectile.owner)
+            {
+                if (projectile.hostile && !projectile.friendly)
                 {
-                    if (projectile.hostile && !projectile.friendly)
-                    {
-                        bool bossfight = false;
-                        foreach (NPC n in Main.npc)
-                            if (n.active)
-                                if (n.boss) bossfight = true;
-                        if (bossfight) return;
+                    bool bossfight = false;
+                    foreach (NPC n in Main.npc)
+                        if (n.active)
+                            if (n.boss) bossfight = true;
+                    if (bossfight) return;
 
-                        Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
-                        Dictionary<ELEMENT, bool> haselement = new Dictionary<ELEMENT, bool>()
-                        {
-                            { ELEMENT.FIRE, player.ZoneUnderworldHeight || player.ZoneTowerSolar || player.ZoneMeteor || player.ZoneDesert || Main.rand.Next(10) == 0 && Main.netMode == 0 },
-                            { ELEMENT.COLD, player.ZoneSnow || player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneDungeon || player.ZoneRain || Main.rand.Next(10) == 0 && Main.netMode == 0 },
-                            { ELEMENT.LIGHTNING, player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneTowerStardust || player.ZoneMeteor || player.ZoneHoly || Main.rand.Next(10) == 0 && Main.netMode == 0 },
-                            { ELEMENT.SHADOW, player.ZoneCorrupt || player.ZoneCrimson || player.ZoneUnderworldHeight || player.ZoneTowerNebula || !Main.dayTime && (Main.rand.Next(10) == 0 && Main.netMode == 0 && player.ZoneOverworldHeight) }
-                        };
-                        int count = 0;
-                        foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                            if (haselement[element]) count += 1;
-                        int portionsize = (int)Math.Round((double)projectile.damage * kNPC.ELE_DMG_MODIFIER / 3.0 / count);
-                        foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                            if (haselement[element]) elementalDamage[element] = Math.Max(1, portionsize);
-                        return;
-                    }
-                }
-                if (projectile.type == ModContent.ProjectileType<ProceduralSpellProj>())
-                {
-                    PlayerCharacter character = Main.player[projectile.owner].GetModPlayer<PlayerCharacter>();
-                    ProceduralSpellProj spell = (ProceduralSpellProj)projectile.modProjectile;
-                    if (spell.source == null)
-                        SelectItem(projectile);
-                    else
+                    Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
+                    Dictionary<ELEMENT, bool> haselement = new Dictionary<ELEMENT, bool>()
                     {
-                        Cross cross = ((Cross)spell.source.glyphs[(int)GLYPHTYPE.CROSS].modItem);
-                        if (cross is Cross_Orange)
-                            SelectItem(projectile, character.lastSelectedWeapon);
-                        else foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                                elementalDamage[element] = (int)Math.Round(cross.eleDmg[element] * projectile.damage);
-                    }
+                        { ELEMENT.FIRE, player.ZoneUnderworldHeight || player.ZoneTowerSolar || player.ZoneMeteor || player.ZoneDesert || Main.rand.Next(10) == 0 && Main.netMode == 0 },
+                        { ELEMENT.COLD, player.ZoneSnow || player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneDungeon || player.ZoneRain || Main.rand.Next(10) == 0 && Main.netMode == 0 },
+                        { ELEMENT.LIGHTNING, player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneTowerStardust || player.ZoneMeteor || player.ZoneHoly || Main.rand.Next(10) == 0 && Main.netMode == 0 },
+                        { ELEMENT.SHADOW, player.ZoneCorrupt || player.ZoneCrimson || player.ZoneUnderworldHeight || player.ZoneTowerNebula || !Main.dayTime && (Main.rand.Next(10) == 0 && Main.netMode == 0 && player.ZoneOverworldHeight) }
+                    };
+                    int count = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => haselement[element]);
+                    int portionsize = (int)Math.Round((double)projectile.damage * kNPC.ELE_DMG_MODIFIER / 3.0 / count);
+                    foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                        if (haselement[element]) elementalDamage[element] = Math.Max(1, portionsize);
+                    return;
                 }
-                else if (projectile.friendly && !projectile.hostile && Main.player[projectile.owner] != null)
+            }
+            if (projectile.type == ModContent.ProjectileType<ProceduralSpellProj>())
+            {
+                PlayerCharacter character = Main.player[projectile.owner].GetModPlayer<PlayerCharacter>();
+                ProceduralSpellProj spell = (ProceduralSpellProj)projectile.modProjectile;
+                if (spell.source == null)
+                    SelectItem(projectile);
+                else
                 {
-                    Player player = Main.player[projectile.owner];
-                    if (player.active)
-                        if (player.inventory[player.selectedItem] != null)
-                            if (player.inventory[player.selectedItem].active && projectile.type != ModContent.ProjectileType<Explosion>() && projectile.type != ModContent.ProjectileType<SmokePellets>())
-                                SelectItem(projectile);
+                    Cross cross = ((Cross)spell.source.glyphs[(int)GLYPHTYPE.CROSS].modItem);
+                    if (cross is Cross_Orange)
+                        SelectItem(projectile, character.lastSelectedWeapon);
+                    else foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                        elementalDamage[element] = (int)Math.Round(cross.eleDmg[element] * projectile.damage);
                 }
+            }
+            else if (projectile.friendly && !projectile.hostile && Main.player[projectile.owner] != null)
+            {
+                Player player = Main.player[projectile.owner];
+                if (!player.active)
+                    return;
+                if (player.inventory[player.selectedItem] == null)
+                    return;
+                if (player.inventory[player.selectedItem].active && projectile.type != ModContent.ProjectileType<Explosion>() && projectile.type != ModContent.ProjectileType<SmokePellets>())
+                    SelectItem(projectile);
             }
             //if (Main.netMode != 0)
             //{

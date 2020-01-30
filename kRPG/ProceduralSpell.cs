@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kRPG.GUI;
 using kRPG.Items.Glyphs;
 using kRPG.Projectiles;
@@ -24,10 +25,7 @@ namespace kRPG
         public int remaining = 0;
 
         public List<ProceduralSpellProj> circlingProtection = new List<ProceduralSpellProj>();
-        public bool minion
-        {
-            get { return !(glyphs[(byte)GLYPHTYPE.STAR].modItem is Star_Blue); }
-        }
+        public bool minion => !(glyphs[(byte)GLYPHTYPE.STAR].modItem is Star_Blue);
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position, float scale)
         {
@@ -104,13 +102,7 @@ namespace kRPG
             }
         }
         public List<GlyphModifier> modifierOverride = null;
-        public int projCount
-        {
-            get
-            {
-                return projCountOverride == -1 ? ((Moon)glyphs[(byte)GLYPHTYPE.MOON].modItem).projCount : projCountOverride;
-            }
-        }
+        public int projCount => projCountOverride == -1 ? ((Moon)glyphs[(byte)GLYPHTYPE.MOON].modItem).projCount : projCountOverride;
         public int projCountOverride = -1;
 
         public ProceduralSpell(Mod mod)
@@ -140,7 +132,7 @@ namespace kRPG
                 Projectile.NewProjectile(oldCenter - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(), 2, 0f, player.whoAmI);
                 Vector2 vector32;
                 vector32.X = (float)Main.mouseX + Main.screenPosition.X;
-                if (player.gravDir == 1f)
+                if (Math.Abs(player.gravDir - 1f) < .01)
                 {
                     vector32.Y = (float)Main.mouseY + Main.screenPosition.Y - (float)player.height;
                 }
@@ -148,7 +140,7 @@ namespace kRPG
                 {
                     vector32.Y = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY;
                 }
-                vector32.X -= (float)(player.width / 2);
+                vector32.X -= (float)(player.width / 2.0);
                 if (vector32.X > 50f && vector32.X < (float)(Main.maxTilesX * 16 - 50) && vector32.Y > 50f && vector32.Y < (float)(Main.maxTilesY * 16 - 50))
                 {
                     int num276 = (int)(vector32.X / 16f);
@@ -263,16 +255,13 @@ namespace kRPG
         {
             int constant = Main.hardMode ? character.level / 3 : 5;
             float multiplier = Main.expertMode ? 1f : 0.65f;
-            foreach (Item item in glyphs)
-                multiplier *= ((Glyph)item.modItem).DamageModifier();
+            multiplier = glyphs.Aggregate(multiplier, (current, item) => current * ((Glyph) item.modItem).DamageModifier());
             return (int)Math.Round(Math.Pow(1.04, Math.Min(130, character.level)) * 9f * multiplier) + constant; 
         }
 
         public int ManaCost(PlayerCharacter character)
         {
-            float multiplier = 0.4f;
-            foreach (Item item in glyphs)
-                multiplier *= ((Glyph)item.modItem).ManaModifier();
+            float multiplier = glyphs.Aggregate(0.4f, (current, item) => current * ((Glyph) item.modItem).ManaModifier());
             return (int)Math.Round((20 + character.level) * multiplier);
         }
     }

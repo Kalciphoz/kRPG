@@ -41,17 +41,11 @@ namespace kRPG.Items
             {STAT.WITS, "239223031 wits"}
         };
 
-        public override bool InstancePerEntity { get { return true; } }
+        public override bool InstancePerEntity => true;
 
         public byte upgradeLevel = 255;
         public byte kPrefix = 0;
-        public bool enhanced
-        {
-            get
-            {
-                return kPrefix != 0;
-            }
-        }
+        public bool enhanced => kPrefix != 0;
 
         public Dictionary<ELEMENT, int> elementalDamage = new Dictionary<ELEMENT, int>()
         {
@@ -276,14 +270,21 @@ namespace kRPG.Items
             {
                 try
                 {
-                    if (item.modItem is ProceduralSword)
-                        ((ProceduralSword)item.modItem).ResetStats();
-                    else if (item.modItem is ProceduralStaff)
-                        ((ProceduralStaff)item.modItem).ResetStats();
-                    else if (item.modItem is RangedWeapon)
-                        ((RangedWeapon)item.modItem).SetStats();
-                    else
-                        item.SetItemDefaults(item.type);
+                    switch (item.modItem)
+                    {
+                        case ProceduralSword osword:
+                            osword.ResetStats();
+                            break;
+                        case ProceduralStaff ostaff:
+                            ostaff.ResetStats();
+                            break;
+                        case RangedWeapon oweapon:
+                            oweapon.SetStats();
+                            break;
+                        default:
+                            item.SetItemDefaults(item.type);
+                            break;
+                    }
                 }
                 catch (SystemException e)
                 {
@@ -320,12 +321,11 @@ namespace kRPG.Items
                 int totalElements = 0;
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 {
-                    if (staff.eleDamage[element] > 0f)
-                    {
-                        elementalDamage[element] += Math.Max((int)(item.damage * staff.eleDamage[element]), 1);
-                        totalReduction += staff.eleDamage[element];
-                        totalElements += 1;
-                    }
+                    if (!(staff.eleDamage[element] > 0f))
+                        continue;
+                    elementalDamage[element] += Math.Max((int)(item.damage * staff.eleDamage[element]), 1);
+                    totalReduction += staff.eleDamage[element];
+                    totalElements += 1;
                 }
                 item.damage -= Math.Max((int)(item.damage * totalReduction), totalElements);
             }
@@ -336,12 +336,11 @@ namespace kRPG.Items
                 int totalElements = 0;
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 {
-                    if (sword.eleDamage[element] > 0f)
-                    {
-                        elementalDamage[element] += Math.Max((int)(item.damage * sword.eleDamage[element]), 1);
-                        totalReduction += sword.eleDamage[element];
-                        totalElements += 1;
-                    }
+                    if (!(sword.eleDamage[element] > 0f))
+                        continue;
+                    elementalDamage[element] += Math.Max((int)(item.damage * sword.eleDamage[element]), 1);
+                    totalReduction += sword.eleDamage[element];
+                    totalElements += 1;
                 }
                 item.damage -= Math.Max((int)(item.damage * totalReduction), totalElements);
             }
@@ -895,14 +894,16 @@ namespace kRPG.Items
 
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 {
-                    if (resBonus[element] != 0)
+                    if (resBonus[element] == 0)
+                        continue;
+                    string color = elementNames[element].Substring(0, 9);
+                    string eleName = elementNames[element].Substring(9);
+                    TooltipLine line = new TooltipLine(mod, "Res" + element.ToString(), resBonus[element].ToString() + eleName + " resistance")
                     {
-                        string color = elementNames[element].Substring(0, 9);
-                        string eleName = elementNames[element].Substring(9);
-                        TooltipLine line = new TooltipLine(mod, "Res" + element.ToString(), resBonus[element].ToString() + eleName + " resistance");
-                        line.overrideColor = new Color(Int32.Parse(color.Substring(0, 3)), Int32.Parse(color.Substring(3, 3)), Int32.Parse(color.Substring(6, 3)));
-                        tooltips.Insert(1, line);
-                    }
+                        overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)),
+                            int.Parse(color.Substring(6, 3)))
+                    };
+                    tooltips.Insert(1, line);
                 }
 
                 foreach (STAT stat in Enum.GetValues(typeof(STAT)))
@@ -911,37 +912,35 @@ namespace kRPG.Items
                     {
                         string color = statNames[stat].Substring(0, 9);
                         string statName = statNames[stat].Substring(9);
-                        TooltipLine line = new TooltipLine(mod, "Stat" + stat.ToString(), statBonus[stat].ToString() + statName);
-                        line.overrideColor = new Color(Int32.Parse(color.Substring(0, 3)), Int32.Parse(color.Substring(3, 3)), Int32.Parse(color.Substring(6, 3)));
+                        TooltipLine line = new TooltipLine(mod, "Stat" + stat.ToString(), statBonus[stat].ToString() + statName)
+                        {
+                            overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)), int.Parse(color.Substring(6, 3)))
+                        };
                         tooltips.Insert(1, line);
                     }
                 }
 
                 if (bonusEva > 0)
                 {
-                    TooltipLine line = new TooltipLine(mod, "Evasion", bonusEva.ToString() + " evasion rating");
-                    line.overrideColor = new Color(159, 159, 159);
+                    TooltipLine line = new TooltipLine(mod, "Evasion", bonusEva.ToString() + " evasion rating") {overrideColor = new Color(159, 159, 159)};
                     tooltips.Insert(1, line);
                 }
 
                 if (bonusMana > 0)
                 {
-                    TooltipLine line = new TooltipLine(mod, "Mana", bonusMana.ToString() + " maximum mana");
-                    line.overrideColor = new Color(0, 63, 255);
+                    TooltipLine line = new TooltipLine(mod, "Mana", bonusMana.ToString() + " maximum mana") {overrideColor = new Color(0, 63, 255)};
                     tooltips.Insert(1, line);
                 }
 
                 if (bonusLife > 0)
                 {
-                    TooltipLine line = new TooltipLine(mod, "Life", bonusLife.ToString() + " maximum life");
-                    line.overrideColor = new Color(255, 31, 31);
+                    TooltipLine line = new TooltipLine(mod, "Life", bonusLife.ToString() + " maximum life") {overrideColor = new Color(255, 31, 31)};
                     tooltips.Insert(1, line);
                 }
 
                 for (int i = 0; i < prefixTooltips.Count; i += 1)
                 {
-                    TooltipLine line = new TooltipLine(mod, "prefixline" + i, prefixTooltips[i]);
-                    line.overrideColor = new Color(127, 191, 127);
+                    TooltipLine line = new TooltipLine(mod, "prefixline" + i, prefixTooltips[i]) {overrideColor = new Color(127, 191, 127)};
                     tooltips.Add(line);
                 }
             }
@@ -955,15 +954,16 @@ namespace kRPG.Items
                     {
                         string color = elementNames[element].Substring(0, 9);
                         string eleName = elementNames[element].Substring(9);
-                        TooltipLine line = new TooltipLine(mod, "Element" + element.ToString(), eleDamage.ToString() + eleName + "damage");
-                        line.overrideColor = new Color(Int32.Parse(color.Substring(0, 3)), Int32.Parse(color.Substring(3, 3)), Int32.Parse(color.Substring(6, 3)));
+                        TooltipLine line = new TooltipLine(mod, "Element" + element.ToString(), eleDamage.ToString() + eleName + "damage")
+                        {
+                            overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)), int.Parse(color.Substring(6, 3)))
+                        };
                         tooltips.Insert(tooltips.FindIndex(tooltip => tooltip.Name == "Damage"), line);
                     }
                 }
                 for (int i = 0; i < prefixTooltips.Count; i += 1)
                 {
-                    TooltipLine line = new TooltipLine(mod, "prefixline" + i, prefixTooltips[i]);
-                    line.overrideColor = new Color(127, 191, 127);
+                    TooltipLine line = new TooltipLine(mod, "prefixline" + i, prefixTooltips[i]) {overrideColor = new Color(127, 191, 127)};
                     tooltips.Add(line);
                 }
             }
@@ -971,8 +971,8 @@ namespace kRPG.Items
 
         public void ApplyUpgradeLevel(Item item)
         {
-            double animationDPS = 60 * item.damage / item.useAnimation;
-            double usetimeDPS = 60 * item.damage / item.useTime;
+            double animationDps = 60f * item.damage / item.useAnimation;
+            double usetimeDps = 60f * item.damage / item.useTime;
             double dpsModifier = 1.0;
             switch (upgradeLevel)
             {
@@ -1004,15 +1004,15 @@ namespace kRPG.Items
                     dpsModifier = 2.25;
                     break;
             }
-            animationDPS *= dpsModifier;
-            usetimeDPS *= dpsModifier;
+            animationDps *= dpsModifier;
+            usetimeDps *= dpsModifier;
 
-            item.damage = (int)Math.Round(animationDPS / 60 * item.useAnimation);
+            item.damage = (int)Math.Round(animationDps / 60 * item.useAnimation);
 
             int i = item.useTime - item.useAnimation;
             
-            item.useAnimation = (int)Math.Round(60 / animationDPS * item.damage);
-            item.useTime = (int)Math.Round(60 / usetimeDPS * item.damage);
+            item.useAnimation = (int)Math.Round(60 / animationDps * item.damage);
+            item.useTime = (int)Math.Round(60 / usetimeDps * item.damage);
 
             if (i >= 0 && item.useTime < item.useAnimation)
                 item.useTime = item.useAnimation + i;
@@ -1031,17 +1031,14 @@ namespace kRPG.Items
 
         public byte RandomizeUpgradeLevel(Item item, bool bonus)
         {
-            if (Main.rand.Next(2) == 1)
-            {
-                if (Main.rand.Next(3) == 1)
-                {
-                    if (Main.rand.Next(4) == 1 && bonus) return 3;
+            if (Main.rand.Next(2) != 1)
+                return 0;
+            if (Main.rand.Next(3) != 1)
+                return 1;
+            if (Main.rand.Next(4) == 1 && bonus) return 3;
 
-                    else return 2;
-                }
-                else return 1;
-            }
-            else return 0;
+            return 2;
+
         }
 
         public void Upgrade(Item item)
@@ -1190,61 +1187,76 @@ namespace kRPG.Items
                             player.NebulaLevelup(item.buffType);
                         }
                     }
-                    if (item.type == ItemID.Heart || item.type == ItemID.CandyApple || item.type == ItemID.CandyCane)
+
+                    switch (item.type)
                     {
-                        Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                        int healAmount = 10 + player.GetModPlayer<PlayerCharacter>().level / 2;
-                        player.statLife += healAmount;
-                        if (Main.myPlayer == player.whoAmI)
+                        case ItemID.Heart:
+                        case ItemID.CandyApple:
+                        case ItemID.CandyCane:
                         {
-                            player.HealEffect(healAmount);
+                            Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
+                            int healAmount = 10 + player.GetModPlayer<PlayerCharacter>().level / 2;
+                            player.statLife += healAmount;
+                            if (Main.myPlayer == player.whoAmI)
+                            {
+                                player.HealEffect(healAmount);
+                            }
+                            if (player.statLife > player.statLifeMax2)
+                            {
+                                player.statLife = player.statLifeMax2;
+                            }
+                            item = new Item();
+                            if (Main.netMode == 1)
+                            {
+                                NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                            }
+
+                            break;
                         }
-                        if (player.statLife > player.statLifeMax2)
+                        case ItemID.Star:
+                        case ItemID.SoulCake:
+                        case ItemID.SugarPlum:
                         {
-                            player.statLife = player.statLifeMax2;
+                            Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
+                            int healAmount = 5 + character.TotalStats(STAT.WITS);
+                            character.mana += healAmount;
+                            player.statMana += healAmount;
+                            if (Main.myPlayer == player.whoAmI)
+                            {
+                                player.ManaEffect(healAmount);
+                            }
+                            item = new Item();
+                            if (Main.netMode == 1)
+                            {
+                                NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                            }
+
+                            break;
                         }
-                        item = new Item();
-                        if (Main.netMode == 1)
+                        default:
                         {
-                            NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
-                        }
-                    }
-                    else if (item.type == ItemID.Star || item.type == ItemID.SoulCake || item.type == ItemID.SugarPlum)
-                    {
-                        Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1, 1f, 0f);
-                        int healAmount = 5 + character.TotalStats(STAT.WITS);
-                        character.mana += healAmount;
-                        player.statMana += healAmount;
-                        if (Main.myPlayer == player.whoAmI)
-                        {
-                            player.ManaEffect(healAmount);
-                        }
-                        item = new Item();
-                        if (Main.netMode == 1)
-                        {
-                            NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
-                        }
-                    }
-                    else if (item.type == ModContent.ItemType<PermanenceCrown>())
-                    {
-                        character.permanence += 1;
-                        ItemText.NewText(item, item.stack);
-                        Main.PlaySound(7, player.position);
-                        return false;
-                    }
-                    else if (item.type == ModContent.ItemType<BlacksmithCrown>())
-                    {
-                        character.transcendence += 1;
-                        ItemText.NewText(item, item.stack);
-                        Main.PlaySound(7, player.position);
-                        return false;
-                    }
-                    else
-                    {
-                        item = player.GetItem(item);
-                        if (Main.netMode == 1)
-                        {
-                            NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                            if (item.type == ModContent.ItemType<PermanenceCrown>())
+                            {
+                                character.permanence += 1;
+                                ItemText.NewText(item, item.stack);
+                                Main.PlaySound(7, player.position);
+                                return false;
+                            }
+
+                            if (item.type == ModContent.ItemType<BlacksmithCrown>())
+                            {
+                                character.transcendence += 1;
+                                ItemText.NewText(item, item.stack);
+                                Main.PlaySound(7, player.position);
+                                return false;
+                            }
+                            item = player.GetItem(item);
+                            if (Main.netMode == 1)
+                            {
+                                NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                            }
+
+                            break;
                         }
                     }
                 }
@@ -1332,22 +1344,18 @@ namespace kRPG.Items
 
         public override bool UseItem(Item item, Player player)
         {
-            if (item.healMana > 0)
-            {
-                PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
-                character.mana = Math.Min(player.statManaMax2, character.mana + item.healMana);
-                player.statMana = character.mana;
-                player.AddBuff(ModContent.BuffType<ManaCooldown>(), 600);
-                return true;
-            }
-            return false;
+            if (item.healMana <= 0)
+                return false;
+            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+            character.mana = Math.Min(player.statManaMax2, character.mana + item.healMana);
+            player.statMana = character.mana;
+            player.AddBuff(ModContent.BuffType<ManaCooldown>(), 600);
+            return true;
         }
 
         public override bool CanUseItem(Item item, Player player)
         {
-            if (item.healMana > 0)
-                return player.GetModPlayer<PlayerCharacter>().canHealMana;
-            return true;
+            return item.healMana <= 0 || player.GetModPlayer<PlayerCharacter>().canHealMana;
         }
     }
 }

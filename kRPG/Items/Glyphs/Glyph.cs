@@ -24,13 +24,7 @@ namespace kRPG.Items.Glyphs
         public List<GlyphModifier> modifiers = new List<GlyphModifier>();
         public bool initialized = false;
 
-        public bool minion
-        {
-            get
-            {
-                return this is Star && !(this is Star_Blue);
-            }
-        }
+        public bool minion => this is Star && !(this is Star_Blue);
 
         public override void SetDefaults()
         {
@@ -44,23 +38,18 @@ namespace kRPG.Items.Glyphs
         public virtual void Randomize()
         {
             initialized = true;
-            foreach (GlyphModifier modifier in GlyphModifier.modifiers)
-                if (modifier.match(this) && modifier.odds())
-                {
-                    if (modifier.group == null)
-                        modifiers.Add(modifier);
-                    else
-                        modifiers.Add(modifier.group());
-                }
+            foreach (var modifier in GlyphModifier.modifiers.Where(modifier => modifier.match(this) && modifier.odds()))
+                modifiers.Add(modifier.@group == null ? modifier : modifier.@group());
         }
 
         public override ModItem Clone(Item item)
         {
             Glyph copy = (Glyph)base.Clone(item);
             copy.modifiers = new List<GlyphModifier>();
-            if (modifiers != null)
-                foreach (GlyphModifier modifier in modifiers)
-                    copy.modifiers.Add(modifier);
+            if (modifiers == null)
+                return copy;
+            foreach (GlyphModifier modifier in modifiers)
+                copy.modifiers.Add(modifier);
             return copy;
         }
 
@@ -76,10 +65,7 @@ namespace kRPG.Items.Glyphs
 
         public float ModifierDamageModifier()
         {
-            float modifier = 1f;
-            foreach (GlyphModifier mod in modifiers)
-                modifier *= mod.dmgModifier;
-            return modifier;
+            return modifiers.Aggregate(1f, (current, modi) => current * modi.dmgModifier);
         }
 
         public virtual float BaseDamageModifier()
@@ -94,10 +80,7 @@ namespace kRPG.Items.Glyphs
 
         public float ModifierManaModifier()
         {
-            float modifier = 1f;
-            foreach (GlyphModifier mod in modifiers)
-                modifier *= mod.manaModifier;
-            return modifier;
+            return modifiers.Aggregate(1f, (current, modi) => current * modi.manaModifier);
         }
 
         public virtual float BaseManaModifier()
@@ -228,19 +211,14 @@ namespace kRPG.Items.Glyphs
             DisplayName.SetDefault("Generic Cross Glyph; Please Ignore");
         }
 
-        public virtual Dictionary<ELEMENT, float> eleDmg
-        {
-            get
+        public virtual Dictionary<ELEMENT, float> eleDmg =>
+            new Dictionary<ELEMENT, float>()
             {
-                return new Dictionary<ELEMENT, float>()
-                {
-                    {ELEMENT.FIRE, 0},
-                    {ELEMENT.COLD, 0},
-                    {ELEMENT.LIGHTNING, 0},
-                    {ELEMENT.SHADOW, 0}
-                };
-            }
-        }
+                {ELEMENT.FIRE, 0},
+                {ELEMENT.COLD, 0},
+                {ELEMENT.LIGHTNING, 0},
+                {ELEMENT.SHADOW, 0}
+            };
     }
     public class Moon : Glyph
     {
@@ -306,7 +284,7 @@ namespace kRPG.Items.Glyphs
                         foreach (ProceduralSpellProj psp in eyeball.circlingProtection)
                             psp.projectile.Kill();
                         eyeball.circlingProtection.Clear();
-                        if (eyeball.smallProt != null) eyeball.smallProt.projectile.Kill();
+                        eyeball.smallProt?.projectile.Kill();
                         eyeball.projectile.Kill();
                     }
                 }
@@ -314,9 +292,8 @@ namespace kRPG.Items.Glyphs
                 eye.Center = target;
                 WingedEyeball we = (WingedEyeball)eye.modProjectile;
                 we.source = spell;
-                foreach (GlyphModifier modifier in spell.modifiers)
-                    if (modifier.minionAI != null)
-                        we.glyphModifiers.Add(modifier.minionAI);
+                foreach (var modifier in spell.modifiers.Where(modifier => modifier.minionAI != null))
+                    we.glyphModifiers.Add(modifier.minionAI);
                 character.minions.Add((WingedEyeball)eye.modProjectile);
             };
         }
@@ -375,24 +352,23 @@ namespace kRPG.Items.Glyphs
                 {
                     int x = (int)(target.X / 16f);
                     Tile tile = Main.tile[x, y];
-                    if (tile.active() && Main.tileSolidTop[tile.type] || tile.collisionType == 1 && Main.tile[x, y - 1].collisionType != 1)
-                    {
-                        placeable = true;
-                        placementHeight = y;
-                        if (target.Y / 16 - 4 <= y)
-                            break;
-                    }
+                    if ((!tile.active() || !Main.tileSolidTop[tile.type]) && (tile.collisionType != 1 || Main.tile[x, y - 1].collisionType == 1))
+                        continue;
+                    placeable = true;
+                    placementHeight = y;
+                    if (target.Y / 16 - 4 <= y)
+                        break;
                 }
                 if (!placeable) return;
                 PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
                 if (character.minions.Exists(minion => minion is Obelisk))
                 {
-                    foreach (ProceduralMinion obelisk in character.minions.Where(minion => minion.projectile.type == ModContent.ProjectileType<Obelisk>()))
+                    foreach (ProceduralMinion obelisk in character.minions.Where(minions => minions.projectile.type == ModContent.ProjectileType<Obelisk>()))
                     {
                         foreach (ProceduralSpellProj psp in obelisk.circlingProtection)
                             psp.projectile.Kill();
                         obelisk.circlingProtection.Clear();
-                        if (obelisk.smallProt != null) obelisk.smallProt.projectile.Kill();
+                        obelisk.smallProt?.projectile.Kill();
                         obelisk.projectile.Kill();
                     }
                 }
@@ -439,11 +415,10 @@ namespace kRPG.Items.Glyphs
                 try
                 {
                     ProceduralSpellProj.AI_RotateToVelocity(spell);
-                    if (Main.rand.NextFloat(0f, 1.5f) <= spell.alpha)
-                    {
-                        int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Fire, spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 1f + spell.alpha * 2f);
-                        Main.dust[dust].noGravity = true;
-                    }
+                    if (!(Main.rand.NextFloat(0f, 1.5f) <= spell.alpha))
+                        return;
+                    int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Fire, spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 1f + spell.alpha * 2f);
+                    Main.dust[dust].noGravity = true;
                 }
                 catch (SystemException e)
                 {
@@ -476,19 +451,14 @@ namespace kRPG.Items.Glyphs
             Tooltip.SetDefault("Casts magical fireballs");
         }
 
-        public override Dictionary<ELEMENT, float> eleDmg
-        {
-            get
+        public override Dictionary<ELEMENT, float> eleDmg =>
+            new Dictionary<ELEMENT, float>()
             {
-                return new Dictionary<ELEMENT, float>()
-                {
-                    {ELEMENT.FIRE, 1f},
-                    {ELEMENT.COLD, 0},
-                    {ELEMENT.LIGHTNING, 0},
-                    {ELEMENT.SHADOW, 0}
-                };
-            }
-        }
+                {ELEMENT.FIRE, 1f},
+                {ELEMENT.COLD, 0},
+                {ELEMENT.LIGHTNING, 0},
+                {ELEMENT.SHADOW, 0}
+            };
     }
 
     public class Cross_Orange : Cross
@@ -503,10 +473,7 @@ namespace kRPG.Items.Glyphs
                     {
                         PlayerCharacter character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
 
-                        if (character.lastSelectedWeapon.modItem is ProceduralSword)
-                            spell.texture = ((ProceduralSword)character.lastSelectedWeapon.modItem).texture;
-                        else
-                            spell.texture = Main.itemTexture[character.lastSelectedWeapon.type];
+                        spell.texture = character.lastSelectedWeapon.modItem is ProceduralSword ? ((ProceduralSword)character.lastSelectedWeapon.modItem).texture : Main.itemTexture[character.lastSelectedWeapon.type];
                     }
                     else
                         spell.texture = GFX.projectile_boulder;
@@ -711,19 +678,14 @@ namespace kRPG.Items.Glyphs
             return 1.05f;
         }
 
-        public override Dictionary<ELEMENT, float> eleDmg
-        {
-            get
+        public override Dictionary<ELEMENT, float> eleDmg =>
+            new Dictionary<ELEMENT, float>()
             {
-                return new Dictionary<ELEMENT, float>()
-                {
-                    {ELEMENT.FIRE, 0},
-                    {ELEMENT.COLD, 1f},
-                    {ELEMENT.LIGHTNING, 0},
-                    {ELEMENT.SHADOW, 0}
-                };
-            }
-        }
+                {ELEMENT.FIRE, 0},
+                {ELEMENT.COLD, 1f},
+                {ELEMENT.LIGHTNING, 0},
+                {ELEMENT.SHADOW, 0}
+            };
     }
 
     public class Cross_Violet : Cross
@@ -746,11 +708,10 @@ namespace kRPG.Items.Glyphs
             return delegate (ProceduralSpellProj spell)
             {
                 ProceduralSpellProj.AI_RotateToVelocity(spell);
-                if (Main.rand.NextFloat(0f, 1.5f) <= spell.alpha)
-                {
-                    int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Shadowflame, spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 0.4f + spell.alpha * 1.2f);
-                    Main.dust[dust].noGravity = true;
-                }
+                if (!(Main.rand.NextFloat(0f, 1.5f) <= spell.alpha))
+                    return;
+                int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Shadowflame, spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 0.4f + spell.alpha * 1.2f);
+                Main.dust[dust].noGravity = true;
             };
         }
 
@@ -771,19 +732,14 @@ namespace kRPG.Items.Glyphs
             Tooltip.SetDefault("Casts magical shadowbolts");
         }
 
-        public override Dictionary<ELEMENT, float> eleDmg
-        {
-            get
+        public override Dictionary<ELEMENT, float> eleDmg =>
+            new Dictionary<ELEMENT, float>()
             {
-                return new Dictionary<ELEMENT, float>()
-                {
-                    {ELEMENT.FIRE, 0},
-                    {ELEMENT.COLD, 0},
-                    {ELEMENT.LIGHTNING, 0},
-                    {ELEMENT.SHADOW, 1f}
-                };
-            }
-        }
+                {ELEMENT.FIRE, 0},
+                {ELEMENT.COLD, 0},
+                {ELEMENT.LIGHTNING, 0},
+                {ELEMENT.SHADOW, 1f}
+            };
     }
 
     public class Cross_Purple : Cross
@@ -804,11 +760,10 @@ namespace kRPG.Items.Glyphs
             return delegate (ProceduralSpellProj spell)
             {
                 ProceduralSpellProj.AI_RotateToVelocity(spell);
-                if (Main.rand.NextFloat(0f, 2f) <= spell.alpha)
-                {
-                    int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Electric, spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 0.2f + spell.alpha);
-                    Main.dust[dust].noGravity = true;
-                }
+                if (!(Main.rand.NextFloat(0f, 2f) <= spell.alpha))
+                    return;
+                int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Electric, spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 0.2f + spell.alpha);
+                Main.dust[dust].noGravity = true;
             };
         }
 
@@ -829,19 +784,14 @@ namespace kRPG.Items.Glyphs
             Tooltip.SetDefault("Casts magical lightning orbs");
         }
 
-        public override Dictionary<ELEMENT, float> eleDmg
-        {
-            get
+        public override Dictionary<ELEMENT, float> eleDmg =>
+            new Dictionary<ELEMENT, float>()
             {
-                return new Dictionary<ELEMENT, float>()
-                {
-                    {ELEMENT.FIRE, 0},
-                    {ELEMENT.COLD, 0},
-                    {ELEMENT.LIGHTNING, 1f},
-                    {ELEMENT.SHADOW, 0}
-                };
-            }
-        }
+                {ELEMENT.FIRE, 0},
+                {ELEMENT.COLD, 0},
+                {ELEMENT.LIGHTNING, 1f},
+                {ELEMENT.SHADOW, 0}
+            };
     }
 
     public class Moon_Yellow : Moon
@@ -926,21 +876,24 @@ namespace kRPG.Items.Glyphs
         {
             return delegate (ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
             {
-                if (caster is Player)
+                switch (caster)
                 {
-                    PlayerCharacter character = ((Player)caster).GetModPlayer<PlayerCharacter>();
-                    foreach (ProceduralSpellProj proj in character.circlingProtection)
-                        if (proj.projectile.modProjectile is ProceduralSpellProj)
+                    case Player p:
+                    {
+                        PlayerCharacter character = p.GetModPlayer<PlayerCharacter>();
+                        foreach (var proj in character.circlingProtection.Where(proj => proj.projectile.modProjectile is ProceduralSpellProj))
                             proj.projectile.Kill();
-                    character.circlingProtection.Clear();
-                }
-                else if (caster is Projectile)
-                {
-                    ProceduralMinion minion = (ProceduralMinion)((Projectile)caster).modProjectile;
-                    foreach (ProceduralSpellProj proj in minion.circlingProtection)
-                        if (proj.projectile.modProjectile is ProceduralSpellProj)
+                        character.circlingProtection.Clear();
+                        break;
+                    }
+                    case Projectile pj:
+                    {
+                        ProceduralMinion minion = (ProceduralMinion)pj.modProjectile;
+                        foreach (var proj in minion.circlingProtection.Where(proj => proj.projectile.modProjectile is ProceduralSpellProj))
                             proj.projectile.Kill();
-                    minion.circlingProtection.Clear();
+                        minion.circlingProtection.Clear();
+                        break;
+                    }
                 }
                 float spread = GetSpread(spell.projCount);
                 Vector2 velocity = new Vector2(0f, -1.5f);
@@ -950,13 +903,14 @@ namespace kRPG.Items.Glyphs
                     proj.projectile.timeLeft = RotTimeLeft;
                     proj.displacementVelocity = velocity.RotatedBy(i * spread * API.Tau);
                     proj.displacementAngle = i * spread * (float)API.Tau;
-                    if (caster is Player)
+                    switch (caster)
                     {
-                        player.GetModPlayer<PlayerCharacter>().circlingProtection.Add(proj);
-                    }
-                    else if (caster is Projectile)
-                    {
-                        ((ProceduralMinion)((Projectile)caster).modProjectile).circlingProtection.Add(proj);
+                        case Player _:
+                            player.GetModPlayer<PlayerCharacter>().circlingProtection.Add(proj);
+                            break;
+                        case Projectile pj:
+                            ((ProceduralMinion)pj.modProjectile).circlingProtection.Add(proj);
+                            break;
                     }
                 }
             };
@@ -1066,12 +1020,11 @@ namespace kRPG.Items.Glyphs
             {
                 new SpellEffect(spell, target, projCount * 8, delegate (ProceduralSpell ability, int timeLeft)
                 {
-                    if (timeLeft % 8 == 0)
-                    {
-                        ProceduralSpellProj proj = spell.CreateProjectile(player, new Vector2(0f, 8f), 0f, new Vector2(target.X - area / 2f + Main.rand.NextFloat(area), target.Y - 240f), caster);
-                        if (proj.alpha < 1f) proj.alpha = 0.5f;
-                        proj.projectile.timeLeft = 60;
-                    }
+                    if (timeLeft % 8 != 0)
+                        return;
+                    ProceduralSpellProj proj = spell.CreateProjectile(player, new Vector2(0f, 8f), 0f, new Vector2(target.X - area / 2f + Main.rand.NextFloat(area), target.Y - 240f), caster);
+                    if (proj.alpha < 1f) proj.alpha = 0.5f;
+                    proj.projectile.timeLeft = 60;
                 });
             };
         }
@@ -1102,12 +1055,11 @@ namespace kRPG.Items.Glyphs
             {
                 new SpellEffect(spell, target, projCount * 10, delegate (ProceduralSpell ability, int timeLeft)
                 {
-                    if (timeLeft % 10 == 0)
-                    {
-                        ProceduralSpellProj proj = spell.CreateProjectile(player, new Vector2(0, -9f), Main.rand.NextFloat(-0.07f, 0.07f), caster.Center + new Vector2(0, -16f), caster);
-                        if (proj.alpha < 1f) proj.alpha = 0.5f;
-                        proj.projectile.tileCollide = true;
-                    }
+                    if (timeLeft % 10 != 0)
+                        return;
+                    ProceduralSpellProj proj = spell.CreateProjectile(player, new Vector2(0, -9f), Main.rand.NextFloat(-0.07f, 0.07f), caster.Center + new Vector2(0, -16f), caster);
+                    if (proj.alpha < 1f) proj.alpha = 0.5f;
+                    proj.projectile.tileCollide = true;
                 });
             };
         }

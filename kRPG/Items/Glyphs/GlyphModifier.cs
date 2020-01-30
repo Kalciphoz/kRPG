@@ -91,13 +91,13 @@ namespace kRPG.Items.Glyphs
             {
                 if (minion.projectile.timeLeft % 50 != 0)
                     return;
-                
+
                 Projectile proj = minion.projectile;
                 NPC target = minion.GetTarget();
                 Vector2 unitVelocity = (target.Center - proj.Center);
                 if (!minion.attack) return;
                 if (Vector2.Distance(minion.projectile.Center, target.Center) < 400f)
-                unitVelocity.Normalize();
+                    unitVelocity.Normalize();
                 Vector2 velocity = unitVelocity * 5f;
                 ProceduralSpellProj spell = minion.source.CreateProjectile(Main.player[minion.projectile.owner], velocity, 0, proj.Center, proj);
                 spell.projectile.minion = true;
@@ -149,11 +149,10 @@ namespace kRPG.Items.Glyphs
                     cross.GetInitAction()(spell);
                     spell.projectile.scale = 0.9f;
                     ProceduralSpellProj.AI_RotateToVelocity(spell);
-                    if (Main.rand.NextFloat(0f, 1.5f) <= spell.alpha)
-                    {
-                        int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Fire, spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 1f + spell.alpha * 2f);
-                        Main.dust[dust].noGravity = true;
-                    }
+                    if (!(Main.rand.NextFloat(0f, 1.5f) <= spell.alpha))
+                        return;
+                    int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Fire, spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 1f + spell.alpha * 2f);
+                    Main.dust[dust].noGravity = true;
                 });
                 ps.impact.Add(cross.GetImpactAction());
                 ps.kill.Add(cross.GetKillAction());
@@ -163,7 +162,7 @@ namespace kRPG.Items.Glyphs
             });
             group_impactEffects = new GlyphModifier(2, "", glyph => glyph is Cross, () => Main.rand.Next(2) == 0).DefineGroup(delegate
             {
-                switch(Main.rand.Next(2))
+                switch (Main.rand.Next(2))
                 {
                     default:
                         return smokePellets;
@@ -186,7 +185,7 @@ namespace kRPG.Items.Glyphs
             vanish = new GlyphModifier(5, "Discord", glyph => glyph is Star, () => Main.rand.Next(3) == 0, 1.2f, 1f);
             crosschains = new GlyphModifier(6, "", glyph => glyph is Cross, () => Main.rand.Next(3) == 0).DefineGroup(delegate
             {
-                switch(Main.rand.Next(2))
+                switch (Main.rand.Next(2))
                 {
                     default:
                         return lifeleech;
@@ -201,15 +200,15 @@ namespace kRPG.Items.Glyphs
                 PlayerCharacter character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
                 float distance = Vector2.Distance(npc.Center, character.player.Center);
                 int count = (int)(distance / 20);
-                Trail trail = new Trail(npc.Center, 60, delegate (SpriteBatch spriteBatch, Player player, Vector2 end, Vector2[] displacement, float scale)
+                Trail trail = new Trail(npc.Center, 60, delegate(SpriteBatch spriteBatch, Player player, Vector2 end, Vector2[] displacement, float scale)
                 {
                     for (int i = 0; i < count; i += 1)
                     {
                         Vector2 position = (npc.position - player.Center) * i / count + player.Center;
-                        spriteBatch.Draw(GFX.heart, position - Main.screenPosition + displacement[i], null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(GFX.heart, position - Main.screenPosition + displacement[i], null, Color.White, 0f, Vector2.Zero, scale,
+                            SpriteEffects.None, 0f);
                     }
-                });
-                trail.displacement = new Vector2[count];
+                }) {displacement = new Vector2[count]};
                 for (int i = 0; i < count; i += 1)
                     trail.displacement[i] = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f));
                 character.trails.Add(trail);
@@ -225,15 +224,15 @@ namespace kRPG.Items.Glyphs
                 PlayerCharacter character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
                 float distance = Vector2.Distance(npc.Center, character.player.Center);
                 int count = (int)(distance / 20);
-                Trail trail = new Trail(npc.Center, 60, delegate (SpriteBatch spriteBatch, Player player, Vector2 end, Vector2[] displacement, float scale)
+                Trail trail = new Trail(npc.Center, 60, delegate(SpriteBatch spriteBatch, Player player, Vector2 end, Vector2[] displacement, float scale)
                 {
                     for (int i = 0; i < count; i += 1)
                     {
                         Vector2 position = (npc.position - player.Center) * i / count + player.Center;
-                        spriteBatch.Draw(GFX.star, position - Main.screenPosition + displacement[i], null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(GFX.star, position - Main.screenPosition + displacement[i], null, Color.White, 0f, Vector2.Zero, scale,
+                            SpriteEffects.None, 0f);
                     }
-                });
-                trail.displacement = new Vector2[count];
+                }) {displacement = new Vector2[count]};
                 for (int i = 0; i < count; i += 1)
                     trail.displacement[i] = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f));
                 character.trails.Add(trail);
@@ -264,17 +263,15 @@ namespace kRPG.Items.Glyphs
                             if (bounds.Intersects(new Rectangle((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height)) && !npc.friendly && !npc.townNPC)
                             {
                                 kNPC kn = npc.GetGlobalNPC<kNPC>();
-                                bool canHit = true;
-                                if (kn.immuneTime > 0) canHit = false;
+                                bool canHit = !(kn.immuneTime > 0);
                                 if (kn.invincibilityTime.ContainsKey(spell.source))
                                     if (kn.invincibilityTime[spell.source] > 0)
                                         canHit = false;
-                                if (canHit)
-                                {
-                                    player.ApplyDamageToNPC(npc, proj.damage, 0f, 0, false);
-                                    npc.AddBuff(BuffID.Poisoned, proj.damage + 60);
-                                    kn.invincibilityTime[spell.source] = 30;
-                                }
+                                if (!canHit)
+                                    continue;
+                                player.ApplyDamageToNPC(npc, proj.damage, 0f, 0, false);
+                                npc.AddBuff(BuffID.Poisoned, proj.damage + 60);
+                                kn.invincibilityTime[spell.source] = 30;
                             }
                     spriteBatch.Draw(GFX.thornChain, chainpos - Main.screenPosition, null, spell.lighted ? Color.White : color, relativePos.ToRotation() - (float)API.Tau / 4f, new Vector2(10f, 16f), 1f, SpriteEffects.None, 0.1f);
                 }

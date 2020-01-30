@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using kRPG.GUI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -22,14 +23,8 @@ namespace kRPG
 
         private int allocated
         {
-            get
-            {
-                return levelGUI.allocated[id];
-            }
-            set
-            {
-                levelGUI.allocated[id] = value;
-            }
+            get => levelGUI.allocated[id];
+            set => levelGUI.allocated[id] = value;
         }
 
         public StatFlame(Mod mod, LevelGUI levelGUI, STAT id, Func<Vector2> position, Texture2D texture)
@@ -58,44 +53,39 @@ namespace kRPG
         {
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
 
-            if (CheckHover())
+            if (!CheckHover())
+                return;
+            switch (id)
             {
-                if (id == STAT.RESILIENCE)
-                {
+                case STAT.RESILIENCE:
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Resilience", new Vector2(Main.screenWidth / 2f - 96f, Main.screenHeight / 2f + 128f), Color.Red);
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.rituals[RITUAL.DEMON_PACT] ? "Converted into Potency by Demon Pact" : "Increases your defence, life regeneration, and maximum life", new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 152f), Color.White);
-                }
-
-                else if (id == STAT.QUICKNESS)
-                {
+                    break;
+                case STAT.QUICKNESS:
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Quickness", new Vector2(Main.screenWidth / 2f - 96f, Main.screenHeight / 2f + 128f), Color.Lime);
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Increases your speed, evasion, and crit chance", new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 152f), Color.White);
-                }
-
-                else if (id == STAT.POTENCY)
-                {
+                    break;
+                case STAT.POTENCY:
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Potency", new Vector2(Main.screenWidth / 2f - 96f, Main.screenHeight / 2f + 128f), Color.Blue);
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Increases your damage, leech, and crit multiplier", new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 152f), Color.White);
-                }
+                    break;
+            }
 
-                if (allocated == 0)
-                    spriteBatch.DrawStringWithShadow(Main.fontMouseText, "<Click to allocate>", new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 176f), Color.White);
-                else
-                    spriteBatch.DrawStringWithShadow(Main.fontMouseText, "<Allocated " + allocated.ToString() + ">", new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 176f), Color.White);
+            if (allocated == 0)
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "<Click to allocate>", new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 176f), Color.White);
+            else
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "<Allocated " + allocated.ToString() + ">", new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 176f), Color.White);
 
-                int total = 0;
-                foreach (STAT stat in levelGUI.allocated.Keys)
-                    total += levelGUI.allocated[stat];
-                if (Main.mouseLeft && Main.mouseLeftRelease && total + character.pointsAllocated < character.level - 1)
-                {
-                    Main.PlaySound(SoundID.MenuTick);
-                    allocated += 1;
-                }
-                if (Main.mouseRight && Main.mouseRightRelease && allocated > 0)
-                {
-                    Main.PlaySound(SoundID.MenuTick);
-                    allocated -= 1;
-                }
+            int total = levelGUI.allocated.Keys.Sum(stat => levelGUI.allocated[stat]);
+            if (Main.mouseLeft && Main.mouseLeftRelease && total + character.pointsAllocated < character.level - 1)
+            {
+                Main.PlaySound(SoundID.MenuTick);
+                allocated += 1;
+            }
+            if (Main.mouseRight && Main.mouseRightRelease && allocated > 0)
+            {
+                Main.PlaySound(SoundID.MenuTick);
+                allocated -= 1;
             }
         }
 

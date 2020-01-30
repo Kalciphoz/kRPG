@@ -65,10 +65,7 @@ namespace kRPG.Projectiles
         public Item selectedItem;
         public Vector2 origin = Vector2.Zero;
         public ProceduralSpell source;
-        public bool minion
-        {
-            get { return caster is Projectile; }
-        }
+        public bool minion => caster is Projectile;
 
         public override void SendExtraAI(BinaryWriter writer)
         {
@@ -143,19 +140,20 @@ namespace kRPG.Projectiles
         public List<Action<ProceduralSpellProj>> init = new List<Action<ProceduralSpellProj>>();
         public override void Initialize()
         {
-            foreach (Action<ProceduralSpellProj> action in init) if (action != null) action(this);
-            if (minion)
-            {
-                projectile.melee = false;
-                projectile.ranged = false;
-                projectile.magic = false;
-            }
+            foreach (var action in init.Where(action => action != null))
+                action(this);
+            if (!minion)
+                return;
+            projectile.melee = false;
+            projectile.ranged = false;
+            projectile.magic = false;
         }
 
         public List<Action<ProceduralSpellProj, SpriteBatch, Color>> draw = new List<Action<ProceduralSpellProj, SpriteBatch, Color>>();
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            foreach (Action<ProceduralSpellProj, SpriteBatch, Color> action in draw) if (action != null) action(this, spriteBatch, color);
+            foreach (var action in draw.Where(action => action != null))
+                action(this, spriteBatch, color);
             if (texture == null)
             {
                 Initialize();
@@ -198,7 +196,8 @@ namespace kRPG.Projectiles
         public List<Action<ProceduralSpellProj>> kill = new List<Action<ProceduralSpellProj>>();
         public override void Kill(int timeLeft)
         {
-            foreach (Action<ProceduralSpellProj> action in kill) if (action != null) action(this);
+            foreach (var action in kill.Where(action => action != null))
+                action(this);
             if (timeLeft > 0)
                 Main.PlaySound(SoundID.Dig, projectile.position);
         }
@@ -211,7 +210,8 @@ namespace kRPG.Projectiles
         public List<Action<ProceduralSpellProj, NPC, int>> impact = new List<Action<ProceduralSpellProj, NPC, int>>();
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            foreach (Action<ProceduralSpellProj, NPC, int> action in impact) if (action != null) action(this, target, damage);
+            foreach (var action in impact.Where(action => action != null))
+                action(this, target, damage);
         }
 
         public List<Action<ProceduralSpellProj>> ai = new List<Action<ProceduralSpellProj>>(); // <=== Look here:
@@ -220,24 +220,23 @@ namespace kRPG.Projectiles
             if (alpha < 1f) alpha += 0.02f;
             if (caster == null) projectile.Kill();
             else if (!caster.active) projectile.Kill();
-            foreach (Action<ProceduralSpellProj> action in ai) if (action != null) action(this);
+            foreach (var action in ai.Where(action => action != null))
+                action(this);
         }
 
         public override bool OnTileCollide(Vector2 velocity)
         {
-            if (bounce)
-            {
-                Main.PlaySound(SoundID.Item10, projectile.position);
+            if (!bounce)
+                return true;
+            Main.PlaySound(SoundID.Item10, projectile.position);
 
-                if (projectile.velocity.Y != velocity.Y)
-                    projectile.velocity.Y = -velocity.Y;
+            if (Math.Abs(projectile.velocity.Y - velocity.Y) > .01)
+                projectile.velocity.Y = -velocity.Y;
 
-                if (projectile.velocity.X != velocity.X)
-                    projectile.velocity.X = -velocity.X;
+            if (Math.Abs(projectile.velocity.X - velocity.X) > .01)
+                projectile.velocity.X = -velocity.X;
 
-                return false;
-            }
-            return true;
+            return false;
         }
 
         public override ModProjectile Clone()
@@ -277,7 +276,7 @@ namespace kRPG.Projectiles
             foreach (ProceduralSpellProj spell in circlingProtection)
                 spell.projectile.Kill();
             circlingProtection.Clear();
-            if (smallProt != null) smallProt.projectile.Kill();
+            smallProt?.projectile.Kill();
         }
 
         public override bool? CanCutTiles()
@@ -300,18 +299,17 @@ namespace kRPG.Projectiles
             foreach (NPC npc in Main.npc)
             {
                 float f = Vector2.Distance(projectile.Center, npc.Center);
-                if (f < distance && npc.active && npc.life > 0 && !npc.friendly && npc.damage > 0)
-                {
-                    target = npc;
-                    distance = f;
-                    attack = true;
-                }
-            }
-            if (player.HasMinionAttackTargetNPC)
-            {
-                target = Main.npc[player.MinionAttackTargetNPC];
+                if (!(f < distance) || !npc.active || npc.life <= 0 || npc.friendly || npc.damage <= 0)
+                    continue;
+                target = npc;
+                distance = f;
                 attack = true;
             }
+
+            if (!player.HasMinionAttackTargetNPC)
+                return target;
+            target = Main.npc[player.MinionAttackTargetNPC];
+            attack = true;
 
             return target;
         }
@@ -320,7 +318,7 @@ namespace kRPG.Projectiles
         {
             if (Main.netMode == 2) return;
             bool self = source.glyphs[(byte)GLYPHTYPE.MOON].modItem is Moon_Green;
-            if ((!self || circlingProtection.Where(spell => spell.projectile.active).Count() <= source.projCount - 3) && cooldown <= 0)
+            if ((!self || circlingProtection.Count(spell => spell.projectile.active) <= source.projCount - 3) && cooldown <= 0)
             {
                 if (!self)
                 {
@@ -392,7 +390,7 @@ namespace kRPG.Projectiles
             float someDist = (float)Math.Sqrt(v.X * v.X + v.Y * v.Y);
             float num22 = 14f;
 
-            if (someDist < 100 && player.velocity.Y == 0f && projectile.Bottom.Y <= player.Bottom.Y && !Collision.SolidCollision(projectile.position, projectile.width, projectile.height))
+            if (someDist < 100 && Math.Abs(player.velocity.Y) < .01 && projectile.Bottom.Y <= player.Bottom.Y && !Collision.SolidCollision(projectile.position, projectile.width, projectile.height))
             {
                 projectile.ai[0] = 0f;
                 if (projectile.velocity.Y < -6f)
@@ -472,11 +470,11 @@ namespace kRPG.Projectiles
                 projectile.frame = num9 + 1;
                 projectile.frameCounter = 0;
             }
-            if (projectile.frame > 3)
-            {
-                projectile.frame = 0;
+
+            if (projectile.frame <= 3)
                 return;
-            }
+            projectile.frame = 0;
+            return;
         }
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
@@ -593,9 +591,7 @@ namespace kRPG.Projectiles
         public override bool? CanHitNPC(NPC target)
         {
             Player owner = Main.player[projectile.owner];
-            if ((target.position.X - owner.position.X) * owner.direction > -1f)
-                return base.CanHitNPC(target);
-            else return false;
+            return (target.position.X - owner.position.X) * owner.direction > -1f ? base.CanHitNPC(target) : false;
         }
 
         public Point CombinedTextureSize()
@@ -625,12 +621,18 @@ namespace kRPG.Projectiles
                 Initialize();
                 return;
             }
-            if (Main.netMode == 0)
-                spriteBatch.Draw(texture, position + texture.Size() / 2f, null, blade.lighted ? Color.White : color, rotation, projectile.spriteDirection > 0 ? texture.Bounds.TopRight() : Vector2.Zero, scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
-            else if (Main.netMode == 1)
+
+            switch (Main.netMode)
             {
-                Texture2D t2d = Main.projectileTexture[projectile.type];
-                spriteBatch.Draw(t2d, position + t2d.Size() / 2f, null, color, rotation, projectile.spriteDirection > 0 ? t2d.Bounds.TopRight() : Vector2.Zero, scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+                case 0:
+                    spriteBatch.Draw(texture, position + texture.Size() / 2f, null, blade.lighted ? Color.White : color, rotation, projectile.spriteDirection > 0 ? texture.Bounds.TopRight() : Vector2.Zero, scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+                    break;
+                case 1:
+                {
+                    Texture2D t2d = Main.projectileTexture[projectile.type];
+                    spriteBatch.Draw(t2d, position + t2d.Size() / 2f, null, color, rotation, projectile.spriteDirection > 0 ? t2d.Bounds.TopRight() : Vector2.Zero, scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+                    break;
+                }
             }
         }
 
@@ -665,7 +667,7 @@ namespace kRPG.Projectiles
             try
             {
                 Player owner = Main.player[projectile.owner];
-                if (accent.onHit != null) accent.onHit(owner, target, (ProceduralSword)owner.inventory[owner.selectedItem].modItem, damage, crit);
+                accent.onHit?.Invoke(owner, target, (ProceduralSword)owner.inventory[owner.selectedItem].modItem, damage, crit);
             }
             catch (SystemException e)
             {
@@ -676,8 +678,8 @@ namespace kRPG.Projectiles
 
         public float movementFactor // Change this value to alter how fast the spear moves
         {
-            get { return projectile.ai[0]; }
-            set { projectile.ai[0] = value; }
+            get => projectile.ai[0];
+            set => projectile.ai[0] = value;
         }
         // It appears that for this AI, only the ai0 field is used!
 
@@ -705,7 +707,7 @@ namespace kRPG.Projectiles
                 // As long as the player isn't frozen, the spear can move
                 if (!projOwner.frozen)
                 {
-                    if (movementFactor == 0f) // When intially thrown out, the ai0 will be 0f
+                    if (Math.Abs(movementFactor) < .01) // When intially thrown out, the ai0 will be 0f
                     {
                         movementFactor = 3f;
                         projectile.netUpdate = true;
@@ -739,8 +741,8 @@ namespace kRPG.Projectiles
                 }
 
                 Rectangle rect = new Rectangle((int)projectile.position.X, (int)projectile.position.Y, texture.Width, texture.Height);
-                if (blade.effect != null) blade.effect(rect, projOwner);
-                if (accent.effect != null) accent.effect(rect, projOwner);
+                blade.effect?.Invoke(rect, projOwner);
+                accent.effect?.Invoke(rect, projOwner);
             }
             catch (SystemException e)
             {

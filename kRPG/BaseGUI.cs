@@ -56,13 +56,7 @@ namespace kRPG
             buttons.Remove(button);
         }
 
-        public virtual bool RemoveOnClose
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public virtual bool RemoveOnClose => false;
 
         public void CloseGUI()
         {
