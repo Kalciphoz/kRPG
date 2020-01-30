@@ -7,7 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kRPG", "kRPG\kRPG.csproj", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EA28824C-5CCD-4965-AEF7-7E077250B9DF}"
 	ProjectSection(SolutionItems) = preProject
-		kRPG.tmod = kRPG.tmod
 		kRPG_VersionInfo.json = kRPG_VersionInfo.json
 	EndProjectSection
 EndProject
