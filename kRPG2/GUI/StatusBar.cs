@@ -24,6 +24,7 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -173,13 +174,38 @@ namespace kRPG2.GUI
                 int num3 = (int) (20f + 22f * (1f - num2));
                 int a = (int) (75f + 150f * num2);
                 new Color(255, 255, 255, a);
-                if (!Main.player[Main.myPlayer].hbLocked && !PlayerInput.IgnoreMouseInterface && Main.mouseX >= posX &&
-                    Main.mouseX <= posX + Main.inventoryBackTexture.Width * Main.hotbarScale[i] && Main.mouseY >= num3 &&
-                    Main.mouseY <= num3 + Main.inventoryBackTexture.Height * Main.hotbarScale[i] && !Main.player[Main.myPlayer].channel)
+
+
+                //
+
+                //if (i == 0)
+                //{
+                //    Debug.WriteLine("*********************************");
+                //    Debug.WriteLine($"Y:{Main.mouseY} >= {num3}");
+                //    Debug.WriteLine($"Y:{Main.mouseY} <= {num3 + Main.inventoryBackTexture.Height * Main.hotbarScale[i]}");
+                //    Debug.WriteLine("!Main.player[Main.myPlayer].hbLocked = " + !Main.player[Main.myPlayer].hbLocked);
+                //    Debug.WriteLine("!PlayerInput.IgnoreMouseInterface = " + !PlayerInput.IgnoreMouseInterface);
+                //    Debug.WriteLine("Main.mouseX >= posX >>>> " + (Main.mouseX >= posX));
+                //    Debug.WriteLine("Main.mouseX <= posX + Main.inventoryBackTexture.Width * Main.hotbarScale[i] >>>>>" + (Main.mouseX <= posX + Main.inventoryBackTexture.Width * Main.hotbarScale[i]));
+                //    Debug.WriteLine("&& Main.mouseY >= num3 >>>>>" + (Main.mouseY >= num3));
+                //    Debug.WriteLine("Main.mouseY <= num3 + Main.inventoryBackTexture.Height * Main.hotbarScale[i] >>>>>>" + (Main.mouseY <= num3 + Main.inventoryBackTexture.Height * Main.hotbarScale[i]));
+                //    Debug.WriteLine("!Main.player[Main.myPlayer].channel)>>>>>" + (!Main.player[Main.myPlayer].channel));
+                //}
+
+                if (
+                    //!Main.player[Main.myPlayer].hbLocked && 
+                    !PlayerInput.IgnoreMouseInterface 
+                                                         && Main.mouseX >= posX 
+                                                         && Main.mouseX <= posX + Main.inventoryBackTexture.Width * Main.hotbarScale[i] 
+                                                         && Main.mouseY >= num3 
+                                                         && Main.mouseY <= num3 + Main.inventoryBackTexture.Height * Main.hotbarScale[i] 
+                                                         && !Main.player[Main.myPlayer].channel)
                 {
                     Main.player[Main.myPlayer].mouseInterface = true;
                     Main.player[Main.myPlayer].showItemIcon = false;
-                    if (Main.mouseLeft && !Main.player[Main.myPlayer].hbLocked && !Main.blockMouse)
+                    if (Main.mouseLeft 
+                        //&& !Main.player[Main.myPlayer].hbLocked 
+                        && !Main.blockMouse)
                         Main.player[Main.myPlayer].changeItem = i;
                     Main.hoverItemName = Main.player[Main.myPlayer].inventory[i].AffixName();
                     if (Main.player[Main.myPlayer].inventory[i].stack > 1)

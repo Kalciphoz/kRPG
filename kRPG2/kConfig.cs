@@ -54,7 +54,7 @@ namespace kRPG2
             private set => _configLocal = value;
         }
 
-        public static string ConfigPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Settings.json";
+        public static string ConfigPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG2_Settings.json";
 
         public static Config ConfigServer
         {
@@ -76,7 +76,7 @@ namespace kRPG2
             private set => _stats = value;
         }
 
-        public static string StatsPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Stats.json";
+        public static string StatsPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG2_Stats.json";
 
         public static void Initialize()
         {

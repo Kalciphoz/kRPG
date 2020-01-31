@@ -497,11 +497,11 @@ namespace kRPG2
 
         public override void ModifyDrawLayers(List<PlayerLayer> layers)
         {
-            if (kRPG2.Overhaul != null)
-                return;
+            //if (kRPG2.Overhaul != null)
+            //    return;
             for (int i = 0; i < layers.Count; i += 1)
                 if (layers[i].Name.Contains("Held"))
-                    layers.Insert(i + 2, new PlayerLayer("kRPG", "ProceduralItem", drawinfo =>
+                    layers.Insert(i + 2, new PlayerLayer("kRPG2", "ProceduralItem", drawinfo =>
                     {
                         if (player.itemAnimation <= 0)
                             return;
@@ -673,13 +673,13 @@ namespace kRPG2
             {
                 case ProceduralSword s:
                 {
-                    if (Main.itemTexture[item.type] != s.texture)
+                    //if (Main.itemTexture[item.type] != s.texture)
                         Main.itemTexture[item.type] = s.texture;
                     break;
                 }
                 case ProceduralStaff st:
                 {
-                    if (Main.itemTexture[ModContent.ItemType<ProceduralStaff>()] != st.texture)
+                    //if (Main.itemTexture[ModContent.ItemType<ProceduralStaff>()] != st.texture)
                         Main.itemTexture[ModContent.ItemType<ProceduralStaff>()] = st.texture;
                     break;
                 }

@@ -151,7 +151,7 @@ namespace kRPG2
 
         public static kRPG2 Mod { get; set; }
 
-        public static Mod Overhaul { get; set; }
+      //  public static Mod Overhaul { get; set; }
 
         public bool DrawInterface()
         {
@@ -426,7 +426,7 @@ namespace kRPG2
 
         public override void Load()
         {
-            Overhaul = ModLoader.GetMod("TerrariaOverhaul");
+            //Overhaul = ModLoader.GetMod("TerrariaOverhaul");
 
             kConfig.Initialize();
             if (Main.netMode != 2)
@@ -478,8 +478,8 @@ namespace kRPG2
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
             layers.Find(layer => layer.Name == "Vanilla: Resource Bars").Active = false;
-            layers[layers.FindIndex(layer => layer.Name == "Vanilla: Inventory")] = new LegacyGameInterfaceLayer("kRPG", DrawInterface, InterfaceScaleType.UI);
-            layers.Find(layer => layer.Name == "Vanilla: Hotbar").Active = false;
+            layers[layers.FindIndex(layer => layer.Name == "Vanilla: Inventory")] = new LegacyGameInterfaceLayer("kRPG2", DrawInterface, InterfaceScaleType.UI);
+            layers.Find(layer => layer.Name == "Vanilla: Hotbar").Active =false;
         }
 
         public override void Unload()
