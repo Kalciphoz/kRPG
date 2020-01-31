@@ -28,7 +28,7 @@ namespace kRPG.Buffs
         /// <param name="buffIndex"></param>
         public override void Update(Player player, ref int buffIndex)
         {
-            player.GetModPlayer<PlayerCharacter>().canHealMana = false;
+            player.GetModPlayer<PlayerCharacter>().CanHealMana = false;
             player.ClearBuff(BuffID.ManaSickness);
         }
     }

@@ -4,42 +4,42 @@ using Terraria.ModLoader;
 
 namespace kRPG.Modifiers
 {
-    public class SpeedModifier : NPCModifier
+    public class SpeedModifier : NpcModifier
     {
-        private readonly kNPC kn;
-        private float speedModifier = 1f;
+        private  kNPC Kn { get; set; }
+        private float SpeedModifierAdj { get; set; }
 
-        public SpeedModifier(kNPC kNPC, NPC npc, float speedModifier = 1.8f) : base(kNPC, npc)
+        public SpeedModifier(kNPC kNpc, NPC npc, float speedModifierAdj = 1.8f) : base(kNpc, npc)
         {
             this.npc = npc;
-            kn = kNPC;
+            Kn = kNpc;
             npc.GivenName = "Swift " + npc.GivenName;
-            this.speedModifier = speedModifier;
+            this.SpeedModifierAdj = speedModifierAdj;
         }
 
         public override void Apply()
         {
-            kn.speedModifier = speedModifier;
+            Kn.SpeedModifier = SpeedModifierAdj;
         }
 
-        public new static NPCModifier New(kNPC kNPC, NPC npc)
+        public new static NpcModifier New(kNPC kNpc, NPC npc)
         {
-            return new SpeedModifier(kNPC, npc);
+            return new SpeedModifier(kNpc, npc);
         }
 
-        public new static NPCModifier Random(kNPC kNPC, NPC npc)
+        public new static NpcModifier Random(kNPC kNpc, NPC npc)
         {
-            return new SpeedModifier(kNPC, npc, 1f + Main.rand.NextFloat(2));
+            return new SpeedModifier(kNpc, npc, 1f + Main.rand.NextFloat(2));
         }
 
         public override void Read(BinaryReader reader)
         {
-            speedModifier = reader.ReadSingle();
+            SpeedModifierAdj = reader.ReadSingle();
         }
 
         public override void Write(ModPacket packet)
         {
-            packet.Write(speedModifier);
+            packet.Write(SpeedModifierAdj);
         }
     }
 }

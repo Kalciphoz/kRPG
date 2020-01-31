@@ -101,9 +101,9 @@ namespace kRPG
             }
         };
 
-        public static kRPG mod;
+        public static kRPG Mod { get; set; }
 
-        public static Mod overhaul;
+        public static Mod Overhaul { get; set; }
 
         public static Dictionary<string, RITUAL> ritualByName = new Dictionary<string, RITUAL>
         {
@@ -116,12 +116,12 @@ namespace kRPG
             {"blood_drinking", RITUAL.BLOOD_DRINKING}
         };
 
-        public Texture2D[] invslot = new Texture2D[16];
+        public Texture2D[] InvSlot { get; set; } = new Texture2D[16];
 
         public kRPG()
         {
             Properties = new ModProperties {Autoload = true, AutoloadGores = true, AutoloadSounds = true};
-            mod = this;
+            Mod = this;
 
             //for (int i = 0; i < Lang.inter.Length;i++)
             //{
@@ -135,9 +135,9 @@ namespace kRPG
             if (Main.netMode == 2 || Main.gameMenu) return true;
             try
             {
-                for (int i = 0; i < BaseGui.guiElements.Count; i += 1)
+                for (int i = 0; i < BaseGui.GuiElements.Count; i += 1)
                 {
-                    BaseGui gui = BaseGui.guiElements[i];
+                    BaseGui gui = BaseGui.GuiElements[i];
                     if (gui.PreDraw())
                         gui.Draw(Main.spriteBatch, Main.LocalPlayer);
                 }
@@ -188,11 +188,11 @@ namespace kRPG
                             {ELEMENT.SHADOW, (bool) tags[DataTag.Flag4]}
                         };
                         int count = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => haselement[element]);
-                        int portionsize = (int) Math.Round(npc.damage * kNPC.ELE_DMG_MODIFIER / 2.0 / count);
+                        int portionsize = (int) Math.Round(npc.damage * kNPC.EleDmgModifier / 2.0 / count);
                         foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                             if (haselement[element])
-                                kn.elementalDamage[element] = Math.Max(1, portionsize);
-                        kn.dealseledmg = count > 0;
+                                kn.ElementalDamage[element] = Math.Max(1, portionsize);
+                        kn.DealsEleDmg = count > 0;
                     }
 
                     break;
@@ -203,10 +203,10 @@ namespace kRPG
                         kNPC kn = npc.GetGlobalNPC<kNPC>();
                         for (int i = 0; i < (int) tags[DataTag.Amount]; i += 1)
                         {
-                            NPCModifier modifier = kn.modifierFuncs[reader.ReadInt32()].Invoke(kn, npc);
+                            NpcModifier modifier = kn.ModifierFuncs[reader.ReadInt32()].Invoke(kn, npc);
                             modifier.Read(reader);
                             modifier.Apply();
-                            kn.modifiers.Add(modifier);
+                            kn.Modifiers.Add(modifier);
                         }
 
                         kn.MakeNotable(npc);
@@ -217,17 +217,17 @@ namespace kRPG
                     if (Main.netMode == 2)
                     {
                         PlayerCharacter character = Main.player[(int) tags[DataTag.PlayerId]].GetModPlayer<PlayerCharacter>();
-                        character.level = (int) tags[DataTag.Amount];
-                        character.baseStats[STAT.RESILIENCE] = (int) tags[DataTag.Resilience];
-                        character.baseStats[STAT.QUICKNESS] = (int) tags[DataTag.Quickness];
-                        character.baseStats[STAT.POTENCY] = (int) tags[DataTag.Potency];
-                        character.baseStats[STAT.WITS] = (int) tags[DataTag.Wits];
+                        character.Level = (int) tags[DataTag.Amount];
+                        character.BaseStats[STAT.RESILIENCE] = (int) tags[DataTag.Resilience];
+                        character.BaseStats[STAT.QUICKNESS] = (int) tags[DataTag.Quickness];
+                        character.BaseStats[STAT.POTENCY] = (int) tags[DataTag.Potency];
+                        character.BaseStats[STAT.WITS] = (int) tags[DataTag.Wits];
                     }
 
                     break;
                 case Message.SyncLevel:
                     if (Main.netMode == 2)
-                        Main.player[(int) tags[DataTag.PlayerId]].GetModPlayer<PlayerCharacter>().level = (int) tags[DataTag.Amount];
+                        Main.player[(int) tags[DataTag.PlayerId]].GetModPlayer<PlayerCharacter>().Level = (int) tags[DataTag.Amount];
                     break;
                 case Message.CreateProjectile:
                     try
@@ -239,33 +239,33 @@ namespace kRPG
                         int modifierCount = (int) tags[DataTag.ModifierCount];
                         List<GlyphModifier> modifiers = new List<GlyphModifier>();
                         for (int i = 0; i < modifierCount; i += 1)
-                            modifiers.Add(GlyphModifier.modifiers[reader.ReadInt32()]);
+                            modifiers.Add(GlyphModifier.Modifiers[reader.ReadInt32()]);
 
                         Projectile projectile = Main.projectile[(int) tags[DataTag.ProjId]];
                         if (projectile == null) break;
                         projectile.owner = (int) tags[DataTag.PlayerId];
                         if (!(projectile.modProjectile is ProceduralSpellProj)) break;
                         ProceduralSpellProj ps = (ProceduralSpellProj) projectile.modProjectile;
-                        ps.source = new ProceduralSpell(mod) {glyphs = new Item[3]};
-                        for (int i = 0; i < ps.source.glyphs.Length; i += 1)
+                        ps.Source = new ProceduralSpell(Mod) {Glyphs = new Item[3]};
+                        for (int i = 0; i < ps.Source.Glyphs.Length; i += 1)
                         {
-                            ps.source.glyphs[i] = new Item();
-                            ps.source.glyphs[i].SetDefaults(0, true);
+                            ps.Source.Glyphs[i] = new Item();
+                            ps.Source.Glyphs[i].SetDefaults(0, true);
                         }
 
-                        ps.source.glyphs[(byte) GLYPHTYPE.STAR].SetDefaults((int) tags[DataTag.GlyphStar], true);
-                        ps.source.glyphs[(byte) GLYPHTYPE.CROSS].SetDefaults((int) tags[DataTag.GlyphCross], true);
-                        ps.source.glyphs[(byte) GLYPHTYPE.MOON].SetDefaults((int) tags[DataTag.GlyphMoon], true);
+                        ps.Source.Glyphs[(byte) GLYPHTYPE.STAR].SetDefaults((int) tags[DataTag.GlyphStar], true);
+                        ps.Source.Glyphs[(byte) GLYPHTYPE.CROSS].SetDefaults((int) tags[DataTag.GlyphCross], true);
+                        ps.Source.Glyphs[(byte) GLYPHTYPE.MOON].SetDefaults((int) tags[DataTag.GlyphMoon], true);
                         projectile.damage = (int) tags[DataTag.Damage];
                         projectile.minion = (bool) tags[DataTag.Flag];
                         try
                         {
                             if (projectile.minion)
-                                ps.caster = Main.projectile[(int) tags[DataTag.EntityId]];
+                                ps.Caster = Main.projectile[(int) tags[DataTag.EntityId]];
                             else if (projectile.hostile)
-                                ps.caster = Main.npc[(int) tags[DataTag.EntityId]];
+                                ps.Caster = Main.npc[(int) tags[DataTag.EntityId]];
                             else
-                                ps.caster = Main.player[(int) tags[DataTag.EntityId]];
+                                ps.Caster = Main.player[(int) tags[DataTag.EntityId]];
                         }
                         catch (SystemException e)
                         {
@@ -273,8 +273,8 @@ namespace kRPG
                             break;
                         }
 
-                        ps.source.modifierOverride = modifiers;
-                        foreach (Item item in ps.source.glyphs)
+                        ps.Source.ModifierOverride = modifiers;
+                        foreach (Item item in ps.Source.Glyphs)
                         {
                             if (item == null)
                                 continue;
@@ -282,41 +282,41 @@ namespace kRPG
                             if (glyph.GetAiAction() != null)
                                 ps.ai.Add(glyph.GetAiAction());
                             if (glyph.GetInitAction() != null)
-                                ps.init.Add(glyph.GetInitAction());
+                                ps.Inits.Add(glyph.GetInitAction());
                             if (glyph.GetImpactAction() != null)
-                                ps.impact.Add(glyph.GetImpactAction());
+                                ps.Impacts.Add(glyph.GetImpactAction());
                             if (glyph.GetKillAction() != null)
-                                ps.kill.Add(glyph.GetKillAction());
+                                ps.Kills.Add(glyph.GetKillAction());
                         }
 
                         foreach (GlyphModifier modifier in modifiers)
                         {
-                            if (modifier.impact != null)
-                                ps.impact.Add(modifier.impact);
-                            if (modifier.draw != null)
-                                ps.draw.Add(modifier.draw);
-                            if (modifier.init != null)
-                                ps.init.Add(modifier.init);
+                            if (modifier.Impact != null)
+                                ps.Impacts.Add(modifier.Impact);
+                            if (modifier.Draw != null)
+                                ps.draw.Add(modifier.Draw);
+                            if (modifier.Init != null)
+                                ps.Inits.Add(modifier.Init);
                         }
 
                         ps.Initialize();
 
                         if (Main.netMode == 2)
                         {
-                            ModPacket packet = mod.GetPacket();
+                            ModPacket packet = Mod.GetPacket();
                             packet.Write((byte) Message.CreateProjectile);
                             packet.Write(projectile.owner);
                             packet.Write(projectile.whoAmI);
-                            packet.Write(ps.source.glyphs[(byte) GLYPHTYPE.STAR].type);
-                            packet.Write(ps.source.glyphs[(byte) GLYPHTYPE.CROSS].type);
-                            packet.Write(ps.source.glyphs[(byte) GLYPHTYPE.MOON].type);
+                            packet.Write(ps.Source.Glyphs[(byte) GLYPHTYPE.STAR].type);
+                            packet.Write(ps.Source.Glyphs[(byte) GLYPHTYPE.CROSS].type);
+                            packet.Write(ps.Source.Glyphs[(byte) GLYPHTYPE.MOON].type);
                             packet.Write(projectile.damage);
                             packet.Write(projectile.minion);
-                            packet.Write(ps.caster.whoAmI);
+                            packet.Write(ps.Caster.whoAmI);
                             List<GlyphModifier> mods = modifiers;
                             packet.Write(mods.Count);
                             for (int j = 0; j < mods.Count; j += 1)
-                                packet.Write(mods[j].id);
+                                packet.Write(mods[j].Id);
                             packet.Send();
                         }
                     }
@@ -340,21 +340,21 @@ namespace kRPG
                     break;
                 case Message.SyncSpear:
                     ProceduralSpear spear = (ProceduralSpear) Main.projectile[(int) tags[DataTag.ProjId]].modProjectile;
-                    spear.blade = SwordBlade.blades[(int) tags[DataTag.PartPrimary]];
-                    spear.hilt = SwordHilt.hilts[(int) tags[DataTag.PartSecondary]];
-                    spear.accent = SwordAccent.accents[(int) tags[DataTag.PartTertiary]];
+                    spear.Blade = SwordBlade.Blades[(int) tags[DataTag.PartPrimary]];
+                    spear.Hilt = SwordHilt.Hilts[(int) tags[DataTag.PartSecondary]];
+                    spear.Accent = SwordAccent.Accents[(int) tags[DataTag.PartTertiary]];
                     if (Main.netMode == 1) spear.Initialize();
                     break;
                 case Message.SwordInit:
                     if (Main.netMode == 1)
                     {
                         ProceduralSword sword = (ProceduralSword) Main.item[(int) tags[DataTag.ItemId]].modItem;
-                        sword.blade = SwordBlade.blades[(int) tags[DataTag.PartPrimary]];
-                        sword.hilt = SwordHilt.hilts[(int) tags[DataTag.PartSecondary]];
-                        sword.accent = SwordAccent.accents[(int) tags[DataTag.PartTertiary]];
-                        sword.dps = (float) tags[DataTag.ItemDps];
-                        Main.NewText(sword.dps.ToString(CultureInfo.InvariantCulture));
-                        sword.enemyDef = (int) tags[DataTag.ItemDef];
+                        sword.Blade = SwordBlade.Blades[(int) tags[DataTag.PartPrimary]];
+                        sword.Hilt = SwordHilt.Hilts[(int) tags[DataTag.PartSecondary]];
+                        sword.Accent = SwordAccent.Accents[(int) tags[DataTag.PartTertiary]];
+                        sword.Dps = (float) tags[DataTag.ItemDps];
+                        Main.NewText(sword.Dps.ToString(CultureInfo.InvariantCulture));
+                        sword.EnemyDef = (int) tags[DataTag.ItemDef];
                         sword.Initialize();
                     }
 
@@ -363,11 +363,11 @@ namespace kRPG
                     if (Main.netMode == 1)
                     {
                         ProceduralStaff staff = (ProceduralStaff) Main.item[(int) tags[DataTag.ItemId]].modItem;
-                        staff.staff = Staff.staves[(int) tags[DataTag.PartPrimary]];
-                        staff.gem = StaffGem.gems[(int) tags[DataTag.PartSecondary]];
-                        staff.ornament = StaffOrnament.ornament[(int) tags[DataTag.PartTertiary]];
-                        staff.dps = (float) tags[DataTag.ItemDps];
-                        staff.enemyDef = (int) tags[DataTag.ItemDef];
+                        staff.Staff = Staff.Staffs[(int) tags[DataTag.PartPrimary]];
+                        staff.Gem = StaffGem.Gems[(int) tags[DataTag.PartSecondary]];
+                        staff.Ornament = StaffOrnament.Ornament[(int) tags[DataTag.PartTertiary]];
+                        staff.Dps = (float) tags[DataTag.ItemDps];
+                        staff.EnemyDef = (int) tags[DataTag.ItemDef];
                         staff.Initialize();
                     }
 
@@ -386,7 +386,7 @@ namespace kRPG
                     if (Main.netMode == 1)
                     {
                         PlayerCharacter character = Main.player[(int) tags[DataTag.PlayerId]].GetModPlayer<PlayerCharacter>();
-                        character.accuracyCounter = (float) tags[DataTag.AmountSingle];
+                        character.AccuracyCounter = (float) tags[DataTag.AmountSingle];
                     }
 
                     break;
@@ -394,7 +394,7 @@ namespace kRPG
                     if (Main.netMode == 1)
                     {
                         PlayerCharacter character = Main.player[(int) tags[DataTag.PlayerId]].GetModPlayer<PlayerCharacter>();
-                        character.critAccuracyCounter = (float) tags[DataTag.AmountSingle];
+                        character.CritAccuracyCounter = (float) tags[DataTag.AmountSingle];
                     }
 
                     break;
@@ -403,44 +403,44 @@ namespace kRPG
 
         public override void Load()
         {
-            overhaul = ModLoader.GetMod("TerrariaOverhaul");
+            Overhaul = ModLoader.GetMod("TerrariaOverhaul");
 
             kConfig.Initialize();
             if (Main.netMode != 2)
             {
                 GFX.LoadGfx();
-                invslot[0] = Main.inventoryBackTexture;
-                invslot[1] = Main.inventoryBack2Texture;
-                invslot[2] = Main.inventoryBack3Texture;
-                invslot[3] = Main.inventoryBack4Texture;
-                invslot[4] = Main.inventoryBack5Texture;
-                invslot[5] = Main.inventoryBack6Texture;
-                invslot[6] = Main.inventoryBack7Texture;
-                invslot[7] = Main.inventoryBack8Texture;
-                invslot[8] = Main.inventoryBack9Texture;
-                invslot[9] = Main.inventoryBack10Texture;
-                invslot[10] = Main.inventoryBack11Texture;
-                invslot[11] = Main.inventoryBack12Texture;
-                invslot[12] = Main.inventoryBack13Texture;
-                invslot[13] = Main.inventoryBack14Texture;
-                invslot[14] = Main.inventoryBack15Texture;
-                invslot[15] = Main.inventoryBack16Texture;
-                Main.inventoryBackTexture = GFX.itemSlot;
-                Main.inventoryBack2Texture = GFX.itemSlot;
-                Main.inventoryBack3Texture = GFX.itemSlot;
-                Main.inventoryBack4Texture = GFX.itemSlot;
-                Main.inventoryBack5Texture = GFX.itemSlot;
-                Main.inventoryBack6Texture = GFX.itemSlot;
-                Main.inventoryBack7Texture = GFX.itemSlot;
-                Main.inventoryBack8Texture = GFX.itemSlot;
-                Main.inventoryBack9Texture = GFX.itemSlot;
-                Main.inventoryBack10Texture = GFX.favouritedSlot;
-                Main.inventoryBack11Texture = GFX.itemSlot;
-                Main.inventoryBack12Texture = GFX.itemSlot;
-                Main.inventoryBack13Texture = GFX.itemSlot;
-                Main.inventoryBack14Texture = GFX.selectedSlot;
-                Main.inventoryBack15Texture = GFX.itemSlot;
-                Main.inventoryBack16Texture = GFX.itemSlot;
+                InvSlot[0] = Main.inventoryBackTexture;
+                InvSlot[1] = Main.inventoryBack2Texture;
+                InvSlot[2] = Main.inventoryBack3Texture;
+                InvSlot[3] = Main.inventoryBack4Texture;
+                InvSlot[4] = Main.inventoryBack5Texture;
+                InvSlot[5] = Main.inventoryBack6Texture;
+                InvSlot[6] = Main.inventoryBack7Texture;
+                InvSlot[7] = Main.inventoryBack8Texture;
+                InvSlot[8] = Main.inventoryBack9Texture;
+                InvSlot[9] = Main.inventoryBack10Texture;
+                InvSlot[10] = Main.inventoryBack11Texture;
+                InvSlot[11] = Main.inventoryBack12Texture;
+                InvSlot[12] = Main.inventoryBack13Texture;
+                InvSlot[13] = Main.inventoryBack14Texture;
+                InvSlot[14] = Main.inventoryBack15Texture;
+                InvSlot[15] = Main.inventoryBack16Texture;
+                Main.inventoryBackTexture = GFX.ItemSlot;
+                Main.inventoryBack2Texture = GFX.ItemSlot;
+                Main.inventoryBack3Texture = GFX.ItemSlot;
+                Main.inventoryBack4Texture = GFX.ItemSlot;
+                Main.inventoryBack5Texture = GFX.ItemSlot;
+                Main.inventoryBack6Texture = GFX.ItemSlot;
+                Main.inventoryBack7Texture = GFX.ItemSlot;
+                Main.inventoryBack8Texture = GFX.ItemSlot;
+                Main.inventoryBack9Texture = GFX.ItemSlot;
+                Main.inventoryBack10Texture = GFX.FavouritedSlot;
+                Main.inventoryBack11Texture = GFX.ItemSlot;
+                Main.inventoryBack12Texture = GFX.ItemSlot;
+                Main.inventoryBack13Texture = GFX.ItemSlot;
+                Main.inventoryBack14Texture = GFX.SelectedSlot;
+                Main.inventoryBack15Texture = GFX.ItemSlot;
+                Main.inventoryBack16Texture = GFX.ItemSlot;
             }
 
             SwordHilt.Initialize();
@@ -461,22 +461,22 @@ namespace kRPG
 
         public override void Unload()
         {
-            Main.inventoryBackTexture = invslot[0];
-            Main.inventoryBack2Texture = invslot[1];
-            Main.inventoryBack3Texture = invslot[2];
-            Main.inventoryBack4Texture = invslot[3];
-            Main.inventoryBack5Texture = invslot[4];
-            Main.inventoryBack6Texture = invslot[5];
-            Main.inventoryBack7Texture = invslot[6];
-            Main.inventoryBack8Texture = invslot[7];
-            Main.inventoryBack9Texture = invslot[8];
-            Main.inventoryBack10Texture = invslot[9];
-            Main.inventoryBack11Texture = invslot[10];
-            Main.inventoryBack12Texture = invslot[11];
-            Main.inventoryBack13Texture = invslot[12];
-            Main.inventoryBack14Texture = invslot[13];
-            Main.inventoryBack15Texture = invslot[14];
-            Main.inventoryBack16Texture = invslot[15];
+            Main.inventoryBackTexture = InvSlot[0];
+            Main.inventoryBack2Texture = InvSlot[1];
+            Main.inventoryBack3Texture = InvSlot[2];
+            Main.inventoryBack4Texture = InvSlot[3];
+            Main.inventoryBack5Texture = InvSlot[4];
+            Main.inventoryBack6Texture = InvSlot[5];
+            Main.inventoryBack7Texture = InvSlot[6];
+            Main.inventoryBack8Texture = InvSlot[7];
+            Main.inventoryBack9Texture = InvSlot[8];
+            Main.inventoryBack10Texture = InvSlot[9];
+            Main.inventoryBack11Texture = InvSlot[10];
+            Main.inventoryBack12Texture = InvSlot[11];
+            Main.inventoryBack13Texture = InvSlot[12];
+            Main.inventoryBack14Texture = InvSlot[13];
+            Main.inventoryBack15Texture = InvSlot[14];
+            Main.inventoryBack16Texture = InvSlot[15];
             GFX.UnloadGfx();
             SwordBlade.Unload();
             SwordHilt.Unload();
@@ -503,7 +503,7 @@ namespace kRPG
             {
                 string url = @"http://raw.githubusercontent.com/FairfieldTekLLC/kRPG/master/kRPG_VersionInfo.json";
                 WebClient client = new WebClient();
-                Version currentVersion = mod.Version;
+                Version currentVersion = Mod.Version;
                 client.DownloadStringCompleted += (sender, e) =>
                 {
                     try
@@ -518,14 +518,14 @@ namespace kRPG
                             Main.NewTextMultiline("[c/cccccc:Summary:] " + versionInfo.summary, WidthLimit: 725);
                             Main.NewText("[c/cccccc:Get the update from Mod Browser]");
                         }
-                        else if (latestVersion == currentVersion && new Version(kConfig.stats.lastStartVersion) < currentVersion)
+                        else if (latestVersion == currentVersion && new Version(kConfig.Stats.LastStartVersion) < currentVersion)
                         {
                             //After installing a public update
                             Main.NewText("[c/cccccc:KRPG is now up to date!]");
                             Main.NewTextMultiline("[c/cccccc:Summary changes:] " + versionInfo.summary, WidthLimit: 725);
                         }
 
-                        kConfig.stats.lastStartVersion = currentVersion.ToString();
+                        kConfig.Stats.LastStartVersion = currentVersion.ToString();
                         kConfig.SaveStats();
                     }
                     catch

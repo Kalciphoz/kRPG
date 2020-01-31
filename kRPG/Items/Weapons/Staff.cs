@@ -8,90 +8,87 @@ namespace kRPG.Items.Weapons
 {
     public class Staff : StaffPart
     {
-        public static Staff arcane;
-        public static Staff bone;
-        public static Staff branch;
-        public static Staff carved;
-        public static Staff gilded;
-        public static Staff hellstone;
-        public static Staff ivy;
+        public static Staff Arcane { get; set; }
+        public static Staff Bone { get; set; }
+        public static Staff Branch { get; set; }
+        public static Staff Carved { get; set; }
+        public static Staff Gilded { get; set; }
+        public static Staff Hellstone { get; set; }
+        public static Staff Ivy { get; set; }
 
-        public static Dictionary<int, Staff> staves;
-        public static Dictionary<STAFFTHEME, List<Staff>> stavesByTheme;
-        public bool autoswing = true;
-        public int critBonus;
+        public static Dictionary<int, Staff> Staffs { get; set; }
+        public static Dictionary<STAFFTHEME, List<Staff>> StaffsByTheme { get; set; }
+        public bool AutoSwing { get; set; }
+        public int CritBonus { get; set; }
 
-        public Dictionary<ELEMENT, float> eleDamage = new Dictionary<ELEMENT, float>
+        public Dictionary<ELEMENT, float> EleDamage { get; set; } = new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}};
+
+        public bool Front { get; set; }
+        public int Iterations { get; set; }
+        public float KnockBack { get; set; }
+        public float Mana { get; set; } 
+        public string Prefix { get; set; }
+        public float ShootSpeed { get; set; }
+
+        public int Type { get; set; }
+        public int UseTime { get; set; }
+
+        public Staff(string texture, int originX, int originY, int useTime, float knockBack, string prefix, float shootSpeed = 8f, bool front = false,
+            float manaMultiplier = 1f, int critBonus = 0, int iterations = 1, bool autoSwing = true)
         {
-            {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
-        };
-
-        public bool front;
-        public int iterations = 1;
-        public float knockBack;
-        public float mana = 1f;
-        public string prefix = "";
-        public float shootSpeed = 8f;
-
-        public int type;
-        public int useTime;
-
-        public Staff(string texture, int origin_x, int origin_y, int useTime, float knockBack, string prefix, float shootSpeed = 8f, bool front = false,
-            float manaMultiplier = 1f, int critBonus = 0, int iterations = 1, bool autoswing = true)
-        {
-            type = staves.Count + 1;
+            Type = Staffs.Count + 1;
             if (Main.netMode != 2)
-                this.texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Staves/" + texture);
-            origin = new Vector2(origin_x, origin_y);
-            this.useTime = useTime;
-            this.knockBack = knockBack;
-            this.iterations = iterations;
-            this.prefix = prefix;
-            mana = manaMultiplier;
-            this.critBonus = critBonus;
-            this.autoswing = autoswing;
-            this.shootSpeed = shootSpeed;
-            this.front = front;
+                this.Texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Staves/" + texture);
+            Origin = new Vector2(originX, originY);
+            this.UseTime = useTime;
+            this.KnockBack = knockBack;
+            this.Iterations = iterations;
+            this.Prefix = prefix;
+            Mana = manaMultiplier;
+            this.CritBonus = critBonus;
+            this.AutoSwing = autoSwing;
+            this.ShootSpeed = shootSpeed;
+            this.Front = front;
 
-            if (!staves.ContainsKey(type))
-                staves.Add(type, this);
+            if (!Staffs.ContainsKey(Type))
+                Staffs.Add(Type, this);
         }
 
         public static void Initialize()
         {
-            staves = new Dictionary<int, Staff>();
+            Staffs = new Dictionary<int, Staff>();
 
-            carved = new Staff("Carved", 14, 1, 28, 4f, "Carved ", 10f);
-            branch = new Staff("Branch", 14, 1, 33, 3f, "Rustic ", 6f, true);
-            ivy = new Staff("Ivy", 13, 1, 18, 2f, "Ivy ", 6f, false, 2.5f, -1, 3);
-            arcane = new Staff("Arcane", 16, 2, 24, 5f, "Arcane ", 11f, true, 1.1f, 5);
-            gilded = new Staff("Gilded", 17, 2, 38, 6f, "Scholarly ", 7f, true, 0.9f);
-            hellstone = new Staff("Hellstone", 16, 2, 26, 5f, "Molten ", 9f, true);
-            bone = new Staff("Bone", 17, 3, 36, 6f, "Underworldly ", 11f, true);
+            Carved = new Staff("Carved", 14, 1, 28, 4f, "Carved ", 10f);
+            Branch = new Staff("Branch", 14, 1, 33, 3f, "Rustic ", 6f, true);
+            Ivy = new Staff("Ivy", 13, 1, 18, 2f, "Ivy ", 6f, false, 2.5f, -1, 3);
+            Arcane = new Staff("Arcane", 16, 2, 24, 5f, "Arcane ", 11f, true, 1.1f, 5);
+            Gilded = new Staff("Gilded", 17, 2, 38, 6f, "Scholarly ", 7f, true, 0.9f);
+            Hellstone = new Staff("Hellstone", 16, 2, 26, 5f, "Molten ", 9f, true);
+            Bone = new Staff("Bone", 17, 3, 36, 6f, "Underworldly ", 11f, true);
 
-            stavesByTheme = new Dictionary<STAFFTHEME, List<Staff>>
+            StaffsByTheme = new Dictionary<STAFFTHEME, List<Staff>>
             {
-                {STAFFTHEME.WOODEN, new List<Staff> {carved, branch, ivy}},
-                {STAFFTHEME.DUNGEON, new List<Staff> {arcane, gilded}},
-                {STAFFTHEME.UNDERWORLD, new List<Staff> {hellstone, bone}}
+                {STAFFTHEME.WOODEN, new List<Staff> {Carved, Branch, Ivy}},
+                {STAFFTHEME.DUNGEON, new List<Staff> {Arcane, Gilded}},
+                {STAFFTHEME.UNDERWORLD, new List<Staff> {Hellstone, Bone}}
             };
         }
 
         public static Staff RandomStaff(STAFFTHEME theme)
         {
-            return stavesByTheme[theme].Random();
+            return StaffsByTheme[theme].Random();
         }
 
         public Staff SetEleDamage(Dictionary<ELEMENT, float> eleDamage)
         {
-            this.eleDamage = eleDamage;
+            this.EleDamage = eleDamage;
             return this;
         }
 
         public static void Unload()
         {
-            foreach (Staff staff in staves.Values)
-                staff.texture = null;
+            foreach (Staff staff in Staffs.Values)
+                staff.Texture = null;
         }
     }
 }

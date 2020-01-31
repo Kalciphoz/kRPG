@@ -11,8 +11,7 @@ namespace kRPG.Items.Glyphs
 {
     public class Cross_Blue : Cross
     {
-        public override Dictionary<ELEMENT, float> eleDmg =>
-            new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 1f}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+        public override Dictionary<ELEMENT, float> EleDmg { get; set; } = new Dictionary<ELEMENT, float> { { ELEMENT.FIRE, 0 }, { ELEMENT.COLD, 1f }, { ELEMENT.LIGHTNING, 0 }, { ELEMENT.SHADOW, 0 } };
 
         public override float BaseDamageModifier()
         {
@@ -21,12 +20,12 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetAiAction()
         {
-            return delegate(ProceduralSpellProj spell)
+            return delegate (ProceduralSpellProj spell)
             {
-                if (Main.rand.NextFloat(0f, 2f) <= spell.alpha)
+                if (Main.rand.NextFloat(0f, 2f) <= spell.Alpha)
                 {
                     int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, ModContent.GetInstance<Ice>().Type, 0f,
-                        0f, 100, Color.White, 0.5f + spell.alpha);
+                        0f, 100, Color.White, 0.5f + spell.Alpha);
                     Main.dust[dust].noGravity = true;
                 }
 
@@ -36,19 +35,19 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetInitAction()
         {
-            return delegate(ProceduralSpellProj spell)
+            return delegate (ProceduralSpellProj spell)
             {
-                spell.texture = GFX.projectileFrostbolt;
-                spell.projectile.width = spell.texture.Width;
-                spell.projectile.height = spell.texture.Height;
+                spell.LocalTexture = GFX.ProjectileFrostbolt;
+                spell.projectile.width = spell.LocalTexture.Width;
+                spell.projectile.height = spell.LocalTexture.Height;
                 spell.projectile.magic = true;
-                spell.lighted = true;
+                spell.Lighted = true;
             };
         }
 
         public override Action<ProceduralSpellProj> GetKillAction()
         {
-            return delegate(ProceduralSpellProj spell)
+            return delegate (ProceduralSpellProj spell)
             {
                 for (int k = 0; k < 8; k++)
                     try

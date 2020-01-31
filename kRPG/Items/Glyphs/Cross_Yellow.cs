@@ -16,14 +16,14 @@ namespace kRPG.Items.Glyphs
         {
             return delegate(ProceduralSpellProj spell)
             {
-                spell.texture = GFX.projectileBoulder;
-                spell.projectile.width = spell.texture.Width;
-                spell.projectile.height = spell.texture.Height;
+                spell.LocalTexture = GFX.ProjectileBoulder;
+                spell.projectile.width = spell.LocalTexture.Width;
+                spell.projectile.height = spell.LocalTexture.Height;
                 spell.projectile.magic = true;
-                spell.alpha = 1f;
-                spell.drawTrail = true;
+                spell.Alpha = 1f;
+                spell.DrawTrail = true;
                 spell.projectile.knockBack = 11f;
-                spell.projectile.scale = spell.minion ? 0.8f : 1f;
+                spell.projectile.scale = spell.Minion ? 0.8f : 1f;
             };
         }
 

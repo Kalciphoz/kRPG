@@ -265,7 +265,7 @@
     <None Remove="NPCs\RetiredAdventurer_Head.png" />
     <None Remove="Projectiles\ChainHook.png" />
     <None Remove="Projectiles\Explosion.png" />
-    <None Remove="Projectiles\NPC_Explosion.png" />
+    <None Remove="Projectiles\NpcExplosion.png" />
     <None Remove="Projectiles\Obelisk.png" />
     <None Remove="Projectiles\ProceduralMinion.png" />
     <None Remove="Projectiles\ProceduralProjectile.png" />
@@ -530,7 +530,7 @@
     <Content Include="NPCs\RetiredAdventurer_Head.png" />
     <Content Include="Projectiles\ChainHook.png" />
     <Content Include="Projectiles\Explosion.png" />
-    <Content Include="Projectiles\NPC_Explosion.png" />
+    <Content Include="Projectiles\NpcExplosion.png" />
     <Content Include="Projectiles\Obelisk.png" />
     <Content Include="Projectiles\ProceduralMinion.png" />
     <Content Include="Projectiles\ProceduralProjectile.png" />

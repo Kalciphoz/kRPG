@@ -11,7 +11,7 @@ namespace kRPG.Items.Weapons.RangedDrops
             return Main.rand.NextFloat() >= 0.5f;
         }
 
-        public override float DPSModifier()
+        public override float DpsModifier()
         {
             return 1.1f;
         }

@@ -9,56 +9,51 @@ namespace kRPG
     public class kConfig
     {
         //Make this fancier?
-        internal static Config _configLocal = new Config();
+        private static Config _configLocal = new Config();
 
-        internal static Config _configServer = new Config();
+        private static Config _configServer = new Config();
 
-        internal static ConfigStats _stats = new ConfigStats();
-        public static ClientConfig clientSide => configLocal.clientside;
+        private static ConfigStats _stats = new ConfigStats();
+        public static ClientConfig ClientSide => ConfigLocal.ClientSide;
 
-        public static Config configLocal
-        {
-            get
-            {
+        public static Config ConfigLocal {
+            get {
                 if (_configLocal != null)
                     return _configLocal;
                 _configLocal = new Config();
-                LoadConfig(configPath, ref _configLocal);
+                LoadConfig(ConfigPath, ref _configLocal);
                 return _configLocal;
             }
             private set => _configLocal = value;
         }
 
-        public static string configPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Settings.json";
+        public static string ConfigPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Settings.json";
 
-        public static Config configServer
-        {
+        public static Config ConfigServer {
             get => _configServer ?? (_configServer = new Config());
             private set => _configServer = value;
         }
 
-        public static ConfigStats stats
-        {
-            get
-            {
+        public static ConfigStats Stats {
+            get {
                 if (_stats != null)
                     return _stats;
                 _stats = new ConfigStats();
-                LoadConfig(statsPath, ref _stats);
+                LoadConfig(StatsPath, ref _stats);
 
                 return _stats;
             }
             private set => _stats = value;
         }
 
-        public static string statsPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Stats.json";
+        public static string StatsPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Stats.json";
 
         public static void Initialize()
         {
             try
             {
-                configLocal = new Config();
-                stats = new ConfigStats();
+                ConfigLocal = new Config();
+                Stats = new ConfigStats();
                 Load();
             }
             catch (SystemException e)
@@ -74,12 +69,12 @@ namespace kRPG
                 Directory.CreateDirectory(Main.SavePath);
 
                 _configLocal = new Config();
-                LoadConfig(configPath, ref _configLocal);
+                LoadConfig(ConfigPath, ref _configLocal);
                 if (_configLocal == null) _configLocal = new Config();
                 Save();
 
                 _stats = new ConfigStats();
-                LoadConfig(statsPath, ref _stats);
+                LoadConfig(StatsPath, ref _stats);
                 if (_stats == null) _stats = new ConfigStats();
                 SaveStats();
             }
@@ -111,7 +106,7 @@ namespace kRPG
             try
             {
                 Directory.CreateDirectory(Main.SavePath);
-                File.WriteAllText(configPath, JsonConvert.SerializeObject(configLocal, Formatting.Indented).Replace("  ", "\t"));
+                File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(ConfigLocal, Formatting.Indented).Replace("  ", "\t"));
             }
             catch (SystemException e)
             {
@@ -122,24 +117,24 @@ namespace kRPG
         public static void SaveStats()
         {
             Directory.CreateDirectory(Main.SavePath);
-            File.WriteAllText(statsPath, JsonConvert.SerializeObject(stats, Formatting.Indented).Replace("  ", "\t"));
+            File.WriteAllText(StatsPath, JsonConvert.SerializeObject(Stats, Formatting.Indented).Replace("  ", "\t"));
         }
 
         public class ClientConfig
         {
-            public bool arpgMinimap = false;
-            public bool manualInventory = false;
-            public bool smartInventory = false;
+            public bool ArpgMiniMap { get; set; } = false;
+            public bool ManualInventory { get; set; } = false;
+            public bool SmartInventory { get; set; } = false;
         }
 
         public class Config
         {
-            public ClientConfig clientside = new ClientConfig();
+            public ClientConfig ClientSide { get; set; } = new ClientConfig();
         }
 
         public class ConfigStats
         {
-            public string lastStartVersion = "1.1.1";
+            public string LastStartVersion { get; set; } = "1.1.1";
         }
     }
 }

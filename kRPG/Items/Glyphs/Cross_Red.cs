@@ -11,20 +11,19 @@ namespace kRPG.Items.Glyphs
 {
     public class Cross_Red : Cross
     {
-        public override Dictionary<ELEMENT, float> eleDmg =>
-            new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 1f}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+        public override Dictionary<ELEMENT, float> EleDmg { get; set; } = new Dictionary<ELEMENT, float> { { ELEMENT.FIRE, 1f }, { ELEMENT.COLD, 0 }, { ELEMENT.LIGHTNING, 0 }, { ELEMENT.SHADOW, 0 } };
 
         public override Action<ProceduralSpellProj> GetAiAction()
         {
-            return delegate(ProceduralSpellProj spell)
+            return delegate (ProceduralSpellProj spell)
             {
                 try
                 {
                     ProceduralSpellProj.aiRotateToVelocity(spell);
-                    if (!(Main.rand.NextFloat(0f, 1.5f) <= spell.alpha))
+                    if (!(Main.rand.NextFloat(0f, 1.5f) <= spell.Alpha))
                         return;
                     int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Fire,
-                        spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 1f + spell.alpha * 2f);
+                        spell.projectile.velocity.X * 0.2f, spell.projectile.velocity.Y * 0.2f, 63, Color.White, 1f + spell.Alpha * 2f);
                     Main.dust[dust].noGravity = true;
                 }
                 catch (SystemException e)
@@ -36,17 +35,17 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetInitAction()
         {
-            return delegate(ProceduralSpellProj spell)
+            return delegate (ProceduralSpellProj spell)
             {
                 try
                 {
-                    spell.texture = GFX.projectileFireball;
-                    spell.projectile.width = spell.texture.Width;
-                    spell.projectile.height = spell.texture.Height;
+                    spell.LocalTexture = GFX.ProjectileFireball;
+                    spell.projectile.width = spell.LocalTexture.Width;
+                    spell.projectile.height = spell.LocalTexture.Height;
                     spell.projectile.magic = true;
-                    spell.drawTrail = true;
-                    spell.lighted = true;
-                    spell.projectile.scale = spell.minion ? 0.7f : 1f;
+                    spell.DrawTrail = true;
+                    spell.Lighted = true;
+                    spell.projectile.scale = spell.Minion ? 0.7f : 1f;
                 }
                 catch (SystemException e)
                 {
@@ -57,7 +56,7 @@ namespace kRPG.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetKillAction()
         {
-            return delegate(ProceduralSpellProj spell)
+            return delegate (ProceduralSpellProj spell)
             {
                 try
                 {

@@ -30,7 +30,7 @@ namespace kRPG.Buffs
         /// </summary>
         public override void Update(NPC npc, ref int buffIndex)
         {
-            npc.GetGlobalNPC<kNPC>().hasAilment[ELEMENT.COLD] = true;
+            npc.GetGlobalNPC<kNPC>().HasAilment[ELEMENT.COLD] = true;
             if (npc.velocity.Length() > 0.2f && !npc.boss)
             {
                 npc.velocity.Normalize();
@@ -49,7 +49,7 @@ namespace kRPG.Buffs
         /// </summary>
         public override void Update(Player player, ref int buffIndex)
         {
-            player.GetModPlayer<PlayerCharacter>().hasAilment[ELEMENT.COLD] = true;
+            player.GetModPlayer<PlayerCharacter>().HasAilment[ELEMENT.COLD] = true;
             if (player.velocity.X > player.maxRunSpeed * 6 / 10)
                 player.velocity.X = player.maxRunSpeed * 6 / 10;
         }

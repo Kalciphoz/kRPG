@@ -12,63 +12,63 @@ namespace kRPG.Items.Weapons
 {
     public class StaffOrnament : StaffPart
     {
-        public static StaffOrnament arcane;
-        public static StaffOrnament bow;
-        public static StaffOrnament cage;
-        public static StaffOrnament demonic;
-        public static StaffOrnament explosive;
-        public static StaffOrnament loop;
-        public static StaffOrnament none;
+        public static StaffOrnament Arcane { get; set; }
+        public static StaffOrnament Bow { get; set; }
+        public static StaffOrnament Cage { get; set; }
+        public static StaffOrnament Demonic { get; set; }
+        public static StaffOrnament Explosive { get; set; }
+        public static StaffOrnament Loop { get; set; }
+        public static StaffOrnament None { get; set; }
 
-        public static Dictionary<int, StaffOrnament> ornament;
-        public static Dictionary<STAFFTHEME, List<StaffOrnament>> ornamentByTheme;
-        public static StaffOrnament twig;
-        public int critBonus;
-        public float dpsModifier = 1f;
+        public static Dictionary<int, StaffOrnament> Ornament { get; set; }
+        public static Dictionary<STAFFTHEME, List<StaffOrnament>> OrnamentByTheme { get; set; }
+        public static StaffOrnament Twig { get; set; }
+        public int CritBonus { get; set; }
+        public float DpsModifier { get; set; } 
 
-        public Dictionary<ELEMENT, float> eleDamage = new Dictionary<ELEMENT, float>
+        public Dictionary<ELEMENT, float> EleDamage { get; set; } = new Dictionary<ELEMENT, float>
         {
             {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
         };
 
-        public bool front = true;
-        public float knockBack;
-        public float mana = 1f;
+        public bool Front { get; set; } 
+        public float KnockBack { get; set; }
+        public float Mana { get; set; } 
 
-        public Action<Player, NPC, Item, int, bool> onHit;
-        public int repetitions;
-        public float speedModifier = 1f;
-        public string suffix = "";
+        public Action<Player, NPC, Item, int, bool> OnHit { get; set; }
+        public int Repetitions { get; set; }
+        public float SpeedModifier { get; set; } 
+        public string Suffix { get; set; } 
 
-        public int type;
+        public int Type { get; set; }
 
-        public StaffOrnament(string texture, int origin_x, int origin_y, string suffix, bool front = true, float mana = 1f, float dpsModifier = 1f,
+        public StaffOrnament(string texture, int originX, int originY, string suffix, bool front = true, float mana = 1f, float dpsModifier = 1f,
             float speedModifier = 1f, float knockBack = 0f, int critBonus = 0, int repetitions = 0)
         {
-            type = ornament.Count;
+            Type = Ornament.Count;
             if (Main.netMode != 2)
                 if (texture != null)
-                    this.texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Ornaments/" + texture);
-            origin = new Vector2(origin_x, origin_y);
-            this.dpsModifier = dpsModifier;
-            this.speedModifier = speedModifier;
-            this.knockBack = knockBack;
-            this.critBonus = critBonus;
-            this.suffix = suffix;
-            this.mana = mana;
-            this.front = front;
-            this.repetitions = repetitions;
-            if (!ornament.ContainsKey(type))
-                ornament.Add(type, this);
+                    this.Texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Ornaments/" + texture);
+            Origin = new Vector2(originX, originY);
+            this.DpsModifier = dpsModifier;
+            this.SpeedModifier = speedModifier;
+            this.KnockBack = knockBack;
+            this.CritBonus = critBonus;
+            this.Suffix = suffix;
+            this.Mana = mana;
+            this.Front = front;
+            this.Repetitions = repetitions;
+            if (!Ornament.ContainsKey(Type))
+                Ornament.Add(Type, this);
         }
 
         public static void Initialize()
         {
-            ornament = new Dictionary<int, StaffOrnament>();
+            Ornament = new Dictionary<int, StaffOrnament>();
 
-            none = new StaffOrnament(null, 0, 0, "");
-            bow = new StaffOrnament("Bow", 4, 3, " of Wizardry", false, 1.1f, 1.1f, 1.1f, 1f, 5);
-            twig = new StaffOrnament("Twig", 2, 7, " of Longevity", true, 1.3f, 1f, 0.9f, 1f).SetEffect(
+            None = new StaffOrnament(null, 0, 0, "");
+            Bow = new StaffOrnament("Bow", 4, 3, " of Wizardry", false, 1.1f, 1.1f, 1.1f, 1f, 5);
+            Twig = new StaffOrnament("Twig", 2, 7, " of Longevity", true, 1.3f, 1f, 0.9f, 1f).SetEffect(
                 delegate(Player player, NPC npc, Item item, int damage, bool crit)
                 {
                     PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
@@ -79,23 +79,23 @@ namespace kRPG.Items.Weapons
                         for (int i = 0; i < count; i += 1)
                         {
                             Vector2 position = (npc.position - p.Center) * i / count + p.Center;
-                            spriteBatch.Draw(GFX.heart, position - Main.screenPosition + displacement[i], null, Color.White, 0f, Vector2.Zero, scale,
+                            spriteBatch.Draw(GFX.Heart, position - Main.screenPosition + displacement[i], null, Color.White, 0f, Vector2.Zero, scale,
                                 SpriteEffects.None, 0f);
                         }
                     });
-                    trail.displacement = new Vector2[count];
+                    trail.Displacement = new Vector2[count];
                     for (int i = 0; i < count; i += 1)
-                        trail.displacement[i] = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f));
-                    character.trails.Add(trail);
+                        trail.Displacement[i] = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f));
+                    character.Trails.Add(trail);
                     int healAmount = Main.rand.Next(4) + 2;
                     player.statLife += healAmount;
                     player.HealEffect(healAmount);
                 });
-            loop = new StaffOrnament("Loop", 0, 6, " of Reverberation", true, 1.5f, 1.2f, 1.5f, 0f, 0, 1);
-            arcane = new StaffOrnament("ArcaneSpider", 7, 8, " of Articulation", true, 1.1f, 1.2f);
-            cage = new StaffOrnament("ArcaneCage", 3, 10, " of Resonance", true, 2f, 1f, 3, 0f, 0, 2);
-            demonic = new StaffOrnament("Demonic", 8, 6, " of Demons", true, 1.5f, 1.2f, 1.5f, 0, 2, 1);
-            explosive = new StaffOrnament("Explosive", 6, 4, " of Blasting", false, 1.2f, 0.9f, 0.9f).SetEffect(
+            Loop = new StaffOrnament("Loop", 0, 6, " of Reverberation", true, 1.5f, 1.2f, 1.5f, 0f, 0, 1);
+            Arcane = new StaffOrnament("ArcaneSpider", 7, 8, " of Articulation", true, 1.1f, 1.2f);
+            Cage = new StaffOrnament("ArcaneCage", 3, 10, " of Resonance", true, 2f, 1f, 3, 0f, 0, 2);
+            Demonic = new StaffOrnament("Demonic", 8, 6, " of Demons", true, 1.5f, 1.2f, 1.5f, 0, 2, 1);
+            Explosive = new StaffOrnament("Explosive", 6, 4, " of Blasting", false, 1.2f, 0.9f, 0.9f).SetEffect(
                 delegate(Player player, NPC npc, Item item, int damage, bool crit)
                 {
                     Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
@@ -104,35 +104,35 @@ namespace kRPG.Items.Weapons
                             player.whoAmI)];
                 });
 
-            ornamentByTheme = new Dictionary<STAFFTHEME, List<StaffOrnament>>
+            OrnamentByTheme = new Dictionary<STAFFTHEME, List<StaffOrnament>>
             {
-                {STAFFTHEME.WOODEN, new List<StaffOrnament> {bow, twig, loop}},
-                {STAFFTHEME.DUNGEON, new List<StaffOrnament> {arcane, cage}},
-                {STAFFTHEME.UNDERWORLD, new List<StaffOrnament> {demonic, explosive}}
+                {STAFFTHEME.WOODEN, new List<StaffOrnament> {Bow, Twig, Loop}},
+                {STAFFTHEME.DUNGEON, new List<StaffOrnament> {Arcane, Cage}},
+                {STAFFTHEME.UNDERWORLD, new List<StaffOrnament> {Demonic, Explosive}}
             };
         }
 
         public static StaffOrnament RandomOrnament(STAFFTHEME theme)
         {
-            return ornamentByTheme[theme].Random();
+            return OrnamentByTheme[theme].Random();
         }
 
         public StaffOrnament SetEffect(Action<Player, NPC, Item, int, bool> onHit)
         {
-            this.onHit = onHit;
+            this.OnHit = onHit;
             return this;
         }
 
         public StaffOrnament SetEleDamage(Dictionary<ELEMENT, float> eleDamage)
         {
-            this.eleDamage = eleDamage;
+            this.EleDamage = eleDamage;
             return this;
         }
 
         public static void Unload()
         {
-            foreach (StaffOrnament o in ornament.Values)
-                o.texture = null;
+            foreach (StaffOrnament o in Ornament.Values)
+                o.Texture = null;
         }
     }
 }

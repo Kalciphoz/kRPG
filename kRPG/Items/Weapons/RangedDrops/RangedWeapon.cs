@@ -21,17 +21,17 @@ namespace kRPG.Items.Weapons.RangedDrops
             return item.value > 100;
         }
 
-        public override ModItem Clone(Item item)
+        public override ModItem Clone(Item tItem)
         {
-            RangedWeapon copy = (RangedWeapon) base.Clone(item);
+            RangedWeapon copy = (RangedWeapon) base.Clone(tItem);
             copy.dps = dps;
             copy.name = name;
             copy.enemyDef = enemyDef;
-            copy.item.SetNameOverride(item.Name);
+            copy.item.SetNameOverride(tItem.Name);
             return copy;
         }
 
-        public virtual float DPSModifier()
+        public virtual float DpsModifier()
         {
             return 1f;
         }
@@ -79,9 +79,9 @@ namespace kRPG.Items.Weapons.RangedDrops
             writer.Write(name);
         }
 
-        public static int NewRangedWeapon(Mod mod, Vector2 position, int npclevel, int playerlevel, float dps, int enemyDef)
+        public static int NewRangedWeapon(Mod mod, Vector2 position, int npcLevel, int playerLevel, float dps, int enemyDef)
         {
-            int combined = npclevel + playerlevel;
+            int combined = npcLevel + playerLevel;
             int ammo = 0;
             string weapon = "";
             if (combined >= 35)
@@ -133,15 +133,16 @@ namespace kRPG.Items.Weapons.RangedDrops
             item.dps = dps;
             item.enemyDef = enemyDef;
             item.Initialize();
-            if (Main.netMode == 2)
-            {
-                ModPacket packet = mod.GetPacket();
-                packet.Write((byte) Message.BowInit);
-                packet.Write(item.item.whoAmI);
-                packet.Write(item.dps);
-                packet.Write(item.enemyDef);
-                packet.Send();
-            }
+
+            if (Main.netMode != 2)
+                return ammo;
+
+            ModPacket packet = mod.GetPacket();
+            packet.Write((byte) Message.BowInit);
+            packet.Write(item.item.whoAmI);
+            packet.Write(item.dps);
+            packet.Write(item.enemyDef);
+            packet.Send();
 
             return ammo;
         }
@@ -180,9 +181,9 @@ namespace kRPG.Items.Weapons.RangedDrops
             item.SetNameOverride(name);
             item.rare = (int) Math.Min(Math.Floor(dps / 15.0), 9);
             item.useTime = UseTime();
-            item.damage = (int) Math.Round(dps * DPSModifier() * item.useTime / 60f + enemyDef - 2);
+            item.damage = (int) Math.Round(dps * DpsModifier() * item.useTime / 60f + enemyDef - 2);
             if (item.damage < 1) item.damage = 1;
-            item.useTime = (int) Math.Round(((float) item.damage - enemyDef + 2) * 60f / (dps * DPSModifier()));
+            item.useTime = (int) Math.Round(((float) item.damage - enemyDef + 2) * 60f / (dps * DpsModifier()));
             item.useAnimation = item.useTime * Iterations() - 1;
             item.value = (int) (dps * 315);
         }

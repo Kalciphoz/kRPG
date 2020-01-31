@@ -14,12 +14,12 @@ namespace kRPG.GUI
 {
 
 
-    public class SpellCraftingGui : BaseGui
+    public class SpellcraftingGUI : BaseGui
     {
         public GlyphSlot[] glyphs = new GlyphSlot[3];
         private readonly Func<Vector2> guiPosition;
 
-        public SpellCraftingGui(Mod mod)
+        public SpellcraftingGUI(Mod mod)
         {
             guiPosition = () => new Vector2(Main.screenWidth / 2f - 100f * Scale, 192f * Scale);
 
@@ -29,19 +29,19 @@ namespace kRPG.GUI
 
             glyphs[2] = new GlyphSlot(() => guiPosition() + new Vector2(84f, 106f) * Scale, () => Scale, GLYPHTYPE.MOON);
 
-            guiElements.Add(this);
+            GuiElements.Add(this);
         }
 
         private float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
 
         public override void OnClose()
         {
-            Main.LocalPlayer.GetModPlayer<PlayerCharacter>().selectedAbility = null;
+            Main.LocalPlayer.GetModPlayer<PlayerCharacter>().SelectedAbility = null;
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
-            spriteBatch.Draw(GFX.spellGui, guiPosition(), null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(GFX.SpellGui, guiPosition(), null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
             foreach (GlyphSlot slot in glyphs)
                 slot.Draw(spriteBatch);
 
@@ -51,11 +51,11 @@ namespace kRPG.GUI
                 new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 224f * Scale), Color.White, Scale);
 
             Vector2 buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
-            spriteBatch.Draw(GFX.buttonClose, buttonPosition, Color.White, Scale);
+            spriteBatch.Draw(GFX.ButtonClose, buttonPosition, Color.White, Scale);
 
             if (!(Main.mouseX >= buttonPosition.X) || !(Main.mouseY >= buttonPosition.Y) ||
-                !(Main.mouseX <= buttonPosition.X + (int) (GFX.buttonConfirm.Width * Scale)) ||
-                !(Main.mouseY <= buttonPosition.Y + (int) (GFX.buttonConfirm.Height * Scale)))
+                !(Main.mouseX <= buttonPosition.X + (int)(GFX.ButtonConfirm.Width * Scale)) ||
+                !(Main.mouseY <= buttonPosition.Y + (int)(GFX.ButtonConfirm.Height * Scale)))
                 return;
             Main.LocalPlayer.mouseInterface = true;
             if (!Main.mouseLeft || !Main.mouseLeftRelease)
@@ -66,7 +66,7 @@ namespace kRPG.GUI
 
         public override bool PreDraw()
         {
-            return Main.LocalPlayer.GetModPlayer<PlayerCharacter>().selectedAbility != null;
+            return Main.LocalPlayer.GetModPlayer<PlayerCharacter>().SelectedAbility != null;
         }
     }
 
@@ -83,13 +83,12 @@ namespace kRPG.GUI
             this.scale = scale;
         }
 
-        private ProceduralSpell Ability => Main.LocalPlayer.GetModPlayer<PlayerCharacter>().selectedAbility;
-        private Rectangle Bounds => new Rectangle((int) position().X, (int) position().Y, (int) (30 * scale()), (int) (30 * scale()));
+        private ProceduralSpell Ability => Main.LocalPlayer.GetModPlayer<PlayerCharacter>().SelectedAbility;
+        private Rectangle Bounds => new Rectangle((int)position().X, (int)position().Y, (int)(30 * scale()), (int)(30 * scale()));
 
-        private Item Glyph
-        {
-            get => Ability.glyphs[(byte) type];
-            set => Ability.glyphs[(byte) type] = value;
+        private Item Glyph {
+            get => Ability.Glyphs[(byte)type];
+            set => Ability.Glyphs[(byte)type] = value;
         }
 
         public bool AttemptPlace()
@@ -99,13 +98,13 @@ namespace kRPG.GUI
             if (!CanPlaceItem(Main.mouseItem))
                 return false;
 
-            foreach (ProceduralMinion minion in character.minions.Where(minion =>
-                minion.source == character.selectedAbility && minion.projectile.modProjectile is ProceduralMinion))
+            foreach (ProceduralMinion minion in character.Minions.Where(minion =>
+                minion.Source == character.SelectedAbility && minion.projectile.modProjectile is ProceduralMinion))
             {
-                foreach (ProceduralSpellProj psp in minion.circlingProtection)
+                foreach (ProceduralSpellProj psp in minion.CirclingProtection)
                     psp.projectile.Kill();
-                minion.circlingProtection.Clear();
-                minion.smallProt?.projectile.Kill();
+                minion.CirclingProtection.Clear();
+                minion.SmallProt?.projectile.Kill();
                 minion.projectile.Kill();
             }
 

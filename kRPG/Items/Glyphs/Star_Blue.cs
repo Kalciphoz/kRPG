@@ -15,7 +15,7 @@ namespace kRPG.Items.Glyphs
         {
             return delegate(ProceduralSpell spell, Player player, Vector2 target)
             {
-                spell.remaining = spell.cooldown;
+                spell.Remaining = spell.Cooldown;
                 spell.CastSpell(player, player.Center, target, player);
             };
         }

@@ -21,39 +21,39 @@ namespace kRPG.Items
             tooltips.Add(new TooltipLine(mod, "enemyDef", "average enemy defense " + dps.ToString()));
         }*/
 
-        public Dictionary<ELEMENT, float> eleDamage = new Dictionary<ELEMENT, float>
+        public Dictionary<ELEMENT, float> EleDamage { get; set; } = new Dictionary<ELEMENT, float>
         {
             {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
         };
 
-        public StaffGem gem;
-        public StaffOrnament ornament;
-        public Staff staff;
+        public StaffGem Gem { get; set; }
+        public StaffOrnament Ornament { get; set; }
+        public Staff Staff { get; set; }
 
-        public override ModItem Clone(Item item)
+        public override ModItem Clone(Item tItem)
         {
-            ProceduralStaff copy = (ProceduralStaff) base.Clone(item);
-            copy.staff = staff;
-            copy.gem = gem;
-            copy.ornament = ornament;
-            copy.dps = dps;
-            copy.enemyDef = enemyDef;
-            copy.eleDamage = new Dictionary<ELEMENT, float>();
+            ProceduralStaff copy = (ProceduralStaff) base.Clone(tItem);
+            copy.Staff = Staff;
+            copy.Gem = Gem;
+            copy.Ornament = Ornament;
+            copy.Dps = Dps;
+            copy.EnemyDef = EnemyDef;
+            copy.EleDamage = new Dictionary<ELEMENT, float>();
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                copy.eleDamage[element] = eleDamage[element];
-            copy.item.SetNameOverride(item.Name);
+                copy.EleDamage[element] = EleDamage[element];
+            copy.item.SetNameOverride(tItem.Name);
             return copy;
         }
 
         public Point CombinedTextureSize()
         {
-            if (ornament.type == 0)
-                return new Point(gem.texture.Width - (int) gem.origin.X + (int) staff.origin.X,
-                    (int) gem.origin.Y + staff.texture.Height - (int) staff.origin.Y);
-            return ornament.origin.Y > gem.origin.Y
-                ? new Point(ornament.texture.Width - (int) ornament.origin.X + (int) staff.origin.X,
-                    (int) ornament.origin.Y + staff.texture.Height - (int) staff.origin.Y)
-                : new Point(gem.texture.Width - (int) gem.origin.X + (int) staff.origin.X, (int) gem.origin.Y + staff.texture.Height - (int) staff.origin.Y);
+            if (Ornament.Type == 0)
+                return new Point(Gem.Texture.Width - (int) Gem.Origin.X + (int) Staff.Origin.X,
+                    (int) Gem.Origin.Y + Staff.Texture.Height - (int) Staff.Origin.Y);
+            return Ornament.Origin.Y > Gem.Origin.Y
+                ? new Point(Ornament.Texture.Width - (int) Ornament.Origin.X + (int) Staff.Origin.X,
+                    (int) Ornament.Origin.Y + Staff.Texture.Height - (int) Staff.Origin.Y)
+                : new Point(Gem.Texture.Width - (int) Gem.Origin.X + (int) Staff.Origin.X, (int) Gem.Origin.Y + Staff.Texture.Height - (int) Staff.Origin.Y);
         }
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
@@ -95,20 +95,20 @@ namespace kRPG.Items
         {
             int id = Item.NewItem(position, mod.GetItem("ProceduralStaff").item.type);
             ProceduralStaff staff = (ProceduralStaff) Main.item[id].modItem;
-            staff.staff = staffstaff;
-            staff.gem = staffgem;
-            staff.ornament = staffornament;
-            staff.dps = dps;
-            staff.enemyDef = enemyDef;
+            staff.Staff = staffstaff;
+            staff.Gem = staffgem;
+            staff.Ornament = staffornament;
+            staff.Dps = dps;
+            staff.EnemyDef = enemyDef;
             staff.Initialize();
             if (Main.netMode != 2)
                 return staff;
             ModPacket packet = mod.GetPacket();
             packet.Write((byte) Message.StaffInit);
             packet.Write(id);
-            packet.Write(staffstaff.type);
-            packet.Write(staffgem.type);
-            packet.Write(staffornament.type);
+            packet.Write(staffstaff.Type);
+            packet.Write(staffgem.Type);
+            packet.Write(staffornament.Type);
             packet.Write(dps);
             packet.Write(enemyDef);
             packet.Send();
@@ -119,7 +119,7 @@ namespace kRPG.Items
         {
             ProceduralStaff staff;
             staff = DropStaff(mod, position, Staff.RandomStaff(theme), StaffGem.RandomGem(theme),
-                Main.rand.Next(3) < 2 ? StaffOrnament.RandomOrnament(theme) : StaffOrnament.none, dps, enemyDef);
+                Main.rand.Next(3) < 2 ? StaffOrnament.RandomOrnament(theme) : StaffOrnament.None, dps, enemyDef);
             return staff.item;
         }
 
@@ -127,26 +127,26 @@ namespace kRPG.Items
         {
             ResetStats();
             List<StaffPart> parts = new List<StaffPart>();
-            if (!ornament.front) parts.Add(ornament);
-            if (!staff.front && !gem.back) parts.Add(staff);
-            parts.Add(gem);
-            if (staff.front || gem.back) parts.Add(staff);
-            if (ornament.front) parts.Add(ornament);
+            if (!Ornament.Front) parts.Add(Ornament);
+            if (!Staff.Front && !Gem.Back) parts.Add(Staff);
+            parts.Add(Gem);
+            if (Staff.Front || Gem.Back) parts.Add(Staff);
+            if (Ornament.Front) parts.Add(Ornament);
             if (Main.netMode != 2)
-                texture = GFX.CombineTextures(new List<Texture2D> {parts[0].texture, parts[1].texture, parts[2].texture},
+                texture = GFX.CombineTextures(new List<Texture2D> {parts[0].Texture, parts[1].Texture, parts[2].Texture},
                     new List<Point>
                     {
-                        parts[0].GetDrawOrigin(new Point(staff.texture.Width, staff.texture.Height), new Point((int) staff.origin.X, (int) staff.origin.Y),
+                        parts[0].GetDrawOrigin(new Point(Staff.Texture.Width, Staff.Texture.Height), new Point((int) Staff.Origin.X, (int) Staff.Origin.Y),
                             CombinedTextureSize()),
-                        parts[1].GetDrawOrigin(new Point(staff.texture.Width, staff.texture.Height), new Point((int) staff.origin.X, (int) staff.origin.Y),
+                        parts[1].GetDrawOrigin(new Point(Staff.Texture.Width, Staff.Texture.Height), new Point((int) Staff.Origin.X, (int) Staff.Origin.Y),
                             CombinedTextureSize()),
-                        parts[2].GetDrawOrigin(new Point(staff.texture.Width, staff.texture.Height), new Point((int) staff.origin.X, (int) staff.origin.Y),
+                        parts[2].GetDrawOrigin(new Point(Staff.Texture.Width, Staff.Texture.Height), new Point((int) Staff.Origin.X, (int) Staff.Origin.Y),
                             CombinedTextureSize())
                     }, CombinedTextureSize());
             if (Main.netMode != 2) item.width = texture.Width;
             if (Main.netMode != 2) item.height = texture.Height;
-            item.shoot = gem.shoot;
-            item.shootSpeed = staff.shootSpeed;
+            item.shoot = Gem.Shoot;
+            item.shootSpeed = Staff.ShootSpeed;
             item.GetGlobalItem<kItem>().ApplyStats(item, true);
         }
 
@@ -154,11 +154,11 @@ namespace kRPG.Items
         {
             try
             {
-                staff = Staff.staves[tag.GetInt("staff_id")];
-                gem = StaffGem.gems[tag.GetInt("gem_id")];
-                ornament = StaffOrnament.ornament[tag.GetInt("ornament_id")];
-                dps = tag.GetFloat("dps");
-                enemyDef = tag.GetInt("enemy_defence");
+                Staff = Staff.Staffs[tag.GetInt("staff_id")];
+                Gem = StaffGem.Gems[tag.GetInt("gem_id")];
+                Ornament = StaffOrnament.Ornament[tag.GetInt("ornament_id")];
+                Dps = tag.GetFloat("dps");
+                EnemyDef = tag.GetInt("enemy_defence");
             }
             catch (SystemException e)
             {
@@ -177,30 +177,30 @@ namespace kRPG.Items
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int) Math.Round(dps / 2.4f)));
+            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int) Math.Round(Dps / 2.4f)));
         }
 
         public override void NetRecieve(BinaryReader reader)
         {
             if (!reader.ReadBoolean()) return;
-            gem = StaffGem.gems[reader.ReadInt32()];
-            staff = Staff.staves[reader.ReadInt32()];
-            ornament = StaffOrnament.ornament[reader.ReadInt32()];
-            dps = reader.ReadSingle();
-            enemyDef = reader.ReadInt32();
+            Gem = StaffGem.Gems[reader.ReadInt32()];
+            Staff = Staff.Staffs[reader.ReadInt32()];
+            Ornament = StaffOrnament.Ornament[reader.ReadInt32()];
+            Dps = reader.ReadSingle();
+            EnemyDef = reader.ReadInt32();
             Initialize();
         }
 
         public override void NetSend(BinaryWriter writer)
         {
-            bool proceed = gem != null;
+            bool proceed = Gem != null;
             writer.Write(proceed);
             if (!proceed) return;
-            writer.Write(gem.type);
-            writer.Write(staff.type);
-            writer.Write(ornament.type);
-            writer.Write(dps);
-            writer.Write(enemyDef);
+            writer.Write(Gem.Type);
+            writer.Write(Staff.Type);
+            writer.Write(Ornament.Type);
+            writer.Write(Dps);
+            writer.Write(EnemyDef);
         }
 
         public Texture2D OverhaulGetTexture()
@@ -217,20 +217,20 @@ namespace kRPG.Items
         {
             try
             {
-                item.rare = (int) Math.Min(Math.Floor(dps / 18.0), 9);
-                item.useTime = (int) (staff.useTime / gem.speedModifier / ornament.speedModifier);
-                item.damage = (int) Math.Round(dps * gem.dpsModifier * ornament.dpsModifier * item.useTime / 60f + enemyDef);
-                item.useTime = (int) Math.Round((item.damage - (float) enemyDef) * 60f / (dps * gem.dpsModifier * ornament.dpsModifier));
-                item.useAnimation = item.useTime * staff.iterations * (1 + ornament.repetitions) - 2;
-                item.knockBack = staff.knockBack + gem.knockBack + ornament.knockBack;
-                item.SetNameOverride(staff.prefix + gem.name + ornament.suffix);
+                item.rare = (int) Math.Min(Math.Floor(Dps / 18.0), 9);
+                item.useTime = (int) (Staff.UseTime / Gem.SpeedModifier / Ornament.SpeedModifier);
+                item.damage = (int) Math.Round(Dps * Gem.DpsModifier * Ornament.DpsModifier * item.useTime / 60f + EnemyDef);
+                item.useTime = (int) Math.Round((item.damage - (float) EnemyDef) * 60f / (Dps * Gem.DpsModifier * Ornament.DpsModifier));
+                item.useAnimation = item.useTime * Staff.Iterations * (1 + Ornament.Repetitions) - 2;
+                item.knockBack = Staff.KnockBack + Gem.KnockBack + Ornament.KnockBack;
+                item.SetNameOverride(Staff.Prefix + Gem.Name + Ornament.Suffix);
                 item.autoReuse = true;
-                item.value = (int) (dps * 315);
-                item.crit = staff.critBonus + gem.critBonus + ornament.critBonus;
-                item.mana = (int) Math.Round(item.damage * ornament.mana * staff.mana * gem.mana / 5);
-                eleDamage = new Dictionary<ELEMENT, float>();
+                item.value = (int) (Dps * 315);
+                item.crit = Staff.CritBonus + Gem.CritBonus + Ornament.CritBonus;
+                item.mana = (int) Math.Round(item.damage * Ornament.Mana * Staff.Mana * Gem.Mana / 5);
+                EleDamage = new Dictionary<ELEMENT, float>();
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                    eleDamage[element] = staff.eleDamage[element] + gem.eleDamage[element] + ornament.eleDamage[element];
+                    EleDamage[element] = Staff.EleDamage[element] + Gem.eleDamage[element] + Ornament.EleDamage[element];
             }
             catch (SystemException e)
             {
@@ -244,11 +244,11 @@ namespace kRPG.Items
             {
                 return new TagCompound
                 {
-                    {"staff_id", staff.type},
-                    {"gem_id", gem.type},
-                    {"ornament_id", ornament.type},
-                    {"dps", dps},
-                    {"enemy_defence", enemyDef}
+                    {"staff_id", Staff.Type},
+                    {"gem_id", Gem.Type},
+                    {"ornament_id", Ornament.Type},
+                    {"dps", Dps},
+                    {"enemy_defence", EnemyDef}
                 };
             }
             catch (SystemException e)
@@ -284,16 +284,16 @@ namespace kRPG.Items
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
-            return gem.projectile == null;
+            return Gem.Projectile == null;
         }
 
         public override bool UseItem(Player player)
         {
             try
             {
-                if (gem.projectile != null)
+                if (Gem.Projectile != null)
                 {
-                    gem.projectile(player, item);
+                    Gem.Projectile(player, item);
                     Main.PlaySound(item.UseSound, player.Center);
                     return true;
                 }

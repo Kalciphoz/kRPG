@@ -31,7 +31,7 @@ namespace kRPG.Buffs
         /// <param name="buffIndex"></param>
         public override void Update(NPC npc, ref int buffIndex)
         {
-            npc.GetGlobalNPC<kNPC>().hasAilment[ELEMENT.FIRE] = true;
+            npc.GetGlobalNPC<kNPC>().HasAilment[ELEMENT.FIRE] = true;
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace kRPG.Buffs
         /// <param name="buffIndex"></param>
         public override void Update(Player player, ref int buffIndex)
         {
-            player.GetModPlayer<PlayerCharacter>().hasAilment[ELEMENT.FIRE] = true;
+            player.GetModPlayer<PlayerCharacter>().HasAilment[ELEMENT.FIRE] = true;
         }
     }
 }

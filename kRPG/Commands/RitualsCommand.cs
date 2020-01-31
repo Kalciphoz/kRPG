@@ -19,7 +19,7 @@ namespace kRPG.Commands
             {
                 RITUAL ritual = kRPG.ritualByName[args[0]];
                 PlayerCharacter character = caller.Player.GetModPlayer<PlayerCharacter>();
-                character.rituals[ritual] = !character.rituals[ritual];
+                character.Rituals[ritual] = !character.Rituals[ritual];
             }
             catch (KeyNotFoundException)
             {

@@ -13,7 +13,7 @@ namespace kRPG.Items.Glyphs
 
         public override float BaseDamageModifier()
         {
-            return 1.24f - projCount * 0.08f;
+            return 1.24f - ProjCount * 0.08f;
         }
 
         public override Action<ProceduralSpellProj> GetAiAction()
@@ -22,26 +22,26 @@ namespace kRPG.Items.Glyphs
             {
                 try
                 {
-                    int rotDistance = spell.minion ? 72 : 96;
+                    int rotDistance = spell.Minion ? 72 : 96;
                     if (RotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
                     {
-                        Vector2 unitRelativePos = spell.RelativePos(spell.caster.Center);
+                        Vector2 unitRelativePos = spell.RelativePos(spell.Caster.Center);
                         unitRelativePos.Normalize();
-                        spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
-                        spell.displacementVelocity =
-                            new Vector2(1.5f, 0f).RotatedBy(spell.RelativePos(spell.caster.Center).ToRotation() + (float) API.Tau / 4f);
+                        spell.projectile.Center = spell.Caster.Center + unitRelativePos * rotDistance;
+                        spell.DisplacementVelocity =
+                            new Vector2(1.5f, 0f).RotatedBy(spell.RelativePos(spell.Caster.Center).ToRotation() + (float) API.Tau / 4f);
 
-                        float angle = spell.displacementAngle + 0.04f * (RotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
-                        spell.projectile.Center = spell.caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
+                        float angle = spell.DisplacementAngle + 0.04f * (RotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
+                        spell.projectile.Center = spell.Caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
                     }
                     else
                     {
-                        spell.projectile.Center = spell.caster.Center +
-                                                  new Vector2(0f, -1.5f).RotatedBy(spell.displacementAngle) * (RotTimeLeft - spell.projectile.timeLeft);
+                        spell.projectile.Center = spell.Caster.Center +
+                                                  new Vector2(0f, -1.5f).RotatedBy(spell.DisplacementAngle) * (RotTimeLeft - spell.projectile.timeLeft);
                     }
 
-                    spell.projectile.velocity = spell.displacementVelocity + spell.caster.velocity;
-                    spell.basePosition = spell.caster.position;
+                    spell.projectile.velocity = spell.DisplacementVelocity + spell.Caster.velocity;
+                    spell.BasePosition = spell.Caster.position;
                 }
                 catch (SystemException e)
                 {
@@ -59,36 +59,36 @@ namespace kRPG.Items.Glyphs
                     case Player p:
                     {
                         PlayerCharacter character = p.GetModPlayer<PlayerCharacter>();
-                        foreach (ProceduralSpellProj proj in character.circlingProtection.Where(proj => proj.projectile.modProjectile is ProceduralSpellProj))
+                        foreach (ProceduralSpellProj proj in character.CirclingProtection.Where(proj => proj.projectile.modProjectile is ProceduralSpellProj))
                             proj.projectile.Kill();
-                        character.circlingProtection.Clear();
+                        character.CirclingProtection.Clear();
                         break;
                     }
                     case Projectile pj:
                     {
                         ProceduralMinion minion = (ProceduralMinion) pj.modProjectile;
-                        foreach (ProceduralSpellProj proj in minion.circlingProtection.Where(proj => proj.projectile.modProjectile is ProceduralSpellProj))
+                        foreach (ProceduralSpellProj proj in minion.CirclingProtection.Where(proj => proj.projectile.modProjectile is ProceduralSpellProj))
                             proj.projectile.Kill();
-                        minion.circlingProtection.Clear();
+                        minion.CirclingProtection.Clear();
                         break;
                     }
                 }
 
-                float spread = GetSpread(spell.projCount);
+                float spread = GetSpread(spell.ProjCount);
                 Vector2 velocity = new Vector2(0f, -1.5f);
-                for (int i = 0; i < spell.projCount; i += 1)
+                for (int i = 0; i < spell.ProjCount; i += 1)
                 {
                     ProceduralSpellProj proj = spell.CreateProjectile(player, Vector2.Zero, spread * i, origin, caster);
                     proj.projectile.timeLeft = RotTimeLeft;
-                    proj.displacementVelocity = velocity.RotatedBy(i * spread * API.Tau);
-                    proj.displacementAngle = i * spread * (float) API.Tau;
+                    proj.DisplacementVelocity = velocity.RotatedBy(i * spread * API.Tau);
+                    proj.DisplacementAngle = i * spread * (float) API.Tau;
                     switch (caster)
                     {
                         case Player _:
-                            player.GetModPlayer<PlayerCharacter>().circlingProtection.Add(proj);
+                            player.GetModPlayer<PlayerCharacter>().CirclingProtection.Add(proj);
                             break;
                         case Projectile pj:
-                            ((ProceduralMinion) pj.modProjectile).circlingProtection.Add(proj);
+                            ((ProceduralMinion) pj.modProjectile).CirclingProtection.Add(proj);
                             break;
                     }
                 }
@@ -103,7 +103,7 @@ namespace kRPG.Items.Glyphs
         public override void Randomize()
         {
             base.Randomize();
-            projCount = Main.rand.Next(3, 11);
+            ProjCount = Main.rand.Next(3, 11);
         }
 
         public override void SetStaticDefaults()

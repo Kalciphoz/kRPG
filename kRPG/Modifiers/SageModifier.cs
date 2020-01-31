@@ -7,46 +7,46 @@ using Terraria.ModLoader;
 
 namespace kRPG.Modifiers
 {
-    public class SageModifier : NPCModifier
+    public class SageModifier : NpcModifier
     {
-        public ProceduralSpellProj rotMissile;
-        public ProceduralSpellProj rotSecondary;
+        public ProceduralSpellProj RotMissile { get; set; }
+        public ProceduralSpellProj RotSecondary { get; set; }
 
-        public SageModifier(kNPC kNPC, NPC npc) : base(kNPC, npc)
+        public SageModifier(kNPC kNpc, NPC npc) : base(kNpc, npc)
         {
             this.npc = npc;
             npc.GivenName = "Sagely " + npc.GivenName;
         }
 
-        public new static NPCModifier New(kNPC kNPC, NPC npc)
+        public new static NpcModifier New(kNPC kNpc, NPC npc)
         {
-            return new SageModifier(kNPC, npc);
+            return new SageModifier(kNpc, npc);
         }
 
-        public new static NPCModifier Random(kNPC kNPC, NPC npc)
+        public new static NpcModifier Random(kNPC kNpc, NPC npc)
         {
-            return new SageModifier(kNPC, npc);
+            return new SageModifier(kNpc, npc);
         }
 
-        public override void Update(NPC npc)
+        public override void Update(NPC kNpc)
         {
             try
             {
-                int rotDistance = 64;
-                int rotTimeLeft = 36000;
+                const int rotDistance = 64;
+                const int rotTimeLeft = 36000;
 
-                if (rotMissile != null)
-                    if (rotMissile.projectile.active && npc.active)
+                if (RotMissile != null)
+                    if (RotMissile.projectile.active && kNpc.active)
                         goto Secondary;
                     else
-                        rotMissile.projectile.Kill();
+                        RotMissile.projectile.Kill();
 
                 Projectile proj1 = Main.projectile[
-                    Projectile.NewProjectile(npc.Center, new Vector2(0f, -1.5f), ModContent.ProjectileType<ProceduralSpellProj>(), npc.damage, 3f)];
+                    Projectile.NewProjectile(kNpc.Center, new Vector2(0f, -1.5f), ModContent.ProjectileType<ProceduralSpellProj>(), kNpc.damage, 3f)];
                 proj1.hostile = true;
                 proj1.friendly = false;
                 ProceduralSpellProj ps1 = (ProceduralSpellProj) proj1.modProjectile;
-                ps1.origin = proj1.position;
+                ps1.Origin = proj1.position;
                 Cross cross1 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Red() : new Cross_Violet();
                 ps1.ai.Add(delegate(ProceduralSpellProj spell)
                 {
@@ -56,44 +56,44 @@ namespace kRPG.Modifiers
                     Vector2 displacementVelocity = Vector2.Zero;
                     if (rotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
                     {
-                        Vector2 unitRelativePos = spell.RelativePos(spell.caster.Center);
+                        Vector2 unitRelativePos = spell.RelativePos(spell.Caster.Center);
                         unitRelativePos.Normalize();
-                        spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
-                        displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.caster.Center).ToRotation() + (float) API.Tau / 4f);
+                        spell.projectile.Center = spell.Caster.Center + unitRelativePos * rotDistance;
+                        displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.Caster.Center).ToRotation() + (float) API.Tau / 4f);
 
                         float angle = displacementAngle - 0.06f * (rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
-                        spell.projectile.Center = spell.caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
+                        spell.projectile.Center = spell.Caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
                     }
                     else
                     {
-                        spell.projectile.Center = spell.caster.Center +
+                        spell.projectile.Center = spell.Caster.Center +
                                                   new Vector2(0f, -1.5f).RotatedBy(displacementAngle) * (rotTimeLeft - spell.projectile.timeLeft);
                     }
 
-                    spell.projectile.velocity = displacementVelocity + spell.caster.velocity;
-                    spell.basePosition = spell.caster.position;
+                    spell.projectile.velocity = displacementVelocity + spell.Caster.velocity;
+                    spell.BasePosition = spell.Caster.position;
                 });
-                ps1.init.Add(cross1.GetInitAction());
-                ps1.caster = npc;
+                ps1.Inits.Add(cross1.GetInitAction());
+                ps1.Caster = kNpc;
                 ps1.Initialize();
                 ps1.projectile.penetrate = -1;
                 ps1.projectile.timeLeft = rotTimeLeft;
-                rotMissile = ps1;
+                RotMissile = ps1;
 
                 Secondary:
 
-                if (rotSecondary != null)
-                    if (rotSecondary.projectile.active && npc.active)
+                if (RotSecondary != null)
+                    if (RotSecondary.projectile.active && kNpc.active)
                         return;
                     else
-                        rotSecondary.projectile.Kill();
+                        RotSecondary.projectile.Kill();
 
                 Projectile proj2 = Main.projectile[
-                    Projectile.NewProjectile(npc.Center, new Vector2(0f, 1.5f), ModContent.ProjectileType<ProceduralSpellProj>(), npc.damage, 3f)];
+                    Projectile.NewProjectile(kNpc.Center, new Vector2(0f, 1.5f), ModContent.ProjectileType<ProceduralSpellProj>(), kNpc.damage, 3f)];
                 proj2.hostile = true;
                 proj2.friendly = false;
                 ProceduralSpellProj ps2 = (ProceduralSpellProj) proj2.modProjectile;
-                ps2.origin = proj2.position;
+                ps2.Origin = proj2.position;
                 Cross cross2 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Blue() : new Cross_Purple();
                 ps2.ai.Add(delegate(ProceduralSpellProj spell)
                 {
@@ -103,29 +103,29 @@ namespace kRPG.Modifiers
                     Vector2 displacementVelocity = Vector2.Zero;
                     if (rotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
                     {
-                        Vector2 unitRelativePos = spell.RelativePos(spell.caster.Center);
+                        Vector2 unitRelativePos = spell.RelativePos(spell.Caster.Center);
                         unitRelativePos.Normalize();
-                        spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
-                        displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.caster.Center).ToRotation() + (float) API.Tau / 4f);
+                        spell.projectile.Center = spell.Caster.Center + unitRelativePos * rotDistance;
+                        displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.Caster.Center).ToRotation() + (float) API.Tau / 4f);
 
                         float angle = displacementAngle - 0.06f * (rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
-                        spell.projectile.Center = spell.caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
+                        spell.projectile.Center = spell.Caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
                     }
                     else
                     {
-                        spell.projectile.Center = spell.caster.Center +
+                        spell.projectile.Center = spell.Caster.Center +
                                                   new Vector2(0f, 1.5f).RotatedBy(displacementAngle) * (rotTimeLeft - spell.projectile.timeLeft);
                     }
 
-                    spell.projectile.velocity = displacementVelocity + spell.caster.velocity;
-                    spell.basePosition = spell.caster.position;
+                    spell.projectile.velocity = displacementVelocity + spell.Caster.velocity;
+                    spell.BasePosition = spell.Caster.position;
                 });
-                ps2.init.Add(cross2.GetInitAction());
-                ps2.caster = npc;
+                ps2.Inits.Add(cross2.GetInitAction());
+                ps2.Caster = kNpc;
                 ps2.Initialize();
                 ps2.projectile.penetrate = -1;
                 ps2.projectile.timeLeft = rotTimeLeft;
-                rotSecondary = ps2;
+                RotSecondary = ps2;
             }
             catch (SystemException e)
             {

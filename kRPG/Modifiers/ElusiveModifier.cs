@@ -4,45 +4,45 @@ using Terraria.ModLoader;
 
 namespace kRPG.Modifiers
 {
-    public class ElusiveModifier : NPCModifier
+    public class ElusiveModifier : NpcModifier
     {
-        private float dodgeModifier = 1.2f;
+        private float DodgeModifier { get; set; } = 1.2f;
 
-        public ElusiveModifier(kNPC kNPC, NPC npc, float dodgeModifier = 1.2f) : base(kNPC, npc)
+        public ElusiveModifier(kNPC kNpc, NPC npc, float dodgeModifier = 1.2f) : base(kNpc, npc)
         {
             this.npc = npc;
             npc.GivenName = "Elusive " + npc.GivenName;
-            this.dodgeModifier = dodgeModifier;
+            this.DodgeModifier = dodgeModifier;
         }
 
         public override void Apply()
         {
-            npc.GetGlobalNPC<kNPC>().speedModifier *= 1.25f;
+            npc.GetGlobalNPC<kNPC>().SpeedModifier *= 1.25f;
         }
 
-        public new static NPCModifier New(kNPC kNPC, NPC npc)
+        public new static NpcModifier New(kNPC kNpc, NPC npc)
         {
-            return new ElusiveModifier(kNPC, npc);
+            return new ElusiveModifier(kNpc, npc);
         }
 
-        public new static NPCModifier Random(kNPC kNPC, NPC npc)
+        public new static NpcModifier Random(kNPC kNpc, NPC npc)
         {
-            return new ElusiveModifier(kNPC, npc, 1f + Main.rand.NextFloat(.3f));
+            return new ElusiveModifier(kNpc, npc, 1f + Main.rand.NextFloat(.3f));
         }
 
         public override void Read(BinaryReader reader)
         {
-            dodgeModifier = reader.ReadSingle();
+            DodgeModifier = reader.ReadSingle();
         }
 
         public override float StrikeNPC(NPC npc, double damage, int defense, float knockback, int hitDirection, bool crit)
         {
-            return dodgeModifier;
+            return DodgeModifier;
         }
 
         public override void Write(ModPacket packet)
         {
-            packet.Write(dodgeModifier);
+            packet.Write(DodgeModifier);
         }
     }
 }

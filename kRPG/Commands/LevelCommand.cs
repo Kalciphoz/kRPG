@@ -14,9 +14,9 @@ namespace kRPG.Commands
         public override void Action(CommandCaller caller, string input, string[] args)
         {
             PlayerCharacter character = caller.Player.GetModPlayer<PlayerCharacter>();
-            float xp = character.xp / (float) character.ExperienceToLevel();
-            character.level = int.Parse(args[0]);
-            character.xp = (int) (character.ExperienceToLevel() * xp);
+            float xp = character.Experience / (float) character.ExperienceToLevel();
+            character.Level = int.Parse(args[0]);
+            character.Experience = (int) (character.ExperienceToLevel() * xp);
         }
     }
 }

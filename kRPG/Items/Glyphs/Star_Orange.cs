@@ -25,15 +25,15 @@ namespace kRPG.Items.Glyphs
             return delegate(ProceduralSpell spell, Player player, Vector2 target)
             {
                 Main.PlaySound(SoundID.Item6, player.position);
-                spell.remaining = spell.cooldown;
+                spell.Remaining = spell.Cooldown;
                 PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
-                if (character.minions.Exists(minion => minion is WingedEyeball))
-                    foreach (ProceduralMinion eyeball in character.minions.Where(minion => minion.projectile.type == ModContent.ProjectileType<WingedEyeball>()))
+                if (character.Minions.Exists(minion => minion is WingedEyeball))
+                    foreach (ProceduralMinion eyeball in character.Minions.Where(minion => minion.projectile.type == ModContent.ProjectileType<WingedEyeball>()))
                     {
-                        foreach (ProceduralSpellProj psp in eyeball.circlingProtection)
+                        foreach (ProceduralSpellProj psp in eyeball.CirclingProtection)
                             psp.projectile.Kill();
-                        eyeball.circlingProtection.Clear();
-                        eyeball.smallProt?.projectile.Kill();
+                        eyeball.CirclingProtection.Clear();
+                        eyeball.SmallProt?.projectile.Kill();
                         eyeball.projectile.Kill();
                     }
 
@@ -41,10 +41,10 @@ namespace kRPG.Items.Glyphs
                     Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<WingedEyeball>(), 0, 0f, player.whoAmI)];
                 eye.Center = target;
                 WingedEyeball we = (WingedEyeball) eye.modProjectile;
-                we.source = spell;
-                foreach (GlyphModifier modifier in spell.modifiers.Where(modifier => modifier.minionAI != null))
-                    we.glyphModifiers.Add(modifier.minionAI);
-                character.minions.Add((WingedEyeball) eye.modProjectile);
+                we.Source = spell;
+                foreach (GlyphModifier modifier in spell.Modifiers.Where(modifier => modifier.MinionAi != null))
+                    we.GlyphModifiers.Add(modifier.MinionAi);
+                character.Minions.Add((WingedEyeball) eye.modProjectile);
             };
         }
 

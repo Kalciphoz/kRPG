@@ -9,9 +9,9 @@ namespace kRPG.Items
 {
     public class ProceduralItem : ModItem
     {
-        public float dps;
-        public int enemyDef;
-        public Texture2D texture;
+        public float Dps { get; set; }
+        public int EnemyDef { get; set; }
+        public Texture2D texture { get; set; }
 
         public override bool CanPickup(Player player)
         {
@@ -19,9 +19,9 @@ namespace kRPG.Items
             return item.value > 100;
         }
 
-        public override ModItem Clone(Item item)
+        public override ModItem Clone(Item tItem)
         {
-            ProceduralItem copy = (ProceduralItem) base.Clone(item);
+            ProceduralItem copy = (ProceduralItem) base.Clone(tItem);
             copy.texture = texture;
             return copy;
         }
@@ -36,7 +36,7 @@ namespace kRPG.Items
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int) Math.Round(dps / 2)));
+            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int) Math.Round(Dps / 2)));
         }
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin,

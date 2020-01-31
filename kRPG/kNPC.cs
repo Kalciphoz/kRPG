@@ -18,30 +18,30 @@ namespace kRPG
 {
     public class kNPC : GlobalNPC
     {
-        public const double ELE_DMG_MODIFIER = 1.2;
+        public const double EleDmgModifier = 1.2;
 
-        public Dictionary<ELEMENT, int> ailmentIntensity = new Dictionary<ELEMENT, int>
+        public Dictionary<ELEMENT, int> AilmentIntensity { get; set; } = new Dictionary<ELEMENT, int>
         {
             {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
         };
 
-        public bool dealseledmg;
+        public bool DealsEleDmg { get; set; }
 
-        public Dictionary<ELEMENT, int> elementalDamage = new Dictionary<ELEMENT, int>
+        public Dictionary<ELEMENT, int> ElementalDamage { get; set; }= new Dictionary<ELEMENT, int>
         {
             {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
         };
 
-        public Dictionary<ELEMENT, bool> hasAilment = new Dictionary<ELEMENT, bool>
+        public Dictionary<ELEMENT, bool> HasAilment { get; set; } = new Dictionary<ELEMENT, bool>
         {
             {ELEMENT.FIRE, false}, {ELEMENT.COLD, false}, {ELEMENT.LIGHTNING, false}, {ELEMENT.SHADOW, false}
         };
 
-        public int immuneTime;
-        private bool initialized;
-        public Dictionary<ProceduralSpell, int> invincibilityTime = new Dictionary<ProceduralSpell, int>();
+        public int ImmuneTime { get; set; }
+        private bool Initialized { get; set; }
+        public Dictionary<ProceduralSpell, int> InvincibilityTime { get; set; } = new Dictionary<ProceduralSpell, int>();
 
-        public List<Func<kNPC, NPC, NPCModifier>> modifierFuncs = new List<Func<kNPC, NPC, NPCModifier>>
+        public List<Func<kNPC, NPC, NpcModifier>> ModifierFuncs { get; set; } = new List<Func<kNPC, NPC, NpcModifier>>
         {
             DamageModifier.New,
             ElusiveModifier.New,
@@ -49,39 +49,39 @@ namespace kRPG
             LifeRegenModifier.New,
             SageModifier.New,
             SizeModifier.New,
-            SpeedModifier.New
+            global::kRPG.Modifiers.SpeedModifier.New
         };
 
-        public List<NPCModifier> modifiers = new List<NPCModifier>();
+        public List<NpcModifier> Modifiers { get; set; } = new List<NpcModifier>();
 
-        public float speedModifier = 1f;
+        public float SpeedModifier { get; set; } = 1f;
 
         public override bool InstancePerEntity => true;
 
         public override bool? CanBeHitByItem(NPC npc, Player player, Item item)
         {
-            if (immuneTime > 0) return false;
+            if (ImmuneTime > 0) return false;
             return null;
         }
 
         public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
         {
-            if (immuneTime > 0) return false;
+            if (ImmuneTime > 0) return false;
             ProceduralSpellProj ps = projectile.modProjectile as ProceduralSpellProj;
-            if (ps?.source == null)
+            if (ps?.Source == null)
                 return null;
-            if (!invincibilityTime.ContainsKey(ps.source))
+            if (!InvincibilityTime.ContainsKey(ps.Source))
                 return null;
-            if (invincibilityTime[ps.source] > 0) return false;
+            if (InvincibilityTime[ps.Source] > 0) return false;
             return null;
         }
 
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
-            foreach (NPCModifier t in modifiers)
+            foreach (NpcModifier t in Modifiers)
                 t.DrawEffects(npc, ref drawColor);
 
-            if (hasAilment[ELEMENT.FIRE])
+            if (HasAilment[ELEMENT.FIRE])
             {
                 if (Main.rand.Next(2) == 0)
                 {
@@ -95,7 +95,7 @@ namespace kRPG
                 Lighting.AddLight(npc.position, 0.7f, 0.4f, 0.1f);
             }
 
-            if (hasAilment[ELEMENT.COLD])
+            if (HasAilment[ELEMENT.COLD])
             {
                 if (Main.rand.Next(2) == 0)
                 {
@@ -107,7 +107,7 @@ namespace kRPG
                 Lighting.AddLight(npc.position, 0f, 0.4f, 1f);
             }
 
-            if (hasAilment[ELEMENT.LIGHTNING])
+            if (HasAilment[ELEMENT.LIGHTNING])
             {
                 if (Main.rand.Next(2) == 0)
                 {
@@ -119,7 +119,7 @@ namespace kRPG
                 Lighting.AddLight(npc.position, 0.5f, 0.5f, 0.5f);
             }
 
-            if (hasAilment[ELEMENT.SHADOW])
+            if (HasAilment[ELEMENT.SHADOW])
             {
                 if (Main.rand.Next(3) >= 2)
                     return;
@@ -132,7 +132,7 @@ namespace kRPG
         public int GetEleDamage(Player player, bool ignoreModifiers = false)
         {
             Dictionary<ELEMENT, int> ele = new Dictionary<ELEMENT, int>();
-            return elementalDamage[ELEMENT.FIRE] + elementalDamage[ELEMENT.COLD] + elementalDamage[ELEMENT.LIGHTNING] + elementalDamage[ELEMENT.SHADOW];
+            return ElementalDamage[ELEMENT.FIRE] + ElementalDamage[ELEMENT.COLD] + ElementalDamage[ELEMENT.LIGHTNING] + ElementalDamage[ELEMENT.SHADOW];
         }
 
         public static int GetLevel(int type)
@@ -177,9 +177,9 @@ namespace kRPG
             int amount = 1;
             for (int i = 0; i < amount; i++)
             {
-                int random = Main.rand.Next(modifierFuncs.Count);
-                NPCModifier modifier = modifierFuncs[random].Invoke(this, npc);
-                modifiers.Add(modifier);
+                int random = Main.rand.Next(ModifierFuncs.Count);
+                NpcModifier modifier = ModifierFuncs[random].Invoke(this, npc);
+                Modifiers.Add(modifier);
             }
 
             if (Main.netMode == 2)
@@ -190,8 +190,8 @@ namespace kRPG
                 packet.Write(amount);
                 for (int i = 0; i < amount; i++)
                 {
-                    packet.Write(modifiers.FindIndex(modifier => modifier == modifiers[i]));
-                    modifiers[i].Write(packet);
+                    packet.Write(Modifiers.FindIndex(modifier => modifier == Modifiers[i]));
+                    Modifiers[i].Write(packet);
                 }
 
                 packet.Send();
@@ -204,21 +204,21 @@ namespace kRPG
         {
             npc.scale *= 1.1f;
             npc.lifeMax = (int) (npc.lifeMax * 1.2);
-            speedModifier *= 1.09f;
+            SpeedModifier *= 1.09f;
         }
 
         public override void ModifyHitPlayer(NPC npc, Player target, ref int damage, ref bool crit)
         {
-            foreach (NPCModifier t in modifiers)
+            foreach (NpcModifier t in Modifiers)
                 t.ModifyHitPlayer(npc, target, ref damage, ref crit);
 
-            if (hasAilment[ELEMENT.SHADOW])
-                damage = damage * (20 + 9360 / (130 + ailmentIntensity[ELEMENT.SHADOW])) / 100;
+            if (HasAilment[ELEMENT.SHADOW])
+                damage = damage * (20 + 9360 / (130 + AilmentIntensity[ELEMENT.SHADOW])) / 100;
         }
 
         public override void NPCLoot(NPC npc)
         {
-            foreach (NPCModifier t in modifiers)
+            foreach (NpcModifier t in Modifiers)
                 t.NPCLoot(npc);
 
             if (npc.lifeMax < 10) return;
@@ -246,7 +246,7 @@ namespace kRPG
                     if (p != null)
                         if (p.active)
                             if (p.GetModPlayer<PlayerCharacter>() != null)
-                                if (p.GetModPlayer<PlayerCharacter>().level > c.level)
+                                if (p.GetModPlayer<PlayerCharacter>().Level > c.Level)
                                     player = p;
             }
 
@@ -254,7 +254,7 @@ namespace kRPG
             int life = npc.type == NPCID.SolarCrawltipedeTail || npc.type == NPCID.SolarCrawltipedeBody || npc.type == NPCID.SolarCrawltipedeHead
                 ? npc.lifeMax / 8
                 : npc.lifeMax;
-            int defFactor = npc.defense < 0 ? 1 : npc.defense * life / (character.level + 10);
+            int defFactor = npc.defense < 0 ? 1 : npc.defense * life / (character.Level + 10);
             int baseExp = Main.rand.Next((life + defFactor) / 5) + (life + defFactor) / 6;
             int scaled = Main.expertMode ? (int) (baseExp * 0.5) : baseExp;
             if (Main.netMode == 2)
@@ -270,29 +270,29 @@ namespace kRPG
                 character.AddXp(scaled);
             }
 
-            if (level < Math.Min(character.level - 17, 70)) return;
+            if (level < Math.Min(character.Level - 17, 70)) return;
 
-            float dps = Math.Min((float) (Math.Pow(1.04, Math.Min(130, character.level)) * 9f), (float) (Math.Pow(1.023, level) * 15) + 14);
-            int assumedDef = !Main.hardMode ? 5 : character.level / 3;
+            float dps = Math.Min((float) (Math.Pow(1.04, Math.Min(130, character.Level)) * 9f), (float) (Math.Pow(1.023, level) * 15) + 14);
+            int assumedDef = !Main.hardMode ? 5 : character.Level / 3;
 
             if (npc.FullName.Contains("Green Slime"))
             {
                 if (Main.rand.Next(22) == 0)
-                    ProceduralSword.NewSword(mod, npc.position, SwordHilt.RandomHilt(SWORDTHEME.GENERIC), SwordBlade.slimeGreen,
-                        Main.rand.Next(3) < 1 ? SwordAccent.RandomAccent() : SwordAccent.none, dps, assumedDef);
+                    ProceduralSword.NewSword(mod, npc.position, SwordHilt.RandomHilt(SWORDTHEME.GENERIC), SwordBlade.SlimeGreen,
+                        Main.rand.Next(3) < 1 ? SwordAccent.RandomAccent() : SwordAccent.None, dps, assumedDef);
             }
 
             else if (npc.FullName.Contains("Blue Slime"))
             {
                 if (Main.rand.Next(30) == 0)
-                    ProceduralSword.NewSword(mod, npc.position, SwordHilt.RandomHilt(SWORDTHEME.GENERIC), SwordBlade.slimeBlue,
-                        Main.rand.Next(2) < 1 ? SwordAccent.RandomAccent() : SwordAccent.none, dps, assumedDef);
+                    ProceduralSword.NewSword(mod, npc.position, SwordHilt.RandomHilt(SWORDTHEME.GENERIC), SwordBlade.SlimeBlue,
+                        Main.rand.Next(2) < 1 ? SwordAccent.RandomAccent() : SwordAccent.None, dps, assumedDef);
             }
 
-            else if (Main.rand.Next(character.level < 5 ? 5 : character.level < 10 ? 8 : 20) == 0)
+            else if (Main.rand.Next(character.Level < 5 ? 5 : character.Level < 10 ? 8 : 20) == 0)
             {
                 if (Main.rand.Next(5) == 0)
-                    Item.NewItem(npc.position, RangedWeapon.NewRangedWeapon(mod, npc.position, level, character.level, dps, assumedDef),
+                    Item.NewItem(npc.position, RangedWeapon.NewRangedWeapon(mod, npc.position, level, character.Level, dps, assumedDef),
                         Main.rand.Next(30, 90));
                 else if (Main.rand.Next(9) < 5) ProceduralSword.GenerateSword(mod, npc.position, GetTheme(player), dps, assumedDef);
                 else ProceduralStaff.GenerateStaff(mod, npc.position, GetStaffTheme(player), dps * 1.2f, assumedDef);
@@ -309,39 +309,39 @@ namespace kRPG
             else if (npc.FullName.EndsWith(" Eye") && level < 20)
             {
                 if (Main.rand.Next(20) == 0)
-                    ProceduralSword.NewSword(mod, npc.position, SwordHilt.RandomHilt(SWORDTHEME.MONSTROUS), SwordBlade.demonEye,
-                        Main.rand.Next(5) < 2 ? SwordAccent.RandomAccent() : SwordAccent.none, dps, assumedDef);
+                    ProceduralSword.NewSword(mod, npc.position, SwordHilt.RandomHilt(SWORDTHEME.MONSTROUS), SwordBlade.DemonEye,
+                        Main.rand.Next(5) < 2 ? SwordAccent.RandomAccent() : SwordAccent.None, dps, assumedDef);
                 else if (Main.rand.Next(15) == 0)
-                    ProceduralSword.NewSword(mod, npc.position, SwordHilt.RandomHilt(SWORDTHEME.GENERIC), SwordBlade.demonEye, SwordAccent.none, dps,
+                    ProceduralSword.NewSword(mod, npc.position, SwordHilt.RandomHilt(SWORDTHEME.GENERIC), SwordBlade.DemonEye, SwordAccent.None, dps,
                         assumedDef);
             }
         }
 
         public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
         {
-            foreach (NPCModifier t in modifiers)
+            foreach (NpcModifier t in Modifiers)
                 t.OnHitByProjectile(npc, projectile, damage, knockback, crit);
 
             if (!(projectile.modProjectile is ProceduralSpellProj))
                 return;
             ProceduralSpellProj ps = (ProceduralSpellProj) projectile.modProjectile;
-            if (invincibilityTime.ContainsKey(ps.source))
-                invincibilityTime[ps.source] = 30;
+            if (InvincibilityTime.ContainsKey(ps.Source))
+                InvincibilityTime[ps.Source] = 30;
             else
-                invincibilityTime.Add(ps.source, 30);
+                InvincibilityTime.Add(ps.Source, 30);
         }
 
         public override void PostAI(NPC npc)
         {
-            foreach (NPCModifier t in modifiers)
+            foreach (NpcModifier t in Modifiers)
                 t.PostAI(npc);
 
-            List<ProceduralSpell> keys = new List<ProceduralSpell>(invincibilityTime.Keys);
+            List<ProceduralSpell> keys = new List<ProceduralSpell>(InvincibilityTime.Keys);
             foreach (ProceduralSpell spell in keys)
-                if (invincibilityTime[spell] > 0) invincibilityTime[spell] -= 1;
-                else invincibilityTime.Remove(spell);
-            if (immuneTime > 0) immuneTime -= 1;
-            if (initialized)
+                if (InvincibilityTime[spell] > 0) InvincibilityTime[spell] -= 1;
+                else InvincibilityTime.Remove(spell);
+            if (ImmuneTime > 0) ImmuneTime -= 1;
+            if (Initialized)
             {
                 Update(npc);
                 return;
@@ -349,9 +349,9 @@ namespace kRPG
 
             if (npc.lifeMax < 10) return;
 
-            invincibilityTime = new Dictionary<ProceduralSpell, int>();
+            InvincibilityTime = new Dictionary<ProceduralSpell, int>();
             Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
-            int playerlevel = Main.netMode == 0 ? player.GetModPlayer<PlayerCharacter>().level : 20;
+            int playerlevel = Main.netMode == 0 ? player.GetModPlayer<PlayerCharacter>().Level : 20;
             npc.lifeMax = (int) Math.Round(npc.lifeMax * (GetLevel(npc.netID) / 30f + 0.4f + playerlevel * 0.025f));
             npc.life = (int) Math.Round(npc.life * (GetLevel(npc.netID) / 30f + 0.4f + playerlevel * 0.025f));
             npc.defense = (int) Math.Round(npc.defense * (GetLevel(npc.netID) / 160f + 1f));
@@ -383,11 +383,11 @@ namespace kRPG
                     }
                 };
                 int count = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => haselement[element]);
-                int portionSize = (int) Math.Round(npc.damage * ELE_DMG_MODIFIER / 2.0 / count);
+                int portionSize = (int) Math.Round(npc.damage * EleDmgModifier / 2.0 / count);
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                     if (haselement[element])
-                        elementalDamage[element] = Math.Max(1, portionSize);
-                dealseledmg = count > 0;
+                        ElementalDamage[element] = Math.Max(1, portionSize);
+                DealsEleDmg = count > 0;
             }
 
             if (Main.rand.Next(8) < 3 && !npc.boss && !npc.townNPC && !npc.friendly && Main.netMode != 1)
@@ -399,15 +399,15 @@ namespace kRPG
                 npc.life = (int) (npc.life * 1.3);
             }
 
-            initialized = true;
+            Initialized = true;
         }
 
         public override void ResetEffects(NPC npc)
         {
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
             {
-                if (!hasAilment[element]) ailmentIntensity[element] = 0;
-                hasAilment[element] = false;
+                if (!HasAilment[element]) AilmentIntensity[element] = 0;
+                HasAilment[element] = false;
             }
         }
 
@@ -447,14 +447,14 @@ namespace kRPG
         {
             Player player = Main.player[npc.target];
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
-            character.accuracyCounter += character.hitChance;
+            character.AccuracyCounter += character.HitChance;
 
             float dodgeChanceModifier = 1f;
 
-            foreach (NPCModifier t in modifiers)
+            foreach (NpcModifier t in Modifiers)
                 dodgeChanceModifier *= t.StrikeNPC(npc, damage, defense, knockback, hitDirection, crit);
 
-            if (character.accuracyCounter < 1 * dodgeChanceModifier && !character.rituals[RITUAL.WARRIOR_OATH])
+            if (character.AccuracyCounter < 1 * dodgeChanceModifier && !character.Rituals[RITUAL.WARRIOR_OATH])
             {
                 npc.NinjaDodge(npc, 10);
                 if (Vector2.Distance(player.Center, npc.Center) < 192)
@@ -465,21 +465,21 @@ namespace kRPG
 
                 damage = 0;
                 crit = false;
-                if (character.player.inventory[character.player.selectedItem] != character.lastSelectedWeapon)
+                if (character.player.inventory[character.player.selectedItem] != character.LastSelectedWeapon)
                     knockback = 0f;
                 SyncCounters(npc.target, character, false);
                 return false;
             }
 
-            character.accuracyCounter -= 1 * dodgeChanceModifier;
+            character.AccuracyCounter -= 1 * dodgeChanceModifier;
             SyncCounters(npc.target, character, false);
-            character.critAccuracyCounter += character.critHitChance;
+            character.CritAccuracyCounter += character.CritHitChance;
             if (crit)
             {
-                if (character.critAccuracyCounter < 1f)
+                if (character.CritAccuracyCounter < 1f)
                     crit = false;
                 else
-                    character.critAccuracyCounter -= 1f;
+                    character.CritAccuracyCounter -= 1f;
             }
 
             SyncCounters(npc.target, character, true);
@@ -493,26 +493,26 @@ namespace kRPG
             ModPacket packet = mod.GetPacket();
             packet.Write((byte) (crit ? Message.SyncCritHit : Message.SyncHit));
             packet.Write(player);
-            packet.Write(crit ? character.critAccuracyCounter : character.accuracyCounter);
+            packet.Write(crit ? character.CritAccuracyCounter : character.AccuracyCounter);
             packet.Send();
         }
 
         public void Update(NPC npc)
         {
             if (npc.aiStyle == 3 && Math.Abs(npc.velocity.Y) < .01)
-                npc.velocity.X = MathHelper.Lerp(npc.velocity.X, npc.direction * Math.Max(Math.Abs(npc.velocity.X), 8f), 1f * speedModifier / 20f);
+                npc.velocity.X = MathHelper.Lerp(npc.velocity.X, npc.direction * Math.Max(Math.Abs(npc.velocity.X), 8f), 1f * SpeedModifier / 20f);
 
-            foreach (NPCModifier t in modifiers)
+            foreach (NpcModifier t in Modifiers)
                 t.Update(npc);
         }
 
         public override void UpdateLifeRegen(NPC npc, ref int damage)
         {
-            if (!hasAilment[ELEMENT.FIRE])
+            if (!HasAilment[ELEMENT.FIRE])
                 return;
             if (npc.lifeRegen > 0) npc.lifeRegen = 0;
-            npc.lifeRegen -= ailmentIntensity[ELEMENT.FIRE] * 2;
-            damage = ailmentIntensity[ELEMENT.FIRE] / 3;
+            npc.lifeRegen -= AilmentIntensity[ELEMENT.FIRE] * 2;
+            damage = AilmentIntensity[ELEMENT.FIRE] / 3;
         }
     }
 }

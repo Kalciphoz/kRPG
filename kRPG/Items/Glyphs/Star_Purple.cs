@@ -14,7 +14,7 @@ namespace kRPG.Items.Glyphs
             return delegate(ProceduralSpell spell, Player player, Vector2 target)
             {
                 Main.PlaySound(0, player.position);
-                spell.remaining = spell.cooldown;
+                spell.Remaining = spell.Cooldown;
                 int placementHeight = 0;
                 bool placeable = false;
                 for (int y = (int) (Main.screenPosition.Y / 16); y < (int) ((Main.screenPosition.Y + Main.screenHeight) / 16); y += 1)
@@ -31,13 +31,13 @@ namespace kRPG.Items.Glyphs
 
                 if (!placeable) return;
                 PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
-                if (character.minions.Exists(minion => minion is Obelisk))
-                    foreach (ProceduralMinion obelisk in character.minions.Where(minions => minions.projectile.type == ModContent.ProjectileType<Obelisk>()))
+                if (character.Minions.Exists(minion => minion is Obelisk))
+                    foreach (ProceduralMinion obelisk in character.Minions.Where(minions => minions.projectile.type == ModContent.ProjectileType<Obelisk>()))
                     {
-                        foreach (ProceduralSpellProj psp in obelisk.circlingProtection)
+                        foreach (ProceduralSpellProj psp in obelisk.CirclingProtection)
                             psp.projectile.Kill();
-                        obelisk.circlingProtection.Clear();
-                        obelisk.smallProt?.projectile.Kill();
+                        obelisk.CirclingProtection.Clear();
+                        obelisk.SmallProt?.projectile.Kill();
                         obelisk.projectile.Kill();
                     }
 
@@ -45,8 +45,8 @@ namespace kRPG.Items.Glyphs
                     Projectile.NewProjectile(new Vector2((int) (target.X / 16) * 16, placementHeight * 16) + new Vector2(8f, -32f), Vector2.Zero,
                         ModContent.GetInstance<Obelisk>().projectile.type, 0, 0f, player.whoAmI)];
                 totem.position = new Vector2((int) (target.X / 16) * 16, placementHeight * 16) - new Vector2(8f, 62f);
-                ((Obelisk) totem.modProjectile).source = spell;
-                character.minions.Add((Obelisk) totem.modProjectile);
+                ((Obelisk) totem.modProjectile).Source = spell;
+                character.Minions.Add((Obelisk) totem.modProjectile);
             };
         }
 

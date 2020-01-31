@@ -16,12 +16,12 @@ namespace kRPG.Buffs
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            npc.GetGlobalNPC<kNPC>().hasAilment[ELEMENT.SHADOW] = true;
+            npc.GetGlobalNPC<kNPC>().HasAilment[ELEMENT.SHADOW] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.GetModPlayer<PlayerCharacter>().hasAilment[ELEMENT.SHADOW] = true;
+            player.GetModPlayer<PlayerCharacter>().HasAilment[ELEMENT.SHADOW] = true;
         }
     }
 }

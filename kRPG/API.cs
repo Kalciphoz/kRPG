@@ -73,10 +73,10 @@ namespace kRPG
                     Item[] array = Main.player[Main.myPlayer].inventory;
                     InvLogic(recipe, array, requiredItem, requiredAmount);
                     PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
-                    for (int j = 0; j < character.inventories.Length; j += 1)
-                        if (character.activeInvPage != j)
+                    for (int j = 0; j < character.Inventories.Length; j += 1)
+                        if (character.ActiveInvPage != j)
                         {
-                            array = character.inventories[j];
+                            array = character.Inventories[j];
                             InvLogic(recipe, array, requiredItem, requiredAmount);
                         }
 
@@ -147,13 +147,13 @@ namespace kRPG
                 APIQuickBuff_TryItem(player, item);
             }
 
-            for (int i = 0; i < character.inventories.Length; i += 1)
+            for (int i = 0; i < character.Inventories.Length; i += 1)
             {
-                if (character.activeInvPage == i)
+                if (character.ActiveInvPage == i)
                     continue;
-                for (int j = 0; j < character.inventories[i].Length; j += 1)
+                for (int j = 0; j < character.Inventories[i].Length; j += 1)
                 {
-                    Item item = character.inventories[i][j];
+                    Item item = character.Inventories[i][j];
                     APIQuickBuff_TryItem(player, item);
                 }
             }
@@ -315,11 +315,11 @@ namespace kRPG
             }
 
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
-            for (int i = 0; i < character.inventories.Length; i += 1)
-                if (character.activeInvPage != i)
-                    for (int j = 0; j < character.inventories[i].Length; j += 1)
+            for (int i = 0; i < character.Inventories.Length; i += 1)
+                if (character.ActiveInvPage != i)
+                    for (int j = 0; j < character.Inventories[i].Length; j += 1)
                     {
-                        Item item = character.inventories[i][j];
+                        Item item = character.Inventories[i][j];
                         if (item.stack <= 0 || item.type <= 0 || !item.potion || item.healLife <= 0 || !ItemLoader.CanUseItem(item, player))
                             continue;
                         int num3 = item.healLife - num;
@@ -350,10 +350,10 @@ namespace kRPG
                 APIQuickMana_TryItem(player, player.inventory[i]);
 
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
-            for (int i = 0; i < character.inventories.Length; i += 1)
-                if (character.activeInvPage != i)
-                    for (int j = 0; j < character.inventories[i].Length; j += 1)
-                        APIQuickMana_TryItem(player, character.inventories[i][j]);
+            for (int i = 0; i < character.Inventories.Length; i += 1)
+                if (character.ActiveInvPage != i)
+                    for (int j = 0; j < character.Inventories[i].Length; j += 1)
+                        APIQuickMana_TryItem(player, character.Inventories[i][j]);
         }
 
         private static void APIQuickMana_TryItem(Player player, Item item)
@@ -550,9 +550,9 @@ namespace kRPG
                 if (Main.player[Main.myPlayer].active)
                 {
                     PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
-                    for (int j = 0; j < character.inventories.Length; j += 1)
-                        if (j != character.activeInvPage)
-                            foreach (Item i in character.inventories[j])
+                    for (int j = 0; j < character.Inventories.Length; j += 1)
+                        if (j != character.ActiveInvPage)
+                            foreach (Item i in character.Inventories[j])
                                 if (dictionary.ContainsKey(i.netID))
                                 {
                                     Dictionary<int, int> dictionary2;
@@ -741,13 +741,13 @@ namespace kRPG
                     FindRecipes();
             }
 
-            for (int i = 0; i < character.inventories.Length; i += 1)
+            for (int i = 0; i < character.Inventories.Length; i += 1)
             {
-                if (character.activeInvPage == i)
+                if (character.ActiveInvPage == i)
                     continue;
-                for (int j = 0; j < character.inventories[i].Length; j += 1)
+                for (int j = 0; j < character.Inventories[i].Length; j += 1)
                 {
-                    Item x = character.inventories[i][j];
+                    Item x = character.Inventories[i][j];
                     if (x.type <= 0 || x.stack >= x.maxStack || !item.IsTheSameAs(x))
                         continue;
                     if (flag)
@@ -786,9 +786,9 @@ namespace kRPG
                     return new Item();
                 }
 
-            if ((newItem.modItem is Glyph || newItem.modItem is ProceduralItem || newItem.modItem is RangedWeapon) && kConfig.clientSide.smartInventory)
+            if ((newItem.modItem is Glyph || newItem.modItem is ProceduralItem || newItem.modItem is RangedWeapon) && kConfig.ClientSide.SmartInventory)
             {
-                if (character.activeInvPage == 2)
+                if (character.ActiveInvPage == 2)
                     for (int i = 10; i < 50; i += 1)
                     {
                         if (player.inventory[i].type != 0)
@@ -800,11 +800,11 @@ namespace kRPG
                         return new Item();
                     }
                 else
-                    for (int i = 0; i < character.inventories[2].Length; i += 1)
+                    for (int i = 0; i < character.Inventories[2].Length; i += 1)
                     {
-                        if (character.inventories[2][i].type != 0)
+                        if (character.Inventories[2][i].type != 0)
                             continue;
-                        character.inventories[2][i] = item;
+                        character.Inventories[2][i] = item;
                         ItemText.NewText(newItem, newItem.stack);
                         Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
                         AchievementsHelper.NotifyItemPickup(player, item);
@@ -816,7 +816,7 @@ namespace kRPG
             {
                 for (int k = 0; k < num; k++)
                 {
-                    if (player.inventory[k].type != 0 || kConfig.clientSide.manualInventory && character.activeInvPage != 0)
+                    if (player.inventory[k].type != 0 || kConfig.ClientSide.ManualInventory && character.ActiveInvPage != 0)
                         continue;
                     player.inventory[k] = item;
                     ItemText.NewText(newItem, newItem.stack);
@@ -832,7 +832,7 @@ namespace kRPG
             {
                 for (int l = num - 1; l >= 0; l--)
                 {
-                    if (player.inventory[l].type != 0 || kConfig.clientSide.manualInventory && character.activeInvPage != 0 && !flag)
+                    if (player.inventory[l].type != 0 || kConfig.ClientSide.ManualInventory && character.ActiveInvPage != 0 && !flag)
                         continue;
                     player.inventory[l] = item;
                     ItemText.NewText(newItem, newItem.stack);
@@ -844,15 +844,15 @@ namespace kRPG
                     return new Item();
                 }
 
-                for (int i = 0; i < character.inventories.Length; i += 1)
+                for (int i = 0; i < character.Inventories.Length; i += 1)
                 {
-                    if (character.activeInvPage == i)
+                    if (character.ActiveInvPage == i)
                         continue;
-                    for (int j = 0; j < character.inventories[i].Length; j += 1)
+                    for (int j = 0; j < character.Inventories[i].Length; j += 1)
                     {
-                        if (character.inventories[i][j].type != 0)
+                        if (character.Inventories[i][j].type != 0)
                             continue;
-                        character.inventories[i][j] = item;
+                        character.Inventories[i][j] = item;
                         ItemText.NewText(newItem, newItem.stack);
                         Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
                         AchievementsHelper.NotifyItemPickup(player, item);
@@ -1359,7 +1359,7 @@ namespace kRPG
 
         public static void NinjaDodge(this NPC npc, Entity dustPos, int time, bool factorLongImmune = true)
         {
-            npc.GetGlobalNPC<kNPC>().immuneTime = time;
+            npc.GetGlobalNPC<kNPC>().ImmuneTime = time;
             for (int j = 0; j < 100; j++)
             {
                 int num = Dust.NewDust(new Vector2(dustPos.position.X, dustPos.position.Y), dustPos.width, dustPos.height, 31, 0f, 0f, 152, default, 2f);
@@ -1451,9 +1451,9 @@ namespace kRPG
                     foreach (Item item in player.inventory)
                         item.stack = RemoveCoins(item, coinType[i], ref cost[i]);
 
-                    for (int j = 0; j < character.inventories.Length; j += 1)
-                        if (character.activeInvPage != j)
-                            foreach (Item item in character.inventories[j])
+                    for (int j = 0; j < character.Inventories.Length; j += 1)
+                        if (character.ActiveInvPage != j)
+                            foreach (Item item in character.Inventories[j])
                                 item.stack = RemoveCoins(item, coinType[i], ref cost[i]);
 
                     foreach (Item item in player.bank.item)
@@ -1729,9 +1729,9 @@ namespace kRPG
 
             int coins = player.inventory.Sum(CoinStackValue);
 
-            for (int i = 0; i < character.inventories.Length; i += 1)
-                if (character.activeInvPage != i)
-                    coins += character.inventories[i].Sum(CoinStackValue);
+            for (int i = 0; i < character.Inventories.Length; i += 1)
+                if (character.ActiveInvPage != i)
+                    coins += character.Inventories[i].Sum(CoinStackValue);
 
             coins += player.bank.item.Sum(CoinStackValue);
 

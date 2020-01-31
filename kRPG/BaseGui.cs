@@ -8,15 +8,15 @@ namespace kRPG
 {
     public class BaseGui
     {
-        public static List<BaseGui> guiElements = new List<BaseGui>();
+        public static List<BaseGui> GuiElements { get; set; } = new List<BaseGui>();
 
-        public List<InterfaceButton> buttons = new List<InterfaceButton>();
+        public List<InterfaceButton> Buttons { get; set; } = new List<InterfaceButton>();
 
-        public bool guiActive;
+        public bool GuiActive { get; set; }
 
         public BaseGui()
         {
-            guiElements.Add(this);
+            GuiElements.Add(this);
         }
 
         public virtual bool RemoveOnClose => false;
@@ -24,29 +24,29 @@ namespace kRPG
         public InterfaceButton AddButton(Func<Rectangle> position, Action<Player> pressAction)
         {
             InterfaceButton button = new InterfaceButton(position, pressAction);
-            buttons.Add(button);
+            Buttons.Add(button);
             return button;
         }
 
         public InterfaceButton AddButton(Func<Rectangle> position, Action<Player> pressAction, Action<Player, SpriteBatch> hoverAction)
         {
             InterfaceButton button = new InterfaceButton(position, pressAction, hoverAction);
-            buttons.Add(button);
+            Buttons.Add(button);
             return button;
         }
 
         public void CloseGui()
         {
             OnClose();
-            guiActive = false;
-            if (RemoveOnClose) guiElements.Remove(this);
+            GuiActive = false;
+            if (RemoveOnClose) GuiElements.Remove(this);
         }
 
         public virtual void Draw(SpriteBatch spriteBatch, Player player)
         {
             PostDraw(spriteBatch, player);
 
-            foreach (InterfaceButton button in buttons)
+            foreach (InterfaceButton button in Buttons)
                 button.Update(spriteBatch, player);
         }
 
@@ -60,12 +60,12 @@ namespace kRPG
 
         public virtual bool PreDraw()
         {
-            return guiActive;
+            return GuiActive;
         }
 
         public void RemoveButton(InterfaceButton button)
         {
-            buttons.Remove(button);
+            Buttons.Remove(button);
         }
 
         //public virtual void PostDraw(SpriteBatch spriteBatch, Player player) {}

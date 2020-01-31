@@ -41,7 +41,7 @@ namespace kRPG.Classes
 
         public DataTag(Func<BinaryReader, object> read)
         {
-            this.Read = read;
+            Read = read;
         }
     }
 }

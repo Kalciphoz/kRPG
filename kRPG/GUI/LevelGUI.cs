@@ -12,7 +12,7 @@ namespace kRPG.GUI
 {
     public class LevelGui : BaseGui
     {
-        public Dictionary<STAT, int> allocated = new Dictionary<STAT, int> {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}};
+        public Dictionary<STAT, int> allocated = new Dictionary<STAT, int> { { STAT.RESILIENCE, 0 }, { STAT.QUICKNESS, 0 }, { STAT.POTENCY, 0 } };
         private PlayerCharacter character;
 
         private readonly Dictionary<STAT, StatFlame> statFlame;
@@ -23,9 +23,9 @@ namespace kRPG.GUI
 
             statFlame = new Dictionary<STAT, StatFlame>
             {
-                [STAT.RESILIENCE] = new StatFlame(mod, this, STAT.RESILIENCE, () => Position[STAT.RESILIENCE], GFX.flames[STAT.RESILIENCE]),
-                [STAT.QUICKNESS] = new StatFlame(mod, this, STAT.QUICKNESS, () => Position[STAT.QUICKNESS], GFX.flames[STAT.QUICKNESS]),
-                [STAT.POTENCY] = new StatFlame(mod, this, STAT.POTENCY, () => Position[STAT.POTENCY], GFX.flames[STAT.POTENCY])
+                [STAT.RESILIENCE] = new StatFlame(mod, this, STAT.RESILIENCE, () => Position[STAT.RESILIENCE], GFX.Flames[STAT.RESILIENCE]),
+                [STAT.QUICKNESS] = new StatFlame(mod, this, STAT.QUICKNESS, () => Position[STAT.QUICKNESS], GFX.Flames[STAT.QUICKNESS]),
+                [STAT.POTENCY] = new StatFlame(mod, this, STAT.POTENCY, () => Position[STAT.POTENCY], GFX.Flames[STAT.POTENCY])
             };
         }
 
@@ -47,9 +47,9 @@ namespace kRPG.GUI
         {
             character = player.GetModPlayer<PlayerCharacter>();
 
-            spriteBatch.Draw(GFX.deerSkull, GuiPosition, Color.White, Scale);
+            spriteBatch.Draw(GFX.DeerSkull, GuiPosition, Color.White, Scale);
 
-            int remaining = character.level - character.pointsAllocated - 1;
+            int remaining = character.Level - character.PointsAllocated - 1;
             remaining = allocated.Keys.Aggregate(remaining, (current, stat) => current - allocated[stat]);
             string text = "You have " + (remaining == 0 ? "no" : remaining.ToString()) + (remaining == 1 ? " point " : " points ") + "remaining";
             float width = Main.fontMouseText.MeasureString(text).X * Scale;
@@ -57,10 +57,10 @@ namespace kRPG.GUI
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, text, GuiPosition - new Vector2(width / 2f - 200f, 38f * Scale + 38f), Color.White, Scale);
 
             Vector2 buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 320f * Scale);
-            spriteBatch.Draw(GFX.buttonCancel, buttonPosition, Color.White, Scale);
+            spriteBatch.Draw(GFX.ButtonCancel, buttonPosition, Color.White, Scale);
 
-            if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.buttonConfirm.Width * Scale &&
-                Main.mouseY <= buttonPosition.Y + GFX.buttonConfirm.Height * Scale)
+            if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.ButtonConfirm.Width * Scale &&
+                Main.mouseY <= buttonPosition.Y + GFX.ButtonConfirm.Height * Scale)
             {
                 Main.LocalPlayer.mouseInterface = true;
                 if (Main.mouseLeft && Main.mouseLeftRelease)
@@ -79,10 +79,10 @@ namespace kRPG.GUI
             statFlame[STAT.POTENCY].Update(spriteBatch, player);
 
             buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
-            spriteBatch.Draw(GFX.buttonConfirm, buttonPosition, Color.White, Scale);
+            spriteBatch.Draw(GFX.ButtonConfirm, buttonPosition, Color.White, Scale);
 
-            if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.buttonConfirm.Width &&
-                Main.mouseY <= buttonPosition.Y + GFX.buttonConfirm.Height)
+            if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.ButtonConfirm.Width &&
+                Main.mouseY <= buttonPosition.Y + GFX.ButtonConfirm.Height)
             {
                 Main.LocalPlayer.mouseInterface = true;
                 if (Main.mouseLeft && Main.mouseLeftRelease)
@@ -90,12 +90,12 @@ namespace kRPG.GUI
                     {
                         Main.PlaySound(SoundID.MenuTick);
                         foreach (STAT s in allocated.Keys)
-                            character.baseStats[s] += allocated[s];
+                            character.BaseStats[s] += allocated[s];
                         foreach (STAT stat in Enum.GetValues(typeof(STAT)))
                             allocated[stat] = 0;
 
-                        guiActive = false;
-                        GFX.sfxLevelUp.Play(0.2f * Main.soundVolume, -0.6f, -0.2f);
+                        GuiActive = false;
+                        GFX.SfxLevelUp.Play(0.2f * Main.soundVolume, -0.6f, -0.2f);
                         return;
                     }
                     catch (SystemException e)
@@ -108,7 +108,7 @@ namespace kRPG.GUI
             foreach (STAT s in statFlame.Keys.Where(s => statFlame[s].CheckHover()))
                 hoverStat = s;
 
-            if (hoverStat != null) spriteBatch.Draw(GFX.deerskull_eyes[hoverStat.Value], GuiPosition, Color.White, Scale);
+            if (hoverStat != null) spriteBatch.Draw(GFX.DeerSkullEyes[hoverStat.Value], GuiPosition, Color.White, Scale);
         }
     }
 }

@@ -9,181 +9,181 @@ namespace kRPG.Items.Weapons
 {
     public class SwordHilt
     {
-        public static SwordHilt arcaneMount;
-        public static SwordHilt blackKatana;
-        public static SwordHilt bone;
-        public static SwordHilt boneCrest;
-        public static SwordHilt boneMount;
-        public static SwordHilt carbon;
-        public static SwordHilt ceremonial;
-        public static SwordHilt ceremonialMount;
-        public static SwordHilt chlorophyteMount;
-        public static SwordHilt clock;
-        public static SwordHilt coe;
-        public static SwordHilt copperCrossguard;
-        public static SwordHilt demonEye;
-        public static SwordHilt demoniteBat;
-        public static SwordHilt eyes;
-        public static SwordHilt goldenKatana;
-        public static SwordHilt goldenRunicKatana;
-        public static SwordHilt hellstoneBasket;
-        public static SwordHilt hellstoneCrossguard;
-        public static SwordHilt hellstoneMount;
+        public static SwordHilt ArcaneMount { get; set; }
+        public static SwordHilt BlackKatana { get; set; }
+        public static SwordHilt Bone { get; set; }
+        public static SwordHilt BoneCrest { get; set; }
+        public static SwordHilt BoneMount { get; set; }
+        public static SwordHilt Carbon { get; set; }
+        public static SwordHilt Ceremonial { get; set; }
+        public static SwordHilt CeremonialMount { get; set; }
+        public static SwordHilt ChlorophyteMount { get; set; }
+        public static SwordHilt Clock { get; set; }
+        public static SwordHilt Coe { get; set; }
+        public static SwordHilt CopperCrossguard { get; set; }
+        public static SwordHilt DemonEye { get; set; }
+        public static SwordHilt DemoniteBat { get; set; }
+        public static SwordHilt Eyes { get; set; }
+        public static SwordHilt GoldenKatana { get; set; }
+        public static SwordHilt GoldenRunicKatana { get; set; }
+        public static SwordHilt HellstoneBasket { get; set; }
+        public static SwordHilt HellstoneCrossguard { get; set; }
+        public static SwordHilt HellstoneMount { get; set; }
 
-        public static Dictionary<int, SwordHilt> hilts = new Dictionary<int, SwordHilt>();
+        public static Dictionary<int, SwordHilt> Hilts { get; set; } = new Dictionary<int, SwordHilt>();
 
-        private static Dictionary<SWORDTHEME, List<SwordHilt>> hiltsByTheme;
-        public static SwordHilt ironBasket;
-        public static SwordHilt lead;
-        public static SwordHilt ominousHilt;
-        public static SwordHilt purpleCrossguard;
-        public static SwordHilt stick;
-        public static SwordHilt thorns;
-        public static SwordHilt torch;
-        public static SwordHilt violetCrossguard;
-        public static SwordHilt violetRunicKatana;
-        public static SwordHilt wooden;
-        public static SwordHilt woodenMount;
-        public Point accentOffset = Point.Zero;
-        public bool autoswing;
-        public int critBonus;
-        public float dpsModifier = 1f;
-        public float knockBack;
-        public int mana;
-        public Vector2 origin;
-        public string prefix = "";
-        public float scale;
-        public bool spear;
-        public Vector2 spearOrigin;
-        public Texture2D spearTexture;
-        public float speedModifier = 1f;
-        public Texture2D texture;
+        private static Dictionary<SWORDTHEME, List<SwordHilt>> HiltsByTheme { get; set; }
+        public static SwordHilt IronBasket { get; set; }
+        public static SwordHilt Lead { get; set; }
+        public static SwordHilt OminousHilt { get; set; }
+        public static SwordHilt PurpleCrossguard { get; set; }
+        public static SwordHilt Stick { get; set; }
+        public static SwordHilt Thorns { get; set; }
+        public static SwordHilt Torch { get; set; }
+        public static SwordHilt VioletCrossguard { get; set; }
+        public static SwordHilt VioletRunicKatana { get; set; }
+        public static SwordHilt Wooden { get; set; }
+        public static SwordHilt WoodenMount { get; set; }
+        public Point AccentOffset { get; set; } 
+        public bool AutoSwing { get; set; }
+        public int CritBonus { get; set; }
+        public float DpsModifier { get; set; }
+        public float KnockBack { get; set; }
+        public int Mana { get; set; }
+        public Vector2 Origin { get; set; }
+        public string Prefix { get; set; }
+        public float Scale { get; set; }
+        public bool Spear { get; set; }
+        public Vector2 SpearOrigin { get; set; }
+        public Texture2D SpearTexture { get; set; }
+        public float SpeedModifier { get; set; } 
+        public Texture2D Texture { get; set; }
 
-        public int type;
+        public int Type { get; set; }
 
-        public SwordHilt(string texture, int origin_x, int origin_y, string prefix, float dpsModifier, float speedModifier, float knockBack = 0f,
-            int critBonus = 0, bool spear = false, bool autoswing = false, int mana = 0, float scale = 0f)
+        public SwordHilt(string texture, int originX, int originY, string prefix, float dpsModifier, float speedModifier, float knockBack = 0f,
+            int critBonus = 0, bool spear = false, bool autoSwing = false, int mana = 0, float scale = 0f)
         {
-            type = hilts.Count + 1;
+            Type = Hilts.Count + 1;
             if (Main.netMode != 2)
-                this.texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Swordhilts/" + texture);
-            origin = new Vector2(origin_x, origin_y);
-            this.dpsModifier = dpsModifier;
-            this.speedModifier = speedModifier;
-            this.knockBack = knockBack;
-            this.critBonus = critBonus;
-            this.autoswing = autoswing;
-            this.prefix = prefix;
-            this.mana = mana;
-            this.spear = spear;
-            accentOffset = Point.Zero;
-            this.scale = scale;
+                this.Texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Swordhilts/" + texture);
+            Origin = new Vector2(originX, originY);
+            this.DpsModifier = dpsModifier;
+            this.SpeedModifier = speedModifier;
+            this.KnockBack = knockBack;
+            this.CritBonus = critBonus;
+            this.AutoSwing = autoSwing;
+            this.Prefix = prefix;
+            this.Mana = mana;
+            this.Spear = spear;
+            AccentOffset = Point.Zero;
+            this.Scale = scale;
 
-            if (!hilts.ContainsKey(type))
-                hilts.Add(type, this);
+            if (!Hilts.ContainsKey(Type))
+                Hilts.Add(Type, this);
         }
 
-        public SwordHilt defineSpear(string texture, int origin_x, int origin_y)
+        public SwordHilt DefineSpear(string texture, int origin_x, int origin_y)
         {
             if (Main.netMode != 2)
-                spearTexture = ModLoader.GetMod("kRPG").GetTexture("GFX/Projectiles/SpearMounts/" + texture);
-            spearOrigin = new Vector2(origin_x, origin_y);
+                SpearTexture = ModLoader.GetMod("kRPG").GetTexture("GFX/Projectiles/SpearMounts/" + texture);
+            SpearOrigin = new Vector2(origin_x, origin_y);
             return this;
         }
 
         public static void Initialize()
         {
-            hilts = new Dictionary<int, SwordHilt>();
-            hiltsByTheme = new Dictionary<SWORDTHEME, List<SwordHilt>>();
+            Hilts = new Dictionary<int, SwordHilt>();
+            HiltsByTheme = new Dictionary<SWORDTHEME, List<SwordHilt>>();
 
-            ceremonial = new SwordHilt("CeremonialHilt", 6, 2, "Ceremonial ", 1f, 1.1f);
-            copperCrossguard = new SwordHilt("CopperCrossHilt", 6, 2, "Crude ", 1.05f, 0.95f, 0f, 0, false, false, 0, 0.1f);
-            goldenKatana = new SwordHilt("GoldenKatanaHilt", 6, 1, "Traditional ", 0.96f, 1.1f, 0f, 5);
-            blackKatana = new SwordHilt("KatanaHilt", 6, 1, "Forged ", 1f, 1.1f, 1.5f, 7, false, true, 1);
-            wooden = new SwordHilt("WoodenHilt", 6, 2, "Training ", 1f, 0.9f, 1f);
-            ironBasket = new SwordHilt("IronBasketHilt", 6, 2, "Folded ", 1.02f, 0.85f, 0.5f, -1);
-            lead = new SwordHilt("LeadHilt", 6, 4, "Blacksmithed ", 0.94f, 1.06f, -0.5f, 5);
-            woodenMount = new SwordHilt("WoodenMount", 21, 2, "Partisan ", 0.9f, 0.8f, 1f, -1, true).defineSpear("WoodenMount", 33, 2);
-            ceremonialMount = new SwordHilt("CeremonialMount", 19, 2, "Mounted ", 0.95f, 1f, 1f, 3, true).defineSpear("CeremonialMount", 35, 2);
-            eyes = new SwordHilt("EyesHilt", 7, 3, "Vile ", 1f, 1f);
-            coe = new SwordHilt("CrownOfEyesHilt", 8, 4, "Corrupted ", 1.04f, 0.9f, 1f, -1);
-            demoniteBat = new SwordHilt("DemoniteBatHilt", 6, 4, "Shadowforged ", 1f, 1.1f, 0.4f, 1);
-            boneMount = new SwordHilt("BoneMount", 20, 2, "Partisan ", 0.8f, 0.9f, 0.5f, 0, true).defineSpear("BoneMount", 29, 2);
-            boneCrest = new SwordHilt("BoneCrest", 9, 2, "Crested ", 1f, 1.1f, 0.4f, 0, false, true);
-            demonEye = new SwordHilt("DemonEyeHilt", 7, 3, "Demonforged ", 1f, 1f, 1f, 3);
-            violetCrossguard = new SwordHilt("VioletRunicCrossHilt", 8, 5, "Runic ", 1f, 1f, 0.3f);
-            purpleCrossguard = new SwordHilt("PurpleRunicCrossHilt", 8, 4, "Arcane ", 1.25f, 1.1f, 1f, 4, false, false, 4);
-            goldenRunicKatana = new SwordHilt("GoldenRunicKatanaHilt", 10, 1, "Runeforged ", 1.1f, 1.1f, 3);
-            violetRunicKatana = new SwordHilt("VioletRunicKatanaHilt", 10, 1, "Glyphic ", 1.05f, 1f, 1f);
-            arcaneMount = new SwordHilt("ArcaneMount", 19, 3, "Mounted ", 0.9f, 1f, 0.4f, 2, true, false, 3).defineSpear("ArcaneMount", 33, 3);
-            stick = new SwordHilt("StickHilt", 6, 0, "Primitive ", 1f, 0.9f, 1f);
-            hellstoneBasket = new SwordHilt("HellstoneBasketHilt", 9, 2, "Brutish ", 1f, 0.9f, 1f, 0, false, false, 0, 0.1f);
-            hellstoneCrossguard = new SwordHilt("HellstoneCrossHilt", 7, 4, "Hellforged ", 1f, 1f, 0.5f, 4, false, false, 0, 0.05f);
-            torch = new SwordHilt("TorchHilt", 9, 4, "Underworldly ", 0.92f, 1.1f, 0, 10);
-            hellstoneMount = new SwordHilt("HellstoneMount", 21, 2, "Mounted ", 0.9f, 1.05f, 2, 0, true).defineSpear("HellstoneMount", 32, 2);
-            bone = new SwordHilt("BoneHilt", 9, 3, "Skeletal ", 1.1f, 0.8f, 0f, 0, false, false, 0, 0.05f);
-            clock = new SwordHilt("ClockHilt", 13, 6, "Clockwork ", 0.96f, 1.1f, 0, 0, false, true).SetAccentOffset(new Point(1, 2));
-            carbon = new SwordHilt("CarbonHilt", 11, 6, "High-tech ", 1.05f, 1f, 1f, 6, false, false, 2);
-            thorns = new SwordHilt("ThornHilt", 6, 7, "Thorny ", 1.1f, 0.8f, 1f);
-            chlorophyteMount = new SwordHilt("ChlorophyteMount", 19, 4, "Mounted ", 0.9f, 0.9f, 1f, 0, true).defineSpear("ChlorophyteMount", 35, 4);
-            ominousHilt = new SwordHilt("OminousHilt", 8, 6, "Ominous ", 1f, 0.9f, 2f, 2, false, true, 2, 0.08f);
+            Ceremonial = new SwordHilt("CeremonialHilt", 6, 2, "Ceremonial ", 1f, 1.1f);
+            CopperCrossguard = new SwordHilt("CopperCrossHilt", 6, 2, "Crude ", 1.05f, 0.95f, 0f, 0, false, false, 0, 0.1f);
+            GoldenKatana = new SwordHilt("GoldenKatanaHilt", 6, 1, "Traditional ", 0.96f, 1.1f, 0f, 5);
+            BlackKatana = new SwordHilt("KatanaHilt", 6, 1, "Forged ", 1f, 1.1f, 1.5f, 7, false, true, 1);
+            Wooden = new SwordHilt("WoodenHilt", 6, 2, "Training ", 1f, 0.9f, 1f);
+            IronBasket = new SwordHilt("IronBasketHilt", 6, 2, "Folded ", 1.02f, 0.85f, 0.5f, -1);
+            Lead = new SwordHilt("LeadHilt", 6, 4, "Blacksmithed ", 0.94f, 1.06f, -0.5f, 5);
+            WoodenMount = new SwordHilt("WoodenMount", 21, 2, "Partisan ", 0.9f, 0.8f, 1f, -1, true).DefineSpear("WoodenMount", 33, 2);
+            CeremonialMount = new SwordHilt("CeremonialMount", 19, 2, "Mounted ", 0.95f, 1f, 1f, 3, true).DefineSpear("CeremonialMount", 35, 2);
+            Eyes = new SwordHilt("EyesHilt", 7, 3, "Vile ", 1f, 1f);
+            Coe = new SwordHilt("CrownOfEyesHilt", 8, 4, "Corrupted ", 1.04f, 0.9f, 1f, -1);
+            DemoniteBat = new SwordHilt("DemoniteBatHilt", 6, 4, "Shadowforged ", 1f, 1.1f, 0.4f, 1);
+            BoneMount = new SwordHilt("BoneMount", 20, 2, "Partisan ", 0.8f, 0.9f, 0.5f, 0, true).DefineSpear("BoneMount", 29, 2);
+            BoneCrest = new SwordHilt("BoneCrest", 9, 2, "Crested ", 1f, 1.1f, 0.4f, 0, false, true);
+            DemonEye = new SwordHilt("DemonEyeHilt", 7, 3, "Demonforged ", 1f, 1f, 1f, 3);
+            VioletCrossguard = new SwordHilt("VioletRunicCrossHilt", 8, 5, "Runic ", 1f, 1f, 0.3f);
+            PurpleCrossguard = new SwordHilt("PurpleRunicCrossHilt", 8, 4, "Arcane ", 1.25f, 1.1f, 1f, 4, false, false, 4);
+            GoldenRunicKatana = new SwordHilt("GoldenRunicKatanaHilt", 10, 1, "Runeforged ", 1.1f, 1.1f, 3);
+            VioletRunicKatana = new SwordHilt("VioletRunicKatanaHilt", 10, 1, "Glyphic ", 1.05f, 1f, 1f);
+            ArcaneMount = new SwordHilt("ArcaneMount", 19, 3, "Mounted ", 0.9f, 1f, 0.4f, 2, true, false, 3).DefineSpear("ArcaneMount", 33, 3);
+            Stick = new SwordHilt("StickHilt", 6, 0, "Primitive ", 1f, 0.9f, 1f);
+            HellstoneBasket = new SwordHilt("HellstoneBasketHilt", 9, 2, "Brutish ", 1f, 0.9f, 1f, 0, false, false, 0, 0.1f);
+            HellstoneCrossguard = new SwordHilt("HellstoneCrossHilt", 7, 4, "Hellforged ", 1f, 1f, 0.5f, 4, false, false, 0, 0.05f);
+            Torch = new SwordHilt("TorchHilt", 9, 4, "Underworldly ", 0.92f, 1.1f, 0, 10);
+            HellstoneMount = new SwordHilt("HellstoneMount", 21, 2, "Mounted ", 0.9f, 1.05f, 2, 0, true).DefineSpear("HellstoneMount", 32, 2);
+            Bone = new SwordHilt("BoneHilt", 9, 3, "Skeletal ", 1.1f, 0.8f, 0f, 0, false, false, 0, 0.05f);
+            Clock = new SwordHilt("ClockHilt", 13, 6, "Clockwork ", 0.96f, 1.1f, 0, 0, false, true).SetAccentOffset(new Point(1, 2));
+            Carbon = new SwordHilt("CarbonHilt", 11, 6, "High-tech ", 1.05f, 1f, 1f, 6, false, false, 2);
+            Thorns = new SwordHilt("ThornHilt", 6, 7, "Thorny ", 1.1f, 0.8f, 1f);
+            ChlorophyteMount = new SwordHilt("ChlorophyteMount", 19, 4, "Mounted ", 0.9f, 0.9f, 1f, 0, true).DefineSpear("ChlorophyteMount", 35, 4);
+            OminousHilt = new SwordHilt("OminousHilt", 8, 6, "Ominous ", 1f, 0.9f, 2f, 2, false, true, 2, 0.08f);
 
-            hiltsByTheme = new Dictionary<SWORDTHEME, List<SwordHilt>>
+            HiltsByTheme = new Dictionary<SWORDTHEME, List<SwordHilt>>
             {
                 {
                     SWORDTHEME.GENERIC, new List<SwordHilt>
                     {
-                        ceremonial,
-                        copperCrossguard,
-                        goldenKatana,
-                        blackKatana,
-                        wooden,
-                        lead,
-                        woodenMount,
-                        ceremonialMount,
-                        demoniteBat,
-                        stick
+                        Ceremonial,
+                        CopperCrossguard,
+                        GoldenKatana,
+                        BlackKatana,
+                        Wooden,
+                        Lead,
+                        WoodenMount,
+                        CeremonialMount,
+                        DemoniteBat,
+                        Stick
                     }
                 },
                 {
                     SWORDTHEME.MONSTROUS, new List<SwordHilt>
                     {
-                        eyes,
-                        coe,
-                        boneMount,
-                        boneCrest,
-                        demonEye
+                        Eyes,
+                        Coe,
+                        BoneMount,
+                        BoneCrest,
+                        DemonEye
                     }
                 },
                 {
                     SWORDTHEME.RUNIC, new List<SwordHilt>
                     {
-                        purpleCrossguard,
-                        violetCrossguard,
-                        goldenRunicKatana,
-                        violetRunicKatana,
-                        arcaneMount
+                        PurpleCrossguard,
+                        VioletCrossguard,
+                        GoldenRunicKatana,
+                        VioletRunicKatana,
+                        ArcaneMount
                     }
                 },
                 {
                     SWORDTHEME.HELLISH, new List<SwordHilt>
                     {
-                        hellstoneBasket,
-                        hellstoneCrossguard,
-                        torch,
-                        hellstoneMount,
-                        bone,
-                        boneMount
+                        HellstoneBasket,
+                        HellstoneCrossguard,
+                        Torch,
+                        HellstoneMount,
+                        Bone,
+                        BoneMount
                     }
                 },
                 {
                     SWORDTHEME.HARDMODE, new List<SwordHilt>
                     {
-                        clock,
-                        carbon,
-                        thorns,
-                        chlorophyteMount,
-                        ominousHilt
+                        Clock,
+                        Carbon,
+                        Thorns,
+                        ChlorophyteMount,
+                        OminousHilt
                     }
                 }
             };
@@ -191,19 +191,19 @@ namespace kRPG.Items.Weapons
 
         public static SwordHilt RandomHilt(SWORDTHEME theme)
         {
-            return hiltsByTheme[theme].Random();
+            return HiltsByTheme[theme].Random();
         }
 
         public SwordHilt SetAccentOffset(Point offset)
         {
-            accentOffset = offset;
+            AccentOffset = offset;
             return this;
         }
 
         public static void Unload()
         {
-            foreach (SwordHilt hilt in hilts.Values)
-                hilt.texture = null;
+            foreach (SwordHilt hilt in Hilts.Values)
+                hilt.Texture = null;
         }
     }
 }

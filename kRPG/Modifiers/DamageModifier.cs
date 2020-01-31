@@ -5,42 +5,43 @@ using Terraria.ModLoader;
 
 namespace kRPG.Modifiers
 {
-    public class DamageModifier : NPCModifier
+    public class DamageModifier : NpcModifier
     {
-        private float damageModifier = 1.2f;
+        private float DmgModifier { get; set; }
 
-        public DamageModifier(kNPC kNPC, NPC npc, float damageModifier = 1.2f) : base(kNPC, npc)
+        public DamageModifier(kNPC kNpc, NPC npc, float dmgModifier = 1.2f) : base(kNpc, npc)
         {
             this.npc = npc;
             npc.GivenName = "Brutal " + npc.GivenName;
-            this.damageModifier = damageModifier;
-            if (Main.netMode != 1) Apply();
+            this.DmgModifier = dmgModifier;
+            if (Main.netMode != 1) 
+                Apply();
         }
 
         public override void Apply()
         {
-            npc.damage = (int) Math.Round(npc.damage * damageModifier);
+            npc.damage = (int) Math.Round(npc.damage * DmgModifier);
             npc.defense = 1;
         }
 
-        public new static NPCModifier New(kNPC kNPC, NPC npc)
+        public new static NpcModifier New(kNPC kNpc, NPC npc)
         {
-            return new DamageModifier(kNPC, npc);
+            return new DamageModifier(kNpc, npc);
         }
 
-        public new static NPCModifier Random(kNPC kNPC, NPC npc)
+        public new static NpcModifier Random(kNPC kNpc, NPC npc)
         {
-            return new DamageModifier(kNPC, npc, 1f + Main.rand.NextFloat(1));
+            return new DamageModifier(kNpc, npc, 1f + Main.rand.NextFloat(1));
         }
 
         public override void Read(BinaryReader reader)
         {
-            damageModifier = reader.ReadSingle();
+            DmgModifier = reader.ReadSingle();
         }
 
         public override void Write(ModPacket packet)
         {
-            packet.Write(damageModifier);
+            packet.Write(DmgModifier);
         }
     }
 }

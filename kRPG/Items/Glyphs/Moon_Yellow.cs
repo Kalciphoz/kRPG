@@ -9,25 +9,25 @@ namespace kRPG.Items.Glyphs
     {
         public override float BaseDamageModifier()
         {
-            return 1f - projCount * 0.05f;
+            return 1f - ProjCount * 0.05f;
         }
 
         public override Action<ProceduralSpellProj> GetAiAction()
         {
             return delegate(ProceduralSpellProj spell)
             {
-                int rotDistance = spell.minion ? 32 : 48;
-                spell.basePosition += spell.baseVelocity;
-                Vector2 unitRelativePos = spell.RelativePos(spell.basePosition);
+                int rotDistance = spell.Minion ? 32 : 48;
+                spell.BasePosition += spell.BaseVelocity;
+                Vector2 unitRelativePos = spell.RelativePos(spell.BasePosition);
                 unitRelativePos.Normalize();
-                spell.projectile.Center = spell.basePosition + unitRelativePos * rotDistance;
-                spell.displacementVelocity =
-                    new Vector2(12f / spell.source.projCount, 0f).RotatedBy(spell.RelativePos(spell.basePosition).ToRotation() + (float) API.Tau / 4f);
+                spell.projectile.Center = spell.BasePosition + unitRelativePos * rotDistance;
+                spell.DisplacementVelocity =
+                    new Vector2(12f / spell.Source.ProjCount, 0f).RotatedBy(spell.RelativePos(spell.BasePosition).ToRotation() + (float) API.Tau / 4f);
 
-                float angle = spell.displacementAngle + 0.24f * (-spell.projectile.timeLeft - rotDistance) / projCount;
-                spell.projectile.Center = spell.basePosition + new Vector2(0f, -rotDistance).RotatedBy(angle);
+                float angle = spell.DisplacementAngle + 0.24f * (-spell.projectile.timeLeft - rotDistance) / ProjCount;
+                spell.projectile.Center = spell.BasePosition + new Vector2(0f, -rotDistance).RotatedBy(angle);
 
-                spell.projectile.velocity = spell.displacementVelocity + spell.baseVelocity;
+                spell.projectile.velocity = spell.DisplacementVelocity + spell.BaseVelocity;
             };
         }
 
@@ -35,17 +35,17 @@ namespace kRPG.Items.Glyphs
         {
             return delegate(ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
             {
-                int rotDistance = spell.minion ? 32 : 48;
-                float spread = GetSpread(spell.projCount);
-                for (int i = 0; i < spell.projCount; i += 1)
+                int rotDistance = spell.Minion ? 32 : 48;
+                float spread = GetSpread(spell.ProjCount);
+                for (int i = 0; i < spell.ProjCount; i += 1)
                 {
                     float angle = i * spread * (float) API.Tau;
                     ProceduralSpellProj proj = spell.CreateProjectile(player, Vector2.Zero, spread * i, origin + new Vector2(0f, -rotDistance).RotatedBy(angle), caster);
-                    proj.basePosition = origin;
+                    proj.BasePosition = origin;
                     Vector2 unitVelocity = target - origin;
                     unitVelocity.Normalize();
-                    proj.baseVelocity = unitVelocity * 8f;
-                    proj.displacementAngle = angle;
+                    proj.BaseVelocity = unitVelocity * 8f;
+                    proj.DisplacementAngle = angle;
                     proj.projectile.penetrate = 3;
                 }
             };
@@ -59,7 +59,7 @@ namespace kRPG.Items.Glyphs
         public override void Randomize()
         {
             base.Randomize();
-            projCount = Main.rand.Next(2, 5);
+            ProjCount = Main.rand.Next(2, 5);
         }
 
         public override void SetStaticDefaults()

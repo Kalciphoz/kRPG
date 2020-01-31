@@ -12,11 +12,11 @@ namespace kRPG.Items.Glyphs
 {
     public class Glyph : ModItem
     {
-        public bool initialized;
+        public bool Initialized { get; set; }
 
-        public List<GlyphModifier> modifiers = new List<GlyphModifier>();
+        public List<GlyphModifier> Modifiers { get; set; }= new List<GlyphModifier>();
 
-        public bool minion => this is Star && !(this is Star_Blue);
+        public bool Minion => this is Star && !(this is Star_Blue);
 
         public virtual float BaseDamageModifier()
         {
@@ -36,11 +36,11 @@ namespace kRPG.Items.Glyphs
         public override ModItem Clone(Item tItem)
         {
             Glyph copy = (Glyph) base.Clone(tItem);
-            copy.modifiers = new List<GlyphModifier>();
-            if (modifiers == null)
+            copy.Modifiers = new List<GlyphModifier>();
+            if (Modifiers == null)
                 return copy;
-            foreach (GlyphModifier modifier in modifiers)
-                copy.modifiers.Add(modifier);
+            foreach (GlyphModifier modifier in Modifiers)
+                copy.Modifiers.Add(modifier);
             return copy;
         }
 
@@ -134,11 +134,11 @@ namespace kRPG.Items.Glyphs
 
         public override void Load(TagCompound tag)
         {
-            modifiers.Clear();
+            Modifiers.Clear();
             int count = tag.GetInt("ModifierCount");
             for (int i = 0; i < count; i += 1)
-                modifiers.Add(GlyphModifier.modifiers[tag.GetInt("Modifier_" + i)]);
-            initialized = true;
+                Modifiers.Add(GlyphModifier.Modifiers[tag.GetInt("Modifier_" + i)]);
+            Initialized = true;
         }
 
         public float ManaModifier()
@@ -148,50 +148,50 @@ namespace kRPG.Items.Glyphs
 
         public float ModifierDamageModifier()
         {
-            return modifiers.Aggregate(1f, (current, modi) => current * modi.dmgModifier);
+            return Modifiers.Aggregate(1f, (current, modi) => current * modi.DamageModifier);
         }
 
         public float ModifierManaModifier()
         {
-            return modifiers.Aggregate(1f, (current, modi) => current * modi.manaModifier);
+            return Modifiers.Aggregate(1f, (current, modi) => current * modi.ManaModifier);
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            for (int i = 0; i < modifiers.Count; i += 1)
-                tooltips.Add(new TooltipLine(mod, "modifier" + i, modifiers[i].tooltip));
+            for (int i = 0; i < Modifiers.Count; i += 1)
+                tooltips.Add(new TooltipLine(mod, "modifier" + i, Modifiers[i].Tooltip));
             tooltips.Add(new TooltipLine(mod, "damage", (int) Math.Round(DamageModifier() * 100) + "% damage"));
             tooltips.Add(new TooltipLine(mod, "mana", (int) Math.Round(ManaModifier() * 100) + "% mana cost"));
         }
 
         public override void NetRecieve(BinaryReader reader)
         {
-            modifiers.Clear();
+            Modifiers.Clear();
             int count = reader.ReadInt32();
             for (int i = 0; i < count; i += 1)
-                modifiers.Add(GlyphModifier.modifiers[reader.ReadInt32()]);
-            initialized = true;
+                Modifiers.Add(GlyphModifier.Modifiers[reader.ReadInt32()]);
+            Initialized = true;
         }
 
         public override void NetSend(BinaryWriter writer)
         {
-            writer.Write(modifiers.Count);
-            for (int i = 0; i < modifiers.Count; i += 1)
-                writer.Write(modifiers[i].id);
+            writer.Write(Modifiers.Count);
+            for (int i = 0; i < Modifiers.Count; i += 1)
+                writer.Write(Modifiers[i].Id);
         }
 
         public virtual void Randomize()
         {
-            initialized = true;
-            foreach (GlyphModifier modifier in GlyphModifier.modifiers.Where(modifier => modifier.match(this) && modifier.odds()))
-                modifiers.Add(modifier.group == null ? modifier : modifier.group());
+            Initialized = true;
+            foreach (GlyphModifier modifier in GlyphModifier.Modifiers.Where(modifier => modifier.Match(this) && modifier.Odds()))
+                Modifiers.Add(modifier.Group == null ? modifier : modifier.Group());
         }
 
         public override TagCompound Save()
         {
-            TagCompound compound = new TagCompound {{"ModifierCount", modifiers.Count}};
-            for (int i = 0; i < modifiers.Count; i += 1)
-                compound.Add("Modifier_" + i, modifiers[i].id);
+            TagCompound compound = new TagCompound {{"ModifierCount", Modifiers.Count}};
+            for (int i = 0; i < Modifiers.Count; i += 1)
+                compound.Add("Modifier_" + i, Modifiers[i].Id);
             return compound;
         }
 
@@ -212,7 +212,7 @@ namespace kRPG.Items.Glyphs
         public override void UpdateInventory(Player player)
         {
             if (Main.netMode == 0) return;
-            if (!initialized) Randomize();
+            if (!Initialized) Randomize();
         }
     }
 }

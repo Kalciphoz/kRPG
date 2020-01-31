@@ -14,48 +14,48 @@ namespace kRPG
     {
         private readonly int animationTime = 5;
 
-        private int counter;
-        private int frameNumber;
-        private readonly STAT id;
-        private readonly LevelGui levelGUI;
-        private Mod mod;
-        private readonly Func<Vector2> position;
-        private readonly Texture2D texture;
+        private int Counter { get; set; }
+        private int FrameNumber { get; set; }
+        private  STAT Id { get; }
+        private  LevelGui LevelGui { get;  }
+        private Mod Mod { get;  }
+        private  Func<Vector2> Position { get;  }
+        private  Texture2D Texture { get;  }
 
-        public StatFlame(Mod mod, LevelGui levelGUI, STAT id, Func<Vector2> position, Texture2D texture)
+        public StatFlame(Mod mod, LevelGui levelGui, STAT id, Func<Vector2> position, Texture2D texture)
         {
-            this.mod = mod;
-            this.levelGUI = levelGUI;
-            this.id = id;
-            this.position = position;
-            this.texture = texture;
-            counter = (int) id * 8;
+            this.Mod = mod;
+            this.LevelGui = levelGui;
+            this.Id = id;
+            this.Position = position;
+            this.Texture = texture;
+            Counter = (int) id * 8;
         }
 
-        private int allocated
+        private int Allocated
         {
-            get => levelGUI.allocated[id];
-            set => levelGUI.allocated[id] = value;
+            get => LevelGui.allocated[Id];
+            set => LevelGui.allocated[Id] = value;
         }
 
         public bool CheckHover()
         {
-            return Main.mouseX >= position().X && Main.mouseY >= position().Y && Main.mouseX <= position().X + texture.Width &&
-                   Main.mouseY <= position().Y + 68;
+            return Main.mouseX >= Position().X && Main.mouseY >= Position().Y && Main.mouseX <= Position().X + Texture.Width &&
+                   Main.mouseY <= Position().Y + 68;
         }
 
         public void Draw(SpriteBatch spriteBatch, Player player, float scale)
         {
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
-            if (counter > 8 * animationTime - 1) counter = 0;
-            frameNumber = (int) Math.Floor(counter / (double) animationTime);
-            spriteBatch.Draw(character.rituals[RITUAL.DEMON_PACT] && id == STAT.RESILIENCE ? GFX.flames_converted : texture, position(),
-                new Rectangle(0, frameNumber * 68, 56, 68), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
-            string text = (allocated + character.baseStats[id]).ToString();
+            if (Counter > 8 * animationTime - 1) Counter = 0;
+            FrameNumber = (int) Math.Floor(Counter / (double) animationTime);
+            spriteBatch.Draw(character.Rituals[RITUAL.DEMON_PACT] && Id == STAT.RESILIENCE ? GFX.FlamesConverted : Texture, Position(),
+                new Rectangle(0, FrameNumber * 68, 56, 68), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            string text = (Allocated + character.BaseStats[Id]).ToString();
             float width = Main.fontItemStack.MeasureString(text).X;
-            spriteBatch.DrawStringWithShadow(Main.fontItemStack, text, position() + new Vector2(28f - width / 2f, 36f) * scale,
-                allocated > 0 ? Color.Lime : Color.White, scale);
-            counter++;
+            spriteBatch.DrawStringWithShadow(Main.fontItemStack, text, Position() + new Vector2(28f - width / 2f, 36f) * scale,
+                Allocated > 0 ? Color.Lime : Color.White, scale);
+            Counter++;
         }
 
         public void Update(SpriteBatch spriteBatch, Player player)
@@ -64,13 +64,13 @@ namespace kRPG
 
             if (!CheckHover())
                 return;
-            switch (id)
+            switch (Id)
             {
                 case STAT.RESILIENCE:
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Resilience", new Vector2(Main.screenWidth / 2f - 96f, Main.screenHeight / 2f + 128f),
                         Color.Red);
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText,
-                        character.rituals[RITUAL.DEMON_PACT]
+                        character.Rituals[RITUAL.DEMON_PACT]
                             ? "Converted into Potency by Demon Pact"
                             : "Increases your defence, life regeneration, and maximum life",
                         new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 152f), Color.White);
@@ -89,24 +89,24 @@ namespace kRPG
                     break;
             }
 
-            if (allocated == 0)
+            if (Allocated == 0)
                 spriteBatch.DrawStringWithShadow(Main.fontMouseText, "<Click to allocate>",
                     new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 176f), Color.White);
             else
-                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "<Allocated " + allocated + ">",
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "<Allocated " + Allocated + ">",
                     new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 176f), Color.White);
 
-            int total = levelGUI.allocated.Keys.Sum(stat => levelGUI.allocated[stat]);
-            if (Main.mouseLeft && Main.mouseLeftRelease && total + character.pointsAllocated < character.level - 1)
+            int total = LevelGui.allocated.Keys.Sum(stat => LevelGui.allocated[stat]);
+            if (Main.mouseLeft && Main.mouseLeftRelease && total + character.PointsAllocated < character.Level - 1)
             {
                 Main.PlaySound(SoundID.MenuTick);
-                allocated += 1;
+                Allocated += 1;
             }
 
-            if (Main.mouseRight && Main.mouseRightRelease && allocated > 0)
+            if (Main.mouseRight && Main.mouseRightRelease && Allocated > 0)
             {
                 Main.PlaySound(SoundID.MenuTick);
-                allocated -= 1;
+                Allocated -= 1;
             }
         }
     }

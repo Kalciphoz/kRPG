@@ -17,8 +17,8 @@ namespace kRPG.Items.Glyphs
         {
             return delegate(ProceduralSpellProj spell)
             {
-                if (spell.projectile.velocity.X < 0 && spell.basePosition == Vector2.Zero) spell.projectile.spriteDirection = -1;
-                Vector2 v = spell.basePosition != Vector2.Zero ? spell.basePosition : spell.origin;
+                if (spell.projectile.velocity.X < 0 && spell.BasePosition == Vector2.Zero) spell.projectile.spriteDirection = -1;
+                Vector2 v = spell.BasePosition != Vector2.Zero ? spell.BasePosition : spell.Origin;
                 spell.projectile.rotation = (spell.projectile.Center - v).ToRotation() - (float) API.Tau / 4f;
             };
         }
@@ -27,14 +27,14 @@ namespace kRPG.Items.Glyphs
         {
             return delegate(ProceduralSpellProj spell)
             {
-                spell.texture = Main.itemTexture[ItemID.WoodenArrow];
-                spell.projectile.width = spell.texture.Width;
-                spell.projectile.height = spell.texture.Height;
+                spell.LocalTexture = Main.itemTexture[ItemID.WoodenArrow];
+                spell.projectile.width = spell.LocalTexture.Width;
+                spell.projectile.height = spell.LocalTexture.Height;
                 spell.projectile.ranged = true;
-                spell.drawTrail = true;
-                spell.alpha = 1f;
-                spell.lighted = true;
-                spell.projectile.scale = spell.minion ? 1f : 1.5f;
+                spell.DrawTrail = true;
+                spell.Alpha = 1f;
+                spell.Lighted = true;
+                spell.projectile.scale = spell.Minion ? 1f : 1.5f;
             };
         }
 

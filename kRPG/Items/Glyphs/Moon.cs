@@ -8,43 +8,43 @@ namespace kRPG.Items.Glyphs
 {
     public class Moon : Glyph
     {
-        public int projCount = 5;
+        public int ProjCount { get; set; }= 5;
 
         public override ModItem Clone(Item tItem)
         {
             Moon copy = (Moon) base.Clone(tItem);
-            copy.projCount = projCount;
+            copy.ProjCount = ProjCount;
             return copy;
         }
 
         public override void Load(TagCompound tag)
         {
             base.Load(tag);
-            projCount = tag.GetInt("projCount");
+            ProjCount = tag.GetInt("projCount");
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             base.ModifyTooltips(tooltips);
-            tooltips.Add(new TooltipLine(mod, "projCount", projCount + " Projectiles"));
+            tooltips.Add(new TooltipLine(mod, "projCount", ProjCount + " Projectiles"));
         }
 
         public override void NetRecieve(BinaryReader reader)
         {
             base.NetRecieve(reader);
-            projCount = reader.ReadInt32();
+            ProjCount = reader.ReadInt32();
         }
 
         public override void NetSend(BinaryWriter writer)
         {
             base.NetSend(writer);
-            writer.Write(projCount);
+            writer.Write(ProjCount);
         }
 
         public override TagCompound Save()
         {
             TagCompound compound = base.Save();
-            compound.Add("projCount", projCount);
+            compound.Add("projCount", ProjCount);
             return compound;
         }
 

@@ -22,161 +22,161 @@ namespace kRPG
 {
     public class PlayerCharacter : ModPlayer
     {
-        public const int defaultMaxUpgradeLevel = 7;
+        public const int DefaultMaxUpgradeLevel = 7;
 
-        public ProceduralSpell[] abilities = new ProceduralSpell[4];
-        public AbilitiesGUI abilitiesGUI;
-        public int accuracy;
+        public ProceduralSpell[] Abilities { get; set; } = new ProceduralSpell[4];
+        public AbilitiesGui AbilitiesGui { get; set; }
+        public int Accuracy { get; set; }
 
-        public float accuracyCounter = 0.5f;
-        public int activeInvPage;
+        public float AccuracyCounter { get; set; } = 0.5f;
+        public int ActiveInvPage { get; set; }
 
-        public Dictionary<ELEMENT, int> ailmentIntensity = new Dictionary<ELEMENT, int>
+        public Dictionary<ELEMENT, int> AilmentIntensity { get; set; } = new Dictionary<ELEMENT, int>
         {
             {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
         };
 
-        public Dictionary<ELEMENT, Type> ailments = new Dictionary<ELEMENT, Type>
+        public Dictionary<ELEMENT, Type> Ailments { get; set; } = new Dictionary<ELEMENT, Type>
         {
             {ELEMENT.FIRE, typeof(Fire)}, {ELEMENT.COLD, typeof(Cold)}, {ELEMENT.LIGHTNING, typeof(Lightning)}, {ELEMENT.SHADOW, typeof(Shadow)}
         };
 
-        public int allres;
-        public AnvilGUI anvilGUI;
+        public int Allres { get; set; }
+        public AnvilGUI AnvilGui { get; set; }
 
-        public Dictionary<STAT, int> baseStats = new Dictionary<STAT, int>();
-        public int bigCritCounter = 50;
-        public int bigHitCounter = 50;
+        public Dictionary<STAT, int> BaseStats { get; set; } = new Dictionary<STAT, int>();
+        public int BigCritCounter { get; set; } = 50;
+        public int BigHitCounter { get; set; } = 50;
 
-        public int bonusLife;
-        public int bonusMana;
-        public bool canHealMana = true;
-        public List<ProceduralSpellProj> circlingProtection = new List<ProceduralSpellProj>();
-        public float critAccuracyCounter = 0.5f;
+        public int BonusLife { get; set; }
+        public int BonusMana { get; set; }
+        public bool CanHealMana { get; set; } = true;
+        public List<ProceduralSpellProj> CirclingProtection { get; set; } = new List<ProceduralSpellProj>();
+        public float CritAccuracyCounter { get; set; } = 0.5f;
 
-        public int critBoost;
-        public int critCounter = 50;
-        public float critMultiplier = 1f;
-        private float degenTimer;
+        public int CritBoost { get; set; }
+        public int CritCounter { get; set; } = 50;
+        public float CritMultiplier { get; set; } = 1f;
+        private float DegenTimer { get; set; }
 
-        public Dictionary<ELEMENT, int> eleres = new Dictionary<ELEMENT, int>
+        public Dictionary<ELEMENT, int> Eleres { get; set; } = new Dictionary<ELEMENT, int>
         {
             {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
         };
 
-        public int evasion = 2;
-        public int evasionCounter = 50;
+        public int Evasion { get; set; } = 2;
+        public int EvasionCounter { get; set; } = 50;
 
-        public Dictionary<ELEMENT, bool> hasAilment = new Dictionary<ELEMENT, bool>
+        public Dictionary<ELEMENT, bool> HasAilment { get; set; } = new Dictionary<ELEMENT, bool>
         {
             {ELEMENT.FIRE, false}, {ELEMENT.COLD, false}, {ELEMENT.LIGHTNING, false}, {ELEMENT.SHADOW, false}
         };
 
-        private bool initialized;
+        private bool Initialized { get; set; }
 
-        public Item[][] inventories = new Item[3][] {new Item[40], new Item[40], new Item[40]};
-        public InventoryGui inventoryGUI;
+        public Item[][] Inventories { get; set; } = new Item[3][] {new Item[40], new Item[40], new Item[40]};
+        public InventoryGui InventoryGui { get; set; }
 
-        public double itemRotation;
-        public Item lastSelectedWeapon;
-        private int leechCooldown;
+        public double ItemRotation { get; set; }
+        public Item LastSelectedWeapon { get; set; }
+        private int LeechCooldown { get; set; }
 
-        public int level = 1;
+        public int Level { get; set; } = 1;
 
-        private int levelAnimation;
-        public LevelGui levelGUI;
-        public float lifeDegen;
+        private int LevelAnimation { get; set; }
+        public LevelGui LevelGui { get; set; }
+        public float LifeDegen { get; set; }
 
-        public float lifeLeech;
+        public float LifeLeech { get; set; }
 
-        public float lifeRegen = 1f;
+        public float LifeRegen { get; set; } = 1f;
 
-        public int mana;
-        public float manaRegen;
-        private float manaRegenTimer;
-        public List<ProceduralMinion> minions = new List<ProceduralMinion>();
-        public int permanence;
-        private float regenTimer;
-        public Dictionary<RITUAL, bool> rituals = new Dictionary<RITUAL, bool>();
-        public ProceduralSpell selectedAbility = null;
-        public SpellCraftingGui spellCraftingGui;
-        public List<SpellEffect> spellEffects = new List<SpellEffect>();
-        public bool statPage = true;
-        public StatusBar statusBar;
-        public Dictionary<STAT, int> tempStats = new Dictionary<STAT, int>();
-        public List<Trail> trails = new List<Trail>();
-        public int transcendence;
-        public int xp;
+        public int Mana { get; set; }
+        public float ManaRegen { get; set; }
+        private float ManaRegenTimer { get; set; }
+        public List<ProceduralMinion> Minions { get; set; } = new List<ProceduralMinion>();
+        public int Permanence { get; set; }
+        private float RegenTimer { get; set; }
+        public Dictionary<RITUAL, bool> Rituals { get; set; } = new Dictionary<RITUAL, bool>();
+        public ProceduralSpell SelectedAbility { get; set; } = null;
+        public SpellcraftingGUI SpellCraftingGui { get; set; }
+        public List<SpellEffect> SpellEffects { get; set; } = new List<SpellEffect>();
+        public bool StatPage { get; set; } = true;
+        public StatusBar StatusBar { get; set; }
+        public Dictionary<STAT, int> TempStats { get; set; } = new Dictionary<STAT, int>();
+        public List<Trail> Trails { get; set; } = new List<Trail>();
+        public int Transcendence { get; set; }
+        public int Experience { get; set; }
 
         public PlayerCharacter()
         {
             foreach (STAT stat in Enum.GetValues(typeof(STAT)))
             {
-                baseStats[stat] = 0;
-                tempStats[stat] = 0;
+                BaseStats[stat] = 0;
+                TempStats[stat] = 0;
             }
 
-            permanence = 0;
-            transcendence = 0;
-            for (int i = 0; i < abilities.Length; i += 1)
+            Permanence = 0;
+            Transcendence = 0;
+            for (int i = 0; i < Abilities.Length; i += 1)
             {
-                abilities[i] = new ProceduralSpell(mod);
-                for (int j = 0; j < abilities[i].glyphs.Length; j += 1)
+                Abilities[i] = new ProceduralSpell(mod);
+                for (int j = 0; j < Abilities[i].Glyphs.Length; j += 1)
                 {
-                    abilities[i].glyphs[j] = new Item();
-                    abilities[i].glyphs[j].SetDefaults(0, true);
+                    Abilities[i].Glyphs[j] = new Item();
+                    Abilities[i].Glyphs[j].SetDefaults(0, true);
                 }
             }
 
-            abilities[0].key = Keys.Z;
-            abilities[1].key = Keys.X;
-            abilities[2].key = Keys.C;
-            abilities[3].key = Keys.V;
+            Abilities[0].Key = Keys.Z;
+            Abilities[1].Key = Keys.X;
+            Abilities[2].Key = Keys.C;
+            Abilities[3].Key = Keys.V;
 
-            inventories = new Item[3][];
-            for (int i = 0; i < inventories.Length; i += 1)
+            Inventories = new Item[3][];
+            for (int i = 0; i < Inventories.Length; i += 1)
             {
-                inventories[i] = new Item[40];
-                for (int j = 0; j < inventories[i].Length; j += 1)
+                Inventories[i] = new Item[40];
+                for (int j = 0; j < Inventories[i].Length; j += 1)
                 {
-                    inventories[i][j] = new Item();
-                    inventories[i][j].SetDefaults(0, true);
+                    Inventories[i][j] = new Item();
+                    Inventories[i][j].SetDefaults(0, true);
                 }
             }
         }
 
-        public float critHitChance
+        public float CritHitChance
         {
             get
             {
-                float diff = 4f + level / 12f;
-                return 1f - diff * (1f - 0.8f) / (accuracy + diff);
+                float diff = 4f + Level / 12f;
+                return 1f - diff * (1f - 0.8f) / (Accuracy + diff);
             }
         }
 
-        public float damageMultiplier => 1f + TotalStats(STAT.POTENCY) * 0.05f + Math.Min(0.09f, TotalStats(STAT.POTENCY) * 0.06f);
+        public float DamageMultiplierPercent => 1f + TotalStats(STAT.POTENCY) * 0.05f + Math.Min(0.09f, TotalStats(STAT.POTENCY) * 0.06f);
 
-        public float hitChance
+        public float HitChance
         {
             get
             {
-                float diff = 7f + level / 40f;
-                return 1f - diff * (1f - 0.85f) / (accuracy + diff);
+                float diff = 7f + Level / 40f;
+                return 1f - diff * (1f - 0.85f) / (Accuracy + diff);
             }
         }
 
-        public int pointsAllocated
+        public int PointsAllocated
         {
-            get { return Enum.GetValues(typeof(STAT)).Cast<STAT>().Sum(stat => baseStats[stat]); }
+            get { return Enum.GetValues(typeof(STAT)).Cast<STAT>().Sum(stat => BaseStats[stat]); }
         }
 
-        public Dictionary<ELEMENT, int> resistance
+        public Dictionary<ELEMENT, int> Resistance
         {
             get
             {
                 Dictionary<ELEMENT, int> dict = new Dictionary<ELEMENT, int>();
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                    dict[element] = eleres[element] + allres;
+                    dict[element] = Eleres[element] + Allres;
                 return dict;
             }
         }
@@ -185,12 +185,12 @@ namespace kRPG
         {
             if (Main.gameMenu) return;
             if (xp == 0) return;
-            this.xp += xp;
+            this.Experience += xp;
 
             Check:
-            if (this.xp >= ExperienceToLevel())
+            if (this.Experience >= ExperienceToLevel())
             {
-                this.xp -= ExperienceToLevel();
+                this.Experience -= ExperienceToLevel();
                 LevelUp();
                 goto Check;
             }
@@ -213,7 +213,7 @@ namespace kRPG
         {
             if (Main.netMode == 2 || Main.myPlayer != player.whoAmI) return;
             if (player.statLife < 1) return;
-            if (hasAilment[ELEMENT.FIRE])
+            if (HasAilment[ELEMENT.FIRE])
             {
                 if (Main.rand.Next(2) == 0)
                 {
@@ -228,7 +228,7 @@ namespace kRPG
                 fullBright = true;
             }
 
-            if (hasAilment[ELEMENT.COLD])
+            if (HasAilment[ELEMENT.COLD])
             {
                 if (Main.rand.Next(2) == 0)
                 {
@@ -240,7 +240,7 @@ namespace kRPG
                 Lighting.AddLight(player.position, 0f, 0.4f, 1f);
             }
 
-            if (hasAilment[ELEMENT.LIGHTNING])
+            if (HasAilment[ELEMENT.LIGHTNING])
             {
                 if (Main.rand.Next(2) == 0)
                 {
@@ -253,7 +253,7 @@ namespace kRPG
                 fullBright = true;
             }
 
-            if (hasAilment[ELEMENT.SHADOW])
+            if (HasAilment[ELEMENT.SHADOW])
                 if (Main.rand.Next(3) < 2)
                 {
                     int dust = Dust.NewDust(player.position - new Vector2(2f, 2f), player.width + 4, player.height + 4, DustID.Shadowflame, player.velocity.X,
@@ -264,12 +264,12 @@ namespace kRPG
             if (Main.netMode == 2) return;
             SpriteBatch spriteBatch = Main.spriteBatch;
 
-            foreach (Trail trail in trails.ToArray())
+            foreach (Trail trail in Trails.ToArray())
                 trail.Draw(spriteBatch, player);
 
-            if (levelAnimation >= 60)
+            if (LevelAnimation >= 60)
                 return;
-            if (levelAnimation < 24)
+            if (LevelAnimation < 24)
             {
                 fullBright = true;
                 Lighting.AddLight(player.position, 0.9f, 0.9f, 0.9f);
@@ -279,20 +279,20 @@ namespace kRPG
                 Lighting.AddLight(player.position, 0.4f, 0.4f, 0.4f);
             }
 
-            spriteBatch.Draw(GFX.levelUp, player.Bottom - new Vector2(48, 108) - Main.screenPosition, new Rectangle(0, levelAnimation / 3 * 96, 96, 96),
+            spriteBatch.Draw(GFX.LevelUp, player.Bottom - new Vector2(48, 108) - Main.screenPosition, new Rectangle(0, LevelAnimation / 3 * 96, 96, 96),
                 Color.White);
-            levelAnimation += 1;
+            LevelAnimation += 1;
         }
 
         public int ExperienceToLevel()
         {
-            if (level < 5)
-                return 80 + level * 20;
-            if (level < 10)
-                return level * 40;
-            if (level < 163)
-                return (int) (280 * Math.Pow(1.09, level - 5) + 3 * level);
-            return (int) (2000000000 - 288500000000 / level);
+            if (Level < 5)
+                return 80 + Level * 20;
+            if (Level < 10)
+                return Level * 40;
+            if (Level < 163)
+                return (int) (280 * Math.Pow(1.09, Level - 5) + 3 * Level);
+            return (int) (2000000000 - 288500000000 / Level);
         }
 
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
@@ -300,52 +300,52 @@ namespace kRPG
             foreach (Projectile projectile in Main.projectile)
                 if (projectile.modProjectile is ProceduralSpear || projectile.modProjectile is ProceduralMinion)
                     projectile.Kill();
-            foreach (ProceduralSpellProj spell in circlingProtection)
+            foreach (ProceduralSpellProj spell in CirclingProtection)
                 spell.projectile.Kill();
-            circlingProtection.Clear();
+            CirclingProtection.Clear();
         }
 
         private void LeechLife(Item item, int damage)
         {
-            if (leechCooldown != 0)
+            if (LeechCooldown != 0)
                 return;
-            int leechAmount = Math.Min((int) (damage * lifeLeech), (int) (player.inventory[player.selectedItem].damage / 2 * (1 + lifeLeech)));
-            leechAmount = Math.Min(leechAmount, (int) (player.statLifeMax2 * lifeLeech * 0.2));
+            int leechAmount = Math.Min((int) (damage * LifeLeech), (int) (player.inventory[player.selectedItem].damage / 2 * (1 + LifeLeech)));
+            leechAmount = Math.Min(leechAmount, (int) (player.statLifeMax2 * LifeLeech * 0.2));
             if (leechAmount > 1)
             {
                 player.statLife += leechAmount;
                 player.HealEffect(leechAmount);
-                leechCooldown = item.useAnimation * 3;
+                LeechCooldown = item.useAnimation * 3;
             }
 
-            else if (lifeLeech > 0f)
+            else if (LifeLeech > 0f)
             {
                 player.statLife += 1;
                 player.HealEffect(1);
-                leechCooldown = (int) (item.useAnimation * (3 - Math.Min(1.4f, lifeLeech * 10f)));
+                LeechCooldown = (int) (item.useAnimation * (3 - Math.Min(1.4f, LifeLeech * 10f)));
             }
         }
 
         public void LevelUp()
         {
-            level += 1;
-            if (!Main.gameMenu) GFX.sfxLevelUp.Play(0.5f * Main.soundVolume, 0f, 0f);
+            Level += 1;
+            if (!Main.gameMenu) GFX.SfxLevelUp.Play(0.5f * Main.soundVolume, 0f, 0f);
             if (Main.netMode == 1)
             {
                 ModPacket packet = mod.GetPacket();
                 packet.Write((byte) Message.SyncLevel);
                 packet.Write(player.whoAmI);
-                packet.Write(level);
+                packet.Write(Level);
                 packet.Send();
             }
 
-            levelAnimation = 0;
-            Main.NewText("Congratulations! You are now level " + level, 255, 223, 63);
+            LevelAnimation = 0;
+            Main.NewText("Congratulations! You are now level " + Level, 255, 223, 63);
         }
 
         private void ModifyDamage(ref int damage, ref bool crit, NPC target, Item item = null, Projectile proj = null)
         {
-            if (rituals[RITUAL.WARRIOR_OATH])
+            if (Rituals[RITUAL.WARRIOR_OATH])
             {
                 crit = false;
                 float damageBoost = 1f + TotalStats(STAT.RESILIENCE) * 0.04f;
@@ -368,31 +368,31 @@ namespace kRPG
                 eleDmg = kp.GetIndividualElements(proj, player);
             }
 
-            if (hasAilment[ELEMENT.SHADOW])
-                damage = Math.Min(damage * 2 / 5, damage - ailmentIntensity[ELEMENT.SHADOW]);
+            if (HasAilment[ELEMENT.SHADOW])
+                damage = Math.Min(damage * 2 / 5, damage - AilmentIntensity[ELEMENT.SHADOW]);
             //    damage = damage * (20 + 9360 / (130 + ailmentIntensity[ELEMENT.SHADOW])) / 100;
 
             kNPC victim = target.GetGlobalNPC<kNPC>();
 
             if (!crit && Main.netMode == 0)
-                crit = Main.rand.Next(500) < 50 + victim.ailmentIntensity[ELEMENT.COLD];
+                crit = Main.rand.Next(500) < 50 + victim.AilmentIntensity[ELEMENT.COLD];
 
             if (crit)
             {
-                damage = (int) (damage / damageMultiplier * (damageMultiplier + critMultiplier));
-                if (rituals[RITUAL.ELDRITCH_FURY])
+                damage = (int) (damage / DamageMultiplierPercent * (DamageMultiplierPercent + CritMultiplier));
+                if (Rituals[RITUAL.ELDRITCH_FURY])
                 {
                     int i = damage;
                     int c = target.boss ? 7 : 2;
-                    damage += Math.Min(mana * c, i);
-                    mana = Math.Max(0, mana - i / c);
+                    damage += Math.Min(Mana * c, i);
+                    Mana = Math.Max(0, Mana - i / c);
                 }
             }
 
             if (item == null && proj == null) return;
 
-            if (victim.hasAilment[ELEMENT.LIGHTNING])
-                damage += 1 + victim.ailmentIntensity[ELEMENT.LIGHTNING];
+            if (victim.HasAilment[ELEMENT.LIGHTNING])
+                damage += 1 + victim.AilmentIntensity[ELEMENT.LIGHTNING];
 
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
             {
@@ -400,19 +400,19 @@ namespace kRPG
                     continue;
                 if (eleDmg[element] <= 0)
                     continue;
-                Type t = ailments[element];
+                Type t = Ailments[element];
                 ModBuff buff;
-                if (ailments[element] == typeof(Fire))
+                if (Ailments[element] == typeof(Fire))
                     buff = ModContent.GetInstance<Fire>();
-                else if (ailments[element] == typeof(Cold))
+                else if (Ailments[element] == typeof(Cold))
                     buff = ModContent.GetInstance<Cold>();
-                else if (ailments[element] == typeof(Lightning))
+                else if (Ailments[element] == typeof(Lightning))
                     buff = ModContent.GetInstance<Lightning>();
                 else
                     buff = ModContent.GetInstance<Shadow>();
                 target.AddBuff(buff.Type, target.boss ? 30 + Math.Min(eleDmg[element], 30) * 3 : 120 + Math.Min(eleDmg[element], 15) * 12);
-                victim.ailmentIntensity[element] = target.boss ? eleDmg[element] / 2 : eleDmg[element];
-                victim.hasAilment[element] = true;
+                victim.AilmentIntensity[element] = target.boss ? eleDmg[element] / 2 : eleDmg[element];
+                victim.HasAilment[element] = true;
             }
         }
 
@@ -438,39 +438,39 @@ namespace kRPG
                     if (n.boss)
                         bossfight = true;
             int elecount = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => eleDmg[element] > 0);
-            if (elecount > 0) damage = (int) Math.Round(damage * (kNPC.ELE_DMG_MODIFIER + 1) / 2);
+            if (elecount > 0) damage = (int) Math.Round(damage * (kNPC.EleDmgModifier + 1) / 2);
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
             {
-                damage -= Math.Min(resistance[element], eleDmg[element] * 3 / 5);
-                if (Main.rand.Next(player.statLifeMax2 + resistance[element] * 20) >= 15 + eleDmg[element] * (bossfight ? 2 : 8) || Main.netMode == 2)
+                damage -= Math.Min(Resistance[element], eleDmg[element] * 3 / 5);
+                if (Main.rand.Next(player.statLifeMax2 + Resistance[element] * 20) >= 15 + eleDmg[element] * (bossfight ? 2 : 8) || Main.netMode == 2)
                     continue;
                 if (eleDmg[element] <= 0)
                     continue;
-                Type t = ailments[element];
+                Type t = Ailments[element];
                 ModBuff buff;
-                if (ailments[element] == typeof(Fire))
+                if (Ailments[element] == typeof(Fire))
                     buff = ModContent.GetInstance<Fire>();
-                else if (ailments[element] == typeof(Cold))
+                else if (Ailments[element] == typeof(Cold))
                     buff = ModContent.GetInstance<Cold>();
-                else if (ailments[element] == typeof(Lightning))
+                else if (Ailments[element] == typeof(Lightning))
                     buff = ModContent.GetInstance<Lightning>();
                 else
                     buff = ModContent.GetInstance<Shadow>();
                 player.AddBuff(buff.Type, bossfight ? 90 : 210);
                 int intensity = eleDmg[element] * 3 / 2;
-                ailmentIntensity[element] = Main.expertMode ? intensity * 2 / 3 : intensity;
-                hasAilment[element] = true;
+                AilmentIntensity[element] = Main.expertMode ? intensity * 2 / 3 : intensity;
+                HasAilment[element] = true;
             }
 
             if (Main.rand.Next(player.statLifeMax2 + player.statDefense) < damage * 3)
                 player.AddBuff(ModContent.BuffType<Physical>(), 15 + Math.Min(30, damage * 30 / player.statLifeMax2));
-            if (hasAilment[ELEMENT.LIGHTNING])
-                damage += 1 + ailmentIntensity[ELEMENT.LIGHTNING];
+            if (HasAilment[ELEMENT.LIGHTNING])
+                damage += 1 + AilmentIntensity[ELEMENT.LIGHTNING];
         }
 
         public override void ModifyDrawLayers(List<PlayerLayer> layers)
         {
-            if (kRPG.overhaul != null)
+            if (kRPG.Overhaul != null)
                 return;
             for (int i = 0; i < layers.Count; i += 1)
                 if (layers[i].Name.Contains("Held"))
@@ -494,7 +494,7 @@ namespace kRPG
 
                             ProceduralSword sword = (ProceduralSword) player.HeldItem.modItem;
 
-                            if (sword.spear) return;
+                            if (sword.Spear) return;
 
                             Vector2 pos = player.Center - Main.screenPosition;
                             sword.DrawHeld(drawinfo, Lighting.GetColor((int) (player.Center.X / 16f), (int) (player.Center.Y / 16f)),
@@ -507,7 +507,7 @@ namespace kRPG
         {
             Dictionary<ELEMENT, int> dict = new Dictionary<ELEMENT, int>();
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                dict[element] = npc.GetGlobalNPC<kNPC>().elementalDamage[element];
+                dict[element] = npc.GetGlobalNPC<kNPC>().ElementalDamage[element];
             ModifyDamageTakenFromNPC(ref damage, ref crit, dict);
         }
 
@@ -548,23 +548,23 @@ namespace kRPG
                 if (proj.type == item.shoot)
                     proceed = true;
                 else if (proj.type == ModContent.ProjectileType<ProceduralSpellProj>())
-                    proceed = ((ProceduralSpellProj) proj.modProjectile).source == null;
+                    proceed = ((ProceduralSpellProj) proj.modProjectile).Source == null;
                 if (proceed)
-                    staff.ornament?.onHit?.Invoke(player, target, item, damage, crit);
+                    staff.Ornament?.OnHit?.Invoke(player, target, item, damage, crit);
             }
             else if (proj.type == ModContent.ProjectileType<ProceduralSpear>() && item.type == ModContent.ItemType<ProceduralSword>())
             {
                 ProceduralSword spear = (ProceduralSword) item.modItem;
-                spear.accent?.onHit?.Invoke(player, target, spear, damage, crit);
+                spear.Accent?.OnHit?.Invoke(player, target, spear, damage, crit);
             }
         }
 
         public void OpenInventoryPage(int page)
         {
             for (int i = 0; i < 40; i += 1)
-                player.inventory[i + 10] = inventories[page][i];
-            activeInvPage = page;
-            statPage = false;
+                player.inventory[i + 10] = Inventories[page][i];
+            ActiveInvPage = page;
+            StatPage = false;
             API.FindRecipes();
             for (int i = 0; i < 50; i += 1)
                 if (player.inventory[i].type == 71 || player.inventory[i].type == 72 || player.inventory[i].type == 73 || player.inventory[i].type == 74)
@@ -576,7 +576,7 @@ namespace kRPG
             ModPacket packet = mod.GetPacket();
             packet.Write((byte) Message.SyncLevel);
             packet.Write(player.whoAmI);
-            packet.Write(level);
+            packet.Write(Level);
             packet.Send();
         }
 
@@ -612,14 +612,14 @@ namespace kRPG
                 {
                     Vector2 pos = player.RotatedRelativePoint(player.MountedCenter);
                     Vector2 relativeMousePos = Main.MouseWorld - pos;
-                    itemRotation = Math.Atan2(relativeMousePos.Y * player.direction, relativeMousePos.X * player.direction) - player.fullRotation;
+                    ItemRotation = Math.Atan2(relativeMousePos.Y * player.direction, relativeMousePos.X * player.direction) - player.fullRotation;
                     NetMessage.SendData(13, -1, -1, null, player.whoAmI);
                     NetMessage.SendData(41, -1, -1, null, player.whoAmI);
                 }
 
                 float scaleFactor = 6f;
                 if (player.itemAnimation > 0)
-                    player.itemRotation = (float) itemRotation;
+                    player.itemRotation = (float) ItemRotation;
                 player.itemLocation = player.MountedCenter;
                 player.itemLocation += player.itemRotation.ToRotationVector2() * scaleFactor * player.direction;
             }
@@ -640,7 +640,7 @@ namespace kRPG
 
             Item item = player.inventory[player.selectedItem];
             if (item.damage > 0 && (item.melee || !item.noMelee || item.modItem is ProceduralSword))
-                lastSelectedWeapon = item;
+                LastSelectedWeapon = item;
 
             switch (item.modItem)
             {
@@ -666,57 +666,57 @@ namespace kRPG
 
         public override void PostUpdateEquips()
         {
-            if (!initialized)
+            if (!Initialized)
             {
                 InitializeGui();
-                initialized = true;
+                Initialized = true;
             }
 
             UpdateStats();
-            if (lifeRegen > 0 && !player.bleed && !player.onFire && !player.poisoned && !player.onFire2 && !player.venom && !player.onFrostBurn)
-                regenTimer += 1f;
-            if (regenTimer > 60f / lifeRegen)
+            if (LifeRegen > 0 && !player.bleed && !player.onFire && !player.poisoned && !player.onFire2 && !player.venom && !player.onFrostBurn)
+                RegenTimer += 1f;
+            if (RegenTimer > 60f / LifeRegen)
             {
-                player.statLife = Math.Min(player.statLife + (int) (regenTimer / (60f / lifeRegen)), player.statLifeMax2);
-                regenTimer = regenTimer % (60f / lifeRegen);
+                player.statLife = Math.Min(player.statLife + (int) (RegenTimer / (60f / LifeRegen)), player.statLifeMax2);
+                RegenTimer = RegenTimer % (60f / LifeRegen);
             }
 
-            if (lifeDegen > 0) degenTimer += 1f;
-            if (degenTimer >= 20f && hasAilment[ELEMENT.FIRE])
+            if (LifeDegen > 0) DegenTimer += 1f;
+            if (DegenTimer >= 20f && HasAilment[ELEMENT.FIRE])
             {
-                int amount = (int) Math.Round(lifeDegen / 3, 1);
+                int amount = (int) Math.Round(LifeDegen / 3, 1);
                 player.statLife = player.statLife - amount;
                 CombatText.NewText(new Rectangle((int) player.position.X, (int) player.position.Y, player.width, player.height), new Color(255, 95, 31),
                     amount);
-                degenTimer = 0;
+                DegenTimer = 0;
                 if (player.statLife <= 0) player.KillMe(PlayerDeathReason.ByCustomReason(player.name + " burned to death."), amount, 0);
             }
 
-            manaRegenTimer += 1f;
+            ManaRegenTimer += 1f;
 
             if (Main.chatRelease && !Main.drawingPlayerChat && !Main.editSign && !Main.editChest && Main.netMode != 2)
-                for (int i = 0; i < abilities.Length; i += 1)
-                    if (abilities[i].CompleteSkill())
+                for (int i = 0; i < Abilities.Length; i += 1)
+                    if (Abilities[i].CompleteSkill())
                     {
                         bool useable = true;
-                        foreach (Item item in abilities[i].glyphs)
+                        foreach (Item item in Abilities[i].Glyphs)
                         {
                             Glyph glyph = (Glyph) item.modItem;
                             if (!glyph.CanUse()) useable = false;
                         }
 
-                        if (!Main.keyState.IsKeyDown(abilities[i].key) || !Main.keyState.IsKeyUp(Keys.LeftShift) || abilities[i].remaining != 0 || !useable ||
-                            player.statMana < abilities[i].ManaCost(this))
+                        if (!Main.keyState.IsKeyDown(Abilities[i].Key) || !Main.keyState.IsKeyUp(Keys.LeftShift) || Abilities[i].Remaining != 0 || !useable ||
+                            player.statMana < Abilities[i].ManaCost(this))
                             continue;
                         if (Main.netMode != 2)
-                            abilities[i].UseAbility(player, Main.MouseWorld);
-                        player.statMana -= abilities[i].ManaCost(this);
+                            Abilities[i].UseAbility(player, Main.MouseWorld);
+                        player.statMana -= Abilities[i].ManaCost(this);
                     }
 
-            for (int i = 0; i < spellEffects.Count; i += 1)
-                spellEffects[i].Update(this);
+            for (int i = 0; i < SpellEffects.Count; i += 1)
+                SpellEffects[i].Update(this);
 
-            if (Main.mapStyle == 0 && kConfig.configLocal.clientside.arpgMinimap) Main.mapStyle += 1;
+            if (Main.mapStyle == 0 && kConfig.ConfigLocal.ClientSide.ArpgMiniMap) Main.mapStyle += 1;
         }
 
         public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit, ref bool customDamage, ref bool playSound,
@@ -726,19 +726,19 @@ namespace kRPG
             int max = 80;
             int diff = 52;
 
-            if (TotalStats(STAT.QUICKNESS) > 0 && !rituals[RITUAL.STONE_ASPECT])
+            if (TotalStats(STAT.QUICKNESS) > 0 && !Rituals[RITUAL.STONE_ASPECT])
             {
-                if (damage < (level + 10) * 5)
+                if (damage < (Level + 10) * 5)
                 {
-                    evasionCounter += 100 - max + max * diff / (diff + evasion);
-                    if (evasionCounter >= 100)
+                    EvasionCounter += 100 - max + max * diff / (diff + Evasion);
+                    if (EvasionCounter >= 100)
                     {
-                        evasionCounter -= 100;
+                        EvasionCounter -= 100;
                         if (enemyCrit)
                         {
-                            critCounter += 100 - max + max * diff / (diff + evasion);
-                            if (critCounter >= 100)
-                                critCounter -= 100;
+                            CritCounter += 100 - max + max * diff / (diff + Evasion);
+                            if (CritCounter >= 100)
+                                CritCounter -= 100;
                             else
                                 enemyCrit = false;
 
@@ -756,15 +756,15 @@ namespace kRPG
                 {
                     max = 90;
                     diff = 38;
-                    bigHitCounter += 100 - max + max * diff / (diff + evasion);
-                    if (bigHitCounter >= 100)
+                    BigHitCounter += 100 - max + max * diff / (diff + Evasion);
+                    if (BigHitCounter >= 100)
                     {
-                        bigHitCounter -= 100;
+                        BigHitCounter -= 100;
                         if (enemyCrit)
                         {
-                            bigCritCounter += 100 - max + max * diff / (diff + evasion + TotalStats(STAT.WITS) * 5);
-                            if (bigCritCounter >= 100)
-                                bigCritCounter -= 100;
+                            BigCritCounter += 100 - max + max * diff / (diff + Evasion + TotalStats(STAT.WITS) * 5);
+                            if (BigCritCounter >= 100)
+                                BigCritCounter -= 100;
                             else
                                 enemyCrit = false;
 
@@ -780,18 +780,18 @@ namespace kRPG
                 }
             }
 
-            if (rituals[RITUAL.MIND_FORTRESS])
+            if (Rituals[RITUAL.MIND_FORTRESS])
             {
                 int i = (int) Math.Round(damage * 0.25);
-                if (mana > i)
+                if (Mana > i)
                 {
                     damage -= i;
-                    mana -= i;
+                    Mana -= i;
                 }
                 else
                 {
-                    damage -= mana;
-                    mana = 0;
+                    damage -= Mana;
+                    Mana = 0;
                 }
             }
 
@@ -854,28 +854,28 @@ namespace kRPG
         public override void ResetEffects()
         {
             foreach (STAT stat in Enum.GetValues(typeof(STAT)))
-                tempStats[stat] = 0;
-            evasion = 2;
-            accuracy = 0;
-            bonusLife = 0;
-            bonusMana = 0;
-            lifeRegen = 1;
-            lifeDegen = 0;
-            manaRegen = 0;
-            canHealMana = true;
+                TempStats[stat] = 0;
+            Evasion = 2;
+            Accuracy = 0;
+            BonusLife = 0;
+            BonusMana = 0;
+            LifeRegen = 1;
+            LifeDegen = 0;
+            ManaRegen = 0;
+            CanHealMana = true;
 
-            critBoost = 0;
-            critMultiplier = 0f;
-            lifeLeech = 0f;
-            allres = 0;
+            CritBoost = 0;
+            CritMultiplier = 0f;
+            LifeLeech = 0f;
+            Allres = 0;
 
-            if (leechCooldown > 0) leechCooldown--;
+            if (LeechCooldown > 0) LeechCooldown--;
 
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
             {
-                eleres[element] = 0;
-                if (!hasAilment[element]) ailmentIntensity[element] = 0;
-                hasAilment[element] = false;
+                Eleres[element] = 0;
+                if (!HasAilment[element]) AilmentIntensity[element] = 0;
+                HasAilment[element] = false;
             }
 
             if (Main.netMode != 1 || (int) Main.time % 300 != 0)
@@ -883,11 +883,11 @@ namespace kRPG
             ModPacket packet = mod.GetPacket();
             packet.Write((byte) Message.SyncStats);
             packet.Write(player.whoAmI);
-            packet.Write(level);
-            packet.Write(baseStats[STAT.RESILIENCE]);
-            packet.Write(baseStats[STAT.QUICKNESS]);
-            packet.Write(baseStats[STAT.POTENCY]);
-            packet.Write(baseStats[STAT.WITS]);
+            packet.Write(Level);
+            packet.Write(BaseStats[STAT.RESILIENCE]);
+            packet.Write(BaseStats[STAT.QUICKNESS]);
+            packet.Write(BaseStats[STAT.POTENCY]);
+            packet.Write(BaseStats[STAT.WITS]);
             packet.Send();
         }
 
@@ -984,154 +984,154 @@ namespace kRPG
 
         public int TotalStats(STAT stat)
         {
-            if (rituals[RITUAL.DEMON_PACT] && stat == STAT.POTENCY)
-                return baseStats[stat] + tempStats[stat] + baseStats[STAT.RESILIENCE];
+            if (Rituals[RITUAL.DEMON_PACT] && stat == STAT.POTENCY)
+                return BaseStats[stat] + TempStats[stat] + BaseStats[STAT.RESILIENCE];
 
-            if (rituals[RITUAL.DEMON_PACT] && stat == STAT.RESILIENCE)
-                return tempStats[stat];
+            if (Rituals[RITUAL.DEMON_PACT] && stat == STAT.RESILIENCE)
+                return TempStats[stat];
 
-            return baseStats[stat] + tempStats[stat];
+            return BaseStats[stat] + TempStats[stat];
         }
 
         public bool UnspentPoints()
         {
-            return pointsAllocated < level - 1;
+            return PointsAllocated < Level - 1;
         }
 
         public void UpdateStats()
         {
             float lifeMultiplier = 1f + (player.statLifeMax - 100f) / 400f;
             int addedLife = player.statLifeMax2 - player.statLifeMax;
-            player.statLifeMax2 += 115 + TotalStats(STAT.RESILIENCE) * 10 + level * 5 + bonusLife - player.statLifeMax;
+            player.statLifeMax2 += 115 + TotalStats(STAT.RESILIENCE) * 10 + Level * 5 + BonusLife - player.statLifeMax;
             player.statLifeMax2 = (int) Math.Round(player.statLifeMax2 * lifeMultiplier) + addedLife;
             float manaMultiplier = 1f + (player.statManaMax - 20f) / 200f * 1.5f;
             int addedMana = player.statManaMax2 - player.statManaMax;
-            player.statManaMax2 += 19 + level + bonusMana + TotalStats(STAT.WITS) * 3 - player.statManaMax;
+            player.statManaMax2 += 19 + Level + BonusMana + TotalStats(STAT.WITS) * 3 - player.statManaMax;
             player.statManaMax2 = (int) Math.Round(player.statManaMax2 * manaMultiplier) + addedMana;
             player.statDefense += TotalStats(STAT.RESILIENCE);
-            allres += TotalStats(STAT.WITS);
-            evasion += TotalStats(STAT.QUICKNESS);
-            accuracy += TotalStats(STAT.WITS);
-            if (rituals[RITUAL.STONE_ASPECT]) player.statDefense += TotalStats(STAT.QUICKNESS);
-            lifeRegen += TotalStats(STAT.RESILIENCE) * 0.3f + TotalStats(STAT.WITS) * 0.2f;
-            if (hasAilment[ELEMENT.FIRE])
-                lifeDegen = ailmentIntensity[ELEMENT.FIRE] / 2;
-            manaRegen = player.statManaMax2 * 0.06f + TotalStats(STAT.WITS) * 0.6f;
+            Allres += TotalStats(STAT.WITS);
+            Evasion += TotalStats(STAT.QUICKNESS);
+            Accuracy += TotalStats(STAT.WITS);
+            if (Rituals[RITUAL.STONE_ASPECT]) player.statDefense += TotalStats(STAT.QUICKNESS);
+            LifeRegen += TotalStats(STAT.RESILIENCE) * 0.3f + TotalStats(STAT.WITS) * 0.2f;
+            if (HasAilment[ELEMENT.FIRE])
+                LifeDegen = AilmentIntensity[ELEMENT.FIRE] / 2;
+            ManaRegen = player.statManaMax2 * 0.06f + TotalStats(STAT.WITS) * 0.6f;
 
             if (Main.netMode != 2 && Main.myPlayer == player.whoAmI)
             {
-                if (mana < 0) mana = 0;
+                if (Mana < 0) Mana = 0;
                 if (player.statMana < 0) player.statMana = 0;
-                if (player.statMana < mana)
-                    mana = player.statMana;
-                if (rituals[RITUAL.ELAN_VITAL] && mana < player.statManaMax2)
+                if (player.statMana < Mana)
+                    Mana = player.statMana;
+                if (Rituals[RITUAL.ELAN_VITAL] && Mana < player.statManaMax2)
                 {
-                    if (player.statLife > player.statLifeMax2 * 0.4 + player.statManaMax2 - mana)
+                    if (player.statLife > player.statLifeMax2 * 0.4 + player.statManaMax2 - Mana)
                     {
-                        player.statLife -= player.statManaMax2 - mana;
-                        mana = player.statManaMax2;
+                        player.statLife -= player.statManaMax2 - Mana;
+                        Mana = player.statManaMax2;
                     }
                     else if (player.statLife > player.statLifeMax2 * 0.4)
                     {
-                        mana += (int) (player.statLife - player.statLifeMax2 * 0.4);
+                        Mana += (int) (player.statLife - player.statLifeMax2 * 0.4);
                         player.statLife = (int) (player.statLifeMax2 * 0.4);
                     }
                 }
 
-                if (player.statMana == player.statManaMax2 && mana == player.statMana - 1)
-                    mana = player.statMana;
-                else player.statMana = mana;
-                if (manaRegenTimer > 60f / manaRegen)
+                if (player.statMana == player.statManaMax2 && Mana == player.statMana - 1)
+                    Mana = player.statMana;
+                else player.statMana = Mana;
+                if (ManaRegenTimer > 60f / ManaRegen)
                 {
-                    mana = Math.Min(mana + (int) (manaRegenTimer / (60f / manaRegen)), player.statManaMax2);
-                    manaRegenTimer = manaRegenTimer % (60f / manaRegen);
+                    Mana = Math.Min(Mana + (int) (ManaRegenTimer / (60f / ManaRegen)), player.statManaMax2);
+                    ManaRegenTimer = ManaRegenTimer % (60f / ManaRegen);
                 }
 
-                player.statMana = mana;
+                player.statMana = Mana;
             }
 
-            critMultiplier += TotalStats(STAT.POTENCY) * 0.04f;
-            lifeLeech += TotalStats(STAT.POTENCY) * 0.002f;
-            lifeLeech += Math.Min(0.006f, TotalStats(STAT.POTENCY) * 0.002f);
+            CritMultiplier += TotalStats(STAT.POTENCY) * 0.04f;
+            LifeLeech += TotalStats(STAT.POTENCY) * 0.002f;
+            LifeLeech += Math.Min(0.006f, TotalStats(STAT.POTENCY) * 0.002f);
 
-            player.meleeDamage *= damageMultiplier;
-            player.rangedDamage *= damageMultiplier;
-            player.magicDamage *= damageMultiplier;
-            player.minionDamage *= damageMultiplier;
-            player.thrownDamage *= damageMultiplier;
+            player.meleeDamage *= DamageMultiplierPercent;
+            player.rangedDamage *= DamageMultiplierPercent;
+            player.magicDamage *= DamageMultiplierPercent;
+            player.minionDamage *= DamageMultiplierPercent;
+            player.thrownDamage *= DamageMultiplierPercent;
 
-            player.moveSpeed *= 1f + Math.Min(1.2f, TotalStats(STAT.QUICKNESS) * 0.02f + Math.Min(level * 0.005f, 0.5f));
+            player.moveSpeed *= 1f + Math.Min(1.2f, TotalStats(STAT.QUICKNESS) * 0.02f + Math.Min(Level * 0.005f, 0.5f));
             player.meleeSpeed *= 1f + TotalStats(STAT.QUICKNESS) * 0.01f;
-            player.jumpSpeedBoost += Math.Min(5f, TotalStats(STAT.QUICKNESS) * 0.2f + Math.Min(level * 0.05f, 2f));
+            player.jumpSpeedBoost += Math.Min(5f, TotalStats(STAT.QUICKNESS) * 0.2f + Math.Min(Level * 0.05f, 2f));
 
-            critBoost += Math.Min(TotalStats(STAT.QUICKNESS), Math.Max(4, TotalStats(STAT.QUICKNESS) / 2 + 2));
-            player.magicCrit += critBoost;
-            player.meleeCrit += critBoost;
-            player.rangedCrit += critBoost;
-            player.thrownCrit += critBoost;
+            CritBoost += Math.Min(TotalStats(STAT.QUICKNESS), Math.Max(4, TotalStats(STAT.QUICKNESS) / 2 + 2));
+            player.magicCrit += CritBoost;
+            player.meleeCrit += CritBoost;
+            player.rangedCrit += CritBoost;
+            player.thrownCrit += CritBoost;
         }
 
         #region Saving and loading
 
         public override void Initialize()
         {
-            baseStats = new Dictionary<STAT, int>();
-            tempStats = new Dictionary<STAT, int>();
+            BaseStats = new Dictionary<STAT, int>();
+            TempStats = new Dictionary<STAT, int>();
 
-            permanence = 0;
-            transcendence = 0;
+            Permanence = 0;
+            Transcendence = 0;
 
-            level = 1;
-            xp = 0;
+            Level = 1;
+            Experience = 0;
 
             foreach (STAT stat in Enum.GetValues(typeof(STAT)))
             {
-                baseStats[stat] = 0;
-                tempStats[stat] = 0;
+                BaseStats[stat] = 0;
+                TempStats[stat] = 0;
             }
 
-            inventories = new Item[3][];
-            for (int i = 0; i < inventories.Length; i += 1)
+            Inventories = new Item[3][];
+            for (int i = 0; i < Inventories.Length; i += 1)
             {
-                inventories[i] = new Item[40];
-                for (int j = 0; j < inventories[i].Length; j += 1)
-                    inventories[i][j] = new Item();
+                Inventories[i] = new Item[40];
+                for (int j = 0; j < Inventories[i].Length; j += 1)
+                    Inventories[i][j] = new Item();
             }
 
-            rituals = new Dictionary<RITUAL, bool>();
+            Rituals = new Dictionary<RITUAL, bool>();
             foreach (RITUAL rite in Enum.GetValues(typeof(RITUAL)))
-                rituals[rite] = false;
+                Rituals[rite] = false;
 
-            for (int i = 0; i < abilities.Length; i += 1)
+            for (int i = 0; i < Abilities.Length; i += 1)
             {
-                abilities[i] = new ProceduralSpell(mod);
-                for (int j = 0; j < abilities[i].glyphs.Length; j += 1)
-                    abilities[i].glyphs[j] = new Item();
+                Abilities[i] = new ProceduralSpell(mod);
+                for (int j = 0; j < Abilities[i].Glyphs.Length; j += 1)
+                    Abilities[i].Glyphs[j] = new Item();
             }
 
-            abilities[0].key = Keys.Z;
-            abilities[1].key = Keys.X;
-            abilities[2].key = Keys.C;
-            abilities[3].key = Keys.V;
+            Abilities[0].Key = Keys.Z;
+            Abilities[1].Key = Keys.X;
+            Abilities[2].Key = Keys.C;
+            Abilities[3].Key = Keys.V;
         }
 
         public void InitializeGui()
         {
             if (Main.netMode == 2) return;
-            BaseGui.guiElements.Clear();
-            anvilGUI = new AnvilGUI(this);
-            levelGUI = new LevelGui(this, mod);
-            statusBar = new StatusBar(this, mod) {guiActive = true};
-            inventoryGUI = new InventoryGui(this);
-            abilitiesGUI = new AbilitiesGUI {guiActive = true};
-            spellCraftingGui = new SpellCraftingGui(mod /*, glyphs, this*/);
+            BaseGui.GuiElements.Clear();
+            AnvilGui = new AnvilGUI(this);
+            LevelGui = new LevelGui(this, mod);
+            StatusBar = new StatusBar(this, mod) {GuiActive = true};
+            InventoryGui = new InventoryGui(this);
+            AbilitiesGui = new AbilitiesGui {GuiActive = true};
+            SpellCraftingGui = new SpellcraftingGUI(mod /*, glyphs, this*/);
         }
 
         public void CloseGuIs()
         {
-            anvilGUI.CloseGui();
-            levelGUI.CloseGui();
-            spellCraftingGui.CloseGui();
+            AnvilGui.CloseGui();
+            LevelGui.CloseGui();
+            SpellCraftingGui.CloseGui();
         }
 
         public override void OnEnterWorld(Player player)
@@ -1146,33 +1146,33 @@ namespace kRPG
         {
             TagCompound tagCompound = new TagCompound
             {
-                {"level", level},
-                {"xp", xp},
-                {"baseRESILIENCE", baseStats[STAT.RESILIENCE]},
-                {"baseQUICKNESS", baseStats[STAT.QUICKNESS]},
-                {"basePOTENCY", baseStats[STAT.POTENCY]},
-                {"baseWITS", baseStats[STAT.WITS]},
-                {"RITUAL_DEMON_PACT", rituals[RITUAL.DEMON_PACT]},
-                {"RITUAL_WARRIOR_OATH", rituals[RITUAL.WARRIOR_OATH]},
-                {"RITUAL_ELAN_VITAL", rituals[RITUAL.ELAN_VITAL]},
-                {"RITUAL_STONE_ASPECT", rituals[RITUAL.STONE_ASPECT]},
-                {"RITUAL_ELDRITCH_FURY", rituals[RITUAL.ELDRITCH_FURY]},
-                {"RITUAL_MIND_FORTRESS", rituals[RITUAL.MIND_FORTRESS]},
-                {"RITUAL_BLOOD_DRINKING", rituals[RITUAL.BLOOD_DRINKING]},
+                {"level", Level},
+                {"Experience", Experience},
+                {"baseRESILIENCE", BaseStats[STAT.RESILIENCE]},
+                {"baseQUICKNESS", BaseStats[STAT.QUICKNESS]},
+                {"basePOTENCY", BaseStats[STAT.POTENCY]},
+                {"baseWITS", BaseStats[STAT.WITS]},
+                {"RITUAL_DEMON_PACT", Rituals[RITUAL.DEMON_PACT]},
+                {"RITUAL_WARRIOR_OATH", Rituals[RITUAL.WARRIOR_OATH]},
+                {"RITUAL_ELAN_VITAL", Rituals[RITUAL.ELAN_VITAL]},
+                {"RITUAL_STONE_ASPECT", Rituals[RITUAL.STONE_ASPECT]},
+                {"RITUAL_ELDRITCH_FURY", Rituals[RITUAL.ELDRITCH_FURY]},
+                {"RITUAL_MIND_FORTRESS", Rituals[RITUAL.MIND_FORTRESS]},
+                {"RITUAL_BLOOD_DRINKING", Rituals[RITUAL.BLOOD_DRINKING]},
                 {"life", player.statLife},
-                {"permanence", permanence},
-                {"transcendence", transcendence}
+                {"permanence", Permanence},
+                {"transcendence", Transcendence}
             };
 
             try
             {
-                for (int i = 0; i < abilities.Length; i += 1)
+                for (int i = 0; i < Abilities.Length; i += 1)
                 {
-                    if (abilities[i] == null) return tagCompound;
-                    tagCompound.Add("abilities" + i + "_key", abilities[i].key.ToString());
-                    for (int j = 0; j < abilities[i].glyphs.Length; j += 1)
-                        if (abilities[i].glyphs[j] != null)
-                            tagCompound.Add("ability" + i + j, ItemIO.Save(abilities[i].glyphs[j]));
+                    if (Abilities[i] == null) return tagCompound;
+                    tagCompound.Add("abilities" + i + "_key", Abilities[i].Key.ToString());
+                    for (int j = 0; j < Abilities[i].Glyphs.Length; j += 1)
+                        if (Abilities[i].Glyphs[j] != null)
+                            tagCompound.Add("ability" + i + j, ItemIO.Save(Abilities[i].Glyphs[j]));
                 }
             }
             catch (SystemException e)
@@ -1182,9 +1182,9 @@ namespace kRPG
 
             try
             {
-                for (int i = 0; i < inventories.Length; i += 1)
-                for (int j = 0; j < inventories[i].Length; j += 1)
-                    tagCompound.Add("item" + i + j, ItemIO.Save(inventories[i][j]));
+                for (int i = 0; i < Inventories.Length; i += 1)
+                for (int j = 0; j < Inventories[i].Length; j += 1)
+                    tagCompound.Add("item" + i + j, ItemIO.Save(Inventories[i][j]));
             }
             catch (SystemException e)
             {
@@ -1198,8 +1198,8 @@ namespace kRPG
         {
             try
             {
-                level = tag.GetInt("level");
-                xp = tag.GetInt("xp");
+                Level = tag.GetInt("level");
+                Experience = tag.GetInt("Experience");
             }
             catch (SystemException e)
             {
@@ -1209,9 +1209,9 @@ namespace kRPG
             try
             {
                 foreach (STAT stat in Enum.GetValues(typeof(STAT)))
-                    baseStats[stat] = tag.GetInt("base" + stat);
+                    BaseStats[stat] = tag.GetInt("base" + stat);
                 foreach (RITUAL rite in Enum.GetValues(typeof(RITUAL)))
-                    rituals[rite] = tag.GetBool("RITUAL_" + rite);
+                    Rituals[rite] = tag.GetBool("RITUAL_" + rite);
             }
             catch (SystemException e)
             {
@@ -1220,14 +1220,14 @@ namespace kRPG
 
             try
             {
-                abilities = new ProceduralSpell[4];
-                for (int i = 0; i < abilities.Length; i += 1)
+                Abilities = new ProceduralSpell[4];
+                for (int i = 0; i < Abilities.Length; i += 1)
                 {
-                    abilities[i] = new ProceduralSpell(mod);
-                    abilities[i].key = (Keys) Enum.Parse(typeof(Keys), tag.GetString("abilities" + i + "_key"));
-                    for (int j = 0; j < abilities[i].glyphs.Length; j += 1)
+                    Abilities[i] = new ProceduralSpell(mod);
+                    Abilities[i].Key = (Keys) Enum.Parse(typeof(Keys), tag.GetString("abilities" + i + "_key"));
+                    for (int j = 0; j < Abilities[i].Glyphs.Length; j += 1)
                         if (tag.ContainsKey("ability" + i + j))
-                            abilities[i].glyphs[j] = ItemIO.Load(tag.GetCompound("ability" + i + j));
+                            Abilities[i].Glyphs[j] = ItemIO.Load(tag.GetCompound("ability" + i + j));
                 }
             }
             catch (SystemException e)
@@ -1237,9 +1237,9 @@ namespace kRPG
 
             try
             {
-                for (int i = 0; i < inventories.Length; i += 1)
-                for (int j = 0; j < inventories[i].Length; j += 1)
-                    inventories[i][j] = ItemIO.Load(tag.GetCompound("item" + i + j));
+                for (int i = 0; i < Inventories.Length; i += 1)
+                for (int j = 0; j < Inventories[i].Length; j += 1)
+                    Inventories[i][j] = ItemIO.Load(tag.GetCompound("item" + i + j));
                 OpenInventoryPage(0);
             }
             catch (SystemException e)
@@ -1250,10 +1250,10 @@ namespace kRPG
             try
             {
                 player.statLife = tag.GetInt("life");
-                permanence = tag.GetInt("permanence");
-                transcendence = tag.GetInt("transcendence");
+                Permanence = tag.GetInt("permanence");
+                Transcendence = tag.GetInt("transcendence");
 
-                mana = 10 + (level - 1) * 3;
+                Mana = 10 + (Level - 1) * 3;
             }
             catch (SystemException e)
             {

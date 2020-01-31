@@ -13,19 +13,19 @@ namespace kRPG.Items.Glyphs
 
         public override float BaseManaModifier()
         {
-            return 0.72f + projCount * 0.06f;
+            return 0.72f + ProjCount * 0.06f;
         }
 
         public override Action<ProceduralSpell, Player, Vector2, Vector2, Entity> GetCastAction()
         {
             return delegate(ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
             {
-                float spread = GetSpread(spell.projCount);
+                float spread = GetSpread(spell.ProjCount);
                 Vector2 unitVelocity = target - origin;
                 unitVelocity.Normalize();
                 Vector2 velocity = unitVelocity * 6f;
-                for (int i = 0; i < spell.projCount; i += 1)
-                    spell.CreateProjectile(player, velocity, spell.projCount * -spread / 2f + i * spread + spread / 2f, origin, caster);
+                for (int i = 0; i < spell.ProjCount; i += 1)
+                    spell.CreateProjectile(player, velocity, spell.ProjCount * -spread / 2f + i * spread + spread / 2f, origin, caster);
             };
         }
 
@@ -37,7 +37,7 @@ namespace kRPG.Items.Glyphs
         public override void Randomize()
         {
             base.Randomize();
-            projCount = Main.rand.Next(3, 8);
+            ProjCount = Main.rand.Next(3, 8);
         }
 
         public override void SetStaticDefaults()

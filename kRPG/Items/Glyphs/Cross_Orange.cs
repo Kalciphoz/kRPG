@@ -21,7 +21,7 @@ namespace kRPG.Items.Glyphs
         {
             Player owner = Main.player[Main.myPlayer];
             PlayerCharacter character = owner.GetModPlayer<PlayerCharacter>();
-            Item item = character.lastSelectedWeapon;
+            Item item = character.LastSelectedWeapon;
             return owner.inventory.Contains(item);
         }
 
@@ -29,8 +29,8 @@ namespace kRPG.Items.Glyphs
         {
             return delegate(ProceduralSpellProj spell)
             {
-                if (spell.projectile.velocity.X < 0 && spell.basePosition == Vector2.Zero) spell.projectile.spriteDirection = -1;
-                Vector2 v = spell.basePosition != Vector2.Zero ? spell.basePosition : spell.origin;
+                if (spell.projectile.velocity.X < 0 && spell.BasePosition == Vector2.Zero) spell.projectile.spriteDirection = -1;
+                Vector2 v = spell.BasePosition != Vector2.Zero ? spell.BasePosition : spell.Origin;
                 if (spell.projectile.spriteDirection == -1)
                     spell.projectile.rotation = (spell.projectile.Center - v).ToRotation() - (float) API.Tau * 5f / 8f;
                 else
@@ -48,17 +48,17 @@ namespace kRPG.Items.Glyphs
                     {
                         PlayerCharacter character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
 
-                        spell.texture = character.lastSelectedWeapon.modItem is ProceduralSword
-                            ? ((ProceduralSword) character.lastSelectedWeapon.modItem).texture
-                            : Main.itemTexture[character.lastSelectedWeapon.type];
+                        spell.LocalTexture = character.LastSelectedWeapon.modItem is ProceduralSword
+                            ? ((ProceduralSword) character.LastSelectedWeapon.modItem).texture
+                            : Main.itemTexture[character.LastSelectedWeapon.type];
                     }
                     else
                     {
-                        spell.texture = GFX.projectileBoulder;
+                        spell.LocalTexture = GFX.ProjectileBoulder;
                     }
 
-                    spell.projectile.width = spell.texture.Width;
-                    spell.projectile.height = spell.texture.Height;
+                    spell.projectile.width = spell.LocalTexture.Width;
+                    spell.projectile.height = spell.LocalTexture.Height;
                 }
                 else
                 {
@@ -67,10 +67,10 @@ namespace kRPG.Items.Glyphs
                 }
 
                 spell.projectile.melee = true;
-                spell.drawTrail = true;
-                spell.alpha = 1f;
-                spell.lighted = true;
-                spell.projectile.scale = spell.minion ? 0.6f : 1f;
+                spell.DrawTrail = true;
+                spell.Alpha = 1f;
+                spell.Lighted = true;
+                spell.projectile.scale = spell.Minion ? 0.6f : 1f;
             };
         }
 

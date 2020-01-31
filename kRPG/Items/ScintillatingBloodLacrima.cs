@@ -38,7 +38,7 @@ namespace kRPG.Items
         {
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
             foreach (STAT stat in Enum.GetValues(typeof(STAT)))
-                character.baseStats[stat] = 0;
+                character.BaseStats[stat] = 0;
             return true;
         }
     }

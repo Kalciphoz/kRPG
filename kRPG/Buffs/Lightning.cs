@@ -19,12 +19,12 @@ namespace kRPG.Buffs
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            npc.GetGlobalNPC<kNPC>().hasAilment[ELEMENT.LIGHTNING] = true;
+            npc.GetGlobalNPC<kNPC>().HasAilment[ELEMENT.LIGHTNING] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.GetModPlayer<PlayerCharacter>().hasAilment[ELEMENT.LIGHTNING] = true;
+            player.GetModPlayer<PlayerCharacter>().HasAilment[ELEMENT.LIGHTNING] = true;
         }
     }
 }

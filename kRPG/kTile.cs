@@ -15,8 +15,8 @@ namespace kRPG
                 return;
             PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
             character.CloseGuIs();
-            character.anvilGUI.guiActive = true;
-            character.anvilGUI.PlayerPosition = new Vector2(i * 16f + 16f, j * 16f + 8f);
+            character.AnvilGui.GuiActive = true;
+            character.AnvilGui.PlayerPosition = new Vector2(i * 16f + 16f, j * 16f + 8f);
         }
     }
 }

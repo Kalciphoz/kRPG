@@ -6,7 +6,7 @@ namespace kRPG.Items.Weapons.RangedDrops
 {
     public class NambuPistol : RangedWeapon
     {
-        public override float DPSModifier()
+        public override float DpsModifier()
         {
             return 1.1f;
         }

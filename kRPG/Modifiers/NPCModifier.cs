@@ -5,11 +5,11 @@ using Terraria.ModLoader;
 
 namespace kRPG.Modifiers
 {
-    public abstract class NPCModifier
+    public abstract class NpcModifier
     {
         public NPC npc;
 
-        public NPCModifier(kNPC kNPC, NPC npc)
+        public NpcModifier(kNPC kNpc, NPC npc)
         {
         }
 
@@ -25,7 +25,7 @@ namespace kRPG.Modifiers
         {
         }
 
-        public static NPCModifier New(kNPC kNPC, NPC npc)
+        public static NpcModifier New(kNPC kNpc, NPC npc)
         {
             return null;
         }
@@ -42,7 +42,7 @@ namespace kRPG.Modifiers
         {
         }
 
-        public static NPCModifier Random(kNPC kNPC, NPC npc)
+        public static NpcModifier Random(kNPC kNpc, NPC npc)
         {
             return null;
         }
@@ -56,7 +56,7 @@ namespace kRPG.Modifiers
             return 1f;
         }
 
-        public virtual void Update(NPC npc)
+        public virtual void Update(NPC kNpc)
         {
         }
 

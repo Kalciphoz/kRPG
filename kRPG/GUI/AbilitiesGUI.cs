@@ -5,12 +5,12 @@ using Terraria;
 
 namespace kRPG.GUI
 {
-    public class AbilitiesGUI : BaseGui
+    public class AbilitiesGui : BaseGui
     {
 
-        public AbilitiesGUI()
+        public AbilitiesGui()
         {
-            GuiPosition = new Vector2(Main.screenWidth - GFX.skillSlot.Width * 8 * Scale, Main.screenHeight - GFX.skillSlot.Height * Scale - 12);
+            GuiPosition = new Vector2(Main.screenWidth - GFX.SkillSlot.Width * 8 * Scale, Main.screenHeight - GFX.SkillSlot.Height * Scale - 12);
         }
 
         private Vector2 GuiPosition { get; }
@@ -20,8 +20,8 @@ namespace kRPG.GUI
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
             PlayerCharacter modPlayer = player.GetModPlayer<PlayerCharacter>();
-            for (int i = 0; i < modPlayer.abilities.Length; i += 1)
-                modPlayer.abilities[i].Draw(spriteBatch, GuiPosition + new Vector2(i * (GFX.skillSlot.Width + 8f) * Scale, 0), Scale);
+            for (int i = 0; i < modPlayer.Abilities.Length; i += 1)
+                modPlayer.Abilities[i].Draw(spriteBatch, GuiPosition + new Vector2(i * (GFX.SkillSlot.Width + 8f) * Scale, 0), Scale);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace kRPG.Items
 {
     public class kItem : GlobalItem
     {
-        public static Dictionary<ELEMENT, string> elementNames = new Dictionary<ELEMENT, string>
+        public static Dictionary<ELEMENT, string> ElementNames { get; set; } = new Dictionary<ELEMENT, string>
         {
             {ELEMENT.FIRE, "255063000 fire "},
             {ELEMENT.COLD, "063127255 cold "},
@@ -24,18 +24,18 @@ namespace kRPG.Items
             {ELEMENT.SHADOW, "095000191 shadow "}
         };
 
-        public static SwordAccent reforgeaccent;
-        public static SwordBlade reforgeblade;
-        public static int reforgedef;
-        public static float reforgedps;
-        public static StaffGem reforgegem;
-        public static SwordHilt reforgehilt;
-        private static byte reforgelevel = 0;
-        public static string reforgename;
-        public static StaffOrnament reforgeornament;
-        public static Staff reforgestaff;
+        //public static SwordAccent ReforgeAccent { get; set; }
+        //public static SwordBlade Reforgeblade { get; set; }
+        //public static int reforgedef { get; set; }
+        //public static float reforgedps { get; set; }
+        //public static StaffGem reforgegem { get; set; }
+        //public static SwordHilt reforgehilt { get; set; }
+        //private static byte reforgelevel { get; set; } = 0;
+        //public static string reforgename { get; set; }
+        //public static StaffOrnament reforgeornament { get; set; }
+        //public static Staff reforgestaff { get; set; }
 
-        public static Dictionary<STAT, string> statNames = new Dictionary<STAT, string>
+        public static Dictionary<STAT, string> StatNames { get; set; } = new Dictionary<STAT, string>
         {
             {STAT.RESILIENCE, "223000000 resilience"},
             {STAT.QUICKNESS, "000191031 quickness"},
@@ -43,45 +43,45 @@ namespace kRPG.Items
             {STAT.WITS, "239223031 wits"}
         };
 
-        public int bonusAccuracy;
-        public int bonusAllres;
-        public int bonusCrit;
+        public int BonusAccuracy { get; set; }
+        public int BonusAllres { get; set; }
+        public int BonusCrit { get; set; }
 
-        public int bonusDef;
-        public int bonusEva;
-        public float bonusLeech;
-        public int bonusLife;
-        public int bonusMana;
-        public float bonusMult;
-        public float bonusRegen;
+        public int BonusDef { get; set; }
+        public int BonusEva { get; set; }
+        public float BonusLeech { get; set; }
+        public int BonusLife { get; set; }
+        public int BonusMana { get; set; }
+        public float BonusMult { get; set; }
+        public float BonusRegen { get; set; }
 
-        public Dictionary<ELEMENT, int> elementalDamage = new Dictionary<ELEMENT, int>
+        public Dictionary<ELEMENT, int> ElementalDamage { get; set; } = new Dictionary<ELEMENT, int>
         {
             {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
         };
 
-        public byte kPrefix;
+        public byte KPrefix { get; set; }
 
-        private List<string> prefixTooltips = new List<string>();
+        private List<string> PrefixTooltips { get; set; } = new List<string>();
 
-        public Dictionary<ELEMENT, int> resBonus = new Dictionary<ELEMENT, int>
+        public Dictionary<ELEMENT, int> ResBonus { get; set; } = new Dictionary<ELEMENT, int>
         {
             {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
         };
 
-        public Dictionary<STAT, int> statBonus = new Dictionary<STAT, int> {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}, {STAT.WITS, 0}};
+        public Dictionary<STAT, int> StatBonus { get; set; } = new Dictionary<STAT, int> {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}, {STAT.WITS, 0}};
 
-        public byte upgradeLevel = 255;
+        public byte UpgradeLevel { get; set; } = 255;
 
         public kItem()
         {
-            upgradeLevel = 255;
-            kPrefix = 0;
+            UpgradeLevel = 255;
+            KPrefix = 0;
 
             ClearPrefixes();
         }
 
-        public bool enhanced => kPrefix != 0;
+        public bool Enhanced => KPrefix != 0;
 
         public override bool InstancePerEntity => true;
 
@@ -124,7 +124,7 @@ namespace kRPG.Items
             }
             else if (item.damage > 0)
             {
-                if (upgradeLevel == 255) return this;
+                if (UpgradeLevel == 255) return this;
                 ApplyUpgradeLevel(item);
                 Prefix(item);
                 Elementalize(item);
@@ -139,7 +139,7 @@ namespace kRPG.Items
             double animationDps = 60f * item.damage / item.useAnimation;
             double usetimeDps = 60f * item.damage / item.useTime;
             double dpsModifier = 1.0;
-            switch (upgradeLevel)
+            switch (UpgradeLevel)
             {
                 default:
                     dpsModifier = 0.85;
@@ -185,13 +185,13 @@ namespace kRPG.Items
             if (i >= 0 && item.useTime < item.useAnimation)
                 item.useTime = item.useAnimation;
 
-            item.crit = item.crit + upgradeLevel - 1;
+            item.crit = item.crit + UpgradeLevel - 1;
 
-            if (upgradeLevel < 3)
+            if (UpgradeLevel < 3)
                 item.scale *= 0.95f;
-            else if (upgradeLevel >= 6 && upgradeLevel < 8)
+            else if (UpgradeLevel >= 6 && UpgradeLevel < 8)
                 item.scale *= 1.05f;
-            else if (upgradeLevel == 8)
+            else if (UpgradeLevel == 8)
                 item.scale *= 1.1f;
         }
 
@@ -202,68 +202,68 @@ namespace kRPG.Items
 
         public override bool CanUseItem(Item item, Player player)
         {
-            return item.healMana <= 0 || player.GetModPlayer<PlayerCharacter>().canHealMana;
+            return item.healMana <= 0 || player.GetModPlayer<PlayerCharacter>().CanHealMana;
         }
 
         public void ClearPrefixes()
         {
-            elementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
-            statBonus = new Dictionary<STAT, int> {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}, {STAT.WITS, 0}};
-            resBonus = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
-            bonusEva = 0;
-            bonusDef = 0;
-            bonusLife = 0;
-            bonusMana = 0;
-            bonusAccuracy = 0;
-            bonusLeech = 0f;
-            bonusCrit = 0;
-            bonusMult = 0f;
-            bonusRegen = 0f;
-            bonusAllres = 0;
-            prefixTooltips = new List<string>();
+            ElementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+            StatBonus = new Dictionary<STAT, int> {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}, {STAT.WITS, 0}};
+            ResBonus = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+            BonusEva = 0;
+            BonusDef = 0;
+            BonusLife = 0;
+            BonusMana = 0;
+            BonusAccuracy = 0;
+            BonusLeech = 0f;
+            BonusCrit = 0;
+            BonusMult = 0f;
+            BonusRegen = 0f;
+            BonusAllres = 0;
+            PrefixTooltips = new List<string>();
         }
 
         public override GlobalItem Clone(Item item, Item itemClone)
         {
             kItem copy = (kItem) base.Clone(item, itemClone);
             if (itemClone.type == 0) return copy;
-            copy.elementalDamage = new Dictionary<ELEMENT, int>
+            copy.ElementalDamage = new Dictionary<ELEMENT, int>
             {
-                {ELEMENT.FIRE, elementalDamage[ELEMENT.FIRE]},
-                {ELEMENT.COLD, elementalDamage[ELEMENT.COLD]},
-                {ELEMENT.LIGHTNING, elementalDamage[ELEMENT.LIGHTNING]},
-                {ELEMENT.SHADOW, elementalDamage[ELEMENT.SHADOW]}
+                {ELEMENT.FIRE, ElementalDamage[ELEMENT.FIRE]},
+                {ELEMENT.COLD, ElementalDamage[ELEMENT.COLD]},
+                {ELEMENT.LIGHTNING, ElementalDamage[ELEMENT.LIGHTNING]},
+                {ELEMENT.SHADOW, ElementalDamage[ELEMENT.SHADOW]}
             };
-            copy.statBonus = new Dictionary<STAT, int>
+            copy.StatBonus = new Dictionary<STAT, int>
             {
-                {STAT.RESILIENCE, statBonus[STAT.RESILIENCE]},
-                {STAT.QUICKNESS, statBonus[STAT.QUICKNESS]},
-                {STAT.POTENCY, statBonus[STAT.POTENCY]},
-                {STAT.WITS, statBonus[STAT.WITS]}
+                {STAT.RESILIENCE, StatBonus[STAT.RESILIENCE]},
+                {STAT.QUICKNESS, StatBonus[STAT.QUICKNESS]},
+                {STAT.POTENCY, StatBonus[STAT.POTENCY]},
+                {STAT.WITS, StatBonus[STAT.WITS]}
             };
-            copy.resBonus = new Dictionary<ELEMENT, int>
+            copy.ResBonus = new Dictionary<ELEMENT, int>
             {
-                {ELEMENT.FIRE, resBonus[ELEMENT.FIRE]},
-                {ELEMENT.COLD, resBonus[ELEMENT.COLD]},
-                {ELEMENT.LIGHTNING, resBonus[ELEMENT.LIGHTNING]},
-                {ELEMENT.SHADOW, resBonus[ELEMENT.SHADOW]}
+                {ELEMENT.FIRE, ResBonus[ELEMENT.FIRE]},
+                {ELEMENT.COLD, ResBonus[ELEMENT.COLD]},
+                {ELEMENT.LIGHTNING, ResBonus[ELEMENT.LIGHTNING]},
+                {ELEMENT.SHADOW, ResBonus[ELEMENT.SHADOW]}
             };
-            copy.prefixTooltips = new List<string>();
-            foreach (string s in prefixTooltips)
-                copy.prefixTooltips.Add(s);
+            copy.PrefixTooltips = new List<string>();
+            foreach (string s in PrefixTooltips)
+                copy.PrefixTooltips.Add(s);
             item.SetNameOverride(itemClone.Name);
-            copy.upgradeLevel = upgradeLevel;
-            copy.kPrefix = kPrefix;
-            copy.bonusDef = bonusDef;
-            copy.bonusEva = bonusEva;
-            copy.bonusLife = bonusLife;
-            copy.bonusMana = bonusMana;
-            copy.bonusAccuracy = bonusAccuracy;
-            copy.bonusLeech = bonusLeech;
-            copy.bonusCrit = bonusCrit;
-            copy.bonusMult = bonusMult;
-            copy.bonusRegen = bonusRegen;
-            copy.bonusAllres = bonusAllres;
+            copy.UpgradeLevel = UpgradeLevel;
+            copy.KPrefix = KPrefix;
+            copy.BonusDef = BonusDef;
+            copy.BonusEva = BonusEva;
+            copy.BonusLife = BonusLife;
+            copy.BonusMana = BonusMana;
+            copy.BonusAccuracy = BonusAccuracy;
+            copy.BonusLeech = BonusLeech;
+            copy.BonusCrit = BonusCrit;
+            copy.BonusMult = BonusMult;
+            copy.BonusRegen = BonusRegen;
+            copy.BonusAllres = BonusAllres;
             return copy;
         }
 
@@ -275,8 +275,8 @@ namespace kRPG.Items
 
         public void Downgrade(Item item)
         {
-            SetUpgradeLevel(item, (byte) Math.Max(upgradeLevel - 1, 0));
-            Main.NewText("Failed to upgrade - item was downgraded to +" + upgradeLevel, 255, 0, 0);
+            SetUpgradeLevel(item, (byte) Math.Max(UpgradeLevel - 1, 0));
+            Main.NewText("Failed to upgrade - item was downgraded to +" + UpgradeLevel, 255, 0, 0);
         }
 
         public void Elementalize(Item item)
@@ -288,10 +288,10 @@ namespace kRPG.Items
                 int totalElements = 0;
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 {
-                    if (!(staff.eleDamage[element] > 0f))
+                    if (!(staff.EleDamage[element] > 0f))
                         continue;
-                    elementalDamage[element] += Math.Max((int) (item.damage * staff.eleDamage[element]), 1);
-                    totalReduction += staff.eleDamage[element];
+                    ElementalDamage[element] += Math.Max((int) (item.damage * staff.EleDamage[element]), 1);
+                    totalReduction += staff.EleDamage[element];
                     totalElements += 1;
                 }
 
@@ -304,10 +304,10 @@ namespace kRPG.Items
                 int totalElements = 0;
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 {
-                    if (!(sword.eleDamage[element] > 0f))
+                    if (!(sword.EleDamage[element] > 0f))
                         continue;
-                    elementalDamage[element] += Math.Max((int) (item.damage * sword.eleDamage[element]), 1);
-                    totalReduction += sword.eleDamage[element];
+                    ElementalDamage[element] += Math.Max((int) (item.damage * sword.EleDamage[element]), 1);
+                    totalReduction += sword.EleDamage[element];
                     totalElements += 1;
                 }
 
@@ -315,17 +315,17 @@ namespace kRPG.Items
             }
 
             if (item.type == mod.GetItem("EyeOnAStick").item.type)
-                elementalDamage[ELEMENT.SHADOW] += 10;
+                ElementalDamage[ELEMENT.SHADOW] += 10;
 
             if (item.Name.Contains("Hellfire") || item.Name.Contains("Molten") || item.Name.Contains("Fiery"))
             {
-                elementalDamage[ELEMENT.FIRE] += (int) (item.damage * 0.5);
+                ElementalDamage[ELEMENT.FIRE] += (int) (item.damage * 0.5);
                 item.damage = (int) (item.damage * 0.5);
             }
 
             if (item.Name.Contains("Clockwork") || item.type == ItemID.BreakerBlade || item.Name.Contains("Phase") || item.Name.Contains("Thunder"))
             {
-                elementalDamage[ELEMENT.LIGHTNING] += (int) (item.damage * 0.3);
+                ElementalDamage[ELEMENT.LIGHTNING] += (int) (item.damage * 0.3);
                 item.damage = (int) (item.damage * 0.7);
             }
 
@@ -342,7 +342,7 @@ namespace kRPG.Items
         public Dictionary<ELEMENT, int> GetIndividualElements(Item item, Player player, bool ignoreModifiers = false)
         {
             Dictionary<ELEMENT, int> dictionary = new Dictionary<ELEMENT, int>();
-            if (player.GetModPlayer<PlayerCharacter>().rituals[RITUAL.DEMON_PACT])
+            if (player.GetModPlayer<PlayerCharacter>().Rituals[RITUAL.DEMON_PACT])
             {
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                     dictionary[element] = 0;
@@ -352,7 +352,7 @@ namespace kRPG.Items
             else
             {
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                    dictionary[element] = (int) Math.Round(elementalDamage[element] * (ignoreModifiers
+                    dictionary[element] = (int) Math.Round(ElementalDamage[element] * (ignoreModifiers
                                                                ? 1
                                                                : player.GetModPlayer<PlayerCharacter>().DamageMultiplier(element, item.melee, item.ranged,
                                                                    item.magic, item.thrown, item.summon)));
@@ -420,19 +420,19 @@ namespace kRPG.Items
 
             if (item.accessory)
             {
-                kPrefix = (byte) (rand.Next(27) + 1);
+                KPrefix = (byte) (rand.Next(27) + 1);
             }
 
             else if (item.damage > 0)
             {
                 bool randomize = item.modItem is ProceduralItem || item.modItem is RangedWeapon || item.value <= 1000 || item.type == 881;
-                upgradeLevel = (byte) (RandomizeUpgradeLevel(item, randomize) + (randomize ? item.modItem is RangedWeapon ? 2 : 0 : 3));
-                kPrefix = (byte) (rand.Next(29) + 1);
+                UpgradeLevel = (byte) (RandomizeUpgradeLevel(item, randomize) + (randomize ? item.modItem is RangedWeapon ? 2 : 0 : 3));
+                KPrefix = (byte) (rand.Next(29) + 1);
             }
 
             else if (item.defense > 0)
             {
-                kPrefix = (byte) (rand.Next(19) + 1);
+                KPrefix = (byte) (rand.Next(19) + 1);
             }
 
             ApplyStats(item, true);
@@ -453,16 +453,16 @@ namespace kRPG.Items
                 for (int i = 0; i < num; i++)
                 {
                     Item item = player.inventory[i];
-                    if ((item.type == 0 || item.stack == 0) && (!kConfig.configLocal.clientside.manualInventory || num > 50 || character.activeInvPage == 0) ||
+                    if ((item.type == 0 || item.stack == 0) && (!kConfig.ConfigLocal.ClientSide.ManualInventory || num > 50 || character.ActiveInvPage == 0) ||
                         item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
                         return true;
                 }
 
-                for (int i = 0; i < character.inventories.Length; i++)
-                for (int j = 0; j < character.inventories[i].Length; j += 1)
+                for (int i = 0; i < character.Inventories.Length; i++)
+                for (int j = 0; j < character.Inventories[i].Length; j += 1)
                 {
-                    Item item = character.inventories[i][j];
-                    if ((item.type == 0 || item.stack == 0) && (!kConfig.configLocal.clientside.manualInventory || i == 0) ||
+                    Item item = character.Inventories[i][j];
+                    if ((item.type == 0 || item.stack == 0) && (!kConfig.ConfigLocal.ClientSide.ManualInventory || i == 0) ||
                         item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
                         //Main.NewText((!kConfig.configLocal.clientSide.manualInventory) + "||" + (i == 0));
                         return true;
@@ -481,8 +481,8 @@ namespace kRPG.Items
 
         public override void Load(Item item, TagCompound tag)
         {
-            upgradeLevel = tag.GetByte("upgrade level");
-            kPrefix = tag.GetByte("prefix");
+            UpgradeLevel = tag.GetByte("upgrade level");
+            KPrefix = tag.GetByte("prefix");
             ApplyStats(item);
         }
 
@@ -494,11 +494,11 @@ namespace kRPG.Items
             {
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 {
-                    if (resBonus[element] == 0)
+                    if (ResBonus[element] == 0)
                         continue;
-                    string color = elementNames[element].Substring(0, 9);
-                    string eleName = elementNames[element].Substring(9);
-                    TooltipLine line = new TooltipLine(mod, "Res" + element, resBonus[element] + eleName + " resistance")
+                    string color = ElementNames[element].Substring(0, 9);
+                    string eleName = ElementNames[element].Substring(9);
+                    TooltipLine line = new TooltipLine(mod, "Res" + element, ResBonus[element] + eleName + " resistance")
                     {
                         overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)), int.Parse(color.Substring(6, 3)))
                     };
@@ -506,38 +506,38 @@ namespace kRPG.Items
                 }
 
                 foreach (STAT stat in Enum.GetValues(typeof(STAT)))
-                    if (statBonus[stat] != 0)
+                    if (StatBonus[stat] != 0)
                     {
-                        string color = statNames[stat].Substring(0, 9);
-                        string statName = statNames[stat].Substring(9);
-                        TooltipLine line = new TooltipLine(mod, "Stat" + stat, statBonus[stat] + statName)
+                        string color = StatNames[stat].Substring(0, 9);
+                        string statName = StatNames[stat].Substring(9);
+                        TooltipLine line = new TooltipLine(mod, "Stat" + stat, StatBonus[stat] + statName)
                         {
                             overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)), int.Parse(color.Substring(6, 3)))
                         };
                         tooltips.Insert(1, line);
                     }
 
-                if (bonusEva > 0)
+                if (BonusEva > 0)
                 {
-                    TooltipLine line = new TooltipLine(mod, "Evasion", bonusEva + " evasion rating") {overrideColor = new Color(159, 159, 159)};
+                    TooltipLine line = new TooltipLine(mod, "Evasion", BonusEva + " evasion rating") {overrideColor = new Color(159, 159, 159)};
                     tooltips.Insert(1, line);
                 }
 
-                if (bonusMana > 0)
+                if (BonusMana > 0)
                 {
-                    TooltipLine line = new TooltipLine(mod, "Mana", bonusMana + " maximum mana") {overrideColor = new Color(0, 63, 255)};
+                    TooltipLine line = new TooltipLine(mod, "Mana", BonusMana + " maximum mana") {overrideColor = new Color(0, 63, 255)};
                     tooltips.Insert(1, line);
                 }
 
-                if (bonusLife > 0)
+                if (BonusLife > 0)
                 {
-                    TooltipLine line = new TooltipLine(mod, "Life", bonusLife + " maximum life") {overrideColor = new Color(255, 31, 31)};
+                    TooltipLine line = new TooltipLine(mod, "Life", BonusLife + " maximum life") {overrideColor = new Color(255, 31, 31)};
                     tooltips.Insert(1, line);
                 }
 
-                for (int i = 0; i < prefixTooltips.Count; i += 1)
+                for (int i = 0; i < PrefixTooltips.Count; i += 1)
                 {
-                    TooltipLine line = new TooltipLine(mod, "prefixline" + i, prefixTooltips[i]) {overrideColor = new Color(127, 191, 127)};
+                    TooltipLine line = new TooltipLine(mod, "prefixline" + i, PrefixTooltips[i]) {overrideColor = new Color(127, 191, 127)};
                     tooltips.Add(line);
                 }
             }
@@ -549,8 +549,8 @@ namespace kRPG.Items
                     int eleDamage = GetIndividualElements(item, Main.player[Main.myPlayer])[element];
                     if (eleDamage != 0)
                     {
-                        string color = elementNames[element].Substring(0, 9);
-                        string eleName = elementNames[element].Substring(9);
+                        string color = ElementNames[element].Substring(0, 9);
+                        string eleName = ElementNames[element].Substring(9);
                         TooltipLine line = new TooltipLine(mod, "Element" + element, eleDamage + eleName + "damage")
                         {
                             overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)), int.Parse(color.Substring(6, 3)))
@@ -559,9 +559,9 @@ namespace kRPG.Items
                     }
                 }
 
-                for (int i = 0; i < prefixTooltips.Count; i += 1)
+                for (int i = 0; i < PrefixTooltips.Count; i += 1)
                 {
-                    TooltipLine line = new TooltipLine(mod, "prefixline" + i, prefixTooltips[i]) {overrideColor = new Color(127, 191, 127)};
+                    TooltipLine line = new TooltipLine(mod, "prefixline" + i, PrefixTooltips[i]) {overrideColor = new Color(127, 191, 127)};
                     tooltips.Add(line);
                 }
             }
@@ -574,15 +574,15 @@ namespace kRPG.Items
 
         public override void NetReceive(Item item, BinaryReader reader)
         {
-            upgradeLevel = reader.ReadByte();
-            kPrefix = reader.ReadByte();
+            UpgradeLevel = reader.ReadByte();
+            KPrefix = reader.ReadByte();
             ApplyStats(item);
         }
 
         public override void NetSend(Item item, BinaryWriter writer)
         {
-            writer.Write(upgradeLevel);
-            writer.Write(kPrefix);
+            writer.Write(UpgradeLevel);
+            writer.Write(KPrefix);
         }
 
         public override bool NewPreReforge(Item item)
@@ -624,11 +624,11 @@ namespace kRPG.Items
             //    item.SetItemDefaults(item.type);
 
             if (item.accessory)
-                kPrefix = (byte) (Main.rand.Next(27) + 1);
+                KPrefix = (byte) (Main.rand.Next(27) + 1);
             else if (item.damage > 0)
-                kPrefix = (byte) (Main.rand.Next(29) + 1);
+                KPrefix = (byte) (Main.rand.Next(29) + 1);
             else if (item.defense > 0)
-                kPrefix = (byte) (Main.rand.Next(19) + 1);
+                KPrefix = (byte) (Main.rand.Next(19) + 1);
 
             ApplyStats(item);
             return false;
@@ -670,7 +670,7 @@ namespace kRPG.Items
                         case ItemID.CandyCane:
                         {
                             Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
-                            int healAmount = 10 + player.GetModPlayer<PlayerCharacter>().level / 2;
+                            int healAmount = 10 + player.GetModPlayer<PlayerCharacter>().Level / 2;
                             player.statLife += healAmount;
                             if (Main.myPlayer == player.whoAmI)
                                 player.HealEffect(healAmount);
@@ -688,7 +688,7 @@ namespace kRPG.Items
                         {
                             Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
                             int healAmount = 5 + character.TotalStats(STAT.WITS);
-                            character.mana += healAmount;
+                            character.Mana += healAmount;
                             player.statMana += healAmount;
                             if (Main.myPlayer == player.whoAmI)
                                 player.ManaEffect(healAmount);
@@ -702,7 +702,7 @@ namespace kRPG.Items
                         {
                             if (item.type == ModContent.ItemType<PermanenceCrown>())
                             {
-                                character.permanence += 1;
+                                character.Permanence += 1;
                                 ItemText.NewText(item, item.stack);
                                 Main.PlaySound(7, player.position);
                                 return false;
@@ -710,7 +710,7 @@ namespace kRPG.Items
 
                             if (item.type == ModContent.ItemType<BlacksmithCrown>())
                             {
-                                character.transcendence += 1;
+                                character.Transcendence += 1;
                                 ItemText.NewText(item, item.stack);
                                 Main.PlaySound(7, player.position);
                                 return false;
@@ -744,7 +744,7 @@ namespace kRPG.Items
             if (player.chest >= 0)
                 if (Main.chest[player.chest].item.Contains(item))
                     flag = true;
-            if (NeedsSaving(item) && !enhanced && !WorldGen.gen && !Main.gameMenu &&
+            if (NeedsSaving(item) && !Enhanced && !WorldGen.gen && !Main.gameMenu &&
                 (player.inventory.Contains(item) || flag || player.bank.item.Contains(item) || player.bank2.item.Contains(item) ||
                  player.bank3.item.Contains(item)))
                 Initialize(item);
@@ -752,243 +752,243 @@ namespace kRPG.Items
 
             if (Upgradeable(item) && Main.mouseRight && Main.mouseRightRelease &&
                 new Rectangle((int) position.X, (int) position.Y, 38, 38).Contains(Main.mouseX, Main.mouseY))
-                character.anvilGUI.AttemptSelectItem(this, item);
+                character.AnvilGui.AttemptSelectItem(this, item);
         }
 
         public void Prefix(Item item)
         {
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                elementalDamage[element] = 0;
+                ElementalDamage[element] = 0;
 
-            prefixTooltips.Clear();
+            PrefixTooltips.Clear();
             float speed = 1f;
 
-            switch (kPrefix - 1)
+            switch (KPrefix - 1)
             {
                 case 0:
                     item.SetNameOverride("Gleaming " + item.Name);
                     item.damage += (int) (item.damage * 0.15);
                     item.rare += 1;
-                    prefixTooltips.Add("+15% damage");
+                    PrefixTooltips.Add("+15% damage");
                     break;
                 case 1:
                     item.SetNameOverride("Sulfuric " + item.Name);
-                    elementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.25), 1);
+                    ElementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.25), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 1);
-                    prefixTooltips.Add("+5% damage");
+                    PrefixTooltips.Add("+5% damage");
                     break;
                 case 2:
                     item.SetNameOverride("Windswept " + item.Name);
-                    elementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.25), 1);
+                    ElementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.25), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 1);
-                    prefixTooltips.Add("+5% damage");
+                    PrefixTooltips.Add("+5% damage");
                     break;
                 case 3:
                     item.SetNameOverride("Buzzing " + item.Name);
-                    elementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.25), 1);
+                    ElementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.25), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 1);
-                    prefixTooltips.Add("+5% damage");
+                    PrefixTooltips.Add("+5% damage");
                     break;
                 case 4:
                     item.SetNameOverride("Demonic " + item.Name);
-                    elementalDamage[ELEMENT.SHADOW] = Math.Max((int) (item.damage * 0.2), 1);
+                    ElementalDamage[ELEMENT.SHADOW] = Math.Max((int) (item.damage * 0.2), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 1);
                     break;
                 case 5:
                     item.SetNameOverride("Rending " + item.Name);
-                    elementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.15), 1);
-                    elementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.15), 1);
+                    ElementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.15), 1);
+                    ElementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.15), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 1);
-                    prefixTooltips.Add("+10% damage");
+                    PrefixTooltips.Add("+10% damage");
                     break;
                 case 6:
                     item.SetNameOverride("Blazing " + item.Name);
-                    elementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.15), 1);
-                    elementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.15), 1);
+                    ElementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.15), 1);
+                    ElementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.15), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 2);
-                    prefixTooltips.Add("+10% damage");
+                    PrefixTooltips.Add("+10% damage");
                     break;
                 case 7:
                     item.SetNameOverride("Dazzling " + item.Name);
-                    elementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.15), 1);
-                    elementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.15), 1);
+                    ElementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.15), 1);
+                    ElementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.15), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 2);
-                    prefixTooltips.Add("+10% damage");
+                    PrefixTooltips.Add("+10% damage");
                     break;
                 case 8:
                     item.SetNameOverride("Prismatic " + item.Name);
-                    elementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.11), 1);
-                    elementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.11), 1);
-                    elementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.11), 1);
+                    ElementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.11), 1);
+                    ElementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.11), 1);
+                    ElementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.11), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 2);
                     item.rare += 1;
-                    prefixTooltips.Add("+13% damage");
+                    PrefixTooltips.Add("+13% damage");
                     break;
                 case 9:
                     item.SetNameOverride("Infernal " + item.Name);
-                    elementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.15), 1);
-                    elementalDamage[ELEMENT.SHADOW] = Math.Max((int) (item.damage * 0.1), 1);
+                    ElementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.15), 1);
+                    ElementalDamage[ELEMENT.SHADOW] = Math.Max((int) (item.damage * 0.1), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 2);
-                    prefixTooltips.Add("+5% damage");
+                    PrefixTooltips.Add("+5% damage");
                     break;
                 case 10:
                     item.SetNameOverride("Glacial " + item.Name);
-                    elementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.15), 1);
-                    elementalDamage[ELEMENT.SHADOW] = Math.Max((int) (item.damage * 0.1), 1);
+                    ElementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.15), 1);
+                    ElementalDamage[ELEMENT.SHADOW] = Math.Max((int) (item.damage * 0.1), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 2);
-                    prefixTooltips.Add("+5% damage");
+                    PrefixTooltips.Add("+5% damage");
                     break;
                 case 11:
                     item.SetNameOverride("Ominous " + item.Name);
-                    elementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.15), 1);
-                    elementalDamage[ELEMENT.SHADOW] = Math.Max((int) (item.damage * 0.1), 1);
+                    ElementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.15), 1);
+                    ElementalDamage[ELEMENT.SHADOW] = Math.Max((int) (item.damage * 0.1), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 2);
-                    prefixTooltips.Add("+5% damage");
+                    PrefixTooltips.Add("+5% damage");
                     break;
                 case 12:
                     item.SetNameOverride("Volcanic " + item.Name);
-                    elementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.15), 1);
+                    ElementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.15), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.15), 1);
                     item.crit += 10;
-                    prefixTooltips.Add("+10% critical strike chance");
+                    PrefixTooltips.Add("+10% critical strike chance");
                     break;
                 case 13:
                     item.SetNameOverride("Cryonic " + item.Name);
-                    elementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.15), 1);
+                    ElementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.15), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.15), 1);
                     item.crit += 10;
-                    prefixTooltips.Add("+10% critical strike chance");
+                    PrefixTooltips.Add("+10% critical strike chance");
                     break;
                 case 14:
                     item.SetNameOverride("Stilling " + item.Name);
-                    elementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.15), 1);
+                    ElementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.15), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.15), 1);
                     item.crit += 10;
-                    prefixTooltips.Add("+10% critical strike chance");
+                    PrefixTooltips.Add("+10% critical strike chance");
                     break;
                 case 15:
                     item.SetNameOverride("Ruthless " + item.Name);
                     item.damage += (int) (item.damage * 0.1);
                     item.crit += 5;
-                    prefixTooltips.Add("+10% damage");
-                    prefixTooltips.Add("+5% critical strike chance");
+                    PrefixTooltips.Add("+10% damage");
+                    PrefixTooltips.Add("+5% critical strike chance");
                     break;
                 case 16:
                     item.SetNameOverride("Ancient " + item.Name);
-                    elementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.11), 1);
-                    elementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.11), 1);
+                    ElementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.11), 1);
+                    ElementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.11), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.16), 2);
                     item.crit += 5;
-                    prefixTooltips.Add("+6% damage");
-                    prefixTooltips.Add("+5% critical strike chance");
+                    PrefixTooltips.Add("+6% damage");
+                    PrefixTooltips.Add("+5% critical strike chance");
                     break;
                 case 17:
                     item.SetNameOverride("Malevolent " + item.Name);
-                    elementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.11), 1);
-                    elementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.11), 1);
+                    ElementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.11), 1);
+                    ElementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.11), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.16), 2);
                     item.crit += 5;
-                    prefixTooltips.Add("+6% damage");
-                    prefixTooltips.Add("+5% critical strike chance");
+                    PrefixTooltips.Add("+6% damage");
+                    PrefixTooltips.Add("+5% critical strike chance");
                     break;
                 case 18:
                     item.SetNameOverride("Incandescent " + item.Name);
-                    elementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.11), 1);
-                    elementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.11), 1);
+                    ElementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.11), 1);
+                    ElementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.11), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.16), 2);
                     item.crit += 5;
-                    prefixTooltips.Add("+6% damage");
-                    prefixTooltips.Add("+5% critical strike chance");
+                    PrefixTooltips.Add("+6% damage");
+                    PrefixTooltips.Add("+5% critical strike chance");
                     break;
                 case 19:
                     item.SetNameOverride("Searing " + item.Name);
-                    elementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.2), 1);
+                    ElementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.2), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 1);
                     speed = 1.1f;
-                    prefixTooltips.Add("+10% speed");
+                    PrefixTooltips.Add("+10% speed");
                     break;
                 case 20:
                     item.SetNameOverride("Arctic " + item.Name);
-                    elementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.2), 1);
+                    ElementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.2), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 1);
                     speed = 1.1f;
-                    prefixTooltips.Add("+10% speed");
+                    PrefixTooltips.Add("+10% speed");
                     break;
                 case 21:
                     item.SetNameOverride("Thunderous " + item.Name);
-                    elementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.2), 1);
+                    ElementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.2), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 1);
                     speed = 1.1f;
-                    prefixTooltips.Add("+10% speed");
+                    PrefixTooltips.Add("+10% speed");
                     break;
                 case 22:
                     item.SetNameOverride("Sacrificial " + item.Name);
-                    elementalDamage[ELEMENT.SHADOW] = Math.Max((int) (item.damage * 0.2), 1);
+                    ElementalDamage[ELEMENT.SHADOW] = Math.Max((int) (item.damage * 0.2), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 1);
                     speed = 1.1f;
-                    prefixTooltips.Add("+10% speed");
+                    PrefixTooltips.Add("+10% speed");
                     break;
                 case 23:
                     item.SetNameOverride("Hateful " + item.Name);
-                    elementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.2), 1);
+                    ElementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.2), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 1);
                     speed = 1.1f;
-                    prefixTooltips.Add("+10% speed");
+                    PrefixTooltips.Add("+10% speed");
                     item.crit += 5;
-                    prefixTooltips.Add("+5% critical strike chance");
+                    PrefixTooltips.Add("+5% critical strike chance");
                     break;
                 case 24:
                     item.SetNameOverride("Forgotten " + item.Name);
-                    elementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.2), 1);
+                    ElementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.2), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 1);
                     speed = 1.1f;
-                    prefixTooltips.Add("+10% speed");
+                    PrefixTooltips.Add("+10% speed");
                     item.crit += 5;
-                    prefixTooltips.Add("+5% critical strike chance");
+                    PrefixTooltips.Add("+5% critical strike chance");
                     break;
                 case 25:
                     item.SetNameOverride("Unreal " + item.Name);
-                    elementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.2), 1);
+                    ElementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.2), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.2), 1);
                     speed = 1.1f;
-                    prefixTooltips.Add("+10% speed");
+                    PrefixTooltips.Add("+10% speed");
                     item.crit += 5;
-                    prefixTooltips.Add("+5% critical strike chance");
+                    PrefixTooltips.Add("+5% critical strike chance");
                     break;
                 case 26:
                     item.SetNameOverride("Zealous " + item.Name);
                     item.crit += 15;
-                    prefixTooltips.Add("+15% critical strike chance");
+                    PrefixTooltips.Add("+15% critical strike chance");
                     break;
                 case 27:
                     item.SetNameOverride("Legendary " + item.Name);
                     item.damage += (int) (item.damage * 0.1);
-                    prefixTooltips.Add("+10% damage");
+                    PrefixTooltips.Add("+10% damage");
                     speed = 1.1f;
-                    prefixTooltips.Add("+10% speed");
+                    PrefixTooltips.Add("+10% speed");
                     item.crit += 5;
-                    prefixTooltips.Add("+5% critical strike chance");
+                    PrefixTooltips.Add("+5% critical strike chance");
                     item.rare += 1;
                     break;
                 case 28:
                     item.SetNameOverride("Mythical " + item.Name);
                     speed = 1.1f;
-                    prefixTooltips.Add("+10% speed");
+                    PrefixTooltips.Add("+10% speed");
                     item.crit += 10;
-                    prefixTooltips.Add("+10% critical strike chance");
+                    PrefixTooltips.Add("+10% critical strike chance");
                     item.rare += 1;
                     break;
                 case 29:
                     item.SetNameOverride("Transcendent " + item.Name);
-                    elementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.1), 1);
-                    elementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.1), 1);
-                    elementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.1), 1);
+                    ElementalDamage[ELEMENT.FIRE] = Math.Max((int) (item.damage * 0.1), 1);
+                    ElementalDamage[ELEMENT.COLD] = Math.Max((int) (item.damage * 0.1), 1);
+                    ElementalDamage[ELEMENT.LIGHTNING] = Math.Max((int) (item.damage * 0.1), 1);
                     item.damage -= Math.Max((int) (item.damage * 0.18), 2);
-                    prefixTooltips.Add("+12% damage");
+                    PrefixTooltips.Add("+12% damage");
                     speed = 1.1f;
-                    prefixTooltips.Add("+10% speed");
+                    PrefixTooltips.Add("+10% speed");
                     item.crit += 5;
-                    prefixTooltips.Add("+5% critical strike chance");
+                    PrefixTooltips.Add("+5% critical strike chance");
                     item.rare += 1;
                     break;
             }
@@ -1003,7 +1003,7 @@ namespace kRPG.Items
             if (i >= 0 && item.useTime < item.useAnimation)
                 item.useTime = item.useAnimation;
 
-            item.SetNameOverride(item.Name + "+" + upgradeLevel);
+            item.SetNameOverride(item.Name + "+" + UpgradeLevel);
 
             if (item.damage < 1) item.damage = 1;
         }
@@ -1012,133 +1012,133 @@ namespace kRPG.Items
         {
             ClearPrefixes();
 
-            switch (kPrefix - 1)
+            switch (KPrefix - 1)
             {
                 case 0:
                     item.SetNameOverride("Sturdy " + item.Name);
-                    statBonus[STAT.RESILIENCE] = 2;
+                    StatBonus[STAT.RESILIENCE] = 2;
                     break;
                 case 1:
                     item.SetNameOverride("Elusive " + item.Name);
-                    statBonus[STAT.QUICKNESS] = 2;
+                    StatBonus[STAT.QUICKNESS] = 2;
                     break;
                 case 2:
                     item.SetNameOverride("Volatile " + item.Name);
-                    statBonus[STAT.POTENCY] = 2;
+                    StatBonus[STAT.POTENCY] = 2;
                     break;
                 case 3:
                     item.SetNameOverride("Cunning " + item.Name);
-                    statBonus[STAT.WITS] = 2;
+                    StatBonus[STAT.WITS] = 2;
                     break;
                 case 4:
                     item.SetNameOverride("Sage " + item.Name);
-                    statBonus[STAT.WITS] = 3;
+                    StatBonus[STAT.WITS] = 3;
                     item.rare += 1;
                     break;
                 case 5:
                     item.SetNameOverride("Armored " + item.Name);
-                    bonusDef = 4;
-                    prefixTooltips.Add("+4 defence");
+                    BonusDef = 4;
+                    PrefixTooltips.Add("+4 defence");
                     break;
                 case 6:
                     item.SetNameOverride("Elegant " + item.Name);
-                    bonusEva = 5;
+                    BonusEva = 5;
                     break;
                 case 7:
                     item.SetNameOverride("Vampiric " + item.Name);
-                    bonusLeech = 0.02f;
-                    prefixTooltips.Add("+2% life Leech");
+                    BonusLeech = 0.02f;
+                    PrefixTooltips.Add("+2% life Leech");
                     break;
                 case 8:
                     item.SetNameOverride("Focused " + item.Name);
-                    bonusAccuracy = 3;
-                    prefixTooltips.Add("+3 accuracy");
+                    BonusAccuracy = 3;
+                    PrefixTooltips.Add("+3 accuracy");
                     break;
                 case 9:
                     item.SetNameOverride("Precise " + item.Name);
-                    bonusAccuracy = 4;
-                    prefixTooltips.Add("+4 accuracy");
+                    BonusAccuracy = 4;
+                    PrefixTooltips.Add("+4 accuracy");
                     break;
                 case 10:
                     item.SetNameOverride("Single-minded " + item.Name);
-                    bonusAccuracy = 6;
+                    BonusAccuracy = 6;
                     item.rare += 1;
-                    prefixTooltips.Add("+6 accuracy");
+                    PrefixTooltips.Add("+6 accuracy");
                     break;
                 case 11:
                     item.SetNameOverride("Organic " + item.Name);
-                    bonusRegen = 1.4f;
-                    prefixTooltips.Add("+1.4 life regen");
+                    BonusRegen = 1.4f;
+                    PrefixTooltips.Add("+1.4 life regen");
                     break;
                 case 12:
                     item.SetNameOverride("Arcane " + item.Name);
-                    bonusMana = 20;
+                    BonusMana = 20;
                     break;
                 case 13:
                     item.SetNameOverride("Frenetic " + item.Name);
-                    bonusCrit = 4;
-                    prefixTooltips.Add("+4 crit chance");
+                    BonusCrit = 4;
+                    PrefixTooltips.Add("+4 crit chance");
                     break;
                 case 14:
                     item.SetNameOverride("Brutal " + item.Name);
-                    bonusMult = 0.20f;
-                    prefixTooltips.Add("+40 crit multiplier");
+                    BonusMult = 0.20f;
+                    PrefixTooltips.Add("+40 crit multiplier");
                     break;
                 case 15:
                     item.SetNameOverride("Warding " + item.Name);
-                    bonusAllres = 3;
-                    prefixTooltips.Add("+4 to all resistances");
+                    BonusAllres = 3;
+                    PrefixTooltips.Add("+4 to all resistances");
                     break;
                 case 16:
                     item.SetNameOverride("Flame Retardant " + item.Name);
-                    resBonus[ELEMENT.FIRE] = 10;
+                    ResBonus[ELEMENT.FIRE] = 10;
                     break;
                 case 17:
                     item.SetNameOverride("Waterproof " + item.Name);
-                    resBonus[ELEMENT.COLD] = 10;
+                    ResBonus[ELEMENT.COLD] = 10;
                     break;
                 case 18:
                     item.SetNameOverride("Insulated " + item.Name);
-                    resBonus[ELEMENT.LIGHTNING] = 10;
+                    ResBonus[ELEMENT.LIGHTNING] = 10;
                     break;
                 case 19:
                     item.SetNameOverride("Hexproof " + item.Name);
-                    resBonus[ELEMENT.SHADOW] = 7;
+                    ResBonus[ELEMENT.SHADOW] = 7;
                     break;
                 case 20:
                     item.SetNameOverride("Hardened " + item.Name);
-                    bonusDef = 3;
-                    prefixTooltips.Add("+3 defence");
+                    BonusDef = 3;
+                    PrefixTooltips.Add("+3 defence");
                     break;
                 case 21:
                     item.SetNameOverride("Protective " + item.Name);
-                    bonusAllres = 2;
-                    prefixTooltips.Add("+3 to all resistances");
+                    BonusAllres = 2;
+                    PrefixTooltips.Add("+3 to all resistances");
                     break;
                 case 22:
                     item.SetNameOverride("Lava-Infused " + item.Name);
-                    resBonus[ELEMENT.FIRE] = 15;
+                    ResBonus[ELEMENT.FIRE] = 15;
                     item.rare += 1;
                     break;
                 case 23:
                     item.SetNameOverride("Snowforged " + item.Name);
-                    resBonus[ELEMENT.COLD] = 15;
+                    ResBonus[ELEMENT.COLD] = 15;
                     item.rare += 1;
                     break;
                 case 24:
                     item.SetNameOverride("Lightning-Coiled " + item.Name);
-                    resBonus[ELEMENT.LIGHTNING] = 15;
+                    ResBonus[ELEMENT.LIGHTNING] = 15;
                     item.rare += 1;
                     break;
                 case 25:
                     item.SetNameOverride("Blackheart " + item.Name);
-                    resBonus[ELEMENT.SHADOW] = 12;
+                    ResBonus[ELEMENT.SHADOW] = 12;
                     item.rare += 1;
                     break;
                 case 26:
                     item.SetNameOverride("Enchanted " + item.Name);
-                    bonusAllres = 4;
-                    prefixTooltips.Add("+5 to all resistances");
+                    BonusAllres = 4;
+                    PrefixTooltips.Add("+5 to all resistances");
                     item.rare += 1;
                     break;
             }
@@ -1148,94 +1148,94 @@ namespace kRPG.Items
         {
             ClearPrefixes();
 
-            switch (kPrefix - 1)
+            switch (KPrefix - 1)
             {
                 case 0:
                     item.SetNameOverride("Carnelian " + item.Name);
-                    statBonus[STAT.RESILIENCE] = 1 + item.rare / 2;
+                    StatBonus[STAT.RESILIENCE] = 1 + item.rare / 2;
                     break;
                 case 1:
                     item.SetNameOverride("Viridian " + item.Name);
-                    statBonus[STAT.QUICKNESS] = 1 + item.rare / 2;
+                    StatBonus[STAT.QUICKNESS] = 1 + item.rare / 2;
                     break;
                 case 2:
                     item.SetNameOverride("Cerulean " + item.Name);
-                    statBonus[STAT.POTENCY] = 1 + item.rare / 2;
+                    StatBonus[STAT.POTENCY] = 1 + item.rare / 2;
                     break;
                 case 3:
                     item.SetNameOverride("Arylide " + item.Name);
-                    statBonus[STAT.WITS] = 1 + item.rare / 3;
+                    StatBonus[STAT.WITS] = 1 + item.rare / 3;
                     break;
                 case 4:
                     item.SetNameOverride("Glaucous " + item.Name);
-                    bonusDef = 2 + item.rare;
-                    prefixTooltips.Add("+" + bonusDef + " defence");
+                    BonusDef = 2 + item.rare;
+                    PrefixTooltips.Add("+" + BonusDef + " defence");
                     break;
                 case 5:
                     item.SetNameOverride("Cinereous " + item.Name);
-                    bonusDef = 1 + item.rare / 2;
-                    prefixTooltips.Add("+" + bonusDef + " defence");
-                    bonusLife = 10 + item.rare * 5;
+                    BonusDef = 1 + item.rare / 2;
+                    PrefixTooltips.Add("+" + BonusDef + " defence");
+                    BonusLife = 10 + item.rare * 5;
                     break;
                 case 6:
                     item.SetNameOverride("Sanguine " + item.Name);
-                    bonusLife = 15 + item.rare * 10;
+                    BonusLife = 15 + item.rare * 10;
                     break;
                 case 7:
                     item.SetNameOverride("Azure " + item.Name);
-                    bonusMana = 10 + item.rare * 3;
+                    BonusMana = 10 + item.rare * 3;
                     break;
                 case 8:
                     item.SetNameOverride("Cerise " + item.Name);
-                    bonusMana = 6 + item.rare * 2;
-                    bonusLife = 10 + item.rare * 5;
+                    BonusMana = 6 + item.rare * 2;
+                    BonusLife = 10 + item.rare * 5;
                     break;
                 case 9:
                     item.SetNameOverride("Amaranth " + item.Name);
-                    bonusLife = 10 + item.rare * 4;
-                    statBonus[STAT.RESILIENCE] = 1 + item.rare / 3;
+                    BonusLife = 10 + item.rare * 4;
+                    StatBonus[STAT.RESILIENCE] = 1 + item.rare / 3;
                     break;
                 case 10:
                     item.SetNameOverride("Icterine " + item.Name);
-                    bonusLife = 10 + item.rare * 3;
-                    statBonus[STAT.QUICKNESS] = 1 + item.rare / 3;
+                    BonusLife = 10 + item.rare * 3;
+                    StatBonus[STAT.QUICKNESS] = 1 + item.rare / 3;
                     break;
                 case 11:
                     item.SetNameOverride("Byzantine " + item.Name);
-                    bonusLife = 8 + item.rare * 3;
-                    statBonus[STAT.POTENCY] = 1 + item.rare / 3;
+                    BonusLife = 8 + item.rare * 3;
+                    StatBonus[STAT.POTENCY] = 1 + item.rare / 3;
                     break;
                 case 12:
                     item.SetNameOverride("Silver " + item.Name);
-                    bonusEva = 2 + item.rare;
+                    BonusEva = 2 + item.rare;
                     break;
                 case 13:
                     item.SetNameOverride("Ebony " + item.Name);
-                    bonusEva = 1 + item.rare / 2;
-                    bonusLife = 9 + item.rare * 5;
+                    BonusEva = 1 + item.rare / 2;
+                    BonusLife = 9 + item.rare * 5;
                     break;
                 case 14:
                     item.SetNameOverride("Onyx " + item.Name);
-                    bonusEva = 1 + item.rare / 2;
-                    bonusDef = 1 + item.rare / 2;
-                    prefixTooltips.Add("+" + bonusDef + " defence");
+                    BonusEva = 1 + item.rare / 2;
+                    BonusDef = 1 + item.rare / 2;
+                    PrefixTooltips.Add("+" + BonusDef + " defence");
                     break;
                 case 15:
                     item.SetNameOverride("Scarlet " + item.Name);
-                    resBonus[ELEMENT.FIRE] = 6 + item.rare * 2;
+                    ResBonus[ELEMENT.FIRE] = 6 + item.rare * 2;
                     break;
                 case 16:
                     item.SetNameOverride("Celeste " + item.Name);
-                    resBonus[ELEMENT.COLD] = 6 + item.rare * 2;
+                    ResBonus[ELEMENT.COLD] = 6 + item.rare * 2;
                     break;
                 case 17:
                     item.SetNameOverride("Golden " + item.Name);
-                    resBonus[ELEMENT.LIGHTNING] = 6 + item.rare * 2;
+                    ResBonus[ELEMENT.LIGHTNING] = 6 + item.rare * 2;
                     break;
                 case 18:
                     item.SetNameOverride("Prismatic " + item.Name);
-                    bonusAllres = 3 + item.rare / 2;
-                    prefixTooltips.Add("+" + bonusAllres + " to all resistances");
+                    BonusAllres = 3 + item.rare / 2;
+                    PrefixTooltips.Add("+" + BonusAllres + " to all resistances");
                     break;
             }
         }
@@ -1253,7 +1253,7 @@ namespace kRPG.Items
 
         public override TagCompound Save(Item item)
         {
-            return new TagCompound {{"upgrade level", upgradeLevel}, {"prefix", kPrefix}};
+            return new TagCompound {{"upgrade level", UpgradeLevel}, {"prefix", KPrefix}};
         }
 
         public override void SetDefaults(Item item)
@@ -1268,7 +1268,7 @@ namespace kRPG.Items
 
         public void SetUpgradeLevel(Item item, byte level)
         {
-            upgradeLevel = level;
+            UpgradeLevel = level;
             ApplyStats(item);
         }
 
@@ -1276,37 +1276,37 @@ namespace kRPG.Items
         {
             PlayerCharacter modPlayer = player.GetModPlayer<PlayerCharacter>();
 
-            if (!enhanced) return;
-            if (bonusDef > 0)
-                player.statDefense += bonusDef;
-            if (bonusLife > 0)
-                modPlayer.bonusLife += bonusLife;
-            if (bonusMana > 0)
-                modPlayer.bonusMana += bonusMana;
-            if (bonusAccuracy > 0)
-                modPlayer.accuracy += bonusAccuracy;
-            if (bonusLeech > 0f)
-                modPlayer.lifeLeech += bonusLeech;
-            if (bonusCrit > 0)
-                modPlayer.critBoost += bonusCrit;
-            if (bonusMult > 0f)
-                modPlayer.critMultiplier += bonusMult;
-            if (bonusRegen > 0f)
-                modPlayer.lifeRegen += bonusRegen;
+            if (!Enhanced) return;
+            if (BonusDef > 0)
+                player.statDefense += BonusDef;
+            if (BonusLife > 0)
+                modPlayer.BonusLife += BonusLife;
+            if (BonusMana > 0)
+                modPlayer.BonusMana += BonusMana;
+            if (BonusAccuracy > 0)
+                modPlayer.Accuracy += BonusAccuracy;
+            if (BonusLeech > 0f)
+                modPlayer.LifeLeech += BonusLeech;
+            if (BonusCrit > 0)
+                modPlayer.CritBoost += BonusCrit;
+            if (BonusMult > 0f)
+                modPlayer.CritMultiplier += BonusMult;
+            if (BonusRegen > 0f)
+                modPlayer.LifeRegen += BonusRegen;
             foreach (STAT stat in Enum.GetValues(typeof(STAT)))
-                if (statBonus[stat] > 0)
-                    modPlayer.tempStats[stat] += statBonus[stat];
+                if (StatBonus[stat] > 0)
+                    modPlayer.TempStats[stat] += StatBonus[stat];
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                modPlayer.eleres[element] += resBonus[element];
-            modPlayer.allres += bonusAllres;
-            if (bonusEva > 0)
-                modPlayer.evasion += bonusEva;
+                modPlayer.Eleres[element] += ResBonus[element];
+            modPlayer.Allres += BonusAllres;
+            if (BonusEva > 0)
+                modPlayer.Evasion += BonusEva;
         }
 
         public void Upgrade(Item item)
         {
-            SetUpgradeLevel(item, (byte) (upgradeLevel + 1));
-            Main.NewText("Successfully upgraded item to +" + upgradeLevel, 0, 255, 0);
+            SetUpgradeLevel(item, (byte) (UpgradeLevel + 1));
+            Main.NewText("Successfully upgraded item to +" + UpgradeLevel, 0, 255, 0);
         }
 
         public bool Upgradeable(Item item)
@@ -1319,8 +1319,8 @@ namespace kRPG.Items
             if (item.healMana <= 0)
                 return false;
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
-            character.mana = Math.Min(player.statManaMax2, character.mana + item.healMana);
-            player.statMana = character.mana;
+            character.Mana = Math.Min(player.statManaMax2, character.Mana + item.healMana);
+            player.statMana = character.Mana;
             player.AddBuff(ModContent.BuffType<ManaCooldown>(), 600);
             return true;
         }

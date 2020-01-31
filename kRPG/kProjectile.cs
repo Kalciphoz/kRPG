@@ -13,16 +13,16 @@ namespace kRPG
 {
     public class kProjectile : GlobalProjectile
     {
-        public Dictionary<ELEMENT, int> elementalDamage;
-        private Item item;
+        public Dictionary<ELEMENT, int> ElementalDamage { get; set; }
+        private Item Item { get; set; }
 
         public override bool InstancePerEntity => true;
 
         public override void AI(Projectile projectile)
         {
-            if (elementalDamage != null || Main.netMode == 1)
+            if (ElementalDamage != null || Main.netMode == 1)
                 return;
-            elementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+            ElementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
 
             if (Main.npc.GetUpperBound(0) >= projectile.owner)
                 if (projectile.hostile && !projectile.friendly)
@@ -59,10 +59,10 @@ namespace kRPG
                         }
                     };
                     int count = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => haselement[element]);
-                    int portionsize = (int) Math.Round(projectile.damage * kNPC.ELE_DMG_MODIFIER / 3.0 / count);
+                    int portionsize = (int) Math.Round(projectile.damage * kNPC.EleDmgModifier / 3.0 / count);
                     foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                         if (haselement[element])
-                            elementalDamage[element] = Math.Max(1, portionsize);
+                            ElementalDamage[element] = Math.Max(1, portionsize);
                     return;
                 }
 
@@ -70,18 +70,18 @@ namespace kRPG
             {
                 PlayerCharacter character = Main.player[projectile.owner].GetModPlayer<PlayerCharacter>();
                 ProceduralSpellProj spell = (ProceduralSpellProj) projectile.modProjectile;
-                if (spell.source == null)
+                if (spell.Source == null)
                 {
                     SelectItem(projectile);
                 }
                 else
                 {
-                    Cross cross = (Cross) spell.source.glyphs[(int) GLYPHTYPE.CROSS].modItem;
+                    Cross cross = (Cross) spell.Source.Glyphs[(int) GLYPHTYPE.CROSS].modItem;
                     if (cross is Cross_Orange)
-                        SelectItem(projectile, character.lastSelectedWeapon);
+                        SelectItem(projectile, character.LastSelectedWeapon);
                     else
                         foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                            elementalDamage[element] = (int) Math.Round(cross.eleDmg[element] * projectile.damage);
+                            ElementalDamage[element] = (int) Math.Round(cross.EleDmg[element] * projectile.damage);
                 }
             }
             else if (projectile.friendly && !projectile.hostile && Main.player[projectile.owner] != null)
@@ -119,13 +119,13 @@ namespace kRPG
             Dictionary<ELEMENT, int> dictionary = new Dictionary<ELEMENT, int>();
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 dictionary[element] = 0;
-            if (elementalDamage == null)
-                elementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
-            if (player.GetModPlayer<PlayerCharacter>().rituals[RITUAL.DEMON_PACT])
+            if (ElementalDamage == null)
+                ElementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+            if (player.GetModPlayer<PlayerCharacter>().Rituals[RITUAL.DEMON_PACT])
                 dictionary[ELEMENT.SHADOW] = GetEleDamage(projectile, player);
             else
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                    dictionary[element] = (int) Math.Round(elementalDamage[element] * (ignoreModifiers
+                    dictionary[element] = (int) Math.Round(ElementalDamage[element] * (ignoreModifiers
                                                                ? 1
                                                                : player.GetModPlayer<PlayerCharacter>().DamageMultiplier(element, projectile.melee,
                                                                    projectile.ranged, projectile.magic, projectile.thrown, projectile.minion)));
@@ -135,20 +135,20 @@ namespace kRPG
 
         public void SelectItem(Projectile projectile, Item item)
         {
-            this.item = item;
+            this.Item = item;
 
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                elementalDamage[element] = this.item.GetGlobalItem<kItem>().elementalDamage[element];
+                ElementalDamage[element] = this.Item.GetGlobalItem<kItem>().ElementalDamage[element];
         }
 
         public void SelectItem(Projectile projectile)
         {
             Player owner = Main.player[projectile.owner];
-            item = owner.inventory[owner.selectedItem];
-            projectile.minion = item.summon || projectile.minion;
+            Item = owner.inventory[owner.selectedItem];
+            projectile.minion = Item.summon || projectile.minion;
 
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                elementalDamage[element] = item.GetGlobalItem<kItem>().elementalDamage[element];
+                ElementalDamage[element] = Item.GetGlobalItem<kItem>().ElementalDamage[element];
         }
     }
 }

@@ -18,7 +18,7 @@ namespace kRPG.NPCs
                 if (!player.active)
                     continue;
                 PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
-                if (character.level >= 20)
+                if (character.Level >= 20)
                     return true;
             }
 

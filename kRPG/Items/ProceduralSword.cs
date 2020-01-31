@@ -17,8 +17,8 @@ namespace kRPG.Items
 {
     public class ProceduralSword : ProceduralItem
     {
-        public SwordAccent accent;
-        public SwordBlade blade;
+        public SwordAccent Accent { get; set; }
+        public SwordBlade Blade { get; set; }
 
         //public override void ModifyTooltips(List<TooltipLine> tooltips)
         //{
@@ -26,35 +26,35 @@ namespace kRPG.Items
         //    tooltips.Add(new TooltipLine(mod, "enemyDef", "average enemy defense " + dps.ToString()));
         //}
 
-        public Dictionary<ELEMENT, float> eleDamage = new Dictionary<ELEMENT, float>
+        public Dictionary<ELEMENT, float> EleDamage { get; set; } = new Dictionary<ELEMENT, float>
         {
             {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
         };
 
-        public SwordHilt hilt;
-        public bool lighted;
-        public bool spear;
+        public SwordHilt Hilt { get; set; }
+        public bool Lighted { get; set; }
+        public bool Spear { get; set; }
 
-        public override ModItem Clone(Item item)
+        public override ModItem Clone(Item tItem)
         {
-            ProceduralSword copy = (ProceduralSword) base.Clone(item);
-            copy.hilt = hilt;
-            copy.blade = blade;
-            copy.accent = accent;
-            copy.dps = dps;
-            copy.enemyDef = enemyDef;
-            copy.spear = spear;
-            copy.eleDamage = new Dictionary<ELEMENT, float>();
+            ProceduralSword copy = (ProceduralSword) base.Clone(tItem);
+            copy.Hilt = Hilt;
+            copy.Blade = Blade;
+            copy.Accent = Accent;
+            copy.Dps = Dps;
+            copy.EnemyDef = EnemyDef;
+            copy.Spear = Spear;
+            copy.EleDamage = new Dictionary<ELEMENT, float>();
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                copy.eleDamage[element] = eleDamage[element];
-            copy.item.SetNameOverride(item.Name);
+                copy.EleDamage[element] = EleDamage[element];
+            copy.item.SetNameOverride(tItem.Name);
             return copy;
         }
 
         public Point CombinedTextureSize()
         {
-            return new Point(Math.Max(blade.texture.Width, blade.texture.Width - (int) blade.origin.X + (int) hilt.origin.X),
-                Math.Max(blade.texture.Height, (int) blade.origin.Y + hilt.texture.Height - (int) hilt.origin.Y));
+            return new Point(Math.Max(Blade.Texture.Width, Blade.Texture.Width - (int) Blade.Origin.X + (int) Hilt.Origin.X),
+                Math.Max(Blade.Texture.Height, (int) Blade.Origin.Y + Hilt.Texture.Height - (int) Hilt.Origin.Y));
         }
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
@@ -65,7 +65,7 @@ namespace kRPG.Items
                 return;
             }
 
-            spriteBatch.Draw(texture, position, null, lighted ? Color.White : color, rotation, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, position, null, Lighted ? Color.White : color, rotation, Vector2.Zero, scale, SpriteEffects.None, 0f);
         }
 
         public void DrawHeld(PlayerDrawInfo drawinfo, Color color, float rotation, float scale, Vector2 playerCenter)
@@ -81,7 +81,7 @@ namespace kRPG.Items
                 }
 
                 SpriteEffects effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-                DrawData draw = new DrawData(texture, position, null, lighted ? Color.White : color, rotation,
+                DrawData draw = new DrawData(texture, position, null, Lighted ? Color.White : color, rotation,
                     new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale, effects, 0);
                 for (int i = 0; i < Main.playerDrawData.Count; i += 1)
                 {
@@ -103,7 +103,7 @@ namespace kRPG.Items
         {
             ProceduralSword sword;
             sword = NewSword(mod, position, SwordHilt.RandomHilt(theme), SwordBlade.RandomBlade(theme),
-                Main.rand.Next(5) < 3 ? SwordAccent.RandomAccent() : SwordAccent.none, dps, enemyDef);
+                Main.rand.Next(5) < 3 ? SwordAccent.RandomAccent() : SwordAccent.None, dps, enemyDef);
             return sword.item;
         }
 
@@ -113,25 +113,25 @@ namespace kRPG.Items
             {
                 ResetStats();
                 if (Main.netMode != 2)
-                    texture = GFX.CombineTextures(new List<Texture2D> {blade.texture, hilt.texture, accent.texture},
+                    texture = GFX.CombineTextures(new List<Texture2D> {Blade.Texture, Hilt.Texture, Accent.Texture},
                         new List<Point>
                         {
-                            new Point(CombinedTextureSize().X - blade.texture.Width, 0),
-                            new Point(0, CombinedTextureSize().Y - hilt.texture.Height),
-                            new Point((int) hilt.origin.X + hilt.accentOffset.X - (int) accent.origin.X,
-                                hilt.accentOffset.Y + CombinedTextureSize().Y - hilt.texture.Height + (int) hilt.origin.Y - (int) accent.origin.Y)
+                            new Point(CombinedTextureSize().X - Blade.Texture.Width, 0),
+                            new Point(0, CombinedTextureSize().Y - Hilt.Texture.Height),
+                            new Point((int) Hilt.Origin.X + Hilt.AccentOffset.X - (int) Accent.Origin.X,
+                                Hilt.AccentOffset.Y + CombinedTextureSize().Y - Hilt.Texture.Height + (int) Hilt.Origin.Y - (int) Accent.Origin.Y)
                         }, CombinedTextureSize());
                 if (Main.netMode != 2) item.width = texture.Width;
                 if (Main.netMode != 2) item.height = texture.Height;
-                if (accent.type == SwordAccent.gemPurple.type)
+                if (Accent.Type == SwordAccent.GemPurple.Type)
                 {
                     item.melee = false;
                     item.magic = true;
                 }
 
-                lighted = blade.lighted;
-                spear = hilt.spear && blade.spearable;
-                if (spear)
+                Lighted = Blade.Lighted;
+                Spear = Hilt.Spear && Blade.Spearable;
+                if (Spear)
                 {
                     item.noMelee = true;
                     item.noUseGraphic = true;
@@ -143,7 +143,7 @@ namespace kRPG.Items
             catch (SystemException e)
             {
                 ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("Blade|Hilt|Accent" + (blade == null) + (hilt == null) + (accent == null));
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("Blade|Hilt|Accent" + (Blade == null) + (Hilt == null) + (Accent == null));
             }
         }
 
@@ -151,11 +151,11 @@ namespace kRPG.Items
         {
             try
             {
-                hilt = SwordHilt.hilts[tag.GetInt("hilt_id")];
-                blade = SwordBlade.blades[tag.GetInt("blade_id")];
-                accent = SwordAccent.accents[tag.GetInt("accent_id")];
-                dps = tag.GetFloat("dps");
-                enemyDef = tag.GetInt("enemy_defence");
+                Hilt = SwordHilt.Hilts[tag.GetInt("hilt_id")];
+                Blade = SwordBlade.Blades[tag.GetInt("blade_id")];
+                Accent = SwordAccent.Accents[tag.GetInt("accent_id")];
+                Dps = tag.GetFloat("dps");
+                EnemyDef = tag.GetInt("enemy_defence");
             }
             catch (SystemException e)
             {
@@ -174,52 +174,52 @@ namespace kRPG.Items
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
-            blade.effect?.Invoke(hitbox, player);
+            Blade.Effect?.Invoke(hitbox, player);
 
-            accent.effect?.Invoke(hitbox, player);
+            Accent.Effect?.Invoke(hitbox, player);
         }
 
         public override void NetRecieve(BinaryReader reader)
         {
             if (!reader.ReadBoolean()) return;
-            blade = SwordBlade.blades[reader.ReadInt32()];
-            hilt = SwordHilt.hilts[reader.ReadInt32()];
-            accent = SwordAccent.accents[reader.ReadInt32()];
-            dps = reader.ReadSingle();
-            enemyDef = reader.ReadInt32();
+            Blade = SwordBlade.Blades[reader.ReadInt32()];
+            Hilt = SwordHilt.Hilts[reader.ReadInt32()];
+            Accent = SwordAccent.Accents[reader.ReadInt32()];
+            Dps = reader.ReadSingle();
+            EnemyDef = reader.ReadInt32();
             Initialize();
         }
 
         public override void NetSend(BinaryWriter writer)
         {
-            bool proceed = blade != null;
+            bool proceed = Blade != null;
             writer.Write(proceed);
             if (!proceed) return;
-            writer.Write(blade.type);
-            writer.Write(hilt.type);
-            writer.Write(accent.type);
-            writer.Write(dps);
-            writer.Write(enemyDef);
+            writer.Write(Blade.Type);
+            writer.Write(Hilt.Type);
+            writer.Write(Accent.Type);
+            writer.Write(Dps);
+            writer.Write(EnemyDef);
         }
 
         public static ProceduralSword NewSword(Mod mod, Vector2 position, SwordHilt hilt, SwordBlade blade, SwordAccent accent, float dps, int enemyDef)
         {
             int id = Item.NewItem(position, mod.GetItem("ProceduralSword").item.type);
             ProceduralSword sword = (ProceduralSword) Main.item[id].modItem;
-            sword.hilt = hilt;
-            sword.blade = blade;
-            sword.accent = accent;
-            sword.dps = dps;
-            sword.enemyDef = enemyDef;
+            sword.Hilt = hilt;
+            sword.Blade = blade;
+            sword.Accent = accent;
+            sword.Dps = dps;
+            sword.EnemyDef = enemyDef;
             sword.Initialize();
             if (Main.netMode != 2)
                 return sword;
             ModPacket packet = mod.GetPacket();
             packet.Write((byte) Message.SwordInit);
             packet.Write(id);
-            packet.Write(blade.type);
-            packet.Write(hilt.type);
-            packet.Write(accent.type);
+            packet.Write(blade.Type);
+            packet.Write(hilt.Type);
+            packet.Write(accent.Type);
             packet.Write(dps);
             packet.Write(enemyDef);
             packet.Send();
@@ -228,7 +228,7 @@ namespace kRPG.Items
 
         public override void OnHitNPC(Player player, NPC target, int damage, float knockBack, bool crit)
         {
-            accent.onHit?.Invoke(player, target, this, damage, crit);
+            Accent.OnHit?.Invoke(player, target, this, damage, crit);
         }
 
         public Texture2D OverhaulGetTexture()
@@ -238,29 +238,29 @@ namespace kRPG.Items
 
         public bool? OverhaulHasTag(string tag)
         {
-            return (spear ? tag == "spear" : tag == "broadsword") ? (bool?) true : null;
+            return (Spear ? tag == "spear" : tag == "broadsword") ? (bool?) true : null;
         }
 
         public void ResetStats()
         {
             try
             {
-                item.rare = (int) Math.Min(Math.Floor(dps / 15.0), 9);
-                item.useAnimation = (int) (blade.useTime / hilt.speedModifier);
-                item.damage = (int) Math.Round(dps * hilt.dpsModifier * accent.dpsModifier * item.useAnimation / 60f + enemyDef);
-                item.useAnimation = (int) Math.Round((item.damage - (float) enemyDef) * 60f / (dps * hilt.dpsModifier * accent.dpsModifier));
+                item.rare = (int) Math.Min(Math.Floor(Dps / 15.0), 9);
+                item.useAnimation = (int) (Blade.UseTime / Hilt.SpeedModifier);
+                item.damage = (int) Math.Round(Dps * Hilt.DpsModifier * Accent.DpsModifier * item.useAnimation / 60f + EnemyDef);
+                item.useAnimation = (int) Math.Round((item.damage - (float) EnemyDef) * 60f / (Dps * Hilt.DpsModifier * Accent.DpsModifier));
                 item.useTime = item.useAnimation;
-                item.knockBack = blade.knockBack + hilt.knockBack;
-                item.SetNameOverride(hilt.prefix + blade.name + accent.suffix);
-                item.autoReuse = hilt.autoswing || blade.autoswing;
+                item.knockBack = Blade.KnockBack + Hilt.KnockBack;
+                item.SetNameOverride(Hilt.Prefix + Blade.Name + Accent.Suffix);
+                item.autoReuse = Hilt.AutoSwing || Blade.AutoSwing;
                 item.useTurn = item.autoReuse;
-                item.value = (int) (dps * 315);
-                item.crit = blade.critBonus + hilt.critBonus + accent.critBonus;
-                item.scale = 1f + blade.scale + hilt.scale;
-                item.mana = hilt.mana + accent.mana;
-                eleDamage = new Dictionary<ELEMENT, float>();
+                item.value = (int) (Dps * 315);
+                item.crit = Blade.CritBonus + Hilt.CritBonus + Accent.CritBonus;
+                item.scale = 1f + Blade.Scale + Hilt.Scale;
+                item.mana = Hilt.Mana + Accent.Mana;
+                EleDamage = new Dictionary<ELEMENT, float>();
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                    eleDamage[element] = blade.eleDamage[element] + accent.eleDamage[element];
+                    EleDamage[element] = Blade.EleDamage[element] + Accent.EleDamage[element];
             }
             catch (SystemException e)
             {
@@ -274,17 +274,17 @@ namespace kRPG.Items
             {
                 return new TagCompound
                 {
-                    {"hilt_id", hilt.type},
-                    {"blade_id", blade.type},
-                    {"accent_id", accent.type},
-                    {"dps", dps},
-                    {"enemy_defence", enemyDef}
+                    {"hilt_id", Hilt.Type},
+                    {"blade_id", Blade.Type},
+                    {"accent_id", Accent.Type},
+                    {"dps", Dps},
+                    {"enemy_defence", EnemyDef}
                 };
             }
             catch (SystemException e)
             {
                 ModLoader.GetMod("kRPG").Logger.InfoFormat("@NewTagCompound :: " + e);
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("Blade|Hilt|Accent" + (blade == null) + (hilt == null) + (accent == null));
+                ModLoader.GetMod("kRPG").Logger.InfoFormat("Blade|Hilt|Accent" + (Blade == null) + (Hilt == null) + (Accent == null));
             }
 
             return new TagCompound();
@@ -317,14 +317,14 @@ namespace kRPG.Items
             Vector2 unitVelocity = (Main.MouseWorld - pos);
             unitVelocity.Normalize();
             Vector2 velocity = unitVelocity * 8f;
-            Projectile projectile = Main.projectile[Projectile.NewProjectile(pos, velocity, mod.ProjectileType<ProceduralSwordThrow>(), item.damage, item.knockBack, player.whoAmI)];
-            projectile.GetGlobalProjectile<kProjectile>().elementalDamage = item.GetGlobalItem<kItem>().elementalDamage;
-            projectile.scale = item.scale;
+            Projectile projectile = Main.projectile[Projectile.NewProjectile(pos, velocity, mod.ProjectileType<ProceduralSwordThrow>(), tItem.damage, tItem.knockBack, player.whoAmI)];
+            projectile.GetGlobalProjectile<kProjectile>().elementalDamage = tItem.GetGlobalItem<kItem>().elementalDamage;
+            projectile.scale = tItem.scale;
             ProceduralSwordThrow ps = (ProceduralSwordThrow)projectile.modProjectile;
             ps.hilt = hilt;
             ps.blade = blade;
             ps.accent = accent;
-            ps.sword = item;
+            ps.sword = tItem;
             ps.Initialize();
             if (player.meleeDamage >= player.rangedDamage && player.meleeDamage >= player.thrownDamage)
                 projectile.melee = true;
@@ -339,7 +339,7 @@ namespace kRPG.Items
         {
             try
             {
-                if (spear /* && player.altFunctionUse != 2*/)
+                if (Spear /* && player.altFunctionUse != 2*/)
                 {
                     Vector2 pos = player.position;
                     Vector2 unitVelocity = new Vector2(Main.mouseX - 12f, Main.mouseY - 24f) + Main.screenPosition - pos;
@@ -349,20 +349,20 @@ namespace kRPG.Items
                         Main.projectile[
                             Projectile.NewProjectile(pos, velocity, GetInstance<ProceduralSpear>().projectile.type, item.damage, item.knockBack,
                                 player.whoAmI)];
-                    projectile.GetGlobalProjectile<kProjectile>().elementalDamage = item.GetGlobalItem<kItem>().elementalDamage;
+                    projectile.GetGlobalProjectile<kProjectile>().ElementalDamage = item.GetGlobalItem<kItem>().ElementalDamage;
                     projectile.scale = item.scale;
                     ProceduralSpear ps = (ProceduralSpear) projectile.modProjectile;
-                    ps.hilt = hilt;
-                    ps.blade = blade;
-                    ps.accent = accent;
+                    ps.Hilt = Hilt;
+                    ps.Blade = Blade;
+                    ps.Accent = Accent;
                     if (Main.netMode != 2) ps.Initialize();
                     if (Main.netMode != 1)
                         return true;
                     ModPacket packet = mod.GetPacket();
                     packet.Write((byte) Message.SyncSpear);
-                    packet.Write(blade.type);
-                    packet.Write(hilt.type);
-                    packet.Write(accent.type);
+                    packet.Write(Blade.Type);
+                    packet.Write(Hilt.Type);
+                    packet.Write(Accent.Type);
                     packet.Send();
                     return true;
                 }
@@ -377,7 +377,7 @@ namespace kRPG.Items
 
         public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)
         {
-            if (spear /* || player.altFunctionUse == 2*/)
+            if (Spear /* || player.altFunctionUse == 2*/)
             {
                 noHitbox = true;
                 return;
