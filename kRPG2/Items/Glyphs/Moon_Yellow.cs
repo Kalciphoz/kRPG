@@ -18,7 +18,7 @@ namespace kRPG2.Items.Glyphs
             {
                 int rotDistance = spell.Minion ? 32 : 48;
                 spell.BasePosition += spell.BaseVelocity;
-                Vector2 unitRelativePos = spell.RelativePos(spell.BasePosition);
+                var unitRelativePos = spell.RelativePos(spell.BasePosition);
                 unitRelativePos.Normalize();
                 spell.projectile.Center = spell.BasePosition + unitRelativePos * rotDistance;
                 spell.DisplacementVelocity =
@@ -40,9 +40,9 @@ namespace kRPG2.Items.Glyphs
                 for (int i = 0; i < spell.ProjCount; i += 1)
                 {
                     float angle = i * spread * (float) API.Tau;
-                    ProceduralSpellProj proj = spell.CreateProjectile(player, Vector2.Zero, spread * i, origin + new Vector2(0f, -rotDistance).RotatedBy(angle), caster);
+                    var proj = spell.CreateProjectile(player, Vector2.Zero, spread * i, origin + new Vector2(0f, -rotDistance).RotatedBy(angle), caster);
                     proj.BasePosition = origin;
-                    Vector2 unitVelocity = target - origin;
+                    var unitVelocity = target - origin;
                     unitVelocity.Normalize();
                     proj.BaseVelocity = unitVelocity * 8f;
                     proj.DisplacementAngle = angle;

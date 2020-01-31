@@ -5,13 +5,13 @@ namespace kRPG2.Modifiers
 {
     public class LifeRegenModifier : NpcModifier
     {
-        private float RegenTimer { get; set; }
-
         public LifeRegenModifier(kNPC kNpc, NPC npc) : base(kNpc, npc)
         {
             this.npc = npc;
             npc.GivenName = "Shimmering " + npc.GivenName;
         }
+
+        private float RegenTimer { get; set; }
 
         public new static NpcModifier New(kNPC kNpc, NPC npc)
         {

@@ -32,7 +32,7 @@ namespace kRPG2.Items
 
         public override ModItem Clone(Item tItem)
         {
-            ProceduralStaff copy = (ProceduralStaff) base.Clone(tItem);
+            var copy = (ProceduralStaff) base.Clone(tItem);
             copy.Staff = Staff;
             copy.Gem = Gem;
             copy.Ornament = Ornament;
@@ -67,12 +67,12 @@ namespace kRPG2.Items
         {
             try
             {
-                Player player = Main.player[Main.myPlayer];
-                Vector2 position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
+                var player = Main.player[Main.myPlayer];
+                var position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
                 if (texture == null)
                     item.SetDefaults(0, true);
-                SpriteEffects effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-                DrawData draw = new DrawData(texture, position, null, color, rotation, new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale,
+                var effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+                var draw = new DrawData(texture, position, null, color, rotation, new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale,
                     effects, 0);
                 for (int i = 0; i < Main.playerDrawData.Count; i += 1)
                 {
@@ -94,7 +94,7 @@ namespace kRPG2.Items
             int enemyDef)
         {
             int id = Item.NewItem(position, mod.GetItem("ProceduralStaff").item.type);
-            ProceduralStaff staff = (ProceduralStaff) Main.item[id].modItem;
+            var staff = (ProceduralStaff) Main.item[id].modItem;
             staff.Staff = staffstaff;
             staff.Gem = staffgem;
             staff.Ornament = staffornament;
@@ -103,7 +103,7 @@ namespace kRPG2.Items
             staff.Initialize();
             if (Main.netMode != 2)
                 return staff;
-            ModPacket packet = mod.GetPacket();
+            var packet = mod.GetPacket();
             packet.Write((byte) Message.StaffInit);
             packet.Write(id);
             packet.Write(staffstaff.Type);
@@ -126,7 +126,7 @@ namespace kRPG2.Items
         public override void Initialize()
         {
             ResetStats();
-            List<StaffPart> parts = new List<StaffPart>();
+            var parts = new List<StaffPart>();
             if (!Ornament.Front) parts.Add(Ornament);
             if (!Staff.Front && !Gem.Back) parts.Add(Staff);
             parts.Add(Gem);

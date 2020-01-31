@@ -17,22 +17,9 @@ namespace kRPG2
 {
     public class ProceduralSpell
     {
-        public List<ProceduralSpellProj> CirclingProtection { get; set; }= new List<ProceduralSpellProj>();
-
-        public int Cooldown { get; set; } = 120;
-
-        public Item[] Glyphs { get; set; } = new Item[3];
-
-        public Keys Key { get; set; } = Keys.A;
-        private  Mod Mod { get; }
-
-        public List<GlyphModifier> ModifierOverride { get; set; } = null;
-        public int ProjCountOverride { get; set; } = -1;
-        public int Remaining { get; set; }
-
         public ProceduralSpell(Mod mod)
         {
-            this.Mod = mod;
+            Mod = mod;
             for (int i = 0; i < Glyphs.Length; i += 1)
                 Glyphs[i] = new Item();
         }
@@ -41,22 +28,33 @@ namespace kRPG2
         {
             get
             {
-                Glyph glyph = (Glyph) Glyphs[(byte) GLYPHTYPE.MOON].modItem;
+                var glyph = (Glyph) Glyphs[(byte) GLYPHTYPE.MOON].modItem;
                 return glyph.GetCastAction();
             }
         }
 
+        public List<ProceduralSpellProj> CirclingProtection { get; set; } = new List<ProceduralSpellProj>();
+
+        public int Cooldown { get; set; } = 120;
+
+        public Item[] Glyphs { get; set; } = new Item[3];
+
+        public Keys Key { get; set; } = Keys.A;
+
         public bool Minion => !(Glyphs[(byte) GLYPHTYPE.STAR].modItem is Star_Blue);
+        private Mod Mod { get; }
+
+        public List<GlyphModifier> ModifierOverride { get; set; } = null;
 
         public List<GlyphModifier> Modifiers
         {
             get
             {
                 if (ModifierOverride != null) return ModifierOverride;
-                List<GlyphModifier> list = new List<GlyphModifier>();
+                var list = new List<GlyphModifier>();
                 for (int i = 0; i < Glyphs.Length; i += 1)
                 {
-                    Glyph glyph = (Glyph) Glyphs[i].modItem;
+                    var glyph = (Glyph) Glyphs[i].modItem;
                     for (int j = 0; j < glyph.Modifiers.Count; j += 1)
                         list.Add(glyph.Modifiers[j]);
                 }
@@ -66,12 +64,14 @@ namespace kRPG2
         }
 
         public int ProjCount => ProjCountOverride == -1 ? ((Moon) Glyphs[(byte) GLYPHTYPE.MOON].modItem).ProjCount : ProjCountOverride;
+        public int ProjCountOverride { get; set; } = -1;
+        public int Remaining { get; set; }
 
         public Action<ProceduralSpell, Player, Vector2> UseAction
         {
             get
             {
-                Glyph glyph = (Glyph) Glyphs[(byte) GLYPHTYPE.STAR].modItem;
+                var glyph = (Glyph) Glyphs[(byte) GLYPHTYPE.STAR].modItem;
                 return glyph.GetUseAbility();
             }
         }
@@ -96,15 +96,15 @@ namespace kRPG2
         public ProceduralSpellProj CreateProjectile(Player player, Vector2 velocity, float angle = 0f, Vector2? position = null, Entity caster = null)
         {
             if (caster == null) caster = player;
-            Projectile projectile =
+            var projectile =
                 Main.projectile[
                     Projectile.NewProjectile(position ?? caster.Center, velocity.RotatedBy(API.Tau * angle), ModContent.ProjectileType<ProceduralSpellProj>(),
                         ProjectileDamage(player.GetModPlayer<PlayerCharacter>()), 3f, player.whoAmI)];
-            ProceduralSpellProj ps = (ProceduralSpellProj) projectile.modProjectile;
+            var ps = (ProceduralSpellProj) projectile.modProjectile;
             ps.Origin = projectile.position;
-            foreach (Item item in Glyphs)
+            foreach (var item in Glyphs)
             {
-                Glyph glyph = (Glyph) item.modItem;
+                var glyph = (Glyph) item.modItem;
                 if (glyph.GetAiAction() != null)
                     ps.ai.Add(glyph.GetAiAction());
                 if (glyph.GetInitAction() != null)
@@ -115,7 +115,7 @@ namespace kRPG2
                     ps.Kills.Add(glyph.GetKillAction());
             }
 
-            foreach (GlyphModifier modifier in Modifiers)
+            foreach (var modifier in Modifiers)
             {
                 if (modifier.Impact != null)
                     ps.Impacts.Add(modifier.Impact);
@@ -136,7 +136,7 @@ namespace kRPG2
             ps.Source = this;
             ps.Initialize();
             if (Main.netMode != 1) return ps;
-            ModPacket packet = Mod.GetPacket();
+            var packet = Mod.GetPacket();
             packet.Write((byte) Message.CreateProjectile);
             packet.Write(player.whoAmI);
             packet.Write(ps.projectile.whoAmI);
@@ -146,7 +146,7 @@ namespace kRPG2
             packet.Write(ps.projectile.damage);
             packet.Write(Minion);
             packet.Write(caster.whoAmI);
-            List<GlyphModifier> mods = Modifiers;
+            var mods = Modifiers;
             packet.Write(mods.Count);
             for (int j = 0; j < mods.Count; j += 1)
                 packet.Write(mods[j].Id);
@@ -166,8 +166,8 @@ namespace kRPG2
                 if (Remaining > 0)
                     Remaining -= 1;
 
-                Rectangle bounds = new Rectangle((int) position.X, (int) position.Y, (int) (GFX.SkillSlot.Width * scale), (int) (GFX.SkillSlot.Height * scale));
-                PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
+                var bounds = new Rectangle((int) position.X, (int) position.Y, (int) (GFX.SkillSlot.Width * scale), (int) (GFX.SkillSlot.Height * scale));
+                var character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
 
                 if (spriteBatch == null || character == null) return;
 
@@ -187,7 +187,7 @@ namespace kRPG2
                     if (character.SelectedAbility.Equals(this))
                     {
                         spriteBatch.Draw(GFX.SelectedSkillSlot, position, Color.White, scale);
-                        for (Keys k = Keys.A; k <= Keys.Z; k += 1)
+                        for (var k = Keys.A; k <= Keys.Z; k += 1)
                             if (Main.keyState.IsKeyDown(k) && (Main.keyState.IsKeyDown(Keys.LeftShift) || Main.keyState.IsKeyDown(Keys.RightShift)))
                             {
                                 for (int i = 0; i < character.Abilities.Length; i += 1)
@@ -234,7 +234,7 @@ namespace kRPG2
         public void UseAbility(Player player, Vector2 target)
         {
             bool vanish = Modifiers.Contains(GlyphModifier.Vanish);
-            Vector2 oldCenter = player.Center;
+            var oldCenter = player.Center;
             if (vanish)
             {
                 Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), oldCenter);
@@ -258,7 +258,7 @@ namespace kRPG2
                         if (player.chaosState)
                         {
                             player.statLife -= player.statLifeMax2 / 7;
-                            PlayerDeathReason damageSource = PlayerDeathReason.ByOther(13);
+                            var damageSource = PlayerDeathReason.ByOther(13);
                             if (Main.rand.Next(2) == 0)
                                 damageSource = PlayerDeathReason.ByOther(player.Male ? 14 : 15);
                             if (player.statLife <= 0)
@@ -275,6 +275,4 @@ namespace kRPG2
             UseAction(this, player, vanish ? oldCenter : target);
         }
     }
-
-
 }

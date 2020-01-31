@@ -11,7 +11,8 @@ namespace kRPG2.Items.Glyphs
 {
     public class Cross_Blue : Cross
     {
-        public override Dictionary<ELEMENT, float> EleDmg { get; set; } = new Dictionary<ELEMENT, float> { { ELEMENT.FIRE, 0 }, { ELEMENT.COLD, 1f }, { ELEMENT.LIGHTNING, 0 }, { ELEMENT.SHADOW, 0 } };
+        public override Dictionary<ELEMENT, float> EleDmg { get; set; } =
+            new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 1f}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
 
         public override float BaseDamageModifier()
         {
@@ -20,7 +21,7 @@ namespace kRPG2.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetAiAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 if (Main.rand.NextFloat(0f, 2f) <= spell.Alpha)
                 {
@@ -35,7 +36,7 @@ namespace kRPG2.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetInitAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 spell.LocalTexture = GFX.ProjectileFrostbolt;
                 spell.projectile.width = spell.LocalTexture.Width;
@@ -47,7 +48,7 @@ namespace kRPG2.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetKillAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 for (int k = 0; k < 8; k++)
                     try

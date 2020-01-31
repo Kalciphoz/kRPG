@@ -13,9 +13,9 @@ namespace kRPG2
     public class kProjectile : GlobalProjectile
     {
         public Dictionary<ELEMENT, int> ElementalDamage { get; set; }
-        private Item Item { get; set; }
 
         public override bool InstancePerEntity => true;
+        private Item Item { get; set; }
 
         public override void AI(Projectile projectile)
         {
@@ -27,14 +27,14 @@ namespace kRPG2
                 if (projectile.hostile && !projectile.friendly)
                 {
                     bool bossfight = false;
-                    foreach (NPC n in Main.npc)
+                    foreach (var n in Main.npc)
                         if (n.active)
                             if (n.boss)
                                 bossfight = true;
                     if (bossfight) return;
 
-                    Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
-                    Dictionary<ELEMENT, bool> haselement = new Dictionary<ELEMENT, bool>
+                    var player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
+                    var haselement = new Dictionary<ELEMENT, bool>
                     {
                         {
                             ELEMENT.FIRE,
@@ -67,15 +67,15 @@ namespace kRPG2
 
             if (projectile.type == ModContent.ProjectileType<ProceduralSpellProj>())
             {
-                PlayerCharacter character = Main.player[projectile.owner].GetModPlayer<PlayerCharacter>();
-                ProceduralSpellProj spell = (ProceduralSpellProj) projectile.modProjectile;
+                var character = Main.player[projectile.owner].GetModPlayer<PlayerCharacter>();
+                var spell = (ProceduralSpellProj) projectile.modProjectile;
                 if (spell.Source == null)
                 {
                     SelectItem(projectile);
                 }
                 else
                 {
-                    Cross cross = (Cross) spell.Source.Glyphs[(int) GLYPHTYPE.CROSS].modItem;
+                    var cross = (Cross) spell.Source.Glyphs[(int) GLYPHTYPE.CROSS].modItem;
                     if (cross is Cross_Orange)
                         SelectItem(projectile, character.LastSelectedWeapon);
                     else
@@ -85,7 +85,7 @@ namespace kRPG2
             }
             else if (projectile.friendly && !projectile.hostile && Main.player[projectile.owner] != null)
             {
-                Player player = Main.player[projectile.owner];
+                var player = Main.player[projectile.owner];
                 if (!player.active)
                     return;
                 if (player.inventory[player.selectedItem] == null)
@@ -108,14 +108,14 @@ namespace kRPG2
 
         public int GetEleDamage(Projectile projectile, Player player, bool ignoreModifiers = false)
         {
-            Dictionary<ELEMENT, int> ele = new Dictionary<ELEMENT, int>();
+            var ele = new Dictionary<ELEMENT, int>();
             ele = GetIndividualElements(projectile, player, ignoreModifiers);
             return ele[ELEMENT.FIRE] + ele[ELEMENT.COLD] + ele[ELEMENT.LIGHTNING] + ele[ELEMENT.SHADOW];
         }
 
         public Dictionary<ELEMENT, int> GetIndividualElements(Projectile projectile, Player player, bool ignoreModifiers = false)
         {
-            Dictionary<ELEMENT, int> dictionary = new Dictionary<ELEMENT, int>();
+            var dictionary = new Dictionary<ELEMENT, int>();
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 dictionary[element] = 0;
             if (ElementalDamage == null)
@@ -134,15 +134,15 @@ namespace kRPG2
 
         public void SelectItem(Projectile projectile, Item item)
         {
-            this.Item = item;
+            Item = item;
 
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                ElementalDamage[element] = this.Item.GetGlobalItem<kItem>().ElementalDamage[element];
+                ElementalDamage[element] = Item.GetGlobalItem<kItem>().ElementalDamage[element];
         }
 
         public void SelectItem(Projectile projectile)
         {
-            Player owner = Main.player[projectile.owner];
+            var owner = Main.player[projectile.owner];
             Item = owner.inventory[owner.selectedItem];
             projectile.minion = Item.summon || projectile.minion;
 

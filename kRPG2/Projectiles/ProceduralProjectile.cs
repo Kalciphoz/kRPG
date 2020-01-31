@@ -37,14 +37,6 @@ namespace kRPG2.Projectiles
         }
     }
 
- 
-
-   
-
- 
-
-
-
     //public class ProceduralSwordThrow : ProceduralProjectile
     //{
     //    public SwordHilt hilt;
@@ -119,6 +111,4 @@ namespace kRPG2.Projectiles
     //        //if (accent.onHit != null) accent.onHit(owner, target, (ProceduralSword)owner.inventory[owner.selectedItem].modItem, damage, crit);
     //    }
     //}
-
-   
 }

@@ -10,7 +10,6 @@ using kRPG2.Items;
 using kRPG2.Items.Glyphs;
 using kRPG2.Items.Weapons;
 using kRPG2.Items.Weapons.RangedDrops;
-using kRPG2.Modifiers;
 using kRPG2.Projectiles;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
@@ -100,10 +99,6 @@ namespace kRPG2
             }
         };
 
-        public static kRPG2 Mod { get; set; }
-
-        public static Mod Overhaul { get; set; }
-
         public static Dictionary<string, RITUAL> ritualByName = new Dictionary<string, RITUAL>
         {
             {"demon_pact", RITUAL.DEMON_PACT},
@@ -114,8 +109,6 @@ namespace kRPG2
             {"mind_fortress", RITUAL.MIND_FORTRESS},
             {"blood_drinking", RITUAL.BLOOD_DRINKING}
         };
-
-        public Texture2D[] InvSlot { get; set; } = new Texture2D[16];
 
         public kRPG2()
         {
@@ -129,6 +122,12 @@ namespace kRPG2
             //}
         }
 
+        public Texture2D[] InvSlot { get; set; } = new Texture2D[16];
+
+        public static kRPG2 Mod { get; set; }
+
+        public static Mod Overhaul { get; set; }
+
         public bool DrawInterface()
         {
             if (Main.netMode == 2 || Main.gameMenu) return true;
@@ -136,7 +135,7 @@ namespace kRPG2
             {
                 for (int i = 0; i < BaseGui.GuiElements.Count; i += 1)
                 {
-                    BaseGui gui = BaseGui.GuiElements[i];
+                    var gui = BaseGui.GuiElements[i];
                     if (gui.PreDraw())
                         gui.Draw(Main.spriteBatch, Main.LocalPlayer);
                 }
@@ -151,8 +150,8 @@ namespace kRPG2
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
-            Message msg = (Message) reader.ReadByte();
-            Dictionary<DataTag, object> tags = dataTags[msg].ToDictionary(tag => tag, tag => tag.Read(reader));
+            var msg = (Message) reader.ReadByte();
+            var tags = dataTags[msg].ToDictionary(tag => tag, tag => tag.Read(reader));
             switch (msg)
             {
                 //case Message.InitProjEleDmg:
@@ -177,9 +176,9 @@ namespace kRPG2
                 case Message.NPCEleDmg:
                     if (Main.netMode == 1)
                     {
-                        NPC npc = Main.npc[(int) tags[DataTag.NpcId]];
-                        kNPC kn = npc.GetGlobalNPC<kNPC>();
-                        Dictionary<ELEMENT, bool> haselement = new Dictionary<ELEMENT, bool>
+                        var npc = Main.npc[(int) tags[DataTag.NpcId]];
+                        var kn = npc.GetGlobalNPC<kNPC>();
+                        var haselement = new Dictionary<ELEMENT, bool>
                         {
                             {ELEMENT.FIRE, (bool) tags[DataTag.Flag]},
                             {ELEMENT.COLD, (bool) tags[DataTag.Flag2]},
@@ -198,11 +197,11 @@ namespace kRPG2
                 case Message.PrefixNPC:
                     if (Main.netMode == 1)
                     {
-                        NPC npc = Main.npc[(int) tags[DataTag.NpcId]];
-                        kNPC kn = npc.GetGlobalNPC<kNPC>();
+                        var npc = Main.npc[(int) tags[DataTag.NpcId]];
+                        var kn = npc.GetGlobalNPC<kNPC>();
                         for (int i = 0; i < (int) tags[DataTag.Amount]; i += 1)
                         {
-                            NpcModifier modifier = kn.ModifierFuncs[reader.ReadInt32()].Invoke(kn, npc);
+                            var modifier = kn.ModifierFuncs[reader.ReadInt32()].Invoke(kn, npc);
                             modifier.Read(reader);
                             modifier.Apply();
                             kn.Modifiers.Add(modifier);
@@ -215,7 +214,7 @@ namespace kRPG2
                 case Message.SyncStats:
                     if (Main.netMode == 2)
                     {
-                        PlayerCharacter character = Main.player[(int) tags[DataTag.PlayerId]].GetModPlayer<PlayerCharacter>();
+                        var character = Main.player[(int) tags[DataTag.PlayerId]].GetModPlayer<PlayerCharacter>();
                         character.Level = (int) tags[DataTag.Amount];
                         character.BaseStats[STAT.RESILIENCE] = (int) tags[DataTag.Resilience];
                         character.BaseStats[STAT.QUICKNESS] = (int) tags[DataTag.Quickness];
@@ -236,15 +235,15 @@ namespace kRPG2
                                 break;
 
                         int modifierCount = (int) tags[DataTag.ModifierCount];
-                        List<GlyphModifier> modifiers = new List<GlyphModifier>();
+                        var modifiers = new List<GlyphModifier>();
                         for (int i = 0; i < modifierCount; i += 1)
                             modifiers.Add(GlyphModifier.Modifiers[reader.ReadInt32()]);
 
-                        Projectile projectile = Main.projectile[(int) tags[DataTag.ProjId]];
+                        var projectile = Main.projectile[(int) tags[DataTag.ProjId]];
                         if (projectile == null) break;
                         projectile.owner = (int) tags[DataTag.PlayerId];
                         if (!(projectile.modProjectile is ProceduralSpellProj)) break;
-                        ProceduralSpellProj ps = (ProceduralSpellProj) projectile.modProjectile;
+                        var ps = (ProceduralSpellProj) projectile.modProjectile;
                         ps.Source = new ProceduralSpell(Mod) {Glyphs = new Item[3]};
                         for (int i = 0; i < ps.Source.Glyphs.Length; i += 1)
                         {
@@ -273,11 +272,11 @@ namespace kRPG2
                         }
 
                         ps.Source.ModifierOverride = modifiers;
-                        foreach (Item item in ps.Source.Glyphs)
+                        foreach (var item in ps.Source.Glyphs)
                         {
                             if (item == null)
                                 continue;
-                            Glyph glyph = (Glyph) item.modItem;
+                            var glyph = (Glyph) item.modItem;
                             if (glyph.GetAiAction() != null)
                                 ps.ai.Add(glyph.GetAiAction());
                             if (glyph.GetInitAction() != null)
@@ -288,7 +287,7 @@ namespace kRPG2
                                 ps.Kills.Add(glyph.GetKillAction());
                         }
 
-                        foreach (GlyphModifier modifier in modifiers)
+                        foreach (var modifier in modifiers)
                         {
                             if (modifier.Impact != null)
                                 ps.Impacts.Add(modifier.Impact);
@@ -302,7 +301,7 @@ namespace kRPG2
 
                         if (Main.netMode == 2)
                         {
-                            ModPacket packet = Mod.GetPacket();
+                            var packet = Mod.GetPacket();
                             packet.Write((byte) Message.CreateProjectile);
                             packet.Write(projectile.owner);
                             packet.Write(projectile.whoAmI);
@@ -312,7 +311,7 @@ namespace kRPG2
                             packet.Write(projectile.damage);
                             packet.Write(projectile.minion);
                             packet.Write(ps.Caster.whoAmI);
-                            List<GlyphModifier> mods = modifiers;
+                            var mods = modifiers;
                             packet.Write(mods.Count);
                             for (int j = 0; j < mods.Count; j += 1)
                                 packet.Write(mods[j].Id);
@@ -332,13 +331,13 @@ namespace kRPG2
                         //Player player = Main.player[Main.myPlayer];
                         //if (Vector2.Distance(player.Center, Main.npc[(int)tags[DataTag.npcId]].Center) > 1024)
                         //    break;
-                        PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
+                        var character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
                         character.AddXp((int) tags[DataTag.Amount]);
                     }
 
                     break;
                 case Message.SyncSpear:
-                    ProceduralSpear spear = (ProceduralSpear) Main.projectile[(int) tags[DataTag.ProjId]].modProjectile;
+                    var spear = (ProceduralSpear) Main.projectile[(int) tags[DataTag.ProjId]].modProjectile;
                     spear.Blade = SwordBlade.Blades[(int) tags[DataTag.PartPrimary]];
                     spear.Hilt = SwordHilt.Hilts[(int) tags[DataTag.PartSecondary]];
                     spear.Accent = SwordAccent.Accents[(int) tags[DataTag.PartTertiary]];
@@ -347,7 +346,7 @@ namespace kRPG2
                 case Message.SwordInit:
                     if (Main.netMode == 1)
                     {
-                        ProceduralSword sword = (ProceduralSword) Main.item[(int) tags[DataTag.ItemId]].modItem;
+                        var sword = (ProceduralSword) Main.item[(int) tags[DataTag.ItemId]].modItem;
                         sword.Blade = SwordBlade.Blades[(int) tags[DataTag.PartPrimary]];
                         sword.Hilt = SwordHilt.Hilts[(int) tags[DataTag.PartSecondary]];
                         sword.Accent = SwordAccent.Accents[(int) tags[DataTag.PartTertiary]];
@@ -361,7 +360,7 @@ namespace kRPG2
                 case Message.StaffInit:
                     if (Main.netMode == 1)
                     {
-                        ProceduralStaff staff = (ProceduralStaff) Main.item[(int) tags[DataTag.ItemId]].modItem;
+                        var staff = (ProceduralStaff) Main.item[(int) tags[DataTag.ItemId]].modItem;
                         staff.Staff = Staff.Staffs[(int) tags[DataTag.PartPrimary]];
                         staff.Gem = StaffGem.Gems[(int) tags[DataTag.PartSecondary]];
                         staff.Ornament = StaffOrnament.Ornament[(int) tags[DataTag.PartTertiary]];
@@ -374,7 +373,7 @@ namespace kRPG2
                 case Message.BowInit:
                     if (Main.netMode == 1)
                     {
-                        RangedWeapon bow = (RangedWeapon) Main.item[(int) tags[DataTag.ItemId]].modItem;
+                        var bow = (RangedWeapon) Main.item[(int) tags[DataTag.ItemId]].modItem;
                         bow.dps = (float) tags[DataTag.ItemDps];
                         bow.enemyDef = (int) tags[DataTag.ItemDef];
                         bow.Initialize();
@@ -384,7 +383,7 @@ namespace kRPG2
                 case Message.SyncHit:
                     if (Main.netMode == 1)
                     {
-                        PlayerCharacter character = Main.player[(int) tags[DataTag.PlayerId]].GetModPlayer<PlayerCharacter>();
+                        var character = Main.player[(int) tags[DataTag.PlayerId]].GetModPlayer<PlayerCharacter>();
                         character.AccuracyCounter = (float) tags[DataTag.AmountSingle];
                     }
 
@@ -392,7 +391,7 @@ namespace kRPG2
                 case Message.SyncCritHit:
                     if (Main.netMode == 1)
                     {
-                        PlayerCharacter character = Main.player[(int) tags[DataTag.PlayerId]].GetModPlayer<PlayerCharacter>();
+                        var character = Main.player[(int) tags[DataTag.PlayerId]].GetModPlayer<PlayerCharacter>();
                         character.CritAccuracyCounter = (float) tags[DataTag.AmountSingle];
                     }
 
@@ -501,15 +500,15 @@ namespace kRPG2
             try
             {
                 string url = @"http://raw.githubusercontent.com/FairfieldTekLLC/kRPG/master/kRPG_VersionInfo.json";
-                WebClient client = new WebClient();
-                Version currentVersion = Mod.Version;
+                var client = new WebClient();
+                var currentVersion = Mod.Version;
                 client.DownloadStringCompleted += (sender, e) =>
                 {
                     try
                     {
                         string text = e.Result;
-                        VersionInfo versionInfo = JsonConvert.DeserializeObject<VersionInfo>(text);
-                        Version latestVersion = new Version(versionInfo.version);
+                        var versionInfo = JsonConvert.DeserializeObject<VersionInfo>(text);
+                        var latestVersion = new Version(versionInfo.version);
                         if (latestVersion > currentVersion)
                         {
                             //Public update available

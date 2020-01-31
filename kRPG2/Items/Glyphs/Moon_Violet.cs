@@ -1,5 +1,4 @@
 ﻿using System;
-using kRPG2.Projectiles;
 using Microsoft.Xna.Framework;
 using Terraria;
 
@@ -22,7 +21,7 @@ namespace kRPG2.Items.Glyphs
                 {
                     if (timeLeft % 8 != 0)
                         return;
-                    ProceduralSpellProj proj = spell.CreateProjectile(player, new Vector2(0f, 8f), 0f,
+                    var proj = spell.CreateProjectile(player, new Vector2(0f, 8f), 0f,
                         new Vector2(target.X - area / 2f + Main.rand.NextFloat(area), target.Y - 240f), caster);
                     if (proj.Alpha < 1f) proj.Alpha = 0.5f;
                     proj.projectile.timeLeft = 60;

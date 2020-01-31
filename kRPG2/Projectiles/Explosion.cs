@@ -35,6 +35,4 @@ namespace kRPG2.Projectiles
             DisplayName.SetDefault("Explosion");
         }
     }
-
-   
 }

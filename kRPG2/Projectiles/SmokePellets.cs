@@ -17,7 +17,7 @@ namespace kRPG2.Projectiles
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             projectile.frame = 19 - (int) Math.Ceiling(projectile.timeLeft / 3.0);
-            Texture2D text = Main.projectileTexture[projectile.type];
+            var text = Main.projectileTexture[projectile.type];
             int height = text.Height / Main.projFrames[projectile.type];
             spriteBatch.Draw(text, projectile.position - Main.screenPosition, new Rectangle(0, projectile.frame * height, text.Width, height), Color.White);
             return false;

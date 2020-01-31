@@ -11,16 +11,16 @@ namespace kRPG2.Projectiles
         public override void AI()
         {
             base.AI();
-            Player player = Main.player[projectile.owner];
+            var player = Main.player[projectile.owner];
 
             float acceleration = 0.4f;
             projectile.tileCollide = false;
-            Vector2 v = player.Center - projectile.Center;
+            var v = player.Center - projectile.Center;
             v.X += Main.rand.Next(-10, 21);
             v.X += Main.rand.Next(-10, 21);
             v.X += 60f * -player.direction;
             v.Y -= 60f;
-            float someDist = (float)Math.Sqrt(v.X * v.X + v.Y * v.Y);
+            float someDist = (float) Math.Sqrt(v.X * v.X + v.Y * v.Y);
             float num22 = 14f;
 
             if (someDist < 100 && Math.Abs(player.velocity.Y) < .01 && projectile.Bottom.Y <= player.Bottom.Y &&
@@ -98,7 +98,7 @@ namespace kRPG2.Projectiles
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            Texture2D t = Main.projectileTexture[ModContent.ProjectileType<WingedEyeball>()];
+            var t = Main.projectileTexture[ModContent.ProjectileType<WingedEyeball>()];
             spriteBatch.Draw(t, position + t.Bounds.Center(), new Rectangle(0, projectile.frame * 40, 90, 40), color, rotation, t.Bounds.Center(), scale,
                 projectile.spriteDirection < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
         }

@@ -9,14 +9,14 @@ namespace kRPG2.Modifiers
 {
     public class SageModifier : NpcModifier
     {
-        public ProceduralSpellProj RotMissile { get; set; }
-        public ProceduralSpellProj RotSecondary { get; set; }
-
         public SageModifier(kNPC kNpc, NPC npc) : base(kNpc, npc)
         {
             this.npc = npc;
             npc.GivenName = "Sagely " + npc.GivenName;
         }
+
+        public ProceduralSpellProj RotMissile { get; set; }
+        public ProceduralSpellProj RotSecondary { get; set; }
 
         public new static NpcModifier New(kNPC kNpc, NPC npc)
         {
@@ -41,22 +41,22 @@ namespace kRPG2.Modifiers
                     else
                         RotMissile.projectile.Kill();
 
-                Projectile proj1 = Main.projectile[
+                var proj1 = Main.projectile[
                     Projectile.NewProjectile(kNpc.Center, new Vector2(0f, -1.5f), ModContent.ProjectileType<ProceduralSpellProj>(), kNpc.damage, 3f)];
                 proj1.hostile = true;
                 proj1.friendly = false;
-                ProceduralSpellProj ps1 = (ProceduralSpellProj) proj1.modProjectile;
+                var ps1 = (ProceduralSpellProj) proj1.modProjectile;
                 ps1.Origin = proj1.position;
-                Cross cross1 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Red() : new Cross_Violet();
+                var cross1 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Red() : new Cross_Violet();
                 ps1.ai.Add(delegate(ProceduralSpellProj spell)
                 {
                     cross1.GetAiAction()(spell);
 
                     float displacementAngle = (float) API.Tau / 4f;
-                    Vector2 displacementVelocity = Vector2.Zero;
+                    var displacementVelocity = Vector2.Zero;
                     if (rotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
                     {
-                        Vector2 unitRelativePos = spell.RelativePos(spell.Caster.Center);
+                        var unitRelativePos = spell.RelativePos(spell.Caster.Center);
                         unitRelativePos.Normalize();
                         spell.projectile.Center = spell.Caster.Center + unitRelativePos * rotDistance;
                         displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.Caster.Center).ToRotation() + (float) API.Tau / 4f);
@@ -88,22 +88,22 @@ namespace kRPG2.Modifiers
                     else
                         RotSecondary.projectile.Kill();
 
-                Projectile proj2 = Main.projectile[
+                var proj2 = Main.projectile[
                     Projectile.NewProjectile(kNpc.Center, new Vector2(0f, 1.5f), ModContent.ProjectileType<ProceduralSpellProj>(), kNpc.damage, 3f)];
                 proj2.hostile = true;
                 proj2.friendly = false;
-                ProceduralSpellProj ps2 = (ProceduralSpellProj) proj2.modProjectile;
+                var ps2 = (ProceduralSpellProj) proj2.modProjectile;
                 ps2.Origin = proj2.position;
-                Cross cross2 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Blue() : new Cross_Purple();
+                var cross2 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Blue() : new Cross_Purple();
                 ps2.ai.Add(delegate(ProceduralSpellProj spell)
                 {
                     cross2.GetAiAction()(spell);
 
                     float displacementAngle = (float) API.Tau / 4f + (float) Math.PI;
-                    Vector2 displacementVelocity = Vector2.Zero;
+                    var displacementVelocity = Vector2.Zero;
                     if (rotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
                     {
-                        Vector2 unitRelativePos = spell.RelativePos(spell.Caster.Center);
+                        var unitRelativePos = spell.RelativePos(spell.Caster.Center);
                         unitRelativePos.Normalize();
                         spell.projectile.Center = spell.Caster.Center + unitRelativePos * rotDistance;
                         displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.Caster.Center).ToRotation() + (float) API.Tau / 4f);

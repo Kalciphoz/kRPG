@@ -10,11 +10,12 @@ namespace kRPG2.Items.Glyphs
 {
     public class Cross_Purple : Cross
     {
-        public override Dictionary<ELEMENT, float> EleDmg { get; set; } = new Dictionary<ELEMENT, float> { { ELEMENT.FIRE, 0 }, { ELEMENT.COLD, 0 }, { ELEMENT.LIGHTNING, 1f }, { ELEMENT.SHADOW, 0 } };
+        public override Dictionary<ELEMENT, float> EleDmg { get; set; } =
+            new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 1f}, {ELEMENT.SHADOW, 0}};
 
         public override Action<ProceduralSpellProj> GetAiAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 ProceduralSpellProj.aiRotateToVelocity(spell);
                 if (!(Main.rand.NextFloat(0f, 2f) <= spell.Alpha))
@@ -27,7 +28,7 @@ namespace kRPG2.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetInitAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 spell.LocalTexture = GFX.ProjectileThunderbolt;
                 spell.projectile.width = spell.LocalTexture.Width;
@@ -39,7 +40,7 @@ namespace kRPG2.Items.Glyphs
 
         public override Action<ProceduralSpellProj> GetKillAction()
         {
-            return delegate (ProceduralSpellProj spell)
+            return delegate(ProceduralSpellProj spell)
             {
                 for (int k = 0; k < 8; k++)
                     Dust.NewDust(spell.projectile.position + spell.projectile.velocity, spell.projectile.width, spell.projectile.height, DustID.Electric,

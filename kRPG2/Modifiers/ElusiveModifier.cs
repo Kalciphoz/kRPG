@@ -6,14 +6,14 @@ namespace kRPG2.Modifiers
 {
     public class ElusiveModifier : NpcModifier
     {
-        private float DodgeModifier { get; set; } = 1.2f;
-
         public ElusiveModifier(kNPC kNpc, NPC npc, float dodgeModifier = 1.2f) : base(kNpc, npc)
         {
             this.npc = npc;
             npc.GivenName = "Elusive " + npc.GivenName;
-            this.DodgeModifier = dodgeModifier;
+            DodgeModifier = dodgeModifier;
         }
+
+        private float DodgeModifier { get; set; } = 1.2f;
 
         public override void Apply()
         {

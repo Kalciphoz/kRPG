@@ -19,9 +19,9 @@ namespace kRPG2.Items.Glyphs
 
         public override bool CanUse()
         {
-            Player owner = Main.player[Main.myPlayer];
-            PlayerCharacter character = owner.GetModPlayer<PlayerCharacter>();
-            Item item = character.LastSelectedWeapon;
+            var owner = Main.player[Main.myPlayer];
+            var character = owner.GetModPlayer<PlayerCharacter>();
+            var item = character.LastSelectedWeapon;
             return owner.inventory.Contains(item);
         }
 
@@ -30,7 +30,7 @@ namespace kRPG2.Items.Glyphs
             return delegate(ProceduralSpellProj spell)
             {
                 if (spell.projectile.velocity.X < 0 && spell.BasePosition == Vector2.Zero) spell.projectile.spriteDirection = -1;
-                Vector2 v = spell.BasePosition != Vector2.Zero ? spell.BasePosition : spell.Origin;
+                var v = spell.BasePosition != Vector2.Zero ? spell.BasePosition : spell.Origin;
                 if (spell.projectile.spriteDirection == -1)
                     spell.projectile.rotation = (spell.projectile.Center - v).ToRotation() - (float) API.Tau * 5f / 8f;
                 else
@@ -46,7 +46,7 @@ namespace kRPG2.Items.Glyphs
                 {
                     if (Main.netMode == 0 || spell.projectile.owner == Main.myPlayer)
                     {
-                        PlayerCharacter character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
+                        var character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
 
                         spell.LocalTexture = character.LastSelectedWeapon.modItem is ProceduralSword
                             ? ((ProceduralSword) character.LastSelectedWeapon.modItem).texture

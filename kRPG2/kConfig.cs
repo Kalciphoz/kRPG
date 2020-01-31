@@ -16,8 +16,10 @@ namespace kRPG2
         private static ConfigStats _stats = new ConfigStats();
         public static ClientConfig ClientSide => ConfigLocal.ClientSide;
 
-        public static Config ConfigLocal {
-            get {
+        public static Config ConfigLocal
+        {
+            get
+            {
                 if (_configLocal != null)
                     return _configLocal;
                 _configLocal = new Config();
@@ -29,13 +31,16 @@ namespace kRPG2
 
         public static string ConfigPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Settings.json";
 
-        public static Config ConfigServer {
+        public static Config ConfigServer
+        {
             get => _configServer ?? (_configServer = new Config());
             private set => _configServer = value;
         }
 
-        public static ConfigStats Stats {
-            get {
+        public static ConfigStats Stats
+        {
+            get
+            {
                 if (_stats != null)
                     return _stats;
                 _stats = new ConfigStats();
@@ -90,7 +95,7 @@ namespace kRPG2
             {
                 if (!File.Exists(path))
                     return;
-                using (StreamReader reader = new StreamReader(path))
+                using (var reader = new StreamReader(path))
                 {
                     config = JsonConvert.DeserializeObject<T>(reader.ReadToEnd());
                 }

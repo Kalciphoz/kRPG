@@ -77,7 +77,6 @@ namespace kRPG2
         private const string THORNCHAIN = PROJECTILES_DIRECTORY + "ThornChain";
         private const string UNSPENTPOINTS = GUI_DIRECTORY + "UnspentPoints";
 
-
         public static Texture2D ButtonCancel { get; set; }
         public static Texture2D ButtonClose { get; set; }
         public static Texture2D ButtonConfirm { get; set; }
@@ -92,7 +91,7 @@ namespace kRPG2
         public static Texture2D ButtonStats { get; set; }
         public static Texture2D ButtonStatsPressed { get; set; }
         public static Texture2D ButtonUpgrade { get; set; }
-        public static Texture2D CharacterFrame{ get; set; }
+        public static Texture2D CharacterFrame { get; set; }
         public static Texture2D DeerSkull { get; set; }
         public static Dictionary<STAT, Texture2D> DeerSkullEyes { get; set; } = new Dictionary<STAT, Texture2D>();
         public static Texture2D FavouritedSlot { get; set; }
@@ -128,18 +127,17 @@ namespace kRPG2
         public static Texture2D StatusBarsBg { get; set; }
         public static Texture2D ThornChain { get; set; }
         public static Texture2D UnspentPoints { get; set; }
-        
 
         public static Texture2D CombineTextures(List<Texture2D> textures, List<Point> origins, Point final_size)
         {
-            Texture2D texture = new Texture2D(Main.spriteBatch.GraphicsDevice, final_size.X * 2, final_size.Y * 2);
-            Color[] combinedTexture = new Color[texture.Width * texture.Height];
+            var texture = new Texture2D(Main.spriteBatch.GraphicsDevice, final_size.X * 2, final_size.Y * 2);
+            var combinedTexture = new Color[texture.Width * texture.Height];
 
             for (int tex = 0; tex < textures.Count; tex += 1)
             {
                 if (textures[tex] == null) continue;
 
-                Color[] pixels = new Color[textures[tex].Width * textures[tex].Height];
+                var pixels = new Color[textures[tex].Width * textures[tex].Height];
                 textures[tex].GetData(pixels);
 
                 for (int x = 0; x < textures[tex].Width; x += 1)
@@ -156,7 +154,7 @@ namespace kRPG2
 
         public static void LoadGfx()
         {
-            Mod loader = ModLoader.GetMod("kRPG2");
+            var loader = ModLoader.GetMod("kRPG2");
 
             ButtonConfirm = loader.GetTexture(BUTTON_CONFIRM);
             ButtonUpgrade = loader.GetTexture(BUTTON_UPGRADE);
@@ -190,7 +188,7 @@ namespace kRPG2
             StatusBarsBg = loader.GetTexture(STATUSBARS_BG);
             for (int i = 0; i < 10; i++)
                 GothicNumeral[i] = loader.GetTexture(NUMERALS + i);
-            for (Keys k = Keys.A; k <= Keys.Z; k += 1)
+            for (var k = Keys.A; k <= Keys.Z; k += 1)
                 GothicLetter[k] = loader.GetTexture(LETTERS + k);
             UnspentPoints = loader.GetTexture(UNSPENTPOINTS);
             ItemSlot = loader.GetTexture(ITEMSLOT);
@@ -256,7 +254,7 @@ namespace kRPG2
             StatusBarsBg = null;
             for (int i = 0; i < 10; i++)
                 GothicNumeral[i] = null;
-            for (Keys k = Keys.A; k <= Keys.Z; k += 1)
+            for (var k = Keys.A; k <= Keys.Z; k += 1)
                 GothicLetter[k] = null;
             UnspentPoints = null;
             ItemSlot = null;

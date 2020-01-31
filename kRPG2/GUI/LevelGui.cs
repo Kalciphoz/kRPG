@@ -12,7 +12,7 @@ namespace kRPG2.GUI
 {
     public class LevelGui : BaseGui
     {
-        public Dictionary<STAT, int> allocated = new Dictionary<STAT, int> { { STAT.RESILIENCE, 0 }, { STAT.QUICKNESS, 0 }, { STAT.POTENCY, 0 } };
+        public Dictionary<STAT, int> allocated = new Dictionary<STAT, int> {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}};
         private PlayerCharacter character;
 
         private readonly Dictionary<STAT, StatFlame> statFlame;
@@ -56,7 +56,7 @@ namespace kRPG2.GUI
 
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, text, GuiPosition - new Vector2(width / 2f - 200f, 38f * Scale + 38f), Color.White, Scale);
 
-            Vector2 buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 320f * Scale);
+            var buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 320f * Scale);
             spriteBatch.Draw(GFX.ButtonCancel, buttonPosition, Color.White, Scale);
 
             if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.ButtonConfirm.Width * Scale &&
@@ -89,7 +89,7 @@ namespace kRPG2.GUI
                     try
                     {
                         Main.PlaySound(SoundID.MenuTick);
-                        foreach (STAT s in allocated.Keys)
+                        foreach (var s in allocated.Keys)
                             character.BaseStats[s] += allocated[s];
                         foreach (STAT stat in Enum.GetValues(typeof(STAT)))
                             allocated[stat] = 0;
@@ -105,7 +105,7 @@ namespace kRPG2.GUI
             }
 
             STAT? hoverStat = null;
-            foreach (STAT s in statFlame.Keys.Where(s => statFlame[s].CheckHover()))
+            foreach (var s in statFlame.Keys.Where(s => statFlame[s].CheckHover()))
                 hoverStat = s;
 
             if (hoverStat != null) spriteBatch.Draw(GFX.DeerSkullEyes[hoverStat.Value], GuiPosition, Color.White, Scale);

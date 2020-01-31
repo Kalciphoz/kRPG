@@ -14,21 +14,13 @@ namespace kRPG2
     {
         private readonly int animationTime = 5;
 
-        private int Counter { get; set; }
-        private int FrameNumber { get; set; }
-        private  STAT Id { get; }
-        private  LevelGui LevelGui { get;  }
-        private Mod Mod { get;  }
-        private  Func<Vector2> Position { get;  }
-        private  Texture2D Texture { get;  }
-
         public StatFlame(Mod mod, LevelGui levelGui, STAT id, Func<Vector2> position, Texture2D texture)
         {
-            this.Mod = mod;
-            this.LevelGui = levelGui;
-            this.Id = id;
-            this.Position = position;
-            this.Texture = texture;
+            Mod = mod;
+            LevelGui = levelGui;
+            Id = id;
+            Position = position;
+            Texture = texture;
             Counter = (int) id * 8;
         }
 
@@ -38,6 +30,14 @@ namespace kRPG2
             set => LevelGui.allocated[Id] = value;
         }
 
+        private int Counter { get; set; }
+        private int FrameNumber { get; set; }
+        private STAT Id { get; }
+        private LevelGui LevelGui { get; }
+        private Mod Mod { get; }
+        private Func<Vector2> Position { get; }
+        private Texture2D Texture { get; }
+
         public bool CheckHover()
         {
             return Main.mouseX >= Position().X && Main.mouseY >= Position().Y && Main.mouseX <= Position().X + Texture.Width &&
@@ -46,7 +46,7 @@ namespace kRPG2
 
         public void Draw(SpriteBatch spriteBatch, Player player, float scale)
         {
-            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+            var character = player.GetModPlayer<PlayerCharacter>();
             if (Counter > 8 * animationTime - 1) Counter = 0;
             FrameNumber = (int) Math.Floor(Counter / (double) animationTime);
             spriteBatch.Draw(character.Rituals[RITUAL.DEMON_PACT] && Id == STAT.RESILIENCE ? GFX.FlamesConverted : Texture, Position(),
@@ -60,7 +60,7 @@ namespace kRPG2
 
         public void Update(SpriteBatch spriteBatch, Player player)
         {
-            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+            var character = player.GetModPlayer<PlayerCharacter>();
 
             if (!CheckHover())
                 return;

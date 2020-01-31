@@ -5,6 +5,11 @@ namespace kRPG2.Classes
 {
     public class DataTag
     {
+        public DataTag(Func<BinaryReader, object> read)
+        {
+            Read = read;
+        }
+
         public static DataTag Amount { get; set; } = new DataTag(reader => reader.ReadInt32());
         public static DataTag AmountSingle { get; set; } = new DataTag(reader => reader.ReadSingle());
         public static DataTag Cold { get; set; } = new DataTag(reader => reader.ReadInt32());
@@ -32,16 +37,11 @@ namespace kRPG2.Classes
         public static DataTag ProjCount { get; set; } = new DataTag(reader => reader.ReadInt32());
         public static DataTag ProjId { get; set; } = new DataTag(reader => reader.ReadInt32());
         public static DataTag Quickness { get; set; } = new DataTag(reader => reader.ReadInt32());
+        public Func<BinaryReader, object> Read { get; set; }
         public static DataTag Resilience { get; set; } = new DataTag(reader => reader.ReadInt32());
         public static DataTag Shadow { get; set; } = new DataTag(reader => reader.ReadInt32());
         public static DataTag TargetX { get; set; } = new DataTag(reader => reader.ReadSingle());
         public static DataTag TargetY { get; set; } = new DataTag(reader => reader.ReadSingle());
         public static DataTag Wits { get; set; } = new DataTag(reader => reader.ReadInt32());
-        public Func<BinaryReader, object> Read { get; set; }
-
-        public DataTag(Func<BinaryReader, object> read)
-        {
-            Read = read;
-        }
     }
 }

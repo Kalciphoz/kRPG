@@ -12,8 +12,6 @@ using Star = kRPG2.Items.Glyphs.Star;
 
 namespace kRPG2.GUI
 {
-
-
     public class SpellcraftingGUI : BaseGui
     {
         public GlyphSlot[] glyphs = new GlyphSlot[3];
@@ -42,7 +40,7 @@ namespace kRPG2.GUI
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
             spriteBatch.Draw(GFX.SpellGui, guiPosition(), null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-            foreach (GlyphSlot slot in glyphs)
+            foreach (var slot in glyphs)
                 slot.Draw(spriteBatch);
 
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Place glyphs in all three slots to create a spell",
@@ -50,12 +48,12 @@ namespace kRPG2.GUI
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Press a key while holding shift to bind it as a hotkey",
                 new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 224f * Scale), Color.White, Scale);
 
-            Vector2 buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
+            var buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
             spriteBatch.Draw(GFX.ButtonClose, buttonPosition, Color.White, Scale);
 
             if (!(Main.mouseX >= buttonPosition.X) || !(Main.mouseY >= buttonPosition.Y) ||
-                !(Main.mouseX <= buttonPosition.X + (int)(GFX.ButtonConfirm.Width * Scale)) ||
-                !(Main.mouseY <= buttonPosition.Y + (int)(GFX.ButtonConfirm.Height * Scale)))
+                !(Main.mouseX <= buttonPosition.X + (int) (GFX.ButtonConfirm.Width * Scale)) ||
+                !(Main.mouseY <= buttonPosition.Y + (int) (GFX.ButtonConfirm.Height * Scale)))
                 return;
             Main.LocalPlayer.mouseInterface = true;
             if (!Main.mouseLeft || !Main.mouseLeftRelease)
@@ -84,31 +82,32 @@ namespace kRPG2.GUI
         }
 
         private ProceduralSpell Ability => Main.LocalPlayer.GetModPlayer<PlayerCharacter>().SelectedAbility;
-        private Rectangle Bounds => new Rectangle((int)position().X, (int)position().Y, (int)(30 * scale()), (int)(30 * scale()));
+        private Rectangle Bounds => new Rectangle((int) position().X, (int) position().Y, (int) (30 * scale()), (int) (30 * scale()));
 
-        private Item Glyph {
-            get => Ability.Glyphs[(byte)type];
-            set => Ability.Glyphs[(byte)type] = value;
+        private Item Glyph
+        {
+            get => Ability.Glyphs[(byte) type];
+            set => Ability.Glyphs[(byte) type] = value;
         }
 
         public bool AttemptPlace()
         {
-            PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
+            var character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
 
             if (!CanPlaceItem(Main.mouseItem))
                 return false;
 
-            foreach (ProceduralMinion minion in character.Minions.Where(minion =>
+            foreach (var minion in character.Minions.Where(minion =>
                 minion.Source == character.SelectedAbility && minion.projectile.modProjectile is ProceduralMinion))
             {
-                foreach (ProceduralSpellProj psp in minion.CirclingProtection)
+                foreach (var psp in minion.CirclingProtection)
                     psp.projectile.Kill();
                 minion.CirclingProtection.Clear();
                 minion.SmallProt?.projectile.Kill();
                 minion.projectile.Kill();
             }
 
-            Item prevItem = Glyph;
+            var prevItem = Glyph;
             Glyph = Main.mouseItem;
             Main.mouseItem = prevItem;
             Main.PlaySound(SoundID.Item4, Main.screenPosition + Bounds.Center());
@@ -144,7 +143,7 @@ namespace kRPG2.GUI
             }
 
             if (Glyph.type == 0) return;
-            Texture2D texture = Main.itemTexture[Glyph.type];
+            var texture = Main.itemTexture[Glyph.type];
             spriteBatch.Draw(texture, Bounds.TopLeft() + new Vector2(2f, 2f), Color.White, scale());
         }
     }

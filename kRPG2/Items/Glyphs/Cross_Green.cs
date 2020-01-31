@@ -18,7 +18,7 @@ namespace kRPG2.Items.Glyphs
             return delegate(ProceduralSpellProj spell)
             {
                 if (spell.projectile.velocity.X < 0 && spell.BasePosition == Vector2.Zero) spell.projectile.spriteDirection = -1;
-                Vector2 v = spell.BasePosition != Vector2.Zero ? spell.BasePosition : spell.Origin;
+                var v = spell.BasePosition != Vector2.Zero ? spell.BasePosition : spell.Origin;
                 spell.projectile.rotation = (spell.projectile.Center - v).ToRotation() - (float) API.Tau / 4f;
             };
         }

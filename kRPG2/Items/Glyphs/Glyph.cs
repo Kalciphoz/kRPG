@@ -14,9 +14,9 @@ namespace kRPG2.Items.Glyphs
     {
         public bool Initialized { get; set; }
 
-        public List<GlyphModifier> Modifiers { get; set; }= new List<GlyphModifier>();
-
         public bool Minion => this is Star && !(this is Star_Blue);
+
+        public List<GlyphModifier> Modifiers { get; set; } = new List<GlyphModifier>();
 
         public virtual float BaseDamageModifier()
         {
@@ -35,11 +35,11 @@ namespace kRPG2.Items.Glyphs
 
         public override ModItem Clone(Item tItem)
         {
-            Glyph copy = (Glyph) base.Clone(tItem);
+            var copy = (Glyph) base.Clone(tItem);
             copy.Modifiers = new List<GlyphModifier>();
             if (Modifiers == null)
                 return copy;
-            foreach (GlyphModifier modifier in Modifiers)
+            foreach (var modifier in Modifiers)
                 copy.Modifiers.Add(modifier);
             return copy;
         }
@@ -183,13 +183,13 @@ namespace kRPG2.Items.Glyphs
         public virtual void Randomize()
         {
             Initialized = true;
-            foreach (GlyphModifier modifier in GlyphModifier.Modifiers.Where(modifier => modifier.Match(this) && modifier.Odds()))
+            foreach (var modifier in GlyphModifier.Modifiers.Where(modifier => modifier.Match(this) && modifier.Odds()))
                 Modifiers.Add(modifier.Group == null ? modifier : modifier.Group());
         }
 
         public override TagCompound Save()
         {
-            TagCompound compound = new TagCompound {{"ModifierCount", Modifiers.Count}};
+            var compound = new TagCompound {{"ModifierCount", Modifiers.Count}};
             for (int i = 0; i < Modifiers.Count; i += 1)
                 compound.Add("Modifier_" + i, Modifiers[i].Id);
             return compound;

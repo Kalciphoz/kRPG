@@ -8,29 +8,28 @@ namespace kRPG2
 {
     public class BaseGui
     {
-        public static List<BaseGui> GuiElements { get; set; } = new List<BaseGui>();
-
-        public List<InterfaceButton> Buttons { get; set; } = new List<InterfaceButton>();
-
-        public bool GuiActive { get; set; }
-
         public BaseGui()
         {
             GuiElements.Add(this);
         }
 
+        public List<InterfaceButton> Buttons { get; set; } = new List<InterfaceButton>();
+
+        public bool GuiActive { get; set; }
+        public static List<BaseGui> GuiElements { get; set; } = new List<BaseGui>();
+
         public virtual bool RemoveOnClose => false;
 
         public InterfaceButton AddButton(Func<Rectangle> position, Action<Player> pressAction)
         {
-            InterfaceButton button = new InterfaceButton(position, pressAction);
+            var button = new InterfaceButton(position, pressAction);
             Buttons.Add(button);
             return button;
         }
 
         public InterfaceButton AddButton(Func<Rectangle> position, Action<Player> pressAction, Action<Player, SpriteBatch> hoverAction)
         {
-            InterfaceButton button = new InterfaceButton(position, pressAction, hoverAction);
+            var button = new InterfaceButton(position, pressAction, hoverAction);
             Buttons.Add(button);
             return button;
         }
@@ -46,7 +45,7 @@ namespace kRPG2
         {
             PostDraw(spriteBatch, player);
 
-            foreach (InterfaceButton button in Buttons)
+            foreach (var button in Buttons)
                 button.Update(spriteBatch, player);
         }
 

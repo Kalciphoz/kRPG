@@ -13,43 +13,23 @@ namespace kRPG2.GUI
     /// </summary>
     public class AnvilGUI : BaseGui
     {
-        private bool GuardianCrown { get; set; }
-        private Item Item { get; set; }
-        private kItem Ki { get; set; }
-        private bool PermanenceCrown { get; set; }
-
-        /// <summary>
-        ///     Player Character gui shown for
-        /// </summary>
-        private PlayerCharacter PlayerCharacter { get; set; }
-
-        public Vector2 PlayerPosition { get; set; }
-
-        private bool Selected { get; set; }
-        private bool TranscendenceCrown { get; set; }
-
-        private int UpgradeCost { get; set; }
-
-        //in percent:
-        private int UpgradeSuccess { get; set; }
-
         public AnvilGUI(PlayerCharacter playerCharacter)
         {
             PlayerCharacter = playerCharacter;
 
-            AddButton(() => new Rectangle((int)BtnCancelPos.X, (int)BtnCancelPos.Y, (int)(GFX.BTN_WIDTH * Scale), (int)(GFX.BTN_HEIGHT * Scale)), delegate
+            AddButton(() => new Rectangle((int) BtnCancelPos.X, (int) BtnCancelPos.Y, (int) (GFX.BTN_WIDTH * Scale), (int) (GFX.BTN_HEIGHT * Scale)), delegate
             {
                 Main.PlaySound(SoundID.MenuTick);
                 CloseGui();
             });
-            AddButton(() => new Rectangle((int)BtnExperiencePos.X, (int)BtnExperiencePos.Y, 48, 48), delegate { GuardianCrown = !GuardianCrown; });
-            AddButton(() => new Rectangle((int)BtnPermanencePos.X, (int)BtnPermanencePos.Y, 48, 48), delegate
+            AddButton(() => new Rectangle((int) BtnExperiencePos.X, (int) BtnExperiencePos.Y, 48, 48), delegate { GuardianCrown = !GuardianCrown; });
+            AddButton(() => new Rectangle((int) BtnPermanencePos.X, (int) BtnPermanencePos.Y, 48, 48), delegate
             {
                 if (!PermanenceCrown && playerCharacter.Permanence > 0)
                     PermanenceCrown = true;
                 else PermanenceCrown = false;
             });
-            AddButton(() => new Rectangle((int)BtnTranscendencePos.X, (int)BtnTranscendencePos.Y, 48, 48), delegate
+            AddButton(() => new Rectangle((int) BtnTranscendencePos.X, (int) BtnTranscendencePos.Y, 48, 48), delegate
             {
                 if (!TranscendenceCrown && playerCharacter.Transcendence > 0)
                     TranscendenceCrown = true;
@@ -66,10 +46,29 @@ namespace kRPG2.GUI
         private static Vector2 BtnTranscendencePos => new Vector2(GuiPosition.X + 150f * Scale, GuiPosition.Y + 52f * Scale);
 
         private static Vector2 BtnUpgradePos => new Vector2(Main.screenWidth / 2f - 92f * Scale, GuiPosition.Y + 208f * Scale);
+        private bool GuardianCrown { get; set; }
 
         private static Vector2 GuiPosition => new Vector2(Main.screenWidth / 2f - 128f * Scale, Main.screenHeight / 2f);
+        private Item Item { get; set; }
+        private kItem Ki { get; set; }
+        private bool PermanenceCrown { get; set; }
+
+        /// <summary>
+        ///     Player Character gui shown for
+        /// </summary>
+        private PlayerCharacter PlayerCharacter { get; }
+
+        public Vector2 PlayerPosition { get; set; }
 
         private static float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
+
+        private bool Selected { get; set; }
+        private bool TranscendenceCrown { get; set; }
+
+        private int UpgradeCost { get; set; }
+
+        //in percent:
+        private int UpgradeSuccess { get; set; }
 
         public bool AttemptSelectItem(kItem tKi, Item tItem)
         {
@@ -100,7 +99,7 @@ namespace kRPG2.GUI
             else if (startLevel == 7)
                 UpgradeCost = tItem.value;
             else if (startLevel == 8)
-                UpgradeCost = (int)(tItem.value * 1.5);
+                UpgradeCost = (int) (tItem.value * 1.5);
 
             return true;
         }
@@ -189,7 +188,7 @@ namespace kRPG2.GUI
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Chance to succeed: " + (UpgradeSuccess + bonusChance) + "%",
                         new Vector2(GuiPosition.X - 192f * Scale, GuiPosition.Y + 176f * Scale), bonusChance > 0 ? Color.Lime : Color.White, Scale);
                     spriteBatch.Draw(GFX.ButtonUpgrade, BtnUpgradePos, Color.White, Scale);
-                    if (new Rectangle((int)BtnUpgradePos.X, (int)BtnUpgradePos.Y, (int)(GFX.BTN_WIDTH * Scale), (int)(GFX.BTN_HEIGHT * Scale)).Contains(
+                    if (new Rectangle((int) BtnUpgradePos.X, (int) BtnUpgradePos.Y, (int) (GFX.BTN_WIDTH * Scale), (int) (GFX.BTN_HEIGHT * Scale)).Contains(
                             Main.mouseX, Main.mouseY) && Main.mouseLeft && Main.mouseLeftRelease)
                     {
                         Main.PlaySound(SoundID.MenuTick);

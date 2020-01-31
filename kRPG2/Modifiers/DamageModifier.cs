@@ -7,16 +7,16 @@ namespace kRPG2.Modifiers
 {
     public class DamageModifier : NpcModifier
     {
-        private float DmgModifier { get; set; }
-
         public DamageModifier(kNPC kNpc, NPC npc, float dmgModifier = 1.2f) : base(kNpc, npc)
         {
             this.npc = npc;
             npc.GivenName = "Brutal " + npc.GivenName;
-            this.DmgModifier = dmgModifier;
-            if (Main.netMode != 1) 
+            DmgModifier = dmgModifier;
+            if (Main.netMode != 1)
                 Apply();
         }
+
+        private float DmgModifier { get; set; }
 
         public override void Apply()
         {

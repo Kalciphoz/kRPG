@@ -14,13 +14,26 @@ namespace kRPG2.Items.Weapons
 {
     public class SwordAccent
     {
+        public SwordAccent(string texture, string suffix, int originX, int originY, int mana = 0, Action<Player, NPC, ProceduralSword, int, bool> onHit = null,
+            float dpsModifier = 1f, int critBonus = 0, Action<Rectangle, Player> effect = null)
+        {
+            Type = Accents.Count;
+            if (Main.netMode != 2)
+                if (texture != null)
+                    Texture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Items/Accents/" + texture);
+            Suffix = suffix;
+            Origin = new Vector2(originX, originY);
+            OnHit = onHit;
+            DpsModifier = dpsModifier;
+            CritBonus = critBonus;
+            Effect = effect;
+            Mana = mana;
+
+            if (!Accents.ContainsKey(Type))
+                Accents.Add(Type, this);
+        }
+
         public static Dictionary<int, SwordAccent> Accents { get; set; } = new Dictionary<int, SwordAccent>();
-        public static SwordAccent Flame { get; set; }
-        public static SwordAccent GemBlue { get; set; }
-        public static SwordAccent GemGreen { get; set; }
-        public static SwordAccent GemPurple { get; set; }
-        public static SwordAccent GemRed { get; set; }
-        public static SwordAccent None { get; set; }
         public int CritBonus { get; set; }
         public float DpsModifier { get; set; }
         public Action<Rectangle, Player> Effect { get; set; }
@@ -30,33 +43,21 @@ namespace kRPG2.Items.Weapons
             {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
         };
 
+        public static SwordAccent Flame { get; set; }
+        public static SwordAccent GemBlue { get; set; }
+        public static SwordAccent GemGreen { get; set; }
+        public static SwordAccent GemPurple { get; set; }
+        public static SwordAccent GemRed { get; set; }
+
         public int Mana { get; set; }
+        public static SwordAccent None { get; set; }
 
         public Action<Player, NPC, ProceduralSword, int, bool> OnHit { get; set; }
         public Vector2 Origin { get; set; }
-        public string Suffix { get; set; } 
+        public string Suffix { get; set; }
         public Texture2D Texture { get; set; }
 
         public int Type { get; set; }
-
-        public SwordAccent(string texture, string suffix, int originX, int originY, int mana = 0,
-            Action<Player, NPC, ProceduralSword, int, bool> onHit = null, float dpsModifier = 1f, int critBonus = 0, Action<Rectangle, Player> effect = null)
-        {
-            Type = Accents.Count;
-            if (Main.netMode != 2)
-                if (texture != null)
-                    this.Texture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Items/Accents/" + texture);
-            this.Suffix = suffix;
-            Origin = new Vector2(originX, originY);
-            this.OnHit = onHit;
-            this.DpsModifier = dpsModifier;
-            this.CritBonus = critBonus;
-            this.Effect = effect;
-            this.Mana = mana;
-
-            if (!Accents.ContainsKey(Type))
-                Accents.Add(Type, this);
-        }
 
         public static void Initialize()
         {
@@ -67,14 +68,14 @@ namespace kRPG2.Items.Weapons
             {
                 if (Main.rand.Next(4) != 0)
                     return;
-                PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+                var character = player.GetModPlayer<PlayerCharacter>();
                 float distance = Vector2.Distance(npc.Center, character.player.Center);
                 int count = (int) (distance / 20);
-                Trail trail = new Trail(npc.Center, 60, delegate(SpriteBatch spriteBatch, Player p, Vector2 end, Vector2[] displacement, float scale)
+                var trail = new Trail(npc.Center, 60, delegate(SpriteBatch spriteBatch, Player p, Vector2 end, Vector2[] displacement, float scale)
                 {
                     for (int i = 0; i < count; i += 1)
                     {
-                        Vector2 position = (npc.position - p.Center) * i / count + p.Center;
+                        var position = (npc.position - p.Center) * i / count + p.Center;
                         spriteBatch.Draw(GFX.Heart, position - Main.screenPosition + displacement[i], null, Color.White, 0f, Vector2.Zero, scale,
                             SpriteEffects.None, 0f);
                     }
@@ -89,7 +90,7 @@ namespace kRPG2.Items.Weapons
             Flame = new SwordAccent("Flame", " of Ignition", 2, 2, 3, delegate(Player player, NPC npc, ProceduralSword sword, int damage, bool crit)
                 {
                     Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
-                    Projectile proj = Main.projectile[
+                    var proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(),
                             Math.Max(1, (int) Math.Round(sword.EleDamage[ELEMENT.FIRE] * damage * 2)), 0f, player.whoAmI)];
                 }, 1.05f).SetEleDamage(new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0.2f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}})
@@ -104,7 +105,7 @@ namespace kRPG2.Items.Weapons
             GemGreen = new SwordAccent("GemGreen", " of Thunder", 2, 2, 2, delegate(Player player, NPC npc, ProceduralSword sword, int damage, bool crit)
                 {
                     Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
-                    Projectile proj = Main.projectile[
+                    var proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(),
                             Math.Max(1, damage / 6),
                             0f, player.whoAmI)];
@@ -149,19 +150,19 @@ namespace kRPG2.Items.Weapons
 
         public SwordAccent SetEffect(Action<Rectangle, Player> effect)
         {
-            this.Effect = effect;
+            Effect = effect;
             return this;
         }
 
         public SwordAccent SetEleDamage(Dictionary<ELEMENT, float> eleDamage)
         {
-            this.EleDamage = eleDamage;
+            EleDamage = eleDamage;
             return this;
         }
 
         public static void Unload()
         {
-            foreach (SwordAccent accent in Accents.Values)
+            foreach (var accent in Accents.Values)
                 accent.Texture = null;
         }
     }

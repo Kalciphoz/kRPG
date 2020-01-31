@@ -9,7 +9,31 @@ namespace kRPG2.Items.Weapons
 {
     public class SwordHilt
     {
+        public SwordHilt(string texture, int originX, int originY, string prefix, float dpsModifier, float speedModifier, float knockBack = 0f,
+            int critBonus = 0, bool spear = false, bool autoSwing = false, int mana = 0, float scale = 0f)
+        {
+            Type = Hilts.Count + 1;
+            if (Main.netMode != 2)
+                Texture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Items/Swordhilts/" + texture);
+            Origin = new Vector2(originX, originY);
+            DpsModifier = dpsModifier;
+            SpeedModifier = speedModifier;
+            KnockBack = knockBack;
+            CritBonus = critBonus;
+            AutoSwing = autoSwing;
+            Prefix = prefix;
+            Mana = mana;
+            Spear = spear;
+            AccentOffset = Point.Zero;
+            Scale = scale;
+
+            if (!Hilts.ContainsKey(Type))
+                Hilts.Add(Type, this);
+        }
+
+        public Point AccentOffset { get; set; }
         public static SwordHilt ArcaneMount { get; set; }
+        public bool AutoSwing { get; set; }
         public static SwordHilt BlackKatana { get; set; }
         public static SwordHilt Bone { get; set; }
         public static SwordHilt BoneCrest { get; set; }
@@ -21,8 +45,10 @@ namespace kRPG2.Items.Weapons
         public static SwordHilt Clock { get; set; }
         public static SwordHilt Coe { get; set; }
         public static SwordHilt CopperCrossguard { get; set; }
+        public int CritBonus { get; set; }
         public static SwordHilt DemonEye { get; set; }
         public static SwordHilt DemoniteBat { get; set; }
+        public float DpsModifier { get; set; }
         public static SwordHilt Eyes { get; set; }
         public static SwordHilt GoldenKatana { get; set; }
         public static SwordHilt GoldenRunicKatana { get; set; }
@@ -34,54 +60,28 @@ namespace kRPG2.Items.Weapons
 
         private static Dictionary<SWORDTHEME, List<SwordHilt>> HiltsByTheme { get; set; }
         public static SwordHilt IronBasket { get; set; }
-        public static SwordHilt Lead { get; set; }
-        public static SwordHilt OminousHilt { get; set; }
-        public static SwordHilt PurpleCrossguard { get; set; }
-        public static SwordHilt Stick { get; set; }
-        public static SwordHilt Thorns { get; set; }
-        public static SwordHilt Torch { get; set; }
-        public static SwordHilt VioletCrossguard { get; set; }
-        public static SwordHilt VioletRunicKatana { get; set; }
-        public static SwordHilt Wooden { get; set; }
-        public static SwordHilt WoodenMount { get; set; }
-        public Point AccentOffset { get; set; } 
-        public bool AutoSwing { get; set; }
-        public int CritBonus { get; set; }
-        public float DpsModifier { get; set; }
         public float KnockBack { get; set; }
+        public static SwordHilt Lead { get; set; }
         public int Mana { get; set; }
+        public static SwordHilt OminousHilt { get; set; }
         public Vector2 Origin { get; set; }
         public string Prefix { get; set; }
+        public static SwordHilt PurpleCrossguard { get; set; }
         public float Scale { get; set; }
         public bool Spear { get; set; }
         public Vector2 SpearOrigin { get; set; }
         public Texture2D SpearTexture { get; set; }
-        public float SpeedModifier { get; set; } 
+        public float SpeedModifier { get; set; }
+        public static SwordHilt Stick { get; set; }
         public Texture2D Texture { get; set; }
+        public static SwordHilt Thorns { get; set; }
+        public static SwordHilt Torch { get; set; }
 
         public int Type { get; set; }
-
-        public SwordHilt(string texture, int originX, int originY, string prefix, float dpsModifier, float speedModifier, float knockBack = 0f,
-            int critBonus = 0, bool spear = false, bool autoSwing = false, int mana = 0, float scale = 0f)
-        {
-            Type = Hilts.Count + 1;
-            if (Main.netMode != 2)
-                this.Texture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Items/Swordhilts/" + texture);
-            Origin = new Vector2(originX, originY);
-            this.DpsModifier = dpsModifier;
-            this.SpeedModifier = speedModifier;
-            this.KnockBack = knockBack;
-            this.CritBonus = critBonus;
-            this.AutoSwing = autoSwing;
-            this.Prefix = prefix;
-            this.Mana = mana;
-            this.Spear = spear;
-            AccentOffset = Point.Zero;
-            this.Scale = scale;
-
-            if (!Hilts.ContainsKey(Type))
-                Hilts.Add(Type, this);
-        }
+        public static SwordHilt VioletCrossguard { get; set; }
+        public static SwordHilt VioletRunicKatana { get; set; }
+        public static SwordHilt Wooden { get; set; }
+        public static SwordHilt WoodenMount { get; set; }
 
         public SwordHilt DefineSpear(string texture, int origin_x, int origin_y)
         {
@@ -202,7 +202,7 @@ namespace kRPG2.Items.Weapons
 
         public static void Unload()
         {
-            foreach (SwordHilt hilt in Hilts.Values)
+            foreach (var hilt in Hilts.Values)
                 hilt.Texture = null;
         }
     }

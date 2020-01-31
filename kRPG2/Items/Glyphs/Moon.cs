@@ -8,11 +8,11 @@ namespace kRPG2.Items.Glyphs
 {
     public class Moon : Glyph
     {
-        public int ProjCount { get; set; }= 5;
+        public int ProjCount { get; set; } = 5;
 
         public override ModItem Clone(Item tItem)
         {
-            Moon copy = (Moon) base.Clone(tItem);
+            var copy = (Moon) base.Clone(tItem);
             copy.ProjCount = ProjCount;
             return copy;
         }
@@ -43,7 +43,7 @@ namespace kRPG2.Items.Glyphs
 
         public override TagCompound Save()
         {
-            TagCompound compound = base.Save();
+            var compound = base.Save();
             compound.Add("projCount", ProjCount);
             return compound;
         }

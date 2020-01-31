@@ -25,7 +25,7 @@ namespace kRPG2.Items.Glyphs
                     int rotDistance = spell.Minion ? 72 : 96;
                     if (RotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
                     {
-                        Vector2 unitRelativePos = spell.RelativePos(spell.Caster.Center);
+                        var unitRelativePos = spell.RelativePos(spell.Caster.Center);
                         unitRelativePos.Normalize();
                         spell.projectile.Center = spell.Caster.Center + unitRelativePos * rotDistance;
                         spell.DisplacementVelocity =
@@ -58,16 +58,16 @@ namespace kRPG2.Items.Glyphs
                 {
                     case Player p:
                     {
-                        PlayerCharacter character = p.GetModPlayer<PlayerCharacter>();
-                        foreach (ProceduralSpellProj proj in character.CirclingProtection.Where(proj => proj.projectile.modProjectile is ProceduralSpellProj))
+                        var character = p.GetModPlayer<PlayerCharacter>();
+                        foreach (var proj in character.CirclingProtection.Where(proj => proj.projectile.modProjectile is ProceduralSpellProj))
                             proj.projectile.Kill();
                         character.CirclingProtection.Clear();
                         break;
                     }
                     case Projectile pj:
                     {
-                        ProceduralMinion minion = (ProceduralMinion) pj.modProjectile;
-                        foreach (ProceduralSpellProj proj in minion.CirclingProtection.Where(proj => proj.projectile.modProjectile is ProceduralSpellProj))
+                        var minion = (ProceduralMinion) pj.modProjectile;
+                        foreach (var proj in minion.CirclingProtection.Where(proj => proj.projectile.modProjectile is ProceduralSpellProj))
                             proj.projectile.Kill();
                         minion.CirclingProtection.Clear();
                         break;
@@ -75,10 +75,10 @@ namespace kRPG2.Items.Glyphs
                 }
 
                 float spread = GetSpread(spell.ProjCount);
-                Vector2 velocity = new Vector2(0f, -1.5f);
+                var velocity = new Vector2(0f, -1.5f);
                 for (int i = 0; i < spell.ProjCount; i += 1)
                 {
-                    ProceduralSpellProj proj = spell.CreateProjectile(player, Vector2.Zero, spread * i, origin, caster);
+                    var proj = spell.CreateProjectile(player, Vector2.Zero, spread * i, origin, caster);
                     proj.projectile.timeLeft = RotTimeLeft;
                     proj.DisplacementVelocity = velocity.RotatedBy(i * spread * API.Tau);
                     proj.DisplacementAngle = i * spread * (float) API.Tau;

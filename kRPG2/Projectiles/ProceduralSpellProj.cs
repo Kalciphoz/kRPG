@@ -14,15 +14,18 @@ namespace kRPG2.Projectiles
 {
     public class ProceduralSpellProj : ProceduralProjectile
     {
-        public static Action<ProceduralSpellProj> aiRotateToVelocity = delegate (ProceduralSpellProj spell)
+        public static Action<ProceduralSpellProj> aiRotateToVelocity = delegate(ProceduralSpellProj spell)
         {
-            spell.projectile.rotation = (float)Math.Atan2(spell.projectile.velocity.Y, spell.projectile.velocity.X) + (float)API.Tau / 8f;
+            spell.projectile.rotation = (float) Math.Atan2(spell.projectile.velocity.Y, spell.projectile.velocity.X) + (float) API.Tau / 8f;
         };
 
-        public static Action<ProceduralSpellProj> aiWhirlcast = delegate (ProceduralSpellProj spell)
+        public static Action<ProceduralSpellProj> aiWhirlcast = delegate(ProceduralSpellProj spell)
         {
-            Player owner = Main.player[spell.projectile.owner];
+            var owner = Main.player[spell.projectile.owner];
         };
+
+        private readonly Queue<Vector2> oldPositions = new Queue<Vector2>();
+        private readonly Queue<float> oldRotations = new Queue<float>();
 
         public List<Action<ProceduralSpellProj>> ai { get; set; } = new List<Action<ProceduralSpellProj>>(); // <=== Look here:
         public float Alpha { get; set; }
@@ -45,19 +48,17 @@ namespace kRPG2.Projectiles
         public List<Action<ProceduralSpellProj>> Kills { get; set; } = new List<Action<ProceduralSpellProj>>();
 
         public bool Lighted { get; set; } = false;
-        private readonly Queue<Vector2> oldPositions = new Queue<Vector2>();
-        private readonly Queue<float> oldRotations = new Queue<float>();
+        public bool Minion => Caster is Projectile;
         public Vector2 Origin { get; set; } = Vector2.Zero;
         public Item SelectedItem { get; set; }
         public ProceduralSpell Source { get; set; }
-        public bool Minion => Caster is Projectile;
 
         public override void AI()
         {
             if (Alpha < 1f) Alpha += 0.02f;
             if (Caster == null) projectile.Kill();
             else if (!Caster.active) projectile.Kill();
-            foreach (Action<ProceduralSpellProj> action in ai.Where(action => action != null))
+            foreach (var action in ai.Where(action => action != null))
                 action(this);
         }
 
@@ -68,21 +69,21 @@ namespace kRPG2.Projectiles
 
         public override ModProjectile Clone()
         {
-            ProceduralSpellProj copy = (ProceduralSpellProj)MemberwiseClone();
+            var copy = (ProceduralSpellProj) MemberwiseClone();
             copy.ai = new List<Action<ProceduralSpellProj>>();
-            foreach (Action<ProceduralSpellProj> action in ai) copy.ai.Add(action);
+            foreach (var action in ai) copy.ai.Add(action);
             copy.Impacts = new List<Action<ProceduralSpellProj, NPC, int>>();
-            foreach (Action<ProceduralSpellProj, NPC, int> action in Impacts) copy.Impacts.Add(action);
+            foreach (var action in Impacts) copy.Impacts.Add(action);
             copy.Inits = new List<Action<ProceduralSpellProj>>();
-            foreach (Action<ProceduralSpellProj> action in Inits) copy.Inits.Add(action);
+            foreach (var action in Inits) copy.Inits.Add(action);
             copy.Kills = new List<Action<ProceduralSpellProj>>();
-            foreach (Action<ProceduralSpellProj> action in Kills) copy.Kills.Add(action);
+            foreach (var action in Kills) copy.Kills.Add(action);
             return copy;
         }
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            foreach (Action<ProceduralSpellProj, SpriteBatch, Color> action in draw.Where(action => action != null))
+            foreach (var action in draw.Where(action => action != null))
                 action(this, spriteBatch, color);
             if (LocalTexture == null)
             {
@@ -106,13 +107,13 @@ namespace kRPG2.Projectiles
                 }
             }
 
-            spriteBatch.Draw(LocalTexture, position + LocalTexture.Bounds.Center(), null, (Lighted ? Color.White : color) * Alpha, rotation, LocalTexture.Bounds.Center(),
-                scale, projectile.spriteDirection >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+            spriteBatch.Draw(LocalTexture, position + LocalTexture.Bounds.Center(), null, (Lighted ? Color.White : color) * Alpha, rotation,
+                LocalTexture.Bounds.Center(), scale, projectile.spriteDirection >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
         }
 
         public override void Initialize()
         {
-            foreach (Action<ProceduralSpellProj> action in Inits.Where(action => action != null))
+            foreach (var action in Inits.Where(action => action != null))
                 action(this);
             if (!Minion)
                 return;
@@ -123,7 +124,7 @@ namespace kRPG2.Projectiles
 
         public override void Kill(int timeLeft)
         {
-            foreach (Action<ProceduralSpellProj> action in Kills.Where(action => action != null))
+            foreach (var action in Kills.Where(action => action != null))
                 action(this);
             if (timeLeft > 0)
                 Main.PlaySound(SoundID.Dig, projectile.position);
@@ -132,7 +133,7 @@ namespace kRPG2.Projectiles
         // ReSharper disable once IdentifierTypo
         public override void OnHitNPC(NPC target, int damage, float knockBack, bool crit)
         {
-            foreach (Action<ProceduralSpellProj, NPC, int> action in Impacts.Where(action => action != null))
+            foreach (var action in Impacts.Where(action => action != null))
                 action(this, target, damage);
         }
 
@@ -159,23 +160,23 @@ namespace kRPG2.Projectiles
             int moonType = reader.ReadInt32();
             projectile.damage = reader.ReadInt32();
             bool minionCaster = reader.ReadBoolean();
-            Caster = minionCaster ? Main.projectile[reader.ReadInt32()] : (Entity)Main.player[reader.ReadInt32()];
-            List<GlyphModifier> modifiers = new List<GlyphModifier>();
+            Caster = minionCaster ? Main.projectile[reader.ReadInt32()] : (Entity) Main.player[reader.ReadInt32()];
+            var modifiers = new List<GlyphModifier>();
             int count = reader.ReadInt32();
             for (int i = 0; i < count; i += 1)
                 modifiers.Add(GlyphModifier.Modifiers[reader.ReadInt32()]);
             if (Source == null)
             {
                 Source = new ProceduralSpell(mod);
-                Source.Glyphs[(byte)GLYPHTYPE.STAR].SetDefaults(starType, true);
-                Source.Glyphs[(byte)GLYPHTYPE.CROSS].SetDefaults(crossType, true);
-                Source.Glyphs[(byte)GLYPHTYPE.MOON].SetDefaults(moonType, true);
+                Source.Glyphs[(byte) GLYPHTYPE.STAR].SetDefaults(starType, true);
+                Source.Glyphs[(byte) GLYPHTYPE.CROSS].SetDefaults(crossType, true);
+                Source.Glyphs[(byte) GLYPHTYPE.MOON].SetDefaults(moonType, true);
                 Source.ModifierOverride = modifiers;
             }
 
-            foreach (Item item in Source.Glyphs)
+            foreach (var item in Source.Glyphs)
             {
-                Glyph glyph = (Glyph)item.modItem;
+                var glyph = (Glyph) item.modItem;
                 if (glyph.GetAiAction() != null)
                     ai.Add(glyph.GetAiAction());
                 if (glyph.GetInitAction() != null)
@@ -186,7 +187,7 @@ namespace kRPG2.Projectiles
                     Kills.Add(glyph.GetKillAction());
             }
 
-            foreach (GlyphModifier modifier in modifiers)
+            foreach (var modifier in modifiers)
             {
                 if (modifier.Impact != null)
                     Impacts.Add(modifier.Impact);
@@ -208,13 +209,13 @@ namespace kRPG2.Projectiles
         {
             if (Source == null) return;
             writer.Write(projectile.owner);
-            writer.Write(Source.Glyphs[(byte)GLYPHTYPE.STAR].type);
-            writer.Write(Source.Glyphs[(byte)GLYPHTYPE.CROSS].type);
-            writer.Write(Source.Glyphs[(byte)GLYPHTYPE.MOON].type);
+            writer.Write(Source.Glyphs[(byte) GLYPHTYPE.STAR].type);
+            writer.Write(Source.Glyphs[(byte) GLYPHTYPE.CROSS].type);
+            writer.Write(Source.Glyphs[(byte) GLYPHTYPE.MOON].type);
             writer.Write(projectile.damage);
             writer.Write(Minion);
             writer.Write(Caster.whoAmI);
-            List<GlyphModifier> modifiers = Source.Modifiers;
+            var modifiers = Source.Modifiers;
             writer.Write(modifiers.Count);
             for (int j = 0; j < modifiers.Count; j += 1)
                 writer.Write(modifiers[j].Id);

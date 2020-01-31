@@ -13,7 +13,7 @@ namespace kRPG2
                 return;
             if (type != TileID.Anvils && type != TileID.MythrilAnvil)
                 return;
-            PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
+            var character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
             character.CloseGuIs();
             character.AnvilGui.GuiActive = true;
             character.AnvilGui.PlayerPosition = new Vector2(i * 16f + 16f, j * 16f + 8f);

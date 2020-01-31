@@ -6,16 +6,16 @@ namespace kRPG2.Modifiers
 {
     public class SpeedModifier : NpcModifier
     {
-        private  kNPC Kn { get; set; }
-        private float SpeedModifierAdj { get; set; }
-
         public SpeedModifier(kNPC kNpc, NPC npc, float speedModifierAdj = 1.8f) : base(kNpc, npc)
         {
             this.npc = npc;
             Kn = kNpc;
             npc.GivenName = "Swift " + npc.GivenName;
-            this.SpeedModifierAdj = speedModifierAdj;
+            SpeedModifierAdj = speedModifierAdj;
         }
+
+        private kNPC Kn { get; }
+        private float SpeedModifierAdj { get; set; }
 
         public override void Apply()
         {

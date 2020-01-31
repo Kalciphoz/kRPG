@@ -15,6 +15,31 @@ namespace kRPG2.Items
 {
     public class kItem : GlobalItem
     {
+        public kItem()
+        {
+            UpgradeLevel = 255;
+            KPrefix = 0;
+
+            ClearPrefixes();
+        }
+
+        public int BonusAccuracy { get; set; }
+        public int BonusAllres { get; set; }
+        public int BonusCrit { get; set; }
+
+        public int BonusDef { get; set; }
+        public int BonusEva { get; set; }
+        public float BonusLeech { get; set; }
+        public int BonusLife { get; set; }
+        public int BonusMana { get; set; }
+        public float BonusMult { get; set; }
+        public float BonusRegen { get; set; }
+
+        public Dictionary<ELEMENT, int> ElementalDamage { get; set; } = new Dictionary<ELEMENT, int>
+        {
+            {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
+        };
+
         public static Dictionary<ELEMENT, string> ElementNames { get; set; } = new Dictionary<ELEMENT, string>
         {
             {ELEMENT.FIRE, "255063000 fire "},
@@ -22,6 +47,22 @@ namespace kRPG2.Items
             {ELEMENT.LIGHTNING, "255239000 lightning "},
             {ELEMENT.SHADOW, "095000191 shadow "}
         };
+
+        public bool Enhanced => KPrefix != 0;
+
+        public override bool InstancePerEntity => true;
+
+        public byte KPrefix { get; set; }
+
+        private List<string> PrefixTooltips { get; set; } = new List<string>();
+
+        public Dictionary<ELEMENT, int> ResBonus { get; set; } = new Dictionary<ELEMENT, int>
+        {
+            {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
+        };
+
+        public Dictionary<STAT, int> StatBonus { get; set; } =
+            new Dictionary<STAT, int> {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}, {STAT.WITS, 0}};
 
         //public static SwordAccent ReforgeAccent { get; set; }
         //public static SwordBlade Reforgeblade { get; set; }
@@ -42,47 +83,7 @@ namespace kRPG2.Items
             {STAT.WITS, "239223031 wits"}
         };
 
-        public int BonusAccuracy { get; set; }
-        public int BonusAllres { get; set; }
-        public int BonusCrit { get; set; }
-
-        public int BonusDef { get; set; }
-        public int BonusEva { get; set; }
-        public float BonusLeech { get; set; }
-        public int BonusLife { get; set; }
-        public int BonusMana { get; set; }
-        public float BonusMult { get; set; }
-        public float BonusRegen { get; set; }
-
-        public Dictionary<ELEMENT, int> ElementalDamage { get; set; } = new Dictionary<ELEMENT, int>
-        {
-            {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
-        };
-
-        public byte KPrefix { get; set; }
-
-        private List<string> PrefixTooltips { get; set; } = new List<string>();
-
-        public Dictionary<ELEMENT, int> ResBonus { get; set; } = new Dictionary<ELEMENT, int>
-        {
-            {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
-        };
-
-        public Dictionary<STAT, int> StatBonus { get; set; } = new Dictionary<STAT, int> {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}, {STAT.WITS, 0}};
-
         public byte UpgradeLevel { get; set; } = 255;
-
-        public kItem()
-        {
-            UpgradeLevel = 255;
-            KPrefix = 0;
-
-            ClearPrefixes();
-        }
-
-        public bool Enhanced => KPrefix != 0;
-
-        public override bool InstancePerEntity => true;
 
         public kItem ApplyStats(Item item, bool clean = false)
         {
@@ -224,7 +225,7 @@ namespace kRPG2.Items
 
         public override GlobalItem Clone(Item item, Item itemClone)
         {
-            kItem copy = (kItem) base.Clone(item, itemClone);
+            var copy = (kItem) base.Clone(item, itemClone);
             if (itemClone.type == 0) return copy;
             copy.ElementalDamage = new Dictionary<ELEMENT, int>
             {
@@ -282,7 +283,7 @@ namespace kRPG2.Items
         {
             if (item.type == mod.GetItem("ProceduralStaff").item.type)
             {
-                ProceduralStaff staff = (ProceduralStaff) item.modItem;
+                var staff = (ProceduralStaff) item.modItem;
                 float totalReduction = 0f;
                 int totalElements = 0;
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
@@ -298,7 +299,7 @@ namespace kRPG2.Items
             }
             else if (item.type == mod.GetItem("ProceduralSword").item.type)
             {
-                ProceduralSword sword = (ProceduralSword) item.modItem;
+                var sword = (ProceduralSword) item.modItem;
                 float totalReduction = 0f;
                 int totalElements = 0;
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
@@ -333,14 +334,14 @@ namespace kRPG2.Items
 
         public int GetEleDamage(Item item, Player player, bool ignoreModifiers = false)
         {
-            Dictionary<ELEMENT, int> ele = new Dictionary<ELEMENT, int>();
+            var ele = new Dictionary<ELEMENT, int>();
             ele = GetIndividualElements(item, player, ignoreModifiers);
             return ele[ELEMENT.FIRE] + ele[ELEMENT.COLD] + ele[ELEMENT.LIGHTNING] + ele[ELEMENT.SHADOW];
         }
 
         public Dictionary<ELEMENT, int> GetIndividualElements(Item item, Player player, bool ignoreModifiers = false)
         {
-            Dictionary<ELEMENT, int> dictionary = new Dictionary<ELEMENT, int>();
+            var dictionary = new Dictionary<ELEMENT, int>();
             if (player.GetModPlayer<PlayerCharacter>().Rituals[RITUAL.DEMON_PACT])
             {
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
@@ -415,7 +416,7 @@ namespace kRPG2.Items
                     !(item.modItem is RangedWeapon))
                     item.SetItemDefaults(item.type);
 
-            Random rand = new Random();
+            var rand = new Random();
 
             if (item.accessory)
             {
@@ -439,7 +440,7 @@ namespace kRPG2.Items
 
         public override bool ItemSpace(Item newItem, Player player)
         {
-            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+            var character = player.GetModPlayer<PlayerCharacter>();
             try
             {
                 if (ItemID.Sets.NebulaPickup[newItem.type] || newItem.type == ItemID.Heart || newItem.type == ItemID.CandyApple ||
@@ -451,7 +452,7 @@ namespace kRPG2.Items
                     num = 54;
                 for (int i = 0; i < num; i++)
                 {
-                    Item item = player.inventory[i];
+                    var item = player.inventory[i];
                     if ((item.type == 0 || item.stack == 0) && (!kConfig.ConfigLocal.ClientSide.ManualInventory || num > 50 || character.ActiveInvPage == 0) ||
                         item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
                         return true;
@@ -460,7 +461,7 @@ namespace kRPG2.Items
                 for (int i = 0; i < character.Inventories.Length; i++)
                 for (int j = 0; j < character.Inventories[i].Length; j += 1)
                 {
-                    Item item = character.Inventories[i][j];
+                    var item = character.Inventories[i][j];
                     if ((item.type == 0 || item.stack == 0) && (!kConfig.ConfigLocal.ClientSide.ManualInventory || i == 0) ||
                         item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
                         //Main.NewText((!kConfig.configLocal.clientSide.manualInventory) + "||" + (i == 0));
@@ -497,7 +498,7 @@ namespace kRPG2.Items
                         continue;
                     string color = ElementNames[element].Substring(0, 9);
                     string eleName = ElementNames[element].Substring(9);
-                    TooltipLine line = new TooltipLine(mod, "Res" + element, ResBonus[element] + eleName + " resistance")
+                    var line = new TooltipLine(mod, "Res" + element, ResBonus[element] + eleName + " resistance")
                     {
                         overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)), int.Parse(color.Substring(6, 3)))
                     };
@@ -509,7 +510,7 @@ namespace kRPG2.Items
                     {
                         string color = StatNames[stat].Substring(0, 9);
                         string statName = StatNames[stat].Substring(9);
-                        TooltipLine line = new TooltipLine(mod, "Stat" + stat, StatBonus[stat] + statName)
+                        var line = new TooltipLine(mod, "Stat" + stat, StatBonus[stat] + statName)
                         {
                             overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)), int.Parse(color.Substring(6, 3)))
                         };
@@ -518,25 +519,25 @@ namespace kRPG2.Items
 
                 if (BonusEva > 0)
                 {
-                    TooltipLine line = new TooltipLine(mod, "Evasion", BonusEva + " evasion rating") {overrideColor = new Color(159, 159, 159)};
+                    var line = new TooltipLine(mod, "Evasion", BonusEva + " evasion rating") {overrideColor = new Color(159, 159, 159)};
                     tooltips.Insert(1, line);
                 }
 
                 if (BonusMana > 0)
                 {
-                    TooltipLine line = new TooltipLine(mod, "Mana", BonusMana + " maximum mana") {overrideColor = new Color(0, 63, 255)};
+                    var line = new TooltipLine(mod, "Mana", BonusMana + " maximum mana") {overrideColor = new Color(0, 63, 255)};
                     tooltips.Insert(1, line);
                 }
 
                 if (BonusLife > 0)
                 {
-                    TooltipLine line = new TooltipLine(mod, "Life", BonusLife + " maximum life") {overrideColor = new Color(255, 31, 31)};
+                    var line = new TooltipLine(mod, "Life", BonusLife + " maximum life") {overrideColor = new Color(255, 31, 31)};
                     tooltips.Insert(1, line);
                 }
 
                 for (int i = 0; i < PrefixTooltips.Count; i += 1)
                 {
-                    TooltipLine line = new TooltipLine(mod, "prefixline" + i, PrefixTooltips[i]) {overrideColor = new Color(127, 191, 127)};
+                    var line = new TooltipLine(mod, "prefixline" + i, PrefixTooltips[i]) {overrideColor = new Color(127, 191, 127)};
                     tooltips.Add(line);
                 }
             }
@@ -550,7 +551,7 @@ namespace kRPG2.Items
                     {
                         string color = ElementNames[element].Substring(0, 9);
                         string eleName = ElementNames[element].Substring(9);
-                        TooltipLine line = new TooltipLine(mod, "Element" + element, eleDamage + eleName + "damage")
+                        var line = new TooltipLine(mod, "Element" + element, eleDamage + eleName + "damage")
                         {
                             overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)), int.Parse(color.Substring(6, 3)))
                         };
@@ -560,7 +561,7 @@ namespace kRPG2.Items
 
                 for (int i = 0; i < PrefixTooltips.Count; i += 1)
                 {
-                    TooltipLine line = new TooltipLine(mod, "prefixline" + i, PrefixTooltips[i]) {overrideColor = new Color(127, 191, 127)};
+                    var line = new TooltipLine(mod, "prefixline" + i, PrefixTooltips[i]) {overrideColor = new Color(127, 191, 127)};
                     tooltips.Add(line);
                 }
             }
@@ -641,7 +642,7 @@ namespace kRPG2.Items
 
         public override bool OnPickup(Item item, Player player)
         {
-            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+            var character = player.GetModPlayer<PlayerCharacter>();
 
             try
             {
@@ -738,7 +739,7 @@ namespace kRPG2.Items
         public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor,
             Vector2 origin, float scale)
         {
-            Player player = Main.LocalPlayer;
+            var player = Main.LocalPlayer;
             bool flag = false;
             if (player.chest >= 0)
                 if (Main.chest[player.chest].item.Contains(item))
@@ -747,7 +748,7 @@ namespace kRPG2.Items
                 (player.inventory.Contains(item) || flag || player.bank.item.Contains(item) || player.bank2.item.Contains(item) ||
                  player.bank3.item.Contains(item)))
                 Initialize(item);
-            PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
+            var character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
 
             if (Upgradeable(item) && Main.mouseRight && Main.mouseRightRelease &&
                 new Rectangle((int) position.X, (int) position.Y, 38, 38).Contains(Main.mouseX, Main.mouseY))
@@ -1273,7 +1274,7 @@ namespace kRPG2.Items
 
         public override void UpdateEquip(Item item, Player player)
         {
-            PlayerCharacter modPlayer = player.GetModPlayer<PlayerCharacter>();
+            var modPlayer = player.GetModPlayer<PlayerCharacter>();
 
             if (!Enhanced) return;
             if (BonusDef > 0)
@@ -1317,7 +1318,7 @@ namespace kRPG2.Items
         {
             if (item.healMana <= 0)
                 return false;
-            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+            var character = player.GetModPlayer<PlayerCharacter>();
             character.Mana = Math.Min(player.statManaMax2, character.Mana + item.healMana);
             player.statMana = character.Mana;
             player.AddBuff(ModContent.BuffType<ManaCooldown>(), 600);

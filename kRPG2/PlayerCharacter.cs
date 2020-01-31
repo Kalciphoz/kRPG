@@ -9,7 +9,6 @@ using kRPG2.Items.Dusts;
 using kRPG2.Items.Glyphs;
 using kRPG2.Projectiles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.DataStructures;
@@ -23,90 +22,6 @@ namespace kRPG2
     public class PlayerCharacter : ModPlayer
     {
         public const int DefaultMaxUpgradeLevel = 7;
-
-        public ProceduralSpell[] Abilities { get; set; } = new ProceduralSpell[4];
-        public AbilitiesGui AbilitiesGui { get; set; }
-        public int Accuracy { get; set; }
-
-        public float AccuracyCounter { get; set; } = 0.5f;
-        public int ActiveInvPage { get; set; }
-
-        public Dictionary<ELEMENT, int> AilmentIntensity { get; set; } = new Dictionary<ELEMENT, int>
-        {
-            {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
-        };
-
-        public Dictionary<ELEMENT, Type> Ailments { get; set; } = new Dictionary<ELEMENT, Type>
-        {
-            {ELEMENT.FIRE, typeof(Fire)}, {ELEMENT.COLD, typeof(Cold)}, {ELEMENT.LIGHTNING, typeof(Lightning)}, {ELEMENT.SHADOW, typeof(Shadow)}
-        };
-
-        public int Allres { get; set; }
-        public AnvilGUI AnvilGui { get; set; }
-
-        public Dictionary<STAT, int> BaseStats { get; set; } = new Dictionary<STAT, int>();
-        public int BigCritCounter { get; set; } = 50;
-        public int BigHitCounter { get; set; } = 50;
-
-        public int BonusLife { get; set; }
-        public int BonusMana { get; set; }
-        public bool CanHealMana { get; set; } = true;
-        public List<ProceduralSpellProj> CirclingProtection { get; set; } = new List<ProceduralSpellProj>();
-        public float CritAccuracyCounter { get; set; } = 0.5f;
-
-        public int CritBoost { get; set; }
-        public int CritCounter { get; set; } = 50;
-        public float CritMultiplier { get; set; } = 1f;
-        private float DegenTimer { get; set; }
-
-        public Dictionary<ELEMENT, int> Eleres { get; set; } = new Dictionary<ELEMENT, int>
-        {
-            {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
-        };
-
-        public int Evasion { get; set; } = 2;
-        public int EvasionCounter { get; set; } = 50;
-
-        public Dictionary<ELEMENT, bool> HasAilment { get; set; } = new Dictionary<ELEMENT, bool>
-        {
-            {ELEMENT.FIRE, false}, {ELEMENT.COLD, false}, {ELEMENT.LIGHTNING, false}, {ELEMENT.SHADOW, false}
-        };
-
-        private bool Initialized { get; set; }
-
-        public Item[][] Inventories { get; set; } = new Item[3][] {new Item[40], new Item[40], new Item[40]};
-        public InventoryGui InventoryGui { get; set; }
-
-        public double ItemRotation { get; set; }
-        public Item LastSelectedWeapon { get; set; }
-        private int LeechCooldown { get; set; }
-
-        public int Level { get; set; } = 1;
-
-        private int LevelAnimation { get; set; }
-        public LevelGui LevelGui { get; set; }
-        public float LifeDegen { get; set; }
-
-        public float LifeLeech { get; set; }
-
-        public float LifeRegen { get; set; } = 1f;
-
-        public int Mana { get; set; }
-        public float ManaRegen { get; set; }
-        private float ManaRegenTimer { get; set; }
-        public List<ProceduralMinion> Minions { get; set; } = new List<ProceduralMinion>();
-        public int Permanence { get; set; }
-        private float RegenTimer { get; set; }
-        public Dictionary<RITUAL, bool> Rituals { get; set; } = new Dictionary<RITUAL, bool>();
-        public ProceduralSpell SelectedAbility { get; set; } = null;
-        public SpellcraftingGUI SpellCraftingGui { get; set; }
-        public List<SpellEffect> SpellEffects { get; set; } = new List<SpellEffect>();
-        public bool StatPage { get; set; } = true;
-        public StatusBar StatusBar { get; set; }
-        public Dictionary<STAT, int> TempStats { get; set; } = new Dictionary<STAT, int>();
-        public List<Trail> Trails { get; set; } = new List<Trail>();
-        public int Transcendence { get; set; }
-        public int Experience { get; set; }
 
         public PlayerCharacter()
         {
@@ -145,6 +60,39 @@ namespace kRPG2
             }
         }
 
+        public ProceduralSpell[] Abilities { get; set; } = new ProceduralSpell[4];
+        public AbilitiesGui AbilitiesGui { get; set; }
+        public int Accuracy { get; set; }
+
+        public float AccuracyCounter { get; set; } = 0.5f;
+        public int ActiveInvPage { get; set; }
+
+        public Dictionary<ELEMENT, int> AilmentIntensity { get; set; } = new Dictionary<ELEMENT, int>
+        {
+            {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
+        };
+
+        public Dictionary<ELEMENT, Type> Ailments { get; set; } = new Dictionary<ELEMENT, Type>
+        {
+            {ELEMENT.FIRE, typeof(Fire)}, {ELEMENT.COLD, typeof(Cold)}, {ELEMENT.LIGHTNING, typeof(Lightning)}, {ELEMENT.SHADOW, typeof(Shadow)}
+        };
+
+        public int Allres { get; set; }
+        public AnvilGUI AnvilGui { get; set; }
+
+        public Dictionary<STAT, int> BaseStats { get; set; } = new Dictionary<STAT, int>();
+        public int BigCritCounter { get; set; } = 50;
+        public int BigHitCounter { get; set; } = 50;
+
+        public int BonusLife { get; set; }
+        public int BonusMana { get; set; }
+        public bool CanHealMana { get; set; } = true;
+        public List<ProceduralSpellProj> CirclingProtection { get; set; } = new List<ProceduralSpellProj>();
+        public float CritAccuracyCounter { get; set; } = 0.5f;
+
+        public int CritBoost { get; set; }
+        public int CritCounter { get; set; } = 50;
+
         public float CritHitChance
         {
             get
@@ -154,7 +102,24 @@ namespace kRPG2
             }
         }
 
+        public float CritMultiplier { get; set; } = 1f;
+
         public float DamageMultiplierPercent => 1f + TotalStats(STAT.POTENCY) * 0.05f + Math.Min(0.09f, TotalStats(STAT.POTENCY) * 0.06f);
+        private float DegenTimer { get; set; }
+
+        public Dictionary<ELEMENT, int> Eleres { get; set; } = new Dictionary<ELEMENT, int>
+        {
+            {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
+        };
+
+        public int Evasion { get; set; } = 2;
+        public int EvasionCounter { get; set; } = 50;
+        public int Experience { get; set; }
+
+        public Dictionary<ELEMENT, bool> HasAilment { get; set; } = new Dictionary<ELEMENT, bool>
+        {
+            {ELEMENT.FIRE, false}, {ELEMENT.COLD, false}, {ELEMENT.LIGHTNING, false}, {ELEMENT.SHADOW, false}
+        };
 
         public float HitChance
         {
@@ -165,32 +130,69 @@ namespace kRPG2
             }
         }
 
+        private bool Initialized { get; set; }
+
+        public Item[][] Inventories { get; set; } = new Item[3][] {new Item[40], new Item[40], new Item[40]};
+        public InventoryGui InventoryGui { get; set; }
+
+        public double ItemRotation { get; set; }
+        public Item LastSelectedWeapon { get; set; }
+        private int LeechCooldown { get; set; }
+
+        public int Level { get; set; } = 1;
+
+        private int LevelAnimation { get; set; }
+        public LevelGui LevelGui { get; set; }
+        public float LifeDegen { get; set; }
+
+        public float LifeLeech { get; set; }
+
+        public float LifeRegen { get; set; } = 1f;
+
+        public int Mana { get; set; }
+        public float ManaRegen { get; set; }
+        private float ManaRegenTimer { get; set; }
+        public List<ProceduralMinion> Minions { get; set; } = new List<ProceduralMinion>();
+        public int Permanence { get; set; }
+
         public int PointsAllocated
         {
             get { return Enum.GetValues(typeof(STAT)).Cast<STAT>().Sum(stat => BaseStats[stat]); }
         }
 
+        private float RegenTimer { get; set; }
+
         public Dictionary<ELEMENT, int> Resistance
         {
             get
             {
-                Dictionary<ELEMENT, int> dict = new Dictionary<ELEMENT, int>();
+                var dict = new Dictionary<ELEMENT, int>();
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                     dict[element] = Eleres[element] + Allres;
                 return dict;
             }
         }
 
+        public Dictionary<RITUAL, bool> Rituals { get; set; } = new Dictionary<RITUAL, bool>();
+        public ProceduralSpell SelectedAbility { get; set; } = null;
+        public SpellcraftingGUI SpellCraftingGui { get; set; }
+        public List<SpellEffect> SpellEffects { get; set; } = new List<SpellEffect>();
+        public bool StatPage { get; set; } = true;
+        public StatusBar StatusBar { get; set; }
+        public Dictionary<STAT, int> TempStats { get; set; } = new Dictionary<STAT, int>();
+        public List<Trail> Trails { get; set; } = new List<Trail>();
+        public int Transcendence { get; set; }
+
         public void AddXp(int xp)
         {
             if (Main.gameMenu) return;
             if (xp == 0) return;
-            this.Experience += xp;
+            Experience += xp;
 
             Check:
-            if (this.Experience >= ExperienceToLevel())
+            if (Experience >= ExperienceToLevel())
             {
-                this.Experience -= ExperienceToLevel();
+                Experience -= ExperienceToLevel();
                 LevelUp();
                 goto Check;
             }
@@ -262,9 +264,9 @@ namespace kRPG2
                 }
 
             if (Main.netMode == 2) return;
-            SpriteBatch spriteBatch = Main.spriteBatch;
+            var spriteBatch = Main.spriteBatch;
 
-            foreach (Trail trail in Trails.ToArray())
+            foreach (var trail in Trails.ToArray())
                 trail.Draw(spriteBatch, player);
 
             if (LevelAnimation >= 60)
@@ -297,10 +299,10 @@ namespace kRPG2
 
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
         {
-            foreach (Projectile projectile in Main.projectile)
+            foreach (var projectile in Main.projectile)
                 if (projectile.modProjectile is ProceduralSpear || projectile.modProjectile is ProceduralMinion)
                     projectile.Kill();
-            foreach (ProceduralSpellProj spell in CirclingProtection)
+            foreach (var spell in CirclingProtection)
                 spell.projectile.Kill();
             CirclingProtection.Clear();
         }
@@ -332,7 +334,7 @@ namespace kRPG2
             if (!Main.gameMenu) GFX.SfxLevelUp.Play(0.5f * Main.soundVolume, 0f, 0f);
             if (Main.netMode == 1)
             {
-                ModPacket packet = mod.GetPacket();
+                var packet = mod.GetPacket();
                 packet.Write((byte) Message.SyncLevel);
                 packet.Write(player.whoAmI);
                 packet.Write(Level);
@@ -353,17 +355,17 @@ namespace kRPG2
                 damage = (int) (damage * damageBoost);
             }
 
-            Dictionary<ELEMENT, int> eleDmg = new Dictionary<ELEMENT, int>();
+            var eleDmg = new Dictionary<ELEMENT, int>();
 
             if (item != null)
             {
-                kItem ki = item.GetGlobalItem<kItem>();
+                var ki = item.GetGlobalItem<kItem>();
                 damage += ki.GetEleDamage(item, player);
                 eleDmg = ki.GetIndividualElements(item, player);
             }
             else if (proj != null)
             {
-                kProjectile kp = proj.GetGlobalProjectile<kProjectile>();
+                var kp = proj.GetGlobalProjectile<kProjectile>();
                 damage += kp.GetEleDamage(proj, player);
                 eleDmg = kp.GetIndividualElements(proj, player);
             }
@@ -372,7 +374,7 @@ namespace kRPG2
                 damage = Math.Min(damage * 2 / 5, damage - AilmentIntensity[ELEMENT.SHADOW]);
             //    damage = damage * (20 + 9360 / (130 + ailmentIntensity[ELEMENT.SHADOW])) / 100;
 
-            kNPC victim = target.GetGlobalNPC<kNPC>();
+            var victim = target.GetGlobalNPC<kNPC>();
 
             if (!crit && Main.netMode == 0)
                 crit = Main.rand.Next(500) < 50 + victim.AilmentIntensity[ELEMENT.COLD];
@@ -400,7 +402,7 @@ namespace kRPG2
                     continue;
                 if (eleDmg[element] <= 0)
                     continue;
-                Type t = Ailments[element];
+                var t = Ailments[element];
                 ModBuff buff;
                 if (Ailments[element] == typeof(Fire))
                     buff = ModContent.GetInstance<Fire>();
@@ -419,7 +421,7 @@ namespace kRPG2
         public void ModifyDamageTakenFromNPC(ref int damage, ref bool crit, Dictionary<ELEMENT, int> eleDmg)
         {
             double dmg = 0.5 * Math.Pow(damage, 1.35);
-            Dictionary<ELEMENT, int> originalEle = eleDmg;
+            var originalEle = eleDmg;
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 eleDmg[element] = (int) (0.5 * Math.Pow(eleDmg[element], 1.35));
             if (!Main.expertMode)
@@ -433,7 +435,7 @@ namespace kRPG2
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 eleDmg[element] = Math.Min(originalEle[element] * 3, eleDmg[element]);
             bool bossfight = false;
-            foreach (NPC n in Main.npc)
+            foreach (var n in Main.npc)
                 if (n.active)
                     if (n.boss)
                         bossfight = true;
@@ -446,7 +448,7 @@ namespace kRPG2
                     continue;
                 if (eleDmg[element] <= 0)
                     continue;
-                Type t = Ailments[element];
+                var t = Ailments[element];
                 ModBuff buff;
                 if (Ailments[element] == typeof(Fire))
                     buff = ModContent.GetInstance<Fire>();
@@ -482,9 +484,9 @@ namespace kRPG2
                         {
                             if (Main.gameMenu) return;
 
-                            ProceduralStaff staff = (ProceduralStaff) player.HeldItem.modItem;
+                            var staff = (ProceduralStaff) player.HeldItem.modItem;
 
-                            Vector2 pos = player.Center - Main.screenPosition;
+                            var pos = player.Center - Main.screenPosition;
                             staff.DrawHeld(drawinfo, Lighting.GetColor((int) (player.Center.X / 16f), (int) (player.Center.Y / 16f)),
                                 player.itemRotation + (float) API.Tau * player.direction / 8, staff.item.scale, pos);
                         }
@@ -492,11 +494,11 @@ namespace kRPG2
                         {
                             if (Main.gameMenu) return;
 
-                            ProceduralSword sword = (ProceduralSword) player.HeldItem.modItem;
+                            var sword = (ProceduralSword) player.HeldItem.modItem;
 
                             if (sword.Spear) return;
 
-                            Vector2 pos = player.Center - Main.screenPosition;
+                            var pos = player.Center - Main.screenPosition;
                             sword.DrawHeld(drawinfo, Lighting.GetColor((int) (player.Center.X / 16f), (int) (player.Center.Y / 16f)),
                                 player.itemRotation + (float) API.Tau, sword.item.scale, pos);
                         }
@@ -505,7 +507,7 @@ namespace kRPG2
 
         public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit)
         {
-            Dictionary<ELEMENT, int> dict = new Dictionary<ELEMENT, int>();
+            var dict = new Dictionary<ELEMENT, int>();
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 dict[element] = npc.GetGlobalNPC<kNPC>().ElementalDamage[element];
             ModifyDamageTakenFromNPC(ref damage, ref crit, dict);
@@ -513,7 +515,7 @@ namespace kRPG2
 
         public override void ModifyHitByProjectile(Projectile proj, ref int damage, ref bool crit)
         {
-            Dictionary<ELEMENT, int> dict = new Dictionary<ELEMENT, int>();
+            var dict = new Dictionary<ELEMENT, int>();
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 dict[element] = proj.GetGlobalProjectile<kProjectile>().GetIndividualElements(proj, player)[element];
             ModifyDamageTakenFromNPC(ref damage, ref crit, dict);
@@ -539,11 +541,11 @@ namespace kRPG2
 
         public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
         {
-            Item item = player.inventory[player.selectedItem];
+            var item = player.inventory[player.selectedItem];
             LeechLife(item, damage);
             if (item.type == ModContent.ItemType<ProceduralStaff>())
             {
-                ProceduralStaff staff = (ProceduralStaff) item.modItem;
+                var staff = (ProceduralStaff) item.modItem;
                 bool proceed = false;
                 if (proj.type == item.shoot)
                     proceed = true;
@@ -554,7 +556,7 @@ namespace kRPG2
             }
             else if (proj.type == ModContent.ProjectileType<ProceduralSpear>() && item.type == ModContent.ItemType<ProceduralSword>())
             {
-                ProceduralSword spear = (ProceduralSword) item.modItem;
+                var spear = (ProceduralSword) item.modItem;
                 spear.Accent?.OnHit?.Invoke(player, target, spear, damage, crit);
             }
         }
@@ -573,7 +575,7 @@ namespace kRPG2
 
         public override void PlayerConnect(Player player)
         {
-            ModPacket packet = mod.GetPacket();
+            var packet = mod.GetPacket();
             packet.Write((byte) Message.SyncLevel);
             packet.Write(player.whoAmI);
             packet.Write(Level);
@@ -588,7 +590,7 @@ namespace kRPG2
 
             try
             {
-                Item item = player.inventory[player.selectedItem];
+                var item = player.inventory[player.selectedItem];
                 if (item.type != ModContent.ItemType<ProceduralStaff>() || item.shoot > 0)
                     return;
                 player.releaseUseItem = true;
@@ -610,8 +612,8 @@ namespace kRPG2
 
                 if (player.itemTime < 2)
                 {
-                    Vector2 pos = player.RotatedRelativePoint(player.MountedCenter);
-                    Vector2 relativeMousePos = Main.MouseWorld - pos;
+                    var pos = player.RotatedRelativePoint(player.MountedCenter);
+                    var relativeMousePos = Main.MouseWorld - pos;
                     ItemRotation = Math.Atan2(relativeMousePos.Y * player.direction, relativeMousePos.X * player.direction) - player.fullRotation;
                     NetMessage.SendData(13, -1, -1, null, player.whoAmI);
                     NetMessage.SendData(41, -1, -1, null, player.whoAmI);
@@ -638,7 +640,7 @@ namespace kRPG2
                     return;
             }
 
-            Item item = player.inventory[player.selectedItem];
+            var item = player.inventory[player.selectedItem];
             if (item.damage > 0 && (item.melee || !item.noMelee || item.modItem is ProceduralSword))
                 LastSelectedWeapon = item;
 
@@ -699,9 +701,9 @@ namespace kRPG2
                     if (Abilities[i].CompleteSkill())
                     {
                         bool useable = true;
-                        foreach (Item item in Abilities[i].Glyphs)
+                        foreach (var item in Abilities[i].Glyphs)
                         {
-                            Glyph glyph = (Glyph) item.modItem;
+                            var glyph = (Glyph) item.modItem;
                             if (!glyph.CanUse()) useable = false;
                         }
 
@@ -880,7 +882,7 @@ namespace kRPG2
 
             if (Main.netMode != 1 || (int) Main.time % 300 != 0)
                 return;
-            ModPacket packet = mod.GetPacket();
+            var packet = mod.GetPacket();
             packet.Write((byte) Message.SyncStats);
             packet.Write(player.whoAmI);
             packet.Write(Level);
@@ -893,7 +895,7 @@ namespace kRPG2
 
         public override void SetupStartInventory(IList<Item> items, bool mediumcoreDeath)
         {
-            Random rand = new Random();
+            var rand = new Random();
             switch (rand.Next(8))
             {
                 default:
@@ -910,7 +912,7 @@ namespace kRPG2
                     break;
                 case 4:
                     items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TinBow : ItemID.CopperBow, true);
-                    Item arrows = new Item();
+                    var arrows = new Item();
                     arrows.SetDefaults(rand.Next(2) == 0 ? ItemID.FlamingArrow : ItemID.WoodenArrow, true);
                     arrows.stack = rand.Next(2) == 0 ? 150 : 200;
                     items.Add(arrows);
@@ -918,7 +920,7 @@ namespace kRPG2
                 case 5:
                     items[0].SetDefaults(ItemID.Shuriken, true);
                     items[0].stack = rand.Next(2) == 0 ? 150 : 100;
-                    Item knives = new Item();
+                    var knives = new Item();
                     knives.SetDefaults(rand.Next(2) == 0 ? ItemID.PoisonedKnife : ItemID.ThrowingKnife, true);
                     knives.stack = 50;
                     items.Add(knives);
@@ -936,9 +938,9 @@ namespace kRPG2
             items[2].SetDefaults(rand.Next(2) == 0 ? ItemID.TinAxe : ItemID.CopperAxe);
             items[2].GetGlobalItem<kItem>().Initialize(items[2]);
 
-            Item star = new Item();
+            var star = new Item();
             star.SetDefaults(ModContent.ItemType<Star_Blue>(), true);
-            Item cross = new Item();
+            var cross = new Item();
             switch (rand.Next(4))
             {
                 default:
@@ -956,7 +958,7 @@ namespace kRPG2
             }
 
             ((Glyph) cross.modItem).Randomize();
-            Item moon = new Item();
+            var moon = new Item();
             switch (rand.Next(5))
             {
                 default:
@@ -1144,7 +1146,7 @@ namespace kRPG2
 
         public override TagCompound Save()
         {
-            TagCompound tagCompound = new TagCompound
+            var tagCompound = new TagCompound
             {
                 {"level", Level},
                 {"Experience", Experience},

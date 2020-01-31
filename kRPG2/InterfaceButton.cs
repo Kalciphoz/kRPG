@@ -9,23 +9,23 @@ namespace kRPG2
     {
         private readonly Action<Player, SpriteBatch> hoverAction;
 
-        private  bool HoverActionSet { get;  }
-        private  Func<Rectangle> Position { get; }
-        private  Action<Player> PressAction { get;  }
-
         public InterfaceButton(Func<Rectangle> position, Action<Player> pressAction)
         {
-            this.Position = position;
-            this.PressAction = pressAction;
+            Position = position;
+            PressAction = pressAction;
         }
 
         public InterfaceButton(Func<Rectangle> position, Action<Player> pressAction, Action<Player, SpriteBatch> hoverAction)
         {
-            this.Position = position;
-            this.PressAction = pressAction;
+            Position = position;
+            PressAction = pressAction;
             this.hoverAction = hoverAction;
             HoverActionSet = true;
         }
+
+        private bool HoverActionSet { get; }
+        private Func<Rectangle> Position { get; }
+        private Action<Player> PressAction { get; }
 
         public virtual void Update(SpriteBatch spriteBatch, Player player)
         {

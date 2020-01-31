@@ -7,21 +7,21 @@ namespace kRPG2
 {
     public class Trail
     {
-        public Vector2[] Displacement { get; set; }
-
-        private  Action<SpriteBatch, Player, Vector2, Vector2[], float> draw { get; }
-
-        private  Vector2 Position { get;  }
-        public float Scale { get; set; } = 1f;
-        private int Timeleft { get; set; }
-
         public Trail(Vector2 position, int timeleft, Action<SpriteBatch, Player, Vector2, Vector2[], float> draw)
         {
-            this.Position = position;
-            this.Timeleft = timeleft;
+            Position = position;
+            Timeleft = timeleft;
             this.draw = draw;
             Scale = 1f;
         }
+
+        public Vector2[] Displacement { get; set; }
+
+        private Action<SpriteBatch, Player, Vector2, Vector2[], float> draw { get; }
+
+        private Vector2 Position { get; }
+        public float Scale { get; set; } = 1f;
+        private int Timeleft { get; set; }
 
         public void Draw(SpriteBatch spritebatch, Player player)
         {

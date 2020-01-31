@@ -8,51 +8,52 @@ namespace kRPG2.Items.Weapons
 {
     public class Staff : StaffPart
     {
-        public static Staff Arcane { get; set; }
-        public static Staff Bone { get; set; }
-        public static Staff Branch { get; set; }
-        public static Staff Carved { get; set; }
-        public static Staff Gilded { get; set; }
-        public static Staff Hellstone { get; set; }
-        public static Staff Ivy { get; set; }
-
-        public static Dictionary<int, Staff> Staffs { get; set; }
-        public static Dictionary<STAFFTHEME, List<Staff>> StaffsByTheme { get; set; }
-        public bool AutoSwing { get; set; }
-        public int CritBonus { get; set; }
-
-        public Dictionary<ELEMENT, float> EleDamage { get; set; } = new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}};
-
-        public bool Front { get; set; }
-        public int Iterations { get; set; }
-        public float KnockBack { get; set; }
-        public float Mana { get; set; } 
-        public string Prefix { get; set; }
-        public float ShootSpeed { get; set; }
-
-        public int Type { get; set; }
-        public int UseTime { get; set; }
-
         public Staff(string texture, int originX, int originY, int useTime, float knockBack, string prefix, float shootSpeed = 8f, bool front = false,
             float manaMultiplier = 1f, int critBonus = 0, int iterations = 1, bool autoSwing = true)
         {
             Type = Staffs.Count + 1;
             if (Main.netMode != 2)
-                this.Texture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Items/Staves/" + texture);
+                Texture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Items/Staves/" + texture);
             Origin = new Vector2(originX, originY);
-            this.UseTime = useTime;
-            this.KnockBack = knockBack;
-            this.Iterations = iterations;
-            this.Prefix = prefix;
+            UseTime = useTime;
+            KnockBack = knockBack;
+            Iterations = iterations;
+            Prefix = prefix;
             Mana = manaMultiplier;
-            this.CritBonus = critBonus;
-            this.AutoSwing = autoSwing;
-            this.ShootSpeed = shootSpeed;
-            this.Front = front;
+            CritBonus = critBonus;
+            AutoSwing = autoSwing;
+            ShootSpeed = shootSpeed;
+            Front = front;
 
             if (!Staffs.ContainsKey(Type))
                 Staffs.Add(Type, this);
         }
+
+        public static Staff Arcane { get; set; }
+        public bool AutoSwing { get; set; }
+        public static Staff Bone { get; set; }
+        public static Staff Branch { get; set; }
+        public static Staff Carved { get; set; }
+        public int CritBonus { get; set; }
+
+        public Dictionary<ELEMENT, float> EleDamage { get; set; } =
+            new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}};
+
+        public bool Front { get; set; }
+        public static Staff Gilded { get; set; }
+        public static Staff Hellstone { get; set; }
+        public int Iterations { get; set; }
+        public static Staff Ivy { get; set; }
+        public float KnockBack { get; set; }
+        public float Mana { get; set; }
+        public string Prefix { get; set; }
+        public float ShootSpeed { get; set; }
+
+        public static Dictionary<int, Staff> Staffs { get; set; }
+        public static Dictionary<STAFFTHEME, List<Staff>> StaffsByTheme { get; set; }
+
+        public int Type { get; set; }
+        public int UseTime { get; set; }
 
         public static void Initialize()
         {
@@ -81,13 +82,13 @@ namespace kRPG2.Items.Weapons
 
         public Staff SetEleDamage(Dictionary<ELEMENT, float> eleDamage)
         {
-            this.EleDamage = eleDamage;
+            EleDamage = eleDamage;
             return this;
         }
 
         public static void Unload()
         {
-            foreach (Staff staff in Staffs.Values)
+            foreach (var staff in Staffs.Values)
                 staff.Texture = null;
         }
     }

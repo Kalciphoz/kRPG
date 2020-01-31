@@ -9,7 +9,7 @@ namespace kRPG2.Projectiles
     {
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            Texture2D t = Main.projectileTexture[ModContent.ProjectileType<Obelisk>()];
+            var t = Main.projectileTexture[ModContent.ProjectileType<Obelisk>()];
             spriteBatch.Draw(t, position + t.Bounds.Center(), null, Color.White, rotation, t.Bounds.Center(), scale, SpriteEffects.None, 0f);
         }
 

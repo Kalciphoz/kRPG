@@ -7,16 +7,16 @@ namespace kRPG2.Modifiers
 {
     public class SizeModifier : NpcModifier
     {
-        private float LifeModifier { get; set; }
-        private float ScaleModifier { get; set; }
-
         public SizeModifier(kNPC kNpc, NPC npc, float scaleModifier = 1.1f, float lifeModifier = 1.4f) : base(kNpc, npc)
         {
             this.npc = npc;
-            this.ScaleModifier = scaleModifier;
-            this.LifeModifier = lifeModifier;
+            ScaleModifier = scaleModifier;
+            LifeModifier = lifeModifier;
             Apply();
         }
+
+        private float LifeModifier { get; set; }
+        private float ScaleModifier { get; set; }
 
         public override void Apply()
         {

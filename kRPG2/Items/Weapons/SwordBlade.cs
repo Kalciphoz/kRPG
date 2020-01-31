@@ -14,6 +14,30 @@ namespace kRPG2.Items.Weapons
     {
         private static Dictionary<SWORDTHEME, List<SwordBlade>> bladeByTheme;
 
+        public SwordBlade(string texture, int originX, int originY, string name, int useTime, float knockBack, float dpsModifier = 1f, int critBonus = 0,
+            bool autoSwing = false, float scale = 0f, bool spearable = true, bool lighted = false, Action<Rectangle, Player> effect = null)
+        {
+            Type = Blades.Count() + 1;
+            if (Main.netMode != 2)
+                Texture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Items/Blades/" + texture);
+            Origin = new Vector2(originX, originY);
+            Name = name;
+            UseTime = useTime;
+            KnockBack = knockBack;
+            DpsModifier = dpsModifier;
+            CritBonus = critBonus;
+            Scale = scale;
+            AutoSwing = autoSwing;
+            Spearable = spearable;
+            Effect = effect;
+            Lighted = lighted;
+
+            if (!Blades.ContainsKey(Type))
+                Blades.Add(Type, this);
+        }
+
+        public bool AutoSwing { get; set; }
+
         public static Dictionary<int, SwordBlade> Blades { get; set; } = new Dictionary<int, SwordBlade>();
         public static SwordBlade BlazeSword { get; set; }
         public static SwordBlade BroadswordBone { get; set; }
@@ -23,7 +47,16 @@ namespace kRPG2.Items.Weapons
         public static SwordBlade Chokuto { get; set; }
         public static SwordBlade ClockSword { get; set; }
         public static SwordBlade CrescentSword { get; set; }
+        public int CritBonus { get; set; }
         public static SwordBlade DemonEye { get; set; }
+        public float DpsModifier { get; set; }
+        public Action<Rectangle, Player> Effect { get; set; }
+
+        public Dictionary<ELEMENT, float> EleDamage { get; set; } = new Dictionary<ELEMENT, float>
+        {
+            {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
+        };
+
         public static SwordBlade Executioner { get; set; }
         public static SwordBlade EyeMallet { get; set; }
         public static SwordBlade FieldGlaive { get; set; }
@@ -32,61 +65,30 @@ namespace kRPG2.Items.Weapons
         public static SwordBlade FieryGreatsword { get; set; }
         public static SwordBlade GrassBreaker { get; set; }
         public static SwordBlade HellstoneBroadsword { get; set; }
+
+        public float KnockBack { get; set; }
         public static SwordBlade LazerCutter { get; set; }
+        public bool Lighted { get; set; }
+        public string Name { get; set; }
         public static SwordBlade ObsidianBroadsword { get; set; }
         public static SwordBlade ObsidianMaul { get; set; }
+        public Vector2 Origin { get; set; }
         public static SwordBlade PhaseSword { get; set; }
         public static SwordBlade RunicDaiKatana { get; set; }
         public static SwordBlade RunicswordViolet { get; set; }
+        public float Scale { get; set; }
         public static SwordBlade Scimitar { get; set; }
         public static SwordBlade SlimeBlue { get; set; }
         public static SwordBlade SlimeGreen { get; set; }
         public static SwordBlade SlumTwirl { get; set; }
+        public bool Spearable { get; set; } = true;
         public static SwordBlade StoneSword { get; set; }
         public static SwordBlade Terra { get; set; }
-        public static SwordBlade WizardSword { get; set; }
-        public bool AutoSwing { get; set; }
-        public int CritBonus { get; set; }
-        public float DpsModifier { get; set; }
-        public Action<Rectangle, Player> Effect { get; set; }
-
-        public Dictionary<ELEMENT, float> EleDamage { get; set; }= new Dictionary<ELEMENT, float>
-        {
-            {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
-        };
-
-        public float KnockBack { get; set; }
-        public bool Lighted { get; set; }
-        public string Name { get; set; }
-        public Vector2 Origin { get; set; }
-        public float Scale { get; set; }
-        public bool Spearable { get; set; } = true;
         public Texture2D Texture { get; set; }
 
         public int Type { get; set; }
         public int UseTime { get; set; }
-
-        public SwordBlade(string texture, int originX, int originY, string name, int useTime, float knockBack, float dpsModifier = 1f, int critBonus = 0,
-            bool autoSwing = false, float scale = 0f, bool spearable = true, bool lighted = false, Action<Rectangle, Player> effect = null)
-        {
-            Type = Blades.Count() + 1;
-            if (Main.netMode != 2)
-                this.Texture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Items/Blades/" + texture);
-            Origin = new Vector2(originX, originY);
-            this.Name = name;
-            this.UseTime = useTime;
-            this.KnockBack = knockBack;
-            this.DpsModifier = dpsModifier;
-            this.CritBonus = critBonus;
-            this.Scale = scale;
-            this.AutoSwing = autoSwing;
-            this.Spearable = spearable;
-            this.Effect = effect;
-            this.Lighted = lighted;
-
-            if (!Blades.ContainsKey(Type))
-                Blades.Add(Type, this);
-        }
+        public static SwordBlade WizardSword { get; set; }
 
         public static void Initialize()
         {
@@ -236,13 +238,13 @@ namespace kRPG2.Items.Weapons
 
         public SwordBlade SetEleDamage(Dictionary<ELEMENT, float> eleDamage)
         {
-            this.EleDamage = eleDamage;
+            EleDamage = eleDamage;
             return this;
         }
 
         public static void Unload()
         {
-            foreach (SwordBlade blade in Blades.Values)
+            foreach (var blade in Blades.Values)
                 blade.Texture = null;
         }
     }

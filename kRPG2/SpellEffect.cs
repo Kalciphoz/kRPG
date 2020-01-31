@@ -6,19 +6,19 @@ namespace kRPG2
 {
     public class SpellEffect
     {
-        private  ProceduralSpell Ability { get;  }
-        private Vector2 Target { get; set; }
-        private int TimeLeft { get; set; }
-        private Action<ProceduralSpell, int> update { get;  }
-
         public SpellEffect(ProceduralSpell ability, Vector2 target, int timeLeft, Action<ProceduralSpell, int> update)
         {
-            this.Ability = ability;
-            this.Target = target;
-            this.TimeLeft = timeLeft;
+            Ability = ability;
+            Target = target;
+            TimeLeft = timeLeft;
             this.update = update;
             Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>().SpellEffects.Add(this);
         }
+
+        private ProceduralSpell Ability { get; }
+        private Vector2 Target { get; }
+        private int TimeLeft { get; set; }
+        private Action<ProceduralSpell, int> update { get; }
 
         public void Update(PlayerCharacter character)
         {
