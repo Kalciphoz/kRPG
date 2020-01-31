@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace kRPG.Enums
+﻿namespace kRPG.Enums
 {
     public enum ELEMENT : byte
     {
@@ -12,5 +6,5 @@ namespace kRPG.Enums
         COLD,
         LIGHTNING,
         SHADOW
-    };
+    }
 }

@@ -13,6 +13,16 @@ namespace kRPG.Modifiers
             npc.GivenName = "Shimmering " + npc.GivenName;
         }
 
+        public new static NPCModifier New(kNPC kNPC, NPC npc)
+        {
+            return new LifeRegenModifier(kNPC, npc);
+        }
+
+        public new static NPCModifier Random(kNPC kNPC, NPC npc)
+        {
+            return new LifeRegenModifier(kNPC, npc);
+        }
+
         public override void Update(NPC npc)
         {
             regenTimer += 1;
@@ -21,16 +31,6 @@ namespace kRPG.Modifiers
                 return;
             npc.life = Math.Min(npc.life + (int) (regenTimer / (60f / amount)), npc.lifeMax);
             regenTimer %= 60f / amount;
-        }
-
-        public new static NPCModifier Random(kNPC kNPC, NPC npc)
-        {
-            return new LifeRegenModifier(kNPC, npc);
-        }
-
-        public new static NPCModifier New(kNPC kNPC, NPC npc)
-        {
-            return new LifeRegenModifier(kNPC, npc);
         }
     }
 }

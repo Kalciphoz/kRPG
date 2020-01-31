@@ -9,13 +9,23 @@ namespace kRPG.Modifiers
 {
     public class SageModifier : NPCModifier
     {
-        public ProceduralSpellProj rotMissile = null;
-        public ProceduralSpellProj rotSecondary = null;
+        public ProceduralSpellProj rotMissile;
+        public ProceduralSpellProj rotSecondary;
 
         public SageModifier(kNPC kNPC, NPC npc) : base(kNPC, npc)
         {
             this.npc = npc;
             npc.GivenName = "Sagely " + npc.GivenName;
+        }
+
+        public new static NPCModifier New(kNPC kNPC, NPC npc)
+        {
+            return new SageModifier(kNPC, npc);
+        }
+
+        public new static NPCModifier Random(kNPC kNPC, NPC npc)
+        {
+            return new SageModifier(kNPC, npc);
         }
 
         public override void Update(NPC npc)
@@ -40,7 +50,7 @@ namespace kRPG.Modifiers
                 var cross1 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Red() : new Cross_Violet();
                 ps1.ai.Add(delegate(ProceduralSpellProj spell)
                 {
-                    cross1.GetAIAction()(spell);
+                    cross1.GetAiAction()(spell);
 
                     float displacementAngle = (float) API.Tau / 4f;
                     var displacementVelocity = Vector2.Zero;
@@ -51,7 +61,7 @@ namespace kRPG.Modifiers
                         spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
                         displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.caster.Center).ToRotation() + (float) API.Tau / 4f);
 
-                        float angle = displacementAngle - 0.06f * (float) (rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
+                        float angle = displacementAngle - 0.06f * (rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
                         spell.projectile.Center = spell.caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
                     }
                     else
@@ -87,7 +97,7 @@ namespace kRPG.Modifiers
                 var cross2 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Blue() : new Cross_Purple();
                 ps2.ai.Add(delegate(ProceduralSpellProj spell)
                 {
-                    cross2.GetAIAction()(spell);
+                    cross2.GetAiAction()(spell);
 
                     float displacementAngle = (float) API.Tau / 4f + (float) Math.PI;
                     var displacementVelocity = Vector2.Zero;
@@ -98,7 +108,7 @@ namespace kRPG.Modifiers
                         spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
                         displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.caster.Center).ToRotation() + (float) API.Tau / 4f);
 
-                        float angle = displacementAngle - 0.06f * (float) (rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
+                        float angle = displacementAngle - 0.06f * (rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
                         spell.projectile.Center = spell.caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
                     }
                     else
@@ -122,16 +132,6 @@ namespace kRPG.Modifiers
                 Main.NewText(e.ToString());
                 ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
-        }
-
-        public new static NPCModifier Random(kNPC kNPC, NPC npc)
-        {
-            return new SageModifier(kNPC, npc);
-        }
-
-        public new static NPCModifier New(kNPC kNPC, NPC npc)
-        {
-            return new SageModifier(kNPC, npc);
         }
     }
 }

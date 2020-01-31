@@ -12,30 +12,14 @@ namespace kRPG
 
         public List<InterfaceButton> buttons = new List<InterfaceButton>();
 
-        public bool guiActive = false;
+        public bool guiActive;
 
         public BaseGui()
         {
             guiElements.Add(this);
-            return;
         }
 
-        public virtual bool PreDraw()
-        {
-            return guiActive;
-        }
-
-        public virtual void Draw(SpriteBatch spriteBatch, Player player)
-        {
-            PostDraw(spriteBatch, player);
-
-            foreach (var button in buttons)
-                button.Update(spriteBatch, player);
-        }
-
-        public virtual void PostDraw(SpriteBatch spriteBatch, Player player)
-        {
-        }
+        public virtual bool RemoveOnClose => false;
 
         public InterfaceButton AddButton(Func<Rectangle> position, Action<Player> pressAction)
         {
@@ -51,13 +35,6 @@ namespace kRPG
             return button;
         }
 
-        public void RemoveButton(InterfaceButton button)
-        {
-            buttons.Remove(button);
-        }
-
-        public virtual bool RemoveOnClose => false;
-
         public void CloseGui()
         {
             OnClose();
@@ -65,8 +42,30 @@ namespace kRPG
             if (RemoveOnClose) guiElements.Remove(this);
         }
 
+        public virtual void Draw(SpriteBatch spriteBatch, Player player)
+        {
+            PostDraw(spriteBatch, player);
+
+            foreach (var button in buttons)
+                button.Update(spriteBatch, player);
+        }
+
         public virtual void OnClose()
         {
+        }
+
+        public virtual void PostDraw(SpriteBatch spriteBatch, Player player)
+        {
+        }
+
+        public virtual bool PreDraw()
+        {
+            return guiActive;
+        }
+
+        public void RemoveButton(InterfaceButton button)
+        {
+            buttons.Remove(button);
         }
 
         //public virtual void PostDraw(SpriteBatch spriteBatch, Player player) {}

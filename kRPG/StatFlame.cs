@@ -12,21 +12,15 @@ namespace kRPG
 {
     public class StatFlame
     {
-        private Mod mod;
-        private STAT id;
-        private readonly Func<Vector2> position;
-        private readonly Texture2D texture;
-        private readonly LevelGUI levelGUI;
+        private readonly int animationTime = 5;
 
         private int counter;
-        private int frameNumber = 0;
-        private int animationTime = 5;
-
-        private int allocated
-        {
-            get => levelGUI.allocated[id];
-            set => levelGUI.allocated[id] = value;
-        }
+        private int frameNumber;
+        private readonly STAT id;
+        private readonly LevelGUI levelGUI;
+        private Mod mod;
+        private readonly Func<Vector2> position;
+        private readonly Texture2D texture;
 
         public StatFlame(Mod mod, LevelGUI levelGUI, STAT id, Func<Vector2> position, Texture2D texture)
         {
@@ -38,11 +32,23 @@ namespace kRPG
             counter = (int) id * 8;
         }
 
+        private int allocated
+        {
+            get => levelGUI.allocated[id];
+            set => levelGUI.allocated[id] = value;
+        }
+
+        public bool CheckHover()
+        {
+            return Main.mouseX >= position().X && Main.mouseY >= position().Y && Main.mouseX <= position().X + texture.Width &&
+                   Main.mouseY <= position().Y + 68;
+        }
+
         public void Draw(SpriteBatch spriteBatch, Player player, float scale)
         {
             var character = player.GetModPlayer<PlayerCharacter>();
             if (counter > 8 * animationTime - 1) counter = 0;
-            frameNumber = (int) Math.Floor((double) counter / (double) animationTime);
+            frameNumber = (int) Math.Floor(counter / (double) animationTime);
             spriteBatch.Draw(character.rituals[RITUAL.DEMON_PACT] && id == STAT.RESILIENCE ? GFX.flames_converted : texture, position(),
                 new Rectangle(0, frameNumber * 68, 56, 68), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
             string text = (allocated + character.baseStats[id]).ToString();
@@ -87,7 +93,7 @@ namespace kRPG
                 spriteBatch.DrawStringWithShadow(Main.fontMouseText, "<Click to allocate>",
                     new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 176f), Color.White);
             else
-                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "<Allocated " + allocated.ToString() + ">",
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "<Allocated " + allocated + ">",
                     new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 176f), Color.White);
 
             int total = levelGUI.allocated.Keys.Sum(stat => levelGUI.allocated[stat]);
@@ -102,12 +108,6 @@ namespace kRPG
                 Main.PlaySound(SoundID.MenuTick);
                 allocated -= 1;
             }
-        }
-
-        public bool CheckHover()
-        {
-            return Main.mouseX >= position().X && Main.mouseY >= position().Y && Main.mouseX <= position().X + texture.Width &&
-                   Main.mouseY <= position().Y + 68;
         }
     }
 }

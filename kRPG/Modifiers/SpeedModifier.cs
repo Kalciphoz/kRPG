@@ -6,8 +6,8 @@ namespace kRPG.Modifiers
 {
     public class SpeedModifier : NPCModifier
     {
+        private readonly kNPC kn;
         private float speedModifier = 1f;
-        private kNPC kn;
 
         public SpeedModifier(kNPC kNPC, NPC npc, float speedModifier = 1.8f) : base(kNPC, npc)
         {
@@ -22,14 +22,9 @@ namespace kRPG.Modifiers
             kn.speedModifier = speedModifier;
         }
 
-        public override void Write(ModPacket packet)
+        public new static NPCModifier New(kNPC kNPC, NPC npc)
         {
-            packet.Write(speedModifier);
-        }
-
-        public override void Read(BinaryReader reader)
-        {
-            speedModifier = reader.ReadSingle();
+            return new SpeedModifier(kNPC, npc);
         }
 
         public new static NPCModifier Random(kNPC kNPC, NPC npc)
@@ -37,9 +32,14 @@ namespace kRPG.Modifiers
             return new SpeedModifier(kNPC, npc, 1f + Main.rand.NextFloat(2));
         }
 
-        public new static NPCModifier New(kNPC kNPC, NPC npc)
+        public override void Read(BinaryReader reader)
         {
-            return new SpeedModifier(kNPC, npc);
+            speedModifier = reader.ReadSingle();
+        }
+
+        public override void Write(ModPacket packet)
+        {
+            packet.Write(speedModifier);
         }
     }
 }

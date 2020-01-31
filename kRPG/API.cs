@@ -23,297 +23,379 @@ namespace kRPG
 {
     public static class API
     {
-        public static V Random<K, V>(this Dictionary<K, V> dictionary)
-        {
-            return dictionary.Values.ToList().Random();
-        }
+        //    public const double Phi = 1.61803398874989484820458683436;
 
-        public static T Random<T>(this IEnumerable<T> e)
-        {
-            var values = e.ToList();
-            return values[Main.rand.Next(values.Count)];
-        }
+        private const byte c = 0;
+        private const byte g = 2;
+        private static readonly FieldInfo InventoryGlowHue = typeof(ItemSlot).GetField("inventoryGlowHue", BindingFlags.NonPublic | BindingFlags.Static);
 
-        public static bool Contains<T>(this IEnumerable<T> e, Predicate<T> match)
-        {
-            var values = e.ToList();
-            return values.Contains(match);
-        }
+        private static readonly FieldInfo InventoryGlowTime = typeof(ItemSlot).GetField("inventoryGlowTime", BindingFlags.NonPublic | BindingFlags.Static);
 
-        public static bool Contains<T>(this IEnumerable<T> e, T item)
-        {
-            var values = e.ToList();
-            return values.Contains(item);
-        }
+        private static readonly FieldInfo InventoryGlowTimeChest =
+            typeof(ItemSlot).GetField("inventoryGlowTimeChest", BindingFlags.NonPublic | BindingFlags.Static);
 
         private static readonly MethodInfo IsModItem = typeof(ItemLoader).GetMethod("IsModItem", BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly PropertyInfo ModItem = typeof(Item).GetProperty("modItem", BindingFlags.Public | BindingFlags.Instance);
-
-        public static void SetItemDefaults(this Item item, int type, bool noMatCheck = false, bool createModItem = true)
-        {
-            try
-            {
-                var globalItems = typeof(Item).GetField("globalItems", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(item);
-                item.ClearNameOverride();
-                if (Main.netMode == 1 || Main.netMode == 2)
-                    item.owner = 255;
-                else
-                    item.owner = Main.myPlayer;
-                item.ResetStats(type);
-                if (item.type == 0)
-                {
-                    item.netID = 0;
-                    item.stack = 0;
-                }
-                else if (item.type <= 1000)
-                {
-                    item.SetDefaults1(item.type);
-                }
-                else if (item.type <= 2001)
-                {
-                    item.SetDefaults2(item.type);
-                }
-                else if (item.type <= 3000)
-                {
-                    item.SetDefaults3(item.type);
-                }
-                else
-                {
-                    item.SetDefaults4(item.type);
-                }
-
-                item.dye = (byte) GameShaders.Armor.GetShaderIdFromItemId(item.type);
-                if (item.hairDye != 0)
-                    item.hairDye = GameShaders.Hair.GetShaderIdFromItemId(item.type);
-                switch (item.type)
-                {
-                    case 2015:
-                        item.value = Item.sellPrice(0, 0, 5);
-                        break;
-                    case 2016:
-                    case 2017:
-                        item.value = Item.sellPrice(0, 0, 7, 50);
-                        break;
-                    case 2019:
-                    case 2018:
-                    case 3563:
-                        item.value = Item.sellPrice(0, 0, 5);
-                        break;
-                    case 261:
-                        item.value = Item.sellPrice(0, 0, 7, 50);
-                        break;
-                    case 2205:
-                        item.value = Item.sellPrice(0, 0, 12, 50);
-                        break;
-                    case 2123:
-                    case 2122:
-                        item.value = Item.sellPrice(0, 0, 7, 50);
-                        break;
-                    case 2003:
-                        item.value = Item.sellPrice(0, 0, 20);
-                        break;
-                    case 2156:
-                    case 2157:
-                    case 2121:
-                        item.value = Item.sellPrice(0, 0, 15);
-                        break;
-                    case 1992:
-                        item.value = Item.sellPrice(0, 0, 3);
-                        break;
-                    case 2004:
-                    case 2002:
-                        item.value = Item.sellPrice(0, 0, 5);
-                        break;
-                    case 2740:
-                        item.value = Item.sellPrice(0, 0, 2, 50);
-                        break;
-                    case 2006:
-                    case 3191:
-                        item.value = Item.sellPrice(0, 0, 20);
-                        break;
-                    case 3192:
-                        item.value = Item.sellPrice(0, 0, 2, 50);
-                        break;
-                    case 3193:
-                        item.value = Item.sellPrice(0, 0, 5);
-                        break;
-                    case 3194:
-                        item.value = Item.sellPrice(0, 0, 10);
-                        break;
-                    case 2007:
-                        item.value = Item.sellPrice(0, 0, 50);
-                        break;
-                    case 2673:
-                        item.value = Item.sellPrice(0, 10);
-                        break;
-                }
-
-                if (item.bait > 0)
-                {
-                    if (item.bait >= 50)
-                        item.rare = 3;
-                    else if (item.bait >= 30)
-                        item.rare = 2;
-                    else if (item.bait >= 15)
-                        item.rare = 1;
-                }
-
-                if (item.type >= 1994 && item.type <= 2001)
-                {
-                    int num = item.type - 1994;
-                    switch (num)
-                    {
-                        case 0:
-                            item.value = Item.sellPrice(0, 0, 5);
-                            break;
-                        case 4:
-                            item.value = Item.sellPrice(0, 0, 10);
-                            break;
-                        case 6:
-                            item.value = Item.sellPrice(0, 0, 15);
-                            break;
-                        case 3:
-                            item.value = Item.sellPrice(0, 0, 20);
-                            break;
-                        case 7:
-                            item.value = Item.sellPrice(0, 0, 30);
-                            break;
-                        case 2:
-                            item.value = Item.sellPrice(0, 0, 40);
-                            break;
-                        case 1:
-                            item.value = Item.sellPrice(0, 0, 75);
-                            break;
-                        case 5:
-                            item.value = Item.sellPrice(0, 1);
-                            break;
-                    }
-                }
-
-                switch (item.type)
-                {
-                    case 483:
-                    case 1192:
-                    case 482:
-                    case 1185:
-                    case 484:
-                    case 1199:
-                    case 368:
-                        item.autoReuse = true;
-                        item.damage = (int) (item.damage * 1.15);
-                        break;
-                    case 2663:
-                    case 1720:
-                    case 2137:
-                    case 2155:
-                    case 2151:
-                    case 1704:
-                    case 2143:
-                    case 1710:
-                    case 2238:
-                    case 2133:
-                    case 2147:
-                    case 2405:
-                    case 1716:
-                    case 1705:
-                        item.value = Item.sellPrice(0, 2);
-                        break;
-                }
-
-                if (Main.projHook[item.shoot])
-                {
-                    item.useStyle = 0;
-                    item.useTime = 0;
-                    item.useAnimation = 0;
-                }
-
-                if (item.type >= 1803 && item.type <= 1807)
-                    item.SetDefaults(1533 + item.type - 1803, true);
-                if (item.dye > 0)
-                    item.maxStack = 99;
-                if (item.createTile == 19)
-                    item.maxStack = 999;
-                item.netID = item.type;
-
-                if ((bool) IsModItem.Invoke(null, new object[] {item.type}) & createModItem)
-                    ModItem.SetValue(item, ItemLoader.GetItem(item.type).NewInstance(item));
-
-                item.modItem?.AutoDefaults();
-                item.modItem?.SetDefaults();
-
-                if (!noMatCheck)
-                    item.checkMat();
-                item.RebuildTooltip();
-                if (item.type > 0 && ItemID.Sets.Deprecated[item.type])
-                {
-                    item.netID = 0;
-                    item.type = 0;
-                    item.stack = 0;
-                }
-
-                typeof(Item).GetField("globalItems", BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(item, globalItems);
-            }
-            catch (SystemException e)
-            {
-                Main.NewText(e.ToString());
-            }
-        }
+        private const byte p = 3;
+        private const byte s = 1;
 
         public static double Tau => Math.PI * 2;
 
-        public const double Phi = 1.61803398874989484820458683436;
-
-        private const byte c = 0;
-        private const byte s = 1;
-        private const byte g = 2;
-        private const byte p = 3;
-
-        public static string MoneyToString(int amount)
+        public static void ApiCreate(this Recipe recipe)
         {
-            string output = "";
-            var coins = SeparateCoinTypes(amount);
+            for (int i = 0; i < Recipe.maxRequirements; i++)
+            {
+                var requiredItem = recipe.requiredItem[i];
+                if (requiredItem.type == 0)
+                    break;
+                int requiredAmount = requiredItem.stack;
+                if (recipe is ModRecipe modRecipe)
+                    requiredAmount = modRecipe.ConsumeItem(requiredItem.type, requiredItem.stack);
+                if (recipe.alchemy && Main.player[Main.myPlayer].alchemyTable)
+                {
+                    if (requiredAmount > 1)
+                    {
+                        int num2 = 0;
+                        for (int j = 0; j < requiredAmount; j++)
+                            if (Main.rand.Next(3) == 0)
+                                num2++;
+                        requiredAmount -= num2;
+                    }
+                    else if (Main.rand.Next(3) == 0)
+                    {
+                        requiredAmount = 0;
+                    }
+                }
 
-            if (coins[p] > 0)
-                output += coins[p] + " platinum ";
-            if (coins[g] > 0)
-                output += coins[g] + " gold ";
-            if (coins[s] > 0)
-                output += coins[s] + " silver ";
-            if (coins[c] > 0)
-                output += coins[c] + " copper ";
+                if (requiredAmount <= 0)
+                    continue;
+                {
+                    var array = Main.player[Main.myPlayer].inventory;
+                    InvLogic(recipe, array, requiredItem, requiredAmount);
+                    var character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
+                    for (int j = 0; j < character.inventories.Length; j += 1)
+                        if (character.activeInvPage != j)
+                        {
+                            array = character.inventories[j];
+                            InvLogic(recipe, array, requiredItem, requiredAmount);
+                        }
 
-            return output;
+                    if (Main.player[Main.myPlayer].chest == -1)
+                        continue;
+                    if (Main.player[Main.myPlayer].chest > -1)
+                        array = Main.chest[Main.player[Main.myPlayer].chest].item;
+                    else
+                        switch (Main.player[Main.myPlayer].chest)
+                        {
+                            case -2:
+                                array = Main.player[Main.myPlayer].bank.item;
+                                break;
+                            case -3:
+                                array = Main.player[Main.myPlayer].bank2.item;
+                                break;
+                            case -4:
+                                array = Main.player[Main.myPlayer].bank3.item;
+                                break;
+                        }
+
+                    for (int l = 0; l < 40; l++)
+                    {
+                        var item3 = array[l];
+                        if (requiredAmount <= 0)
+                            break;
+
+                        if (!item3.IsTheSameAs(requiredItem) && !recipe.useWood(item3.type, requiredItem.type) &&
+                            !recipe.useSand(item3.type, requiredItem.type) && !recipe.useIronBar(item3.type, requiredItem.type) &&
+                            !recipe.usePressurePlate(item3.type, requiredItem.type) && !recipe.useFragment(item3.type, requiredItem.type) &&
+                            !recipe.AcceptedByItemGroups(item3.type, requiredItem.type))
+                            continue;
+                        if (item3.stack > requiredAmount)
+                        {
+                            item3.stack -= requiredAmount;
+                            if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
+                                NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, l);
+                            requiredAmount = 0;
+                        }
+                        else
+                        {
+                            requiredAmount -= item3.stack;
+                            array[l] = new Item();
+                            if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
+                                NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, l);
+                        }
+                    }
+                }
+            }
+
+            AchievementsHelper.NotifyItemCraft(recipe);
+            AchievementsHelper.NotifyItemPickup(Main.player[Main.myPlayer], recipe.createItem);
+            FindRecipes();
         }
 
-        public static int[] SeparateCoinTypes(int amount)
+        public static void ApiQuickBuff(this Player player)
         {
-            //splitting the cost into individual coin types
-            var output = new int[4];
-            output[c] = Math.Max(0, amount % 100);
-            output[s] = Math.Max(0, (amount % 10000 - output[c]) / 100);
-            output[g] = Math.Max(0, (amount % 1000000 - output[c] - output[s]) / 10000);
-            output[p] = Math.Max(0, (amount - output[c] - output[s] - output[g]) / 1000000);
-
-            return output;
-        }
-
-        public static int Wealth(this Player player)
-        {
+            if (player.noItems)
+                return;
             var character = player.GetModPlayer<PlayerCharacter>();
 
-            int coins = player.inventory.Sum(CoinStackValue);
+            if (player.CountBuffs() == 22)
+                return;
+
+            for (int i = 0; i < 58; i += 1)
+            {
+                var item = player.inventory[i];
+                APIQuickBuff_TryItem(player, item);
+            }
 
             for (int i = 0; i < character.inventories.Length; i += 1)
+            {
+                if (character.activeInvPage == i)
+                    continue;
+                for (int j = 0; j < character.inventories[i].Length; j += 1)
+                {
+                    var item = character.inventories[i][j];
+                    APIQuickBuff_TryItem(player, item);
+                }
+            }
+        }
+
+        private static void APIQuickBuff_TryItem(Player player, Item item)
+        {
+            LegacySoundStyle legacySoundStyle = null;
+
+            if (item.stack > 0 && item.type > 0 && item.buffType > 0 && !item.summon && item.buffType != 90)
+            {
+                int num = item.buffType;
+                bool flag = ItemLoader.CanUseItem(item, player);
+                for (int b = 0; b < 22; b++)
+                {
+                    if (num == 27 && (player.buffType[b] == num || player.buffType[b] == 101 || player.buffType[b] == 102))
+                    {
+                        flag = false;
+                        break;
+                    }
+
+                    if (player.buffType[b] == num)
+                    {
+                        flag = false;
+                        break;
+                    }
+
+                    if (!Main.meleeBuff[num] || !Main.meleeBuff[player.buffType[b]])
+                        continue;
+                    flag = false;
+                    break;
+                }
+
+                if (Main.lightPet[item.buffType] || Main.vanityPet[item.buffType])
+                    for (int k = 0; k < 22; k++)
+                    {
+                        if (Main.lightPet[player.buffType[k]] && Main.lightPet[item.buffType])
+                            flag = false;
+                        if (Main.vanityPet[player.buffType[k]] && Main.vanityPet[item.buffType])
+                            flag = false;
+                    }
+
+                if ((item.mana > 0) & flag)
+                {
+                    if (player.statMana >= (int) (item.mana * player.manaCost))
+                    {
+                        player.manaRegenDelay = (int) player.maxRegenDelay;
+                        player.statMana -= (int) (item.mana * player.manaCost);
+                    }
+                    else
+                    {
+                        flag = false;
+                    }
+                }
+
+                if (player.whoAmI == Main.myPlayer && item.type == 603 && !Main.cEd)
+                    flag = false;
+                if (num == 27)
+                {
+                    num = Main.rand.Next(3);
+                    if (num == 0)
+                        num = 27;
+                    if (num == 1)
+                        num = 101;
+                    if (num == 2)
+                        num = 102;
+                }
+
+                if (flag)
+                {
+                    ItemLoader.UseItem(item, player);
+                    legacySoundStyle = item.UseSound;
+                    int num2 = item.buffTime;
+                    if (num2 == 0)
+                        num2 = 3600;
+                    player.AddBuff(num, num2);
+                    if (item.consumable)
+                    {
+                        if (ItemLoader.ConsumeItem(item, player))
+                            item.stack--;
+                        if (item.stack <= 0)
+                            item.TurnToAir();
+                    }
+                }
+            }
+
+            if (legacySoundStyle == null)
+                return;
+            Main.PlaySound(legacySoundStyle, player.position);
+            FindRecipes();
+        }
+
+        public static void ApiQuickHeal(this Player player)
+        {
+            if (player.noItems)
+                return;
+            if (player.statLife == player.statLifeMax2 || player.potionDelay > 0)
+                return;
+            var item = player.APIQuickHeal_GetItemToUse();
+            if (item == null)
+                return;
+            Main.PlaySound(item.UseSound, player.position);
+            if (item.potion)
+            {
+                if (item.type == 227)
+                {
+                    player.potionDelay = player.restorationDelayTime;
+                    player.AddBuff(21, player.potionDelay);
+                }
+                else
+                {
+                    player.potionDelay = player.potionDelayTime;
+                    player.AddBuff(21, player.potionDelay);
+                }
+            }
+
+            ItemLoader.UseItem(item, player);
+            player.statLife += item.healLife;
+            player.statMana += item.healMana;
+            if (player.statLife > player.statLifeMax2)
+                player.statLife = player.statLifeMax2;
+            if (player.statMana > player.statManaMax2)
+                player.statMana = player.statManaMax2;
+            if (item.healLife > 0 && Main.myPlayer == player.whoAmI)
+                player.HealEffect(item.healLife);
+            if (item.healMana > 0)
+                if (Main.myPlayer == player.whoAmI)
+                    player.ManaEffect(item.healMana);
+            if (ItemLoader.ConsumeItem(item, player))
+                item.stack--;
+            if (item.stack <= 0)
+                item.TurnToAir();
+            FindRecipes();
+        }
+
+        public static Item APIQuickHeal_GetItemToUse(this Player player)
+        {
+            int num = player.statLifeMax2 - player.statLife;
+            Item result = null;
+            int num2 = -player.statLifeMax2;
+            for (int i = 0; i < 58; i++)
+            {
+                var item = player.inventory[i];
+                if (item.stack <= 0 || item.type <= 0 || !item.potion || item.healLife <= 0 || !ItemLoader.CanUseItem(item, player))
+                    continue;
+                int num3 = item.healLife - num;
+                if (num2 < 0)
+                {
+                    if (num3 <= num2)
+                        continue;
+                    result = item;
+                    num2 = num3;
+                }
+                else if (num3 < num2 && num3 >= 0)
+                {
+                    result = item;
+                    num2 = num3;
+                }
+            }
+
+            var character = player.GetModPlayer<PlayerCharacter>();
+            for (int i = 0; i < character.inventories.Length; i += 1)
                 if (character.activeInvPage != i)
-                    coins += character.inventories[i].Sum(CoinStackValue);
+                    for (int j = 0; j < character.inventories[i].Length; j += 1)
+                    {
+                        var item = character.inventories[i][j];
+                        if (item.stack <= 0 || item.type <= 0 || !item.potion || item.healLife <= 0 || !ItemLoader.CanUseItem(item, player))
+                            continue;
+                        int num3 = item.healLife - num;
+                        if (num2 < 0)
+                        {
+                            if (num3 <= num2)
+                                continue;
+                            result = item;
+                            num2 = num3;
+                        }
+                        else if (num3 < num2 && num3 >= 0)
+                        {
+                            result = item;
+                            num2 = num3;
+                        }
+                    }
 
-            coins += player.bank.item.Sum(CoinStackValue);
+            return result;
+        }
 
-            coins += player.bank2.item.Sum(CoinStackValue);
+        public static void ApiQuickMana(this Player player)
+        {
+            if (player.noItems)
+                return;
+            if (player.statMana == player.statManaMax2)
+                return;
+            for (int i = 0; i < 58; i++)
+                APIQuickMana_TryItem(player, player.inventory[i]);
 
-            coins += player.bank3.item.Sum(CoinStackValue);
+            var character = player.GetModPlayer<PlayerCharacter>();
+            for (int i = 0; i < character.inventories.Length; i += 1)
+                if (character.activeInvPage != i)
+                    for (int j = 0; j < character.inventories[i].Length; j += 1)
+                        APIQuickMana_TryItem(player, character.inventories[i][j]);
+        }
 
-            return coins;
+        private static void APIQuickMana_TryItem(Player player, Item item)
+        {
+            if (item.stack <= 0 || item.type <= 0 || item.healMana <= 0 || player.potionDelay != 0 && item.potion || !ItemLoader.CanUseItem(item, player))
+                return;
+            Main.PlaySound(item.UseSound, player.position);
+            if (item.potion)
+            {
+                if (item.type == 227)
+                {
+                    player.potionDelay = player.restorationDelayTime;
+                    player.AddBuff(21, player.potionDelay);
+                }
+                else
+                {
+                    player.potionDelay = player.potionDelayTime;
+                    player.AddBuff(21, player.potionDelay);
+                }
+            }
+
+            ItemLoader.UseItem(item, player);
+            player.statLife += item.healLife;
+            player.statMana += item.healMana;
+            if (player.statLife > player.statLifeMax2)
+                player.statLife = player.statLifeMax2;
+            if (player.statMana > player.statManaMax2)
+                player.statMana = player.statManaMax2;
+            if (item.healLife > 0 && Main.myPlayer == player.whoAmI)
+                player.HealEffect(item.healLife);
+            if (item.healMana > 0)
+            {
+                player.AddBuff(94, Player.manaSickTime);
+                if (Main.myPlayer == player.whoAmI)
+                    player.ManaEffect(item.healMana);
+            }
+
+            if (ItemLoader.ConsumeItem(item, player))
+                item.stack--;
+            if (item.stack <= 0)
+                item.TurnToAir();
+            FindRecipes();
         }
 
         public static int CoinStackValue(Item i)
@@ -338,79 +420,16 @@ namespace kRPG
             return coins;
         }
 
-        public static void RemoveCoins(this Player player, int amount)
+        public static bool Contains<T>(this IEnumerable<T> e, Predicate<T> match)
         {
-            int[] coinType = {71, 72, 73, 74};
-
-            //splitting the cost into individual coin types
-            var cost = SeparateCoinTypes(amount);
-
-            var coins = new int[4];
-            for (int i = 0; i < coins.Length; i++)
-                coins[i] = 0;
-
-            coins = SeparateCoinTypes(player.Wealth());
-
-            var character = player.GetModPlayer<PlayerCharacter>();
-            //foreach (Item[] inventory in character.inventories)
-            //    foreach (Item i in inventory)
-            //        coins = SumCoins(coins, CountCoins(i));
-
-            //foreach (Item i in player.bank.item)
-            //    coins = SumCoins(coins, CountCoins(i));
-
-            //foreach (Item i in player.bank2.item)
-            //    coins = SumCoins(coins, CountCoins(i));
-
-            //foreach (Item i in player.bank3.item)
-            //    coins = SumCoins(coins, CountCoins(i));
-
-            for (int i = 0; i < 4; i++)
-                if (coins[i] >= cost[i])
-                {
-                    foreach (var item in player.inventory)
-                        item.stack = RemoveCoins(item, coinType[i], ref cost[i]);
-
-                    for (int j = 0; j < character.inventories.Length; j += 1)
-                        if (character.activeInvPage != j)
-                            foreach (var item in character.inventories[j])
-                                item.stack = RemoveCoins(item, coinType[i], ref cost[i]);
-
-                    foreach (var item in player.bank.item)
-                        item.stack = RemoveCoins(item, coinType[i], ref cost[i]);
-
-                    foreach (var item in player.bank2.item)
-                        item.stack = RemoveCoins(item, coinType[i], ref cost[i]);
-
-                    foreach (var item in player.bank3.item)
-                        item.stack = RemoveCoins(item, coinType[i], ref cost[i]);
-                }
-
-                else
-                {
-                    cost[i + 1] += 1;
-                    cost[i] -= 100;
-                    Item.NewItem((int) player.position.X, (int) player.position.Y, 0, 0, coinType[i], -cost[i], true, 0, true);
-                }
+            var values = e.ToList();
+            return values.Contains(match);
         }
 
-        public static int RemoveCoins(Item item, int coinType, ref int amount)
+        public static bool Contains<T>(this IEnumerable<T> e, T item)
         {
-            int stackSize = item.stack;
-            if (item.type != coinType)
-                return stackSize;
-            if (stackSize >= amount)
-            {
-                stackSize -= amount;
-                amount = 0;
-            }
-            else
-            {
-                amount -= item.stack;
-                stackSize = 0;
-            }
-
-            return stackSize;
+            var values = e.ToList();
+            return values.Contains(item);
         }
 
         public static int[] CountCoins(Item i)
@@ -435,135 +454,22 @@ namespace kRPG
             return coins;
         }
 
-        public static int[] SumCoins(int[] a, int[] b)
+        public static void CraftItem(Recipe r)
         {
-            var coins = new int[4];
-            for (int i = 0; i < 4; i += 1)
-                coins[i] = a[i] + b[i];
-            return coins;
-        }
-
-        public static void NinjaDodge(this Player player, int time, bool factorLongImmune = true)
-        {
-            player.immune = true;
-            player.immuneTime = time;
-            if (player.longInvince && factorLongImmune)
-                player.immuneTime *= 2;
-            for (int i = 0; i < player.hurtCooldowns.Length; i++)
-                player.hurtCooldowns[i] = player.immuneTime;
-            for (int j = 0; j < 100; j++)
-            {
-                int num = Dust.NewDust(new Vector2(player.position.X, player.position.Y), player.width, player.height, 31, 0f, 0f, 100, default, 2f);
-                var dust = Main.dust[num];
-                dust.position.X = dust.position.X + Main.rand.Next(-20, 21);
-                var dust2 = Main.dust[num];
-                dust2.position.Y = dust2.position.Y + Main.rand.Next(-20, 21);
-                Main.dust[num].velocity *= 0.4f;
-                Main.dust[num].scale *= 0.8f + Main.rand.Next(40) * 0.01f;
-                Main.dust[num].shader = GameShaders.Armor.GetSecondaryShader(player.cWaist, player);
-                if (Main.rand.Next(2) != 0)
-                    continue;
-                Main.dust[num].scale *= 1f + Main.rand.Next(40) * 0.01f;
-                Main.dust[num].noGravity = true;
-            }
-
-            int num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
-                default, Main.rand.Next(61, 64));
-            //Main.gore[num2].scale = 1.5f;
-            Main.gore[num2].velocity.X = Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity.Y = Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
-                default, Main.rand.Next(61, 64));
-            //Main.gore[num2].scale = 1.5f;
-            Main.gore[num2].velocity.X = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity.Y = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
-                default, Main.rand.Next(61, 64));
-            //Main.gore[num2].scale = 1.5f;
-            Main.gore[num2].velocity.X = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity.Y = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
-                default, Main.rand.Next(61, 64));
-            //Main.gore[num2].scale = 1.5f;
-            Main.gore[num2].velocity.X = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity.Y = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
-                default, Main.rand.Next(61, 64));
-            //Main.gore[num2].scale = 1.5f;
-            Main.gore[num2].velocity.X = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity.Y = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity *= 0.4f;
-            if (player.whoAmI == Main.myPlayer)
-                NetMessage.SendData(62, -1, -1, null, player.whoAmI, 1f);
-        }
-
-        public static void NinjaDodge(this NPC npc, Entity dustPos, int time, bool factorLongImmune = true)
-        {
-            npc.GetGlobalNPC<kNPC>().immuneTime = time;
-            for (int j = 0; j < 100; j++)
-            {
-                int num = Dust.NewDust(new Vector2(dustPos.position.X, dustPos.position.Y), dustPos.width, dustPos.height, 31, 0f, 0f, 152, default, 2f);
-                var dust = Main.dust[num];
-                dust.position.X = dust.position.X + Main.rand.Next(-20, 21);
-                var dust2 = Main.dust[num];
-                dust2.position.Y = dust2.position.Y + Main.rand.Next(-20, 21);
-                Main.dust[num].velocity *= 0.4f;
-                Main.dust[num].scale *= 0.7f + Main.rand.Next(30) * 0.01f;
-                if (Main.rand.Next(2) != 0)
-                    continue;
-                Main.dust[num].scale *= 1f + Main.rand.Next(40) * 0.01f;
-                Main.dust[num].noGravity = true;
-            }
-
-            int num2 = Gore.NewGore(
-                new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default,
-                Main.rand.Next(61, 64));
-            Main.gore[num2].scale = 0.8f;
-            Main.gore[num2].velocity.X = Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity.Y = Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f),
-                default, Main.rand.Next(61, 64));
-            Main.gore[num2].scale = 0.8f;
-            Main.gore[num2].velocity.X = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity.Y = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f),
-                default, Main.rand.Next(61, 64));
-            Main.gore[num2].scale = 0.8f;
-            Main.gore[num2].velocity.X = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity.Y = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f),
-                default, Main.rand.Next(61, 64));
-            Main.gore[num2].scale = 0.8f;
-            Main.gore[num2].velocity.X = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity.Y = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f),
-                default, Main.rand.Next(61, 64));
-            Main.gore[num2].scale = 0.8f;
-            Main.gore[num2].velocity.X = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity.Y = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
-            Main.gore[num2].velocity *= 0.4f;
-        }
-
-        private static readonly FieldInfo InventoryGlowTime = typeof(ItemSlot).GetField("inventoryGlowTime", BindingFlags.NonPublic | BindingFlags.Static);
-        private static readonly FieldInfo InventoryGlowHue = typeof(ItemSlot).GetField("inventoryGlowHue", BindingFlags.NonPublic | BindingFlags.Static);
-
-        private static readonly FieldInfo InventoryGlowTimeChest =
-            typeof(ItemSlot).GetField("inventoryGlowTimeChest", BindingFlags.NonPublic | BindingFlags.Static);
-
-       // private static FieldInfo _inventoryGlowHueChest = typeof(ItemSlot).GetField("inventoryGlowHueChest", BindingFlags.NonPublic | BindingFlags.Static);
-
-        public static void DrawStringWithShadow(this SpriteBatch spriteBatch, DynamicSpriteFont font, string text, Vector2 position, Color color,
-            float scale = 1f)
-        {
-            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, font, text, position, color, 0f, Vector2.Zero, Vector2.One * scale);
+            int stack = Main.mouseItem.stack;
+            Main.mouseItem = r.createItem.Clone();
+            Main.mouseItem.stack += stack;
+            if (stack <= 0)
+                Main.mouseItem.Prefix(-1);
+            Main.mouseItem.position.X = Main.player[Main.myPlayer].position.X + Main.player[Main.myPlayer].width / 2f - Main.mouseItem.width / 2f;
+            Main.mouseItem.position.Y = Main.player[Main.myPlayer].position.Y + Main.player[Main.myPlayer].height / 2f - Main.mouseItem.height / 2f;
+            ItemText.NewText(Main.mouseItem, r.createItem.stack);
+            r.ApiCreate();
+            if (Main.mouseItem.type <= 0 && r.createItem.type <= 0)
+                return;
+            RecipeHooks.OnCraft(Main.mouseItem, r);
+            ItemLoader.OnCraft(Main.mouseItem, r);
+            Main.PlaySound(7);
         }
 
         public static void Draw(this SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Color color, float scale)
@@ -574,6 +480,413 @@ namespace kRPG
         public static void Draw(this SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float scale)
         {
             spriteBatch.Draw(texture, position, sourceRectangle, color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+        }
+
+        // private static FieldInfo _inventoryGlowHueChest = typeof(ItemSlot).GetField("inventoryGlowHueChest", BindingFlags.NonPublic | BindingFlags.Static);
+
+        public static void DrawStringWithShadow(this SpriteBatch spriteBatch, DynamicSpriteFont font, string text, Vector2 position, Color color,
+            float scale = 1f)
+        {
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, font, text, position, color, 0f, Vector2.Zero, Vector2.One * scale);
+        }
+
+        public static void FindRecipes()
+        {
+            if (Main.netMode == 2) return;
+            int num = Main.availableRecipe[Main.focusRecipe];
+            float num2 = Main.availableRecipeY[Main.focusRecipe];
+            for (int i = 0; i < Recipe.maxRecipes; i++)
+                Main.availableRecipe[i] = 0;
+            Main.numAvailableRecipes = 0;
+            bool flag = Main.guideItem.type > 0 && Main.guideItem.stack > 0 && Main.guideItem.Name != "";
+            if (flag)
+            {
+                for (int j = 0; j < Recipe.maxRecipes; j++)
+                {
+                    if (Main.recipe[j].createItem.type == 0)
+                        break;
+                    int num3 = 0;
+                    while (num3 < Recipe.maxRequirements && Main.recipe[j].requiredItem[num3].type != 0)
+                    {
+                        if (Main.guideItem.IsTheSameAs(Main.recipe[j].requiredItem[num3]) ||
+                            Main.recipe[j].useWood(Main.guideItem.type, Main.recipe[j].requiredItem[num3].type) ||
+                            Main.recipe[j].useSand(Main.guideItem.type, Main.recipe[j].requiredItem[num3].type) ||
+                            Main.recipe[j].useIronBar(Main.guideItem.type, Main.recipe[j].requiredItem[num3].type) ||
+                            Main.recipe[j].useFragment(Main.guideItem.type, Main.recipe[j].requiredItem[num3].type) ||
+                            Main.recipe[j].AcceptedByItemGroups(Main.guideItem.type, Main.recipe[j].requiredItem[num3].type) ||
+                            Main.recipe[j].usePressurePlate(Main.guideItem.type, Main.recipe[j].requiredItem[num3].type))
+                        {
+                            Main.availableRecipe[Main.numAvailableRecipes] = j;
+                            Main.numAvailableRecipes++;
+                            break;
+                        }
+
+                        num3++;
+                    }
+                }
+            }
+            else
+            {
+                var dictionary = new Dictionary<int, int>();
+                Item item;
+                var inv = Main.player[Main.myPlayer].inventory;
+                foreach (var t in inv)
+                {
+                    item = t;
+                    if (item.stack <= 0)
+                        continue;
+                    if (dictionary.ContainsKey(item.netID))
+                    {
+                        Dictionary<int, int> dictionary2;
+                        int netId;
+                        (dictionary2 = dictionary)[netId = item.netID] = dictionary2[netId] + item.stack;
+                    }
+                    else
+                    {
+                        dictionary[item.netID] = item.stack;
+                    }
+                }
+
+                if (Main.player[Main.myPlayer].active)
+                {
+                    var character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
+                    for (int j = 0; j < character.inventories.Length; j += 1)
+                        if (j != character.activeInvPage)
+                            foreach (var i in character.inventories[j])
+                                if (dictionary.ContainsKey(i.netID))
+                                {
+                                    Dictionary<int, int> dictionary2;
+                                    int netId;
+                                    (dictionary2 = dictionary)[netId = i.netID] = dictionary2[netId] + i.stack;
+                                }
+                                else
+                                {
+                                    dictionary[i.netID] = i.stack;
+                                }
+                }
+
+                var array = new Item[0];
+                if (Main.player[Main.myPlayer].chest != -1)
+                {
+                    if (Main.player[Main.myPlayer].chest > -1)
+                        array = Main.chest[Main.player[Main.myPlayer].chest].item;
+                    else
+                        switch (Main.player[Main.myPlayer].chest)
+                        {
+                            case -2:
+                                array = Main.player[Main.myPlayer].bank.item;
+                                break;
+                            case -3:
+                                array = Main.player[Main.myPlayer].bank2.item;
+                                break;
+                            case -4:
+                                array = Main.player[Main.myPlayer].bank3.item;
+                                break;
+                        }
+
+                    for (int l = 0; l < 40; l++)
+                    {
+                        item = array[l];
+                        if (item.stack <= 0)
+                            continue;
+                        if (dictionary.ContainsKey(item.netID))
+                        {
+                            Dictionary<int, int> dictionary3;
+                            int netId2;
+                            (dictionary3 = dictionary)[netId2 = item.netID] = dictionary3[netId2] + item.stack;
+                        }
+                        else
+                        {
+                            dictionary[item.netID] = item.stack;
+                        }
+                    }
+                }
+
+                int num4 = 0;
+                while (num4 < Recipe.maxRecipes && Main.recipe[num4].createItem.type != 0)
+                {
+                    bool flag2 = true;
+                    if (flag2)
+                    {
+                        int num5 = 0;
+                        while (num5 < Recipe.maxRequirements && Main.recipe[num4].requiredTile[num5] != -1)
+                        {
+                            if (!Main.player[Main.myPlayer].adjTile[Main.recipe[num4].requiredTile[num5]])
+                            {
+                                flag2 = false;
+                                break;
+                            }
+
+                            num5++;
+                        }
+                    }
+
+                    if (flag2)
+                        for (int m = 0; m < Recipe.maxRequirements; m++)
+                        {
+                            item = Main.recipe[num4].requiredItem[m];
+                            if (item.type == 0)
+                                break;
+                            int num6 = item.stack;
+                            bool flag3 = false;
+                            foreach (int current in dictionary.Keys.Where(current =>
+                                Main.recipe[num4].useWood(current, item.type) || Main.recipe[num4].useSand(current, item.type) ||
+                                Main.recipe[num4].useIronBar(current, item.type) || Main.recipe[num4].useFragment(current, item.type) ||
+                                Main.recipe[num4].AcceptedByItemGroups(current, item.type) || Main.recipe[num4].usePressurePlate(current, item.type)))
+                            {
+                                num6 -= dictionary[current];
+                                flag3 = true;
+                            }
+
+                            if (!flag3 && dictionary.ContainsKey(item.netID))
+                                num6 -= dictionary[item.netID];
+
+                            if (num6 <= 0)
+                                continue;
+                            flag2 = false;
+                            break;
+                        }
+
+                    if (flag2)
+                    {
+                        bool flag4 = !Main.recipe[num4].needWater || Main.player[Main.myPlayer].adjWater || Main.player[Main.myPlayer].adjTile[172];
+                        bool flag5 = !Main.recipe[num4].needHoney || Main.recipe[num4].needHoney == Main.player[Main.myPlayer].adjHoney;
+                        bool flag6 = !Main.recipe[num4].needLava || Main.recipe[num4].needLava == Main.player[Main.myPlayer].adjLava;
+                        bool flag7 = !Main.recipe[num4].needSnowBiome || Main.player[Main.myPlayer].ZoneSnow;
+                        if (!flag4 || !flag5 || !flag6 || !flag7)
+                            flag2 = false;
+                    }
+
+                    if (flag2 && RecipeHooks.RecipeAvailable(Main.recipe[num4]))
+                    {
+                        Main.availableRecipe[Main.numAvailableRecipes] = num4;
+                        Main.numAvailableRecipes++;
+                    }
+
+                    num4++;
+                }
+            }
+
+            for (int n = 0; n < Main.numAvailableRecipes; n++)
+            {
+                if (num != Main.availableRecipe[n])
+                    continue;
+                Main.focusRecipe = n;
+                break;
+            }
+
+            if (Main.focusRecipe >= Main.numAvailableRecipes)
+                Main.focusRecipe = Main.numAvailableRecipes - 1;
+            if (Main.focusRecipe < 0)
+                Main.focusRecipe = 0;
+            float num7 = Main.availableRecipeY[Main.focusRecipe] - num2;
+            for (int num8 = 0; num8 < Recipe.maxRecipes; num8++)
+                Main.availableRecipeY[num8] -= num7;
+        }
+
+        public static Item GetItem(this Player player, Item newItem)
+        {
+            int plr = player.whoAmI;
+            var character = player.GetModPlayer<PlayerCharacter>();
+            bool flag = newItem.type >= 71 && newItem.type <= 74;
+            var item = newItem;
+            int num = 50;
+            if (newItem.noGrabDelay > 0)
+                return item;
+            int num2 = 0;
+            if (newItem.uniqueStack && player.HasItem(newItem.type))
+                return item;
+            if (newItem.type == 71 || newItem.type == 72 || newItem.type == 73 || newItem.type == 74)
+            {
+                num2 = -4;
+                num = 54;
+            }
+
+            if ((item.ammo > 0 || item.bait > 0) && !item.notAmmo || item.type == 530)
+            {
+                item = player.FillAmmo(plr, item);
+                if (item.type == 0 || item.stack == 0)
+                    return new Item();
+            }
+
+            for (int i = num2; i < 50; i++)
+            {
+                int num3 = i;
+                if (num3 < 0)
+                    num3 = 54 + i;
+                var x = player.inventory[num3];
+                if (x.type <= 0 || x.stack <= 0 || x.stack >= x.maxStack || !item.IsTheSameAs(x))
+                    continue;
+                if (flag)
+                    Main.PlaySound(38, (int) player.position.X, (int) player.position.Y);
+                else
+                    Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
+                if (item.stack + x.stack <= x.maxStack)
+                {
+                    x.stack += item.stack;
+                    ItemText.NewText(newItem, item.stack);
+                    player.DoCoins(num3);
+                    if (plr == Main.myPlayer)
+                        FindRecipes();
+                    AchievementsHelper.NotifyItemPickup(player, item);
+                    return new Item();
+                }
+
+                AchievementsHelper.NotifyItemPickup(player, item, x.maxStack - x.stack);
+                item.stack -= x.maxStack - x.stack;
+                ItemText.NewText(newItem, x.maxStack - x.stack);
+                x.stack = x.maxStack;
+                player.DoCoins(num3);
+                if (plr == Main.myPlayer)
+                    FindRecipes();
+            }
+
+            for (int i = 0; i < character.inventories.Length; i += 1)
+            {
+                if (character.activeInvPage == i)
+                    continue;
+                for (int j = 0; j < character.inventories[i].Length; j += 1)
+                {
+                    var x = character.inventories[i][j];
+                    if (x.type <= 0 || x.stack >= x.maxStack || !item.IsTheSameAs(x))
+                        continue;
+                    if (flag)
+                        Main.PlaySound(38, (int) player.position.X, (int) player.position.Y);
+                    else
+                        Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
+                    if (item.stack + x.stack <= x.maxStack)
+                    {
+                        x.stack += item.stack;
+                        ItemText.NewText(newItem, item.stack);
+                        AchievementsHelper.NotifyItemPickup(player, item);
+                        return new Item();
+                    }
+
+                    AchievementsHelper.NotifyItemPickup(player, item, x.maxStack - x.stack);
+                    item.stack -= x.maxStack - x.stack;
+                    ItemText.NewText(newItem, x.maxStack - x.stack);
+                    x.stack = x.maxStack;
+                    if (plr == Main.myPlayer)
+                        FindRecipes();
+                }
+            }
+
+            if (newItem.type != 71 && newItem.type != 72 && newItem.type != 73 && newItem.type != 74 && newItem.useStyle > 0)
+                for (int j = 0; j < 10; j++)
+                {
+                    if (player.inventory[j].type != 0)
+                        continue;
+                    player.inventory[j] = item;
+                    ItemText.NewText(newItem, newItem.stack);
+                    player.DoCoins(j);
+                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                    if (plr == Main.myPlayer)
+                        FindRecipes();
+                    AchievementsHelper.NotifyItemPickup(player, item);
+                    return new Item();
+                }
+
+            if ((newItem.modItem is Glyph || newItem.modItem is ProceduralItem || newItem.modItem is RangedWeapon) && kConfig.clientSide.smartInventory)
+            {
+                if (character.activeInvPage == 2)
+                    for (int i = 10; i < 50; i += 1)
+                    {
+                        if (player.inventory[i].type != 0)
+                            continue;
+                        player.inventory[i] = item;
+                        ItemText.NewText(newItem, newItem.stack);
+                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                        AchievementsHelper.NotifyItemPickup(player, item);
+                        return new Item();
+                    }
+                else
+                    for (int i = 0; i < character.inventories[2].Length; i += 1)
+                    {
+                        if (character.inventories[2][i].type != 0)
+                            continue;
+                        character.inventories[2][i] = item;
+                        ItemText.NewText(newItem, newItem.stack);
+                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                        AchievementsHelper.NotifyItemPickup(player, item);
+                        return new Item();
+                    }
+            }
+
+            if (newItem.favorited)
+            {
+                for (int k = 0; k < num; k++)
+                {
+                    if (player.inventory[k].type != 0 || kConfig.clientSide.manualInventory && character.activeInvPage != 0)
+                        continue;
+                    player.inventory[k] = item;
+                    ItemText.NewText(newItem, newItem.stack);
+                    player.DoCoins(k);
+                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                    if (plr == Main.myPlayer)
+                        FindRecipes();
+                    AchievementsHelper.NotifyItemPickup(player, item);
+                    return new Item();
+                }
+            }
+            else
+            {
+                for (int l = num - 1; l >= 0; l--)
+                {
+                    if (player.inventory[l].type != 0 || kConfig.clientSide.manualInventory && character.activeInvPage != 0 && !flag)
+                        continue;
+                    player.inventory[l] = item;
+                    ItemText.NewText(newItem, newItem.stack);
+                    player.DoCoins(l);
+                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                    if (plr == Main.myPlayer)
+                        FindRecipes();
+                    AchievementsHelper.NotifyItemPickup(player, item);
+                    return new Item();
+                }
+
+                for (int i = 0; i < character.inventories.Length; i += 1)
+                {
+                    if (character.activeInvPage == i)
+                        continue;
+                    for (int j = 0; j < character.inventories[i].Length; j += 1)
+                    {
+                        if (character.inventories[i][j].type != 0)
+                            continue;
+                        character.inventories[i][j] = item;
+                        ItemText.NewText(newItem, newItem.stack);
+                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                        AchievementsHelper.NotifyItemPickup(player, item);
+                        return new Item();
+                    }
+                }
+            }
+
+            return item;
+        }
+
+        private static void InvLogic(this Recipe recipe, Item[] array, Item requiredItem, int requiredAmount)
+        {
+            for (int k = 0; k < array.Length; k++)
+            {
+                var item2 = array[k];
+                if (requiredAmount <= 0)
+                    break;
+
+                if (!item2.IsTheSameAs(requiredItem) && !recipe.useWood(item2.type, requiredItem.type) && !recipe.useSand(item2.type, requiredItem.type) &&
+                    !recipe.useFragment(item2.type, requiredItem.type) && !recipe.useIronBar(item2.type, requiredItem.type) &&
+                    !recipe.usePressurePlate(item2.type, requiredItem.type) && !recipe.AcceptedByItemGroups(item2.type, requiredItem.type))
+                    continue;
+                if (item2.stack > requiredAmount)
+                {
+                    item2.stack -= requiredAmount;
+                    requiredAmount = 0;
+                }
+                else
+                {
+                    requiredAmount -= item2.stack;
+                    array[k] = new Item();
+                }
+            }
         }
 
         public static void ItemSlotDrawExtension(SpriteBatch spriteBatch, Item[] inv, int context, int slot, Vector2 position, Color overrideColor,
@@ -825,8 +1138,8 @@ namespace kRPG
                 var rectangle = texture2D2.Frame(3, 6, num7 % 3, num7 / 3);
                 rectangle.Width -= 2;
                 rectangle.Height -= 2;
-                spriteBatch.Draw(texture2D2, position + texture2D.Size() / 2f * inventoryScale, rectangle, Color.White * 0.35f, 0f,
-                    rectangle.Size() / 2f, inventoryScale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(texture2D2, position + texture2D.Size() / 2f * inventoryScale, rectangle, Color.White * 0.35f, 0f, rectangle.Size() / 2f,
+                    inventoryScale, SpriteEffects.None, 0f);
             }
 
             var vector = texture2D.Size() * inventoryScale;
@@ -852,11 +1165,9 @@ namespace kRPG
                 var origin = rectangle2.Size() * (num8 / 2f - 0.5f);
                 if (ItemLoader.PreDrawInInventory(item, spriteBatch, position2, rectangle2, item.GetAlpha(newColor), item.GetColor(color), origin, num9 * num8))
                 {
-                    spriteBatch.Draw(texture2D3, position2, rectangle2, item.GetAlpha(newColor), 0f, origin, num9 * num8, SpriteEffects.None,
-                        0f);
+                    spriteBatch.Draw(texture2D3, position2, rectangle2, item.GetAlpha(newColor), 0f, origin, num9 * num8, SpriteEffects.None, 0f);
                     if (item.color != Color.Transparent)
-                        spriteBatch.Draw(texture2D3, position2, rectangle2, item.GetColor(color), 0f, origin, num9 * num8, SpriteEffects.None,
-                            0f);
+                        spriteBatch.Draw(texture2D3, position2, rectangle2, item.GetColor(color), 0f, origin, num9 * num8, SpriteEffects.None, 0f);
                 }
 
                 ItemLoader.PostDrawInInventory(item, spriteBatch, position2, rectangle2, item.GetAlpha(newColor), item.GetColor(color), origin, num9 * num8);
@@ -962,789 +1273,473 @@ namespace kRPG
                     inventoryBack.A = 100;
                 }
 
-                ChatManager.DrawColorCodedStringWithShadow(spriteBatch, Main.fontItemStack, text2,
-                    position + new Vector2(6f, 4 + num12) * inventoryScale, inventoryBack, 0f, Vector2.Zero, new Vector2(inventoryScale), -1f,
-                    inventoryScale);
+                ChatManager.DrawColorCodedStringWithShadow(spriteBatch, Main.fontItemStack, text2, position + new Vector2(6f, 4 + num12) * inventoryScale,
+                    inventoryBack, 0f, Vector2.Zero, new Vector2(inventoryScale), -1f, inventoryScale);
             }
 
             if (num != -1)
                 UILinkPointNavigator.SetPosition(num, position + vector * 0.75f);
         }
 
-        public static void ApiQuickHeal(this Player player)
+        public static string MoneyToString(int amount)
         {
-            if (player.noItems)
-                return;
-            if (player.statLife == player.statLifeMax2 || player.potionDelay > 0)
-                return;
-            var item = player.APIQuickHeal_GetItemToUse();
-            if (item == null)
-                return;
-            Main.PlaySound(item.UseSound, player.position);
-            if (item.potion)
-            {
-                if (item.type == 227)
-                {
-                    player.potionDelay = player.restorationDelayTime;
-                    player.AddBuff(21, player.potionDelay);
-                }
-                else
-                {
-                    player.potionDelay = player.potionDelayTime;
-                    player.AddBuff(21, player.potionDelay);
-                }
-            }
+            string output = "";
+            var coins = SeparateCoinTypes(amount);
 
-            ItemLoader.UseItem(item, player);
-            player.statLife += item.healLife;
-            player.statMana += item.healMana;
-            if (player.statLife > player.statLifeMax2)
-                player.statLife = player.statLifeMax2;
-            if (player.statMana > player.statManaMax2)
-                player.statMana = player.statManaMax2;
-            if (item.healLife > 0 && Main.myPlayer == player.whoAmI)
-                player.HealEffect(item.healLife);
-            if (item.healMana > 0)
-                if (Main.myPlayer == player.whoAmI)
-                    player.ManaEffect(item.healMana);
-            if (ItemLoader.ConsumeItem(item, player))
-                item.stack--;
-            if (item.stack <= 0)
-                item.TurnToAir();
-            FindRecipes();
+            if (coins[p] > 0)
+                output += coins[p] + " platinum ";
+            if (coins[g] > 0)
+                output += coins[g] + " gold ";
+            if (coins[s] > 0)
+                output += coins[s] + " silver ";
+            if (coins[c] > 0)
+                output += coins[c] + " copper ";
+
+            return output;
         }
 
-        public static Item APIQuickHeal_GetItemToUse(this Player player)
+        public static void NinjaDodge(this Player player, int time, bool factorLongImmune = true)
         {
-            int num = player.statLifeMax2 - player.statLife;
-            Item result = null;
-            int num2 = -player.statLifeMax2;
-            for (int i = 0; i < 58; i++)
+            player.immune = true;
+            player.immuneTime = time;
+            if (player.longInvince && factorLongImmune)
+                player.immuneTime *= 2;
+            for (int i = 0; i < player.hurtCooldowns.Length; i++)
+                player.hurtCooldowns[i] = player.immuneTime;
+            for (int j = 0; j < 100; j++)
             {
-                var item = player.inventory[i];
-                if (item.stack <= 0 || item.type <= 0 || !item.potion || item.healLife <= 0 || !ItemLoader.CanUseItem(item, player))
+                int num = Dust.NewDust(new Vector2(player.position.X, player.position.Y), player.width, player.height, 31, 0f, 0f, 100, default, 2f);
+                var dust = Main.dust[num];
+                dust.position.X = dust.position.X + Main.rand.Next(-20, 21);
+                var dust2 = Main.dust[num];
+                dust2.position.Y = dust2.position.Y + Main.rand.Next(-20, 21);
+                Main.dust[num].velocity *= 0.4f;
+                Main.dust[num].scale *= 0.8f + Main.rand.Next(40) * 0.01f;
+                Main.dust[num].shader = GameShaders.Armor.GetSecondaryShader(player.cWaist, player);
+                if (Main.rand.Next(2) != 0)
                     continue;
-                int num3 = item.healLife - num;
-                if (num2 < 0)
-                {
-                    if (num3 <= num2)
-                        continue;
-                    result = item;
-                    num2 = num3;
-                }
-                else if (num3 < num2 && num3 >= 0)
-                {
-                    result = item;
-                    num2 = num3;
-                }
+                Main.dust[num].scale *= 1f + Main.rand.Next(40) * 0.01f;
+                Main.dust[num].noGravity = true;
             }
+
+            int num2 = Gore.NewGore(
+                new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f), default,
+                Main.rand.Next(61, 64));
+            //Main.gore[num2].scale = 1.5f;
+            Main.gore[num2].velocity.X = Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity.Y = Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity *= 0.4f;
+            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
+                default, Main.rand.Next(61, 64));
+            //Main.gore[num2].scale = 1.5f;
+            Main.gore[num2].velocity.X = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity.Y = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity *= 0.4f;
+            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
+                default, Main.rand.Next(61, 64));
+            //Main.gore[num2].scale = 1.5f;
+            Main.gore[num2].velocity.X = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity.Y = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity *= 0.4f;
+            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
+                default, Main.rand.Next(61, 64));
+            //Main.gore[num2].scale = 1.5f;
+            Main.gore[num2].velocity.X = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity.Y = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity *= 0.4f;
+            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
+                default, Main.rand.Next(61, 64));
+            //Main.gore[num2].scale = 1.5f;
+            Main.gore[num2].velocity.X = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity.Y = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity *= 0.4f;
+            if (player.whoAmI == Main.myPlayer)
+                NetMessage.SendData(62, -1, -1, null, player.whoAmI, 1f);
+        }
+
+        public static void NinjaDodge(this NPC npc, Entity dustPos, int time, bool factorLongImmune = true)
+        {
+            npc.GetGlobalNPC<kNPC>().immuneTime = time;
+            for (int j = 0; j < 100; j++)
+            {
+                int num = Dust.NewDust(new Vector2(dustPos.position.X, dustPos.position.Y), dustPos.width, dustPos.height, 31, 0f, 0f, 152, default, 2f);
+                var dust = Main.dust[num];
+                dust.position.X = dust.position.X + Main.rand.Next(-20, 21);
+                var dust2 = Main.dust[num];
+                dust2.position.Y = dust2.position.Y + Main.rand.Next(-20, 21);
+                Main.dust[num].velocity *= 0.4f;
+                Main.dust[num].scale *= 0.7f + Main.rand.Next(30) * 0.01f;
+                if (Main.rand.Next(2) != 0)
+                    continue;
+                Main.dust[num].scale *= 1f + Main.rand.Next(40) * 0.01f;
+                Main.dust[num].noGravity = true;
+            }
+
+            int num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default,
+                Main.rand.Next(61, 64));
+            Main.gore[num2].scale = 0.8f;
+            Main.gore[num2].velocity.X = Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity.Y = Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity *= 0.4f;
+            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default,
+                Main.rand.Next(61, 64));
+            Main.gore[num2].scale = 0.8f;
+            Main.gore[num2].velocity.X = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity.Y = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity *= 0.4f;
+            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default,
+                Main.rand.Next(61, 64));
+            Main.gore[num2].scale = 0.8f;
+            Main.gore[num2].velocity.X = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity.Y = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity *= 0.4f;
+            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default,
+                Main.rand.Next(61, 64));
+            Main.gore[num2].scale = 0.8f;
+            Main.gore[num2].velocity.X = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity.Y = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity *= 0.4f;
+            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default,
+                Main.rand.Next(61, 64));
+            Main.gore[num2].scale = 0.8f;
+            Main.gore[num2].velocity.X = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity.Y = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
+            Main.gore[num2].velocity *= 0.4f;
+        }
+
+        public static V Random<K, V>(this Dictionary<K, V> dictionary)
+        {
+            return dictionary.Values.ToList().Random();
+        }
+
+        public static T Random<T>(this IEnumerable<T> e)
+        {
+            var values = e.ToList();
+            return values[Main.rand.Next(values.Count)];
+        }
+
+        public static void RemoveCoins(this Player player, int amount)
+        {
+            int[] coinType = {71, 72, 73, 74};
+
+            //splitting the cost into individual coin types
+            var cost = SeparateCoinTypes(amount);
+
+            var coins = new int[4];
+            for (int i = 0; i < coins.Length; i++)
+                coins[i] = 0;
+
+            coins = SeparateCoinTypes(player.Wealth());
 
             var character = player.GetModPlayer<PlayerCharacter>();
-            for (int i = 0; i < character.inventories.Length; i += 1)
-                if (character.activeInvPage != i)
-                    for (int j = 0; j < character.inventories[i].Length; j += 1)
-                    {
-                        var item = character.inventories[i][j];
-                        if (item.stack <= 0 || item.type <= 0 || !item.potion || item.healLife <= 0 || !ItemLoader.CanUseItem(item, player))
-                            continue;
-                        int num3 = item.healLife - num;
-                        if (num2 < 0)
-                        {
-                            if (num3 <= num2)
-                                continue;
-                            result = item;
-                            num2 = num3;
-                        }
-                        else if (num3 < num2 && num3 >= 0)
-                        {
-                            result = item;
-                            num2 = num3;
-                        }
-                    }
+            //foreach (Item[] inventory in character.inventories)
+            //    foreach (Item i in inventory)
+            //        coins = SumCoins(coins, CountCoins(i));
 
-            return result;
-        }
+            //foreach (Item i in player.bank.item)
+            //    coins = SumCoins(coins, CountCoins(i));
 
-        public static void ApiQuickMana(this Player player)
-        {
-            if (player.noItems)
-                return;
-            if (player.statMana == player.statManaMax2)
-                return;
-            for (int i = 0; i < 58; i++)
-                APIQuickMana_TryItem(player, player.inventory[i]);
+            //foreach (Item i in player.bank2.item)
+            //    coins = SumCoins(coins, CountCoins(i));
 
-            var character = player.GetModPlayer<PlayerCharacter>();
-            for (int i = 0; i < character.inventories.Length; i += 1)
-                if (character.activeInvPage != i)
-                    for (int j = 0; j < character.inventories[i].Length; j += 1)
-                        APIQuickMana_TryItem(player, character.inventories[i][j]);
-        }
+            //foreach (Item i in player.bank3.item)
+            //    coins = SumCoins(coins, CountCoins(i));
 
-        private static void APIQuickMana_TryItem(Player player, Item item)
-        {
-            if (item.stack <= 0 || item.type <= 0 || item.healMana <= 0 || player.potionDelay != 0 && item.potion || !ItemLoader.CanUseItem(item, player))
-                return;
-            Main.PlaySound(item.UseSound, player.position);
-            if (item.potion)
-            {
-                if (item.type == 227)
+            for (int i = 0; i < 4; i++)
+                if (coins[i] >= cost[i])
                 {
-                    player.potionDelay = player.restorationDelayTime;
-                    player.AddBuff(21, player.potionDelay);
-                }
-                else
-                {
-                    player.potionDelay = player.potionDelayTime;
-                    player.AddBuff(21, player.potionDelay);
-                }
-            }
+                    foreach (var item in player.inventory)
+                        item.stack = RemoveCoins(item, coinType[i], ref cost[i]);
 
-            ItemLoader.UseItem(item, player);
-            player.statLife += item.healLife;
-            player.statMana += item.healMana;
-            if (player.statLife > player.statLifeMax2)
-                player.statLife = player.statLifeMax2;
-            if (player.statMana > player.statManaMax2)
-                player.statMana = player.statManaMax2;
-            if (item.healLife > 0 && Main.myPlayer == player.whoAmI)
-                player.HealEffect(item.healLife);
-            if (item.healMana > 0)
-            {
-                player.AddBuff(94, Player.manaSickTime);
-                if (Main.myPlayer == player.whoAmI)
-                    player.ManaEffect(item.healMana);
-            }
-
-            if (ItemLoader.ConsumeItem(item, player))
-                item.stack--;
-            if (item.stack <= 0)
-                item.TurnToAir();
-            FindRecipes();
-        }
-
-        public static void ApiQuickBuff(this Player player)
-        {
-            if (player.noItems)
-                return;
-            var character = player.GetModPlayer<PlayerCharacter>();
-
-            if (player.CountBuffs() == 22)
-                return;
-
-            for (int i = 0; i < 58; i += 1)
-            {
-                var item = player.inventory[i];
-                APIQuickBuff_TryItem(player, item);
-            }
-
-            for (int i = 0; i < character.inventories.Length; i += 1)
-            {
-                if (character.activeInvPage == i)
-                    continue;
-                for (int j = 0; j < character.inventories[i].Length; j += 1)
-                {
-                    var item = character.inventories[i][j];
-                    APIQuickBuff_TryItem(player, item);
-                }
-            }
-        }
-
-        private static void APIQuickBuff_TryItem(Player player, Item item)
-        {
-            LegacySoundStyle legacySoundStyle = null;
-
-            if (item.stack > 0 && item.type > 0 && item.buffType > 0 && !item.summon && item.buffType != 90)
-            {
-                int num = item.buffType;
-                bool flag = ItemLoader.CanUseItem(item, player);
-                for (int b = 0; b < 22; b++)
-                {
-                    if (num == 27 && (player.buffType[b] == num || player.buffType[b] == 101 || player.buffType[b] == 102))
-                    {
-                        flag = false;
-                        break;
-                    }
-
-                    if (player.buffType[b] == num)
-                    {
-                        flag = false;
-                        break;
-                    }
-
-                    if (!Main.meleeBuff[num] || !Main.meleeBuff[player.buffType[b]])
-                        continue;
-                    flag = false;
-                    break;
-                }
-
-                if (Main.lightPet[item.buffType] || Main.vanityPet[item.buffType])
-                    for (int k = 0; k < 22; k++)
-                    {
-                        if (Main.lightPet[player.buffType[k]] && Main.lightPet[item.buffType])
-                            flag = false;
-                        if (Main.vanityPet[player.buffType[k]] && Main.vanityPet[item.buffType])
-                            flag = false;
-                    }
-
-                if ((item.mana > 0) & flag)
-                {
-                    if (player.statMana >= (int) (item.mana * player.manaCost))
-                    {
-                        player.manaRegenDelay = (int) player.maxRegenDelay;
-                        player.statMana -= (int) (item.mana * player.manaCost);
-                    }
-                    else
-                    {
-                        flag = false;
-                    }
-                }
-
-                if (player.whoAmI == Main.myPlayer && item.type == 603 && !Main.cEd)
-                    flag = false;
-                if (num == 27)
-                {
-                    num = Main.rand.Next(3);
-                    if (num == 0)
-                        num = 27;
-                    if (num == 1)
-                        num = 101;
-                    if (num == 2)
-                        num = 102;
-                }
-
-                if (flag)
-                {
-                    ItemLoader.UseItem(item, player);
-                    legacySoundStyle = item.UseSound;
-                    int num2 = item.buffTime;
-                    if (num2 == 0)
-                        num2 = 3600;
-                    player.AddBuff(num, num2);
-                    if (item.consumable)
-                    {
-                        if (ItemLoader.ConsumeItem(item, player))
-                            item.stack--;
-                        if (item.stack <= 0)
-                            item.TurnToAir();
-                    }
-                }
-            }
-
-            if (legacySoundStyle == null)
-                return;
-            Main.PlaySound(legacySoundStyle, player.position);
-            FindRecipes();
-        }
-
-        public static Item GetItem(this Player player, Item newItem)
-        {
-            int plr = player.whoAmI;
-            var character = player.GetModPlayer<PlayerCharacter>();
-            bool flag = newItem.type >= 71 && newItem.type <= 74;
-            var item = newItem;
-            int num = 50;
-            if (newItem.noGrabDelay > 0)
-                return item;
-            int num2 = 0;
-            if (newItem.uniqueStack && player.HasItem(newItem.type))
-                return item;
-            if (newItem.type == 71 || newItem.type == 72 || newItem.type == 73 || newItem.type == 74)
-            {
-                num2 = -4;
-                num = 54;
-            }
-
-            if ((item.ammo > 0 || item.bait > 0) && !item.notAmmo || item.type == 530)
-            {
-                item = player.FillAmmo(plr, item);
-                if (item.type == 0 || item.stack == 0)
-                    return new Item();
-            }
-
-            for (int i = num2; i < 50; i++)
-            {
-                int num3 = i;
-                if (num3 < 0)
-                    num3 = 54 + i;
-                var x = player.inventory[num3];
-                if (x.type <= 0 || x.stack <= 0 || x.stack >= x.maxStack || !item.IsTheSameAs(x))
-                    continue;
-                if (flag)
-                    Main.PlaySound(38, (int) player.position.X, (int) player.position.Y);
-                else
-                    Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
-                if (item.stack + x.stack <= x.maxStack)
-                {
-                    x.stack += item.stack;
-                    ItemText.NewText(newItem, item.stack);
-                    player.DoCoins(num3);
-                    if (plr == Main.myPlayer)
-                        FindRecipes();
-                    AchievementsHelper.NotifyItemPickup(player, item);
-                    return new Item();
-                }
-
-                AchievementsHelper.NotifyItemPickup(player, item, x.maxStack - x.stack);
-                item.stack -= x.maxStack - x.stack;
-                ItemText.NewText(newItem, x.maxStack - x.stack);
-                x.stack = x.maxStack;
-                player.DoCoins(num3);
-                if (plr == Main.myPlayer)
-                    FindRecipes();
-            }
-
-            for (int i = 0; i < character.inventories.Length; i += 1)
-            {
-                if (character.activeInvPage == i)
-                    continue;
-                for (int j = 0; j < character.inventories[i].Length; j += 1)
-                {
-                    var x = character.inventories[i][j];
-                    if (x.type <= 0 || x.stack >= x.maxStack || !item.IsTheSameAs(x))
-                        continue;
-                    if (flag)
-                        Main.PlaySound(38, (int) player.position.X, (int) player.position.Y);
-                    else
-                        Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
-                    if (item.stack + x.stack <= x.maxStack)
-                    {
-                        x.stack += item.stack;
-                        ItemText.NewText(newItem, item.stack);
-                        AchievementsHelper.NotifyItemPickup(player, item);
-                        return new Item();
-                    }
-
-                    AchievementsHelper.NotifyItemPickup(player, item, x.maxStack - x.stack);
-                    item.stack -= x.maxStack - x.stack;
-                    ItemText.NewText(newItem, x.maxStack - x.stack);
-                    x.stack = x.maxStack;
-                    if (plr == Main.myPlayer)
-                        FindRecipes();
-                }
-            }
-
-            if (newItem.type != 71 && newItem.type != 72 && newItem.type != 73 && newItem.type != 74 && newItem.useStyle > 0)
-                for (int j = 0; j < 10; j++)
-                {
-                    if (player.inventory[j].type != 0)
-                        continue;
-                    player.inventory[j] = item;
-                    ItemText.NewText(newItem, newItem.stack);
-                    player.DoCoins(j);
-                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
-                    if (plr == Main.myPlayer)
-                        FindRecipes();
-                    AchievementsHelper.NotifyItemPickup(player, item);
-                    return new Item();
-                }
-
-            if ((newItem.modItem is Glyph || newItem.modItem is ProceduralItem || newItem.modItem is RangedWeapon) && kConfig.clientSide.smartInventory)
-            {
-                if (character.activeInvPage == 2)
-                    for (int i = 10; i < 50; i += 1)
-                    {
-                        if (player.inventory[i].type != 0)
-                            continue;
-                        player.inventory[i] = item;
-                        ItemText.NewText(newItem, newItem.stack);
-                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
-                        AchievementsHelper.NotifyItemPickup(player, item);
-                        return new Item();
-                    }
-                else
-                    for (int i = 0; i < character.inventories[2].Length; i += 1)
-                    {
-                        if (character.inventories[2][i].type != 0)
-                            continue;
-                        character.inventories[2][i] = item;
-                        ItemText.NewText(newItem, newItem.stack);
-                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
-                        AchievementsHelper.NotifyItemPickup(player, item);
-                        return new Item();
-                    }
-            }
-
-            if (newItem.favorited)
-            {
-                for (int k = 0; k < num; k++)
-                {
-                    if (player.inventory[k].type != 0 || kConfig.clientSide.manualInventory && character.activeInvPage != 0)
-                        continue;
-                    player.inventory[k] = item;
-                    ItemText.NewText(newItem, newItem.stack);
-                    player.DoCoins(k);
-                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
-                    if (plr == Main.myPlayer)
-                        FindRecipes();
-                    AchievementsHelper.NotifyItemPickup(player, item);
-                    return new Item();
-                }
-            }
-            else
-            {
-                for (int l = num - 1; l >= 0; l--)
-                {
-                    if (player.inventory[l].type != 0 || kConfig.clientSide.manualInventory && character.activeInvPage != 0 && !flag)
-                        continue;
-                    player.inventory[l] = item;
-                    ItemText.NewText(newItem, newItem.stack);
-                    player.DoCoins(l);
-                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
-                    if (plr == Main.myPlayer)
-                        FindRecipes();
-                    AchievementsHelper.NotifyItemPickup(player, item);
-                    return new Item();
-                }
-
-                for (int i = 0; i < character.inventories.Length; i += 1)
-                {
-                    if (character.activeInvPage == i)
-                        continue;
-                    for (int j = 0; j < character.inventories[i].Length; j += 1)
-                    {
-                        if (character.inventories[i][j].type != 0)
-                            continue;
-                        character.inventories[i][j] = item;
-                        ItemText.NewText(newItem, newItem.stack);
-                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
-                        AchievementsHelper.NotifyItemPickup(player, item);
-                        return new Item();
-                    }
-                }
-            }
-
-            return item;
-        }
-
-        public static void FindRecipes()
-        {
-            if (Main.netMode == 2) return;
-            int num = Main.availableRecipe[Main.focusRecipe];
-            float num2 = Main.availableRecipeY[Main.focusRecipe];
-            for (int i = 0; i < Recipe.maxRecipes; i++)
-                Main.availableRecipe[i] = 0;
-            Main.numAvailableRecipes = 0;
-            bool flag = Main.guideItem.type > 0 && Main.guideItem.stack > 0 && Main.guideItem.Name != "";
-            if (flag)
-            {
-                for (int j = 0; j < Recipe.maxRecipes; j++)
-                {
-                    if (Main.recipe[j].createItem.type == 0)
-                        break;
-                    int num3 = 0;
-                    while (num3 < Recipe.maxRequirements && Main.recipe[j].requiredItem[num3].type != 0)
-                    {
-                        if (Main.guideItem.IsTheSameAs(Main.recipe[j].requiredItem[num3]) ||
-                            Main.recipe[j].useWood(Main.guideItem.type, Main.recipe[j].requiredItem[num3].type) ||
-                            Main.recipe[j].useSand(Main.guideItem.type, Main.recipe[j].requiredItem[num3].type) ||
-                            Main.recipe[j].useIronBar(Main.guideItem.type, Main.recipe[j].requiredItem[num3].type) ||
-                            Main.recipe[j].useFragment(Main.guideItem.type, Main.recipe[j].requiredItem[num3].type) ||
-                            Main.recipe[j].AcceptedByItemGroups(Main.guideItem.type, Main.recipe[j].requiredItem[num3].type) ||
-                            Main.recipe[j].usePressurePlate(Main.guideItem.type, Main.recipe[j].requiredItem[num3].type))
-                        {
-                            Main.availableRecipe[Main.numAvailableRecipes] = j;
-                            Main.numAvailableRecipes++;
-                            break;
-                        }
-
-                        num3++;
-                    }
-                }
-            }
-            else
-            {
-                var dictionary = new Dictionary<int, int>();
-                Item item;
-                var inv = Main.player[Main.myPlayer].inventory;
-                foreach (var t in inv)
-                {
-                    item = t;
-                    if (item.stack <= 0)
-                        continue;
-                    if (dictionary.ContainsKey(item.netID))
-                    {
-                        Dictionary<int, int> dictionary2;
-                        int netId;
-                        (dictionary2 = dictionary)[netId = item.netID] = dictionary2[netId] + item.stack;
-                    }
-                    else
-                    {
-                        dictionary[item.netID] = item.stack;
-                    }
-                }
-
-                if (Main.player[Main.myPlayer].active)
-                {
-                    var character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
-                    for (int j = 0; j < character.inventories.Length; j += 1)
-                        if (j != character.activeInvPage)
-                            foreach (var i in character.inventories[j])
-                                if (dictionary.ContainsKey(i.netID))
-                                {
-                                    Dictionary<int, int> dictionary2;
-                                    int netId;
-                                    (dictionary2 = dictionary)[netId = i.netID] = dictionary2[netId] + i.stack;
-                                }
-                                else
-                                {
-                                    dictionary[i.netID] = i.stack;
-                                }
-                }
-
-                var array = new Item[0];
-                if (Main.player[Main.myPlayer].chest != -1)
-                {
-                    if (Main.player[Main.myPlayer].chest > -1)
-                        array = Main.chest[Main.player[Main.myPlayer].chest].item;
-                    else
-                        switch (Main.player[Main.myPlayer].chest)
-                        {
-                            case -2:
-                                array = Main.player[Main.myPlayer].bank.item;
-                                break;
-                            case -3:
-                                array = Main.player[Main.myPlayer].bank2.item;
-                                break;
-                            case -4:
-                                array = Main.player[Main.myPlayer].bank3.item;
-                                break;
-                        }
-
-                    for (int l = 0; l < 40; l++)
-                    {
-                        item = array[l];
-                        if (item.stack <= 0)
-                            continue;
-                        if (dictionary.ContainsKey(item.netID))
-                        {
-                            Dictionary<int, int> dictionary3;
-                            int netId2;
-                            (dictionary3 = dictionary)[netId2 = item.netID] = dictionary3[netId2] + item.stack;
-                        }
-                        else
-                        {
-                            dictionary[item.netID] = item.stack;
-                        }
-                    }
-                }
-
-                int num4 = 0;
-                while (num4 < Recipe.maxRecipes && Main.recipe[num4].createItem.type != 0)
-                {
-                    bool flag2 = true;
-                    if (flag2)
-                    {
-                        int num5 = 0;
-                        while (num5 < Recipe.maxRequirements && Main.recipe[num4].requiredTile[num5] != -1)
-                        {
-                            if (!Main.player[Main.myPlayer].adjTile[Main.recipe[num4].requiredTile[num5]])
-                            {
-                                flag2 = false;
-                                break;
-                            }
-
-                            num5++;
-                        }
-                    }
-
-                    if (flag2)
-                        for (int m = 0; m < Recipe.maxRequirements; m++)
-                        {
-                            item = Main.recipe[num4].requiredItem[m];
-                            if (item.type == 0)
-                                break;
-                            int num6 = item.stack;
-                            bool flag3 = false;
-                            foreach (int current in dictionary.Keys.Where(current =>
-                                Main.recipe[num4].useWood(current, item.type) || Main.recipe[num4].useSand(current, item.type) ||
-                                Main.recipe[num4].useIronBar(current, item.type) || Main.recipe[num4].useFragment(current, item.type) ||
-                                Main.recipe[num4].AcceptedByItemGroups(current, item.type) || Main.recipe[num4].usePressurePlate(current, item.type)))
-                            {
-                                num6 -= dictionary[current];
-                                flag3 = true;
-                            }
-
-                            if (!flag3 && dictionary.ContainsKey(item.netID))
-                                num6 -= dictionary[item.netID];
-
-                            if (num6 <= 0)
-                                continue;
-                            flag2 = false;
-                            break;
-                        }
-
-                    if (flag2)
-                    {
-                        bool flag4 = !Main.recipe[num4].needWater || Main.player[Main.myPlayer].adjWater || Main.player[Main.myPlayer].adjTile[172];
-                        bool flag5 = !Main.recipe[num4].needHoney || Main.recipe[num4].needHoney == Main.player[Main.myPlayer].adjHoney;
-                        bool flag6 = !Main.recipe[num4].needLava || Main.recipe[num4].needLava == Main.player[Main.myPlayer].adjLava;
-                        bool flag7 = !Main.recipe[num4].needSnowBiome || Main.player[Main.myPlayer].ZoneSnow;
-                        if (!flag4 || !flag5 || !flag6 || !flag7)
-                            flag2 = false;
-                    }
-
-                    if (flag2 && RecipeHooks.RecipeAvailable(Main.recipe[num4]))
-                    {
-                        Main.availableRecipe[Main.numAvailableRecipes] = num4;
-                        Main.numAvailableRecipes++;
-                    }
-
-                    num4++;
-                }
-            }
-
-            for (int n = 0; n < Main.numAvailableRecipes; n++)
-            {
-                if (num != Main.availableRecipe[n])
-                    continue;
-                Main.focusRecipe = n;
-                break;
-            }
-
-            if (Main.focusRecipe >= Main.numAvailableRecipes)
-                Main.focusRecipe = Main.numAvailableRecipes - 1;
-            if (Main.focusRecipe < 0)
-                Main.focusRecipe = 0;
-            float num7 = Main.availableRecipeY[Main.focusRecipe] - num2;
-            for (int num8 = 0; num8 < Recipe.maxRecipes; num8++)
-                Main.availableRecipeY[num8] -= num7;
-        }
-
-        public static void CraftItem(Recipe r)
-        {
-            int stack = Main.mouseItem.stack;
-            Main.mouseItem = r.createItem.Clone();
-            Main.mouseItem.stack += stack;
-            if (stack <= 0)
-                Main.mouseItem.Prefix(-1);
-            Main.mouseItem.position.X = Main.player[Main.myPlayer].position.X + Main.player[Main.myPlayer].width / 2f -
-                                        Main.mouseItem.width / 2f;
-            Main.mouseItem.position.Y = Main.player[Main.myPlayer].position.Y + Main.player[Main.myPlayer].height / 2f -
-                                        Main.mouseItem.height / 2f;
-            ItemText.NewText(Main.mouseItem, r.createItem.stack);
-            r.ApiCreate();
-            if (Main.mouseItem.type <= 0 && r.createItem.type <= 0)
-                return;
-            RecipeHooks.OnCraft(Main.mouseItem, r);
-            ItemLoader.OnCraft(Main.mouseItem, r);
-            Main.PlaySound(7);
-        }
-
-        public static void ApiCreate(this Recipe recipe)
-        {
-            for (int i = 0; i < Recipe.maxRequirements; i++)
-            {
-                var requiredItem = recipe.requiredItem[i];
-                if (requiredItem.type == 0)
-                    break;
-                int requiredAmount = requiredItem.stack;
-                if (recipe is ModRecipe modRecipe)
-                    requiredAmount = modRecipe.ConsumeItem(requiredItem.type, requiredItem.stack);
-                if (recipe.alchemy && Main.player[Main.myPlayer].alchemyTable)
-                {
-                    if (requiredAmount > 1)
-                    {
-                        int num2 = 0;
-                        for (int j = 0; j < requiredAmount; j++)
-                            if (Main.rand.Next(3) == 0)
-                                num2++;
-                        requiredAmount -= num2;
-                    }
-                    else if (Main.rand.Next(3) == 0)
-                    {
-                        requiredAmount = 0;
-                    }
-                }
-
-                if (requiredAmount <= 0)
-                    continue;
-                {
-                    var array = Main.player[Main.myPlayer].inventory;
-                    InvLogic(recipe, array, requiredItem, requiredAmount);
-                    var character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
                     for (int j = 0; j < character.inventories.Length; j += 1)
                         if (character.activeInvPage != j)
-                        {
-                            array = character.inventories[j];
-                            InvLogic(recipe, array, requiredItem, requiredAmount);
-                        }
+                            foreach (var item in character.inventories[j])
+                                item.stack = RemoveCoins(item, coinType[i], ref cost[i]);
 
-                    if (Main.player[Main.myPlayer].chest == -1)
-                        continue;
-                    if (Main.player[Main.myPlayer].chest > -1)
-                        array = Main.chest[Main.player[Main.myPlayer].chest].item;
-                    else
-                        switch (Main.player[Main.myPlayer].chest)
-                        {
-                            case -2:
-                                array = Main.player[Main.myPlayer].bank.item;
-                                break;
-                            case -3:
-                                array = Main.player[Main.myPlayer].bank2.item;
-                                break;
-                            case -4:
-                                array = Main.player[Main.myPlayer].bank3.item;
-                                break;
-                        }
+                    foreach (var item in player.bank.item)
+                        item.stack = RemoveCoins(item, coinType[i], ref cost[i]);
 
-                    for (int l = 0; l < 40; l++)
-                    {
-                        var item3 = array[l];
-                        if (requiredAmount <= 0)
-                            break;
+                    foreach (var item in player.bank2.item)
+                        item.stack = RemoveCoins(item, coinType[i], ref cost[i]);
 
-                        if (!item3.IsTheSameAs(requiredItem) && !recipe.useWood(item3.type, requiredItem.type) &&
-                            !recipe.useSand(item3.type, requiredItem.type) && !recipe.useIronBar(item3.type, requiredItem.type) &&
-                            !recipe.usePressurePlate(item3.type, requiredItem.type) && !recipe.useFragment(item3.type, requiredItem.type) &&
-                            !recipe.AcceptedByItemGroups(item3.type, requiredItem.type))
-                            continue;
-                        if (item3.stack > requiredAmount)
-                        {
-                            item3.stack -= requiredAmount;
-                            if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
-                                NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, l);
-                            requiredAmount = 0;
-                        }
-                        else
-                        {
-                            requiredAmount -= item3.stack;
-                            array[l] = new Item();
-                            if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
-                                NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, l);
-                        }
-                    }
+                    foreach (var item in player.bank3.item)
+                        item.stack = RemoveCoins(item, coinType[i], ref cost[i]);
                 }
-            }
 
-            AchievementsHelper.NotifyItemCraft(recipe);
-            AchievementsHelper.NotifyItemPickup(Main.player[Main.myPlayer], recipe.createItem);
-            FindRecipes();
+                else
+                {
+                    cost[i + 1] += 1;
+                    cost[i] -= 100;
+                    Item.NewItem((int) player.position.X, (int) player.position.Y, 0, 0, coinType[i], -cost[i], true, 0, true);
+                }
         }
 
-        private static void InvLogic(this Recipe recipe, Item[] array, Item requiredItem, int requiredAmount)
+        public static int RemoveCoins(Item item, int coinType, ref int amount)
         {
-            for (int k = 0; k < array.Length; k++)
+            int stackSize = item.stack;
+            if (item.type != coinType)
+                return stackSize;
+            if (stackSize >= amount)
             {
-                var item2 = array[k];
-                if (requiredAmount <= 0)
-                    break;
+                stackSize -= amount;
+                amount = 0;
+            }
+            else
+            {
+                amount -= item.stack;
+                stackSize = 0;
+            }
 
-                if (!item2.IsTheSameAs(requiredItem) && !recipe.useWood(item2.type, requiredItem.type) && !recipe.useSand(item2.type, requiredItem.type) &&
-                    !recipe.useFragment(item2.type, requiredItem.type) && !recipe.useIronBar(item2.type, requiredItem.type) &&
-                    !recipe.usePressurePlate(item2.type, requiredItem.type) && !recipe.AcceptedByItemGroups(item2.type, requiredItem.type))
-                    continue;
-                if (item2.stack > requiredAmount)
+            return stackSize;
+        }
+
+        public static int[] SeparateCoinTypes(int amount)
+        {
+            //splitting the cost into individual coin types
+            var output = new int[4];
+            output[c] = Math.Max(0, amount % 100);
+            output[s] = Math.Max(0, (amount % 10000 - output[c]) / 100);
+            output[g] = Math.Max(0, (amount % 1000000 - output[c] - output[s]) / 10000);
+            output[p] = Math.Max(0, (amount - output[c] - output[s] - output[g]) / 1000000);
+
+            return output;
+        }
+
+        public static void SetItemDefaults(this Item item, int type, bool noMatCheck = false, bool createModItem = true)
+        {
+            try
+            {
+                var globalItems = typeof(Item).GetField("globalItems", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(item);
+                item.ClearNameOverride();
+                if (Main.netMode == 1 || Main.netMode == 2)
+                    item.owner = 255;
+                else
+                    item.owner = Main.myPlayer;
+                item.ResetStats(type);
+                if (item.type == 0)
                 {
-                    item2.stack -= requiredAmount;
-                    requiredAmount = 0;
+                    item.netID = 0;
+                    item.stack = 0;
+                }
+                else if (item.type <= 1000)
+                {
+                    item.SetDefaults1(item.type);
+                }
+                else if (item.type <= 2001)
+                {
+                    item.SetDefaults2(item.type);
+                }
+                else if (item.type <= 3000)
+                {
+                    item.SetDefaults3(item.type);
                 }
                 else
                 {
-                    requiredAmount -= item2.stack;
-                    array[k] = new Item();
+                    item.SetDefaults4(item.type);
                 }
+
+                item.dye = (byte) GameShaders.Armor.GetShaderIdFromItemId(item.type);
+                if (item.hairDye != 0)
+                    item.hairDye = GameShaders.Hair.GetShaderIdFromItemId(item.type);
+                switch (item.type)
+                {
+                    case 2015:
+                        item.value = Item.sellPrice(0, 0, 5);
+                        break;
+                    case 2016:
+                    case 2017:
+                        item.value = Item.sellPrice(0, 0, 7, 50);
+                        break;
+                    case 2019:
+                    case 2018:
+                    case 3563:
+                        item.value = Item.sellPrice(0, 0, 5);
+                        break;
+                    case 261:
+                        item.value = Item.sellPrice(0, 0, 7, 50);
+                        break;
+                    case 2205:
+                        item.value = Item.sellPrice(0, 0, 12, 50);
+                        break;
+                    case 2123:
+                    case 2122:
+                        item.value = Item.sellPrice(0, 0, 7, 50);
+                        break;
+                    case 2003:
+                        item.value = Item.sellPrice(0, 0, 20);
+                        break;
+                    case 2156:
+                    case 2157:
+                    case 2121:
+                        item.value = Item.sellPrice(0, 0, 15);
+                        break;
+                    case 1992:
+                        item.value = Item.sellPrice(0, 0, 3);
+                        break;
+                    case 2004:
+                    case 2002:
+                        item.value = Item.sellPrice(0, 0, 5);
+                        break;
+                    case 2740:
+                        item.value = Item.sellPrice(0, 0, 2, 50);
+                        break;
+                    case 2006:
+                    case 3191:
+                        item.value = Item.sellPrice(0, 0, 20);
+                        break;
+                    case 3192:
+                        item.value = Item.sellPrice(0, 0, 2, 50);
+                        break;
+                    case 3193:
+                        item.value = Item.sellPrice(0, 0, 5);
+                        break;
+                    case 3194:
+                        item.value = Item.sellPrice(0, 0, 10);
+                        break;
+                    case 2007:
+                        item.value = Item.sellPrice(0, 0, 50);
+                        break;
+                    case 2673:
+                        item.value = Item.sellPrice(0, 10);
+                        break;
+                }
+
+                if (item.bait > 0)
+                {
+                    if (item.bait >= 50)
+                        item.rare = 3;
+                    else if (item.bait >= 30)
+                        item.rare = 2;
+                    else if (item.bait >= 15)
+                        item.rare = 1;
+                }
+
+                if (item.type >= 1994 && item.type <= 2001)
+                {
+                    int num = item.type - 1994;
+                    switch (num)
+                    {
+                        case 0:
+                            item.value = Item.sellPrice(0, 0, 5);
+                            break;
+                        case 4:
+                            item.value = Item.sellPrice(0, 0, 10);
+                            break;
+                        case 6:
+                            item.value = Item.sellPrice(0, 0, 15);
+                            break;
+                        case 3:
+                            item.value = Item.sellPrice(0, 0, 20);
+                            break;
+                        case 7:
+                            item.value = Item.sellPrice(0, 0, 30);
+                            break;
+                        case 2:
+                            item.value = Item.sellPrice(0, 0, 40);
+                            break;
+                        case 1:
+                            item.value = Item.sellPrice(0, 0, 75);
+                            break;
+                        case 5:
+                            item.value = Item.sellPrice(0, 1);
+                            break;
+                    }
+                }
+
+                switch (item.type)
+                {
+                    case 483:
+                    case 1192:
+                    case 482:
+                    case 1185:
+                    case 484:
+                    case 1199:
+                    case 368:
+                        item.autoReuse = true;
+                        item.damage = (int) (item.damage * 1.15);
+                        break;
+                    case 2663:
+                    case 1720:
+                    case 2137:
+                    case 2155:
+                    case 2151:
+                    case 1704:
+                    case 2143:
+                    case 1710:
+                    case 2238:
+                    case 2133:
+                    case 2147:
+                    case 2405:
+                    case 1716:
+                    case 1705:
+                        item.value = Item.sellPrice(0, 2);
+                        break;
+                }
+
+                if (Main.projHook[item.shoot])
+                {
+                    item.useStyle = 0;
+                    item.useTime = 0;
+                    item.useAnimation = 0;
+                }
+
+                if (item.type >= 1803 && item.type <= 1807)
+                    item.SetDefaults(1533 + item.type - 1803, true);
+                if (item.dye > 0)
+                    item.maxStack = 99;
+                if (item.createTile == 19)
+                    item.maxStack = 999;
+                item.netID = item.type;
+
+                if ((bool) IsModItem.Invoke(null, new object[] {item.type}) & createModItem)
+                    ModItem.SetValue(item, ItemLoader.GetItem(item.type).NewInstance(item));
+
+                item.modItem?.AutoDefaults();
+                item.modItem?.SetDefaults();
+
+                if (!noMatCheck)
+                    item.checkMat();
+                item.RebuildTooltip();
+                if (item.type > 0 && ItemID.Sets.Deprecated[item.type])
+                {
+                    item.netID = 0;
+                    item.type = 0;
+                    item.stack = 0;
+                }
+
+                typeof(Item).GetField("globalItems", BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(item, globalItems);
             }
+            catch (SystemException e)
+            {
+                Main.NewText(e.ToString());
+            }
+        }
+
+        public static int[] SumCoins(int[] a, int[] b)
+        {
+            var coins = new int[4];
+            for (int i = 0; i < 4; i += 1)
+                coins[i] = a[i] + b[i];
+            return coins;
+        }
+
+        public static int Wealth(this Player player)
+        {
+            var character = player.GetModPlayer<PlayerCharacter>();
+
+            int coins = player.inventory.Sum(CoinStackValue);
+
+            for (int i = 0; i < character.inventories.Length; i += 1)
+                if (character.activeInvPage != i)
+                    coins += character.inventories[i].Sum(CoinStackValue);
+
+            coins += player.bank.item.Sum(CoinStackValue);
+
+            coins += player.bank2.item.Sum(CoinStackValue);
+
+            coins += player.bank3.item.Sum(CoinStackValue);
+
+            return coins;
         }
     }
 }

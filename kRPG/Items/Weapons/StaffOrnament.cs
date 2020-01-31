@@ -12,34 +12,35 @@ namespace kRPG.Items.Weapons
 {
     public class StaffOrnament : StaffPart
     {
-        public static StaffOrnament none;
-        public static StaffOrnament bow;
-        public static StaffOrnament twig;
-        public static StaffOrnament loop;
         public static StaffOrnament arcane;
+        public static StaffOrnament bow;
         public static StaffOrnament cage;
         public static StaffOrnament demonic;
         public static StaffOrnament explosive;
+        public static StaffOrnament loop;
+        public static StaffOrnament none;
 
         public static Dictionary<int, StaffOrnament> ornament;
         public static Dictionary<STAFFTHEME, List<StaffOrnament>> ornamentByTheme;
-
-        public int type = 0;
+        public static StaffOrnament twig;
+        public int critBonus;
         public float dpsModifier = 1f;
-        public float speedModifier = 1f;
-        public float knockBack = 0f;
-        public int critBonus = 0;
-        public string suffix = "";
-        public float mana = 1f;
-        public bool front = true;
-        public int repetitions = 0;
 
-        public Action<Player, NPC, Item, int, bool> onHit;
-
-        public Dictionary<ELEMENT, float> eleDamage = new Dictionary<ELEMENT, float>()
+        public Dictionary<ELEMENT, float> eleDamage = new Dictionary<ELEMENT, float>
         {
             {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
         };
+
+        public bool front = true;
+        public float knockBack;
+        public float mana = 1f;
+
+        public Action<Player, NPC, Item, int, bool> onHit;
+        public int repetitions;
+        public float speedModifier = 1f;
+        public string suffix = "";
+
+        public int type;
 
         public StaffOrnament(string texture, int origin_x, int origin_y, string suffix, bool front = true, float mana = 1f, float dpsModifier = 1f,
             float speedModifier = 1f, float knockBack = 0f, int critBonus = 0, int repetitions = 0)
@@ -59,18 +60,6 @@ namespace kRPG.Items.Weapons
             this.repetitions = repetitions;
             if (!ornament.ContainsKey(type))
                 ornament.Add(type, this);
-        }
-
-        public StaffOrnament SetEleDamage(Dictionary<ELEMENT, float> eleDamage)
-        {
-            this.eleDamage = eleDamage;
-            return this;
-        }
-
-        public StaffOrnament SetEffect(Action<Player, NPC, Item, int, bool> onHit)
-        {
-            this.onHit = onHit;
-            return this;
         }
 
         public static void Initialize()
@@ -109,23 +98,35 @@ namespace kRPG.Items.Weapons
             explosive = new StaffOrnament("Explosive", 6, 4, " of Blasting", false, 1.2f, 0.9f, 0.9f).SetEffect(
                 delegate(Player player, NPC npc, Item item, int damage, bool crit)
                 {
-                    Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), player.Center);
+                    Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
                     var proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(), damage / 2, 0f,
                             player.whoAmI)];
                 });
 
-            ornamentByTheme = new Dictionary<STAFFTHEME, List<StaffOrnament>>()
+            ornamentByTheme = new Dictionary<STAFFTHEME, List<StaffOrnament>>
             {
-                {STAFFTHEME.WOODEN, new List<StaffOrnament>() {bow, twig, loop}},
-                {STAFFTHEME.DUNGEON, new List<StaffOrnament>() {arcane, cage}},
-                {STAFFTHEME.UNDERWORLD, new List<StaffOrnament>() {demonic, explosive}}
+                {STAFFTHEME.WOODEN, new List<StaffOrnament> {bow, twig, loop}},
+                {STAFFTHEME.DUNGEON, new List<StaffOrnament> {arcane, cage}},
+                {STAFFTHEME.UNDERWORLD, new List<StaffOrnament> {demonic, explosive}}
             };
         }
 
         public static StaffOrnament RandomOrnament(STAFFTHEME theme)
         {
             return ornamentByTheme[theme].Random();
+        }
+
+        public StaffOrnament SetEffect(Action<Player, NPC, Item, int, bool> onHit)
+        {
+            this.onHit = onHit;
+            return this;
+        }
+
+        public StaffOrnament SetEleDamage(Dictionary<ELEMENT, float> eleDamage)
+        {
+            this.eleDamage = eleDamage;
+            return this;
         }
 
         public static void Unload()

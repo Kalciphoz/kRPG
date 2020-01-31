@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kRPG.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -8,57 +9,57 @@ namespace kRPG.Items.Weapons
 {
     public class SwordHilt
     {
-        public static SwordHilt ceremonial;
-        public static SwordHilt copperCrossguard;
-        public static SwordHilt goldenKatana;
-        public static SwordHilt blackKatana;
-        public static SwordHilt wooden;
-        public static SwordHilt ironBasket;
-        public static SwordHilt lead;
-        public static SwordHilt woodenMount;
-        public static SwordHilt ceremonialMount;
-        public static SwordHilt eyes;
-        public static SwordHilt coe;
-        public static SwordHilt demoniteBat;
-        public static SwordHilt boneMount;
-        public static SwordHilt boneCrest;
-        public static SwordHilt demonEye;
-        public static SwordHilt purpleCrossguard;
-        public static SwordHilt violetCrossguard;
-        public static SwordHilt violetRunicKatana;
-        public static SwordHilt goldenRunicKatana;
         public static SwordHilt arcaneMount;
-        public static SwordHilt stick;
-        public static SwordHilt hellstoneCrossguard;
-        public static SwordHilt hellstoneBasket;
-        public static SwordHilt hellstoneMount;
-        public static SwordHilt torch;
+        public static SwordHilt blackKatana;
         public static SwordHilt bone;
-        public static SwordHilt clock;
+        public static SwordHilt boneCrest;
+        public static SwordHilt boneMount;
         public static SwordHilt carbon;
-        public static SwordHilt thorns;
+        public static SwordHilt ceremonial;
+        public static SwordHilt ceremonialMount;
         public static SwordHilt chlorophyteMount;
-        public static SwordHilt ominousHilt;
-
-        private static Dictionary<SWORDTHEME, List<SwordHilt>> hiltsByTheme;
+        public static SwordHilt clock;
+        public static SwordHilt coe;
+        public static SwordHilt copperCrossguard;
+        public static SwordHilt demonEye;
+        public static SwordHilt demoniteBat;
+        public static SwordHilt eyes;
+        public static SwordHilt goldenKatana;
+        public static SwordHilt goldenRunicKatana;
+        public static SwordHilt hellstoneBasket;
+        public static SwordHilt hellstoneCrossguard;
+        public static SwordHilt hellstoneMount;
 
         public static Dictionary<int, SwordHilt> hilts = new Dictionary<int, SwordHilt>();
 
-        public int type = 0;
-        public Texture2D texture;
-        public Texture2D spearTexture;
-        public Vector2 origin;
+        private static Dictionary<SWORDTHEME, List<SwordHilt>> hiltsByTheme;
+        public static SwordHilt ironBasket;
+        public static SwordHilt lead;
+        public static SwordHilt ominousHilt;
+        public static SwordHilt purpleCrossguard;
+        public static SwordHilt stick;
+        public static SwordHilt thorns;
+        public static SwordHilt torch;
+        public static SwordHilt violetCrossguard;
+        public static SwordHilt violetRunicKatana;
+        public static SwordHilt wooden;
+        public static SwordHilt woodenMount;
         public Point accentOffset = Point.Zero;
-        public Vector2 spearOrigin;
+        public bool autoswing;
+        public int critBonus;
         public float dpsModifier = 1f;
-        public float speedModifier = 1f;
-        public float knockBack = 0f;
-        public int critBonus = 0;
-        public bool autoswing = false;
+        public float knockBack;
+        public int mana;
+        public Vector2 origin;
         public string prefix = "";
-        public int mana = 0;
-        public bool spear = false;
-        public float scale = 0f;
+        public float scale;
+        public bool spear;
+        public Vector2 spearOrigin;
+        public Texture2D spearTexture;
+        public float speedModifier = 1f;
+        public Texture2D texture;
+
+        public int type;
 
         public SwordHilt(string texture, int origin_x, int origin_y, string prefix, float dpsModifier, float speedModifier, float knockBack = 0f,
             int critBonus = 0, bool spear = false, bool autoswing = false, int mana = 0, float scale = 0f)
@@ -87,12 +88,6 @@ namespace kRPG.Items.Weapons
             if (Main.netMode != 2)
                 spearTexture = ModLoader.GetMod("kRPG").GetTexture("GFX/Projectiles/SpearMounts/" + texture);
             spearOrigin = new Vector2(origin_x, origin_y);
-            return this;
-        }
-
-        public SwordHilt SetAccentOffset(Point offset)
-        {
-            accentOffset = offset;
             return this;
         }
 
@@ -133,10 +128,10 @@ namespace kRPG.Items.Weapons
             chlorophyteMount = new SwordHilt("ChlorophyteMount", 19, 4, "Mounted ", 0.9f, 0.9f, 1f, 0, true).defineSpear("ChlorophyteMount", 35, 4);
             ominousHilt = new SwordHilt("OminousHilt", 8, 6, "Ominous ", 1f, 0.9f, 2f, 2, false, true, 2, 0.08f);
 
-            hiltsByTheme = new Dictionary<SWORDTHEME, List<SwordHilt>>()
+            hiltsByTheme = new Dictionary<SWORDTHEME, List<SwordHilt>>
             {
                 {
-                    SWORDTHEME.GENERIC, new List<SwordHilt>()
+                    SWORDTHEME.GENERIC, new List<SwordHilt>
                     {
                         ceremonial,
                         copperCrossguard,
@@ -151,7 +146,7 @@ namespace kRPG.Items.Weapons
                     }
                 },
                 {
-                    SWORDTHEME.MONSTROUS, new List<SwordHilt>()
+                    SWORDTHEME.MONSTROUS, new List<SwordHilt>
                     {
                         eyes,
                         coe,
@@ -161,7 +156,7 @@ namespace kRPG.Items.Weapons
                     }
                 },
                 {
-                    SWORDTHEME.RUNIC, new List<SwordHilt>()
+                    SWORDTHEME.RUNIC, new List<SwordHilt>
                     {
                         purpleCrossguard,
                         violetCrossguard,
@@ -171,7 +166,7 @@ namespace kRPG.Items.Weapons
                     }
                 },
                 {
-                    SWORDTHEME.HELLISH, new List<SwordHilt>()
+                    SWORDTHEME.HELLISH, new List<SwordHilt>
                     {
                         hellstoneBasket,
                         hellstoneCrossguard,
@@ -182,7 +177,7 @@ namespace kRPG.Items.Weapons
                     }
                 },
                 {
-                    SWORDTHEME.HARDMODE, new List<SwordHilt>()
+                    SWORDTHEME.HARDMODE, new List<SwordHilt>
                     {
                         clock,
                         carbon,
@@ -197,6 +192,12 @@ namespace kRPG.Items.Weapons
         public static SwordHilt RandomHilt(SWORDTHEME theme)
         {
             return hiltsByTheme[theme].Random();
+        }
+
+        public SwordHilt SetAccentOffset(Point offset)
+        {
+            accentOffset = offset;
+            return this;
         }
 
         public static void Unload()

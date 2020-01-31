@@ -25,32 +25,20 @@ namespace kRPG.Modifiers
         {
         }
 
-        public virtual void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
+        public static NPCModifier New(kNPC kNPC, NPC npc)
         {
-        }
-
-        public virtual float StrikeNPC(NPC npc, double damage, int defense, float knockback, int hitDirection, bool crit)
-        {
-            return 1f;
-        }
-
-        public virtual void PostAI(NPC npc)
-        {
-        }
-
-        public virtual void Update(NPC npc)
-        {
+            return null;
         }
 
         public virtual void NPCLoot(NPC npc)
         {
         }
 
-        public virtual void Write(ModPacket packet)
+        public virtual void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
         {
         }
 
-        public virtual void Read(BinaryReader reader)
+        public virtual void PostAI(NPC npc)
         {
         }
 
@@ -59,9 +47,21 @@ namespace kRPG.Modifiers
             return null;
         }
 
-        public static NPCModifier New(kNPC kNPC, NPC npc)
+        public virtual void Read(BinaryReader reader)
         {
-            return null;
+        }
+
+        public virtual float StrikeNPC(NPC npc, double damage, int defense, float knockback, int hitDirection, bool crit)
+        {
+            return 1f;
+        }
+
+        public virtual void Update(NPC npc)
+        {
+        }
+
+        public virtual void Write(ModPacket packet)
+        {
         }
     }
 }

@@ -14,33 +14,33 @@ namespace kRPG.Items.Glyphs
     public class GlyphModifier
     {
         public static GlyphModifier attack;
-        public static GlyphModifier smallProt;
-        public static GlyphModifier smokePellets;
-        public static GlyphModifier explosions;
-        public static GlyphModifier vanish;
-        public static GlyphModifier crosschains;
-        public static GlyphModifier lifeleech;
-        public static GlyphModifier manaleech;
-        public static GlyphModifier thornchains;
-        public static GlyphModifier pierce;
         public static GlyphModifier bounce;
+        public static GlyphModifier crosschains;
+        public static GlyphModifier explosions;
 
         public static GlyphModifier group_impactEffects;
+        public static GlyphModifier lifeleech;
+        public static GlyphModifier manaleech;
 
         public static List<GlyphModifier> modifiers;
-
-        public int id = 0;
-        public string tooltip = "";
-        public Func<Glyph, bool> match;
-        public Func<bool> odds;
+        public static GlyphModifier pierce;
+        public static GlyphModifier smallProt;
+        public static GlyphModifier smokePellets;
+        public static GlyphModifier thornchains;
+        public static GlyphModifier vanish;
         public float dmgModifier = 1f;
-        public float manaModifier = 1f;
-        public Action<ProceduralMinion> minionAI;
-        public Action<ProceduralSpellProj, NPC, int> impact;
-        public Action<ProceduralSpellProj> init;
         public Action<ProceduralSpellProj, SpriteBatch, Color> draw;
 
         public Func<GlyphModifier> group;
+
+        public int id;
+        public Action<ProceduralSpellProj, NPC, int> impact;
+        public Action<ProceduralSpellProj> init;
+        public float manaModifier = 1f;
+        public Func<Glyph, bool> match;
+        public Action<ProceduralMinion> minionAI;
+        public Func<bool> odds;
+        public string tooltip = "";
 
         public GlyphModifier(int id, string tooltip, Func<Glyph, bool> match, Func<bool> odds, float dmgModifier = 1f, float manaModifier = 1f)
         {
@@ -51,30 +51,6 @@ namespace kRPG.Items.Glyphs
             this.dmgModifier = dmgModifier;
             this.manaModifier = manaModifier;
             if (!modifiers.Contains(this)) modifiers.Insert(id, this);
-        }
-
-        public GlyphModifier SetMinionAI(Action<ProceduralMinion> minionAI)
-        {
-            this.minionAI = minionAI;
-            return this;
-        }
-
-        public GlyphModifier SetImpact(Action<ProceduralSpellProj, NPC, int> impact)
-        {
-            this.impact = impact;
-            return this;
-        }
-
-        public GlyphModifier SetInit(Action<ProceduralSpellProj> init)
-        {
-            this.init = init;
-            return this;
-        }
-
-        public GlyphModifier SetDraw(Action<ProceduralSpellProj, SpriteBatch, Color> draw)
-        {
-            this.draw = draw;
-            return this;
         }
 
         public GlyphModifier DefineGroup(Func<GlyphModifier> group)
@@ -102,7 +78,7 @@ namespace kRPG.Items.Glyphs
                 var spell = minion.source.CreateProjectile(Main.player[minion.projectile.owner], velocity, 0, proj.Center, proj);
                 spell.projectile.minion = true;
                 var moon = (Moon) minion.source.glyphs[(int) GLYPHTYPE.MOON].modItem;
-                spell.ai.Remove(moon.GetAIAction());
+                spell.ai.Remove(moon.GetAiAction());
             });
             smallProt = new GlyphModifier(1, "Orbiting fire", glyph => glyph.minion, () => Main.rand.Next(4) == 0, 0.95f).SetMinionAI(
                 delegate(ProceduralMinion minion)
@@ -125,7 +101,7 @@ namespace kRPG.Items.Glyphs
                     Cross cross = new Cross_Red();
                     ps.ai.Add(delegate(ProceduralSpellProj spell)
                     {
-                        cross.GetAIAction()(spell);
+                        cross.GetAiAction()(spell);
 
                         int rotDistance = 40;
                         int rotTimeLeft = 3600;
@@ -138,7 +114,7 @@ namespace kRPG.Items.Glyphs
                             spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
                             displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.caster.Center).ToRotation() + (float) API.Tau / 4f);
 
-                            float angle = displacementAngle - 0.06f * (float) (rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
+                            float angle = displacementAngle - 0.06f * (rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
                             spell.projectile.Center = spell.caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
                         }
                         else
@@ -154,7 +130,7 @@ namespace kRPG.Items.Glyphs
                     {
                         cross.GetInitAction()(spell);
                         spell.projectile.scale = 0.9f;
-                        ProceduralSpellProj.AI_RotateToVelocity(spell);
+                        ProceduralSpellProj.aiRotateToVelocity(spell);
                         if (!(Main.rand.NextFloat(0f, 1.5f) <= spell.alpha))
                             return;
                         int dust = Dust.NewDust(spell.projectile.position, spell.projectile.width, spell.projectile.height, DustID.Fire,
@@ -180,7 +156,7 @@ namespace kRPG.Items.Glyphs
             smokePellets = new GlyphModifier(3, "Smoke Pellets", glyph => false, () => false, 0.9f).SetImpact(
                 delegate(ProceduralSpellProj spell, NPC npc, int damage)
                 {
-                    Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), spell.projectile.Center);
+                    Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), spell.projectile.Center);
                     var proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(), 2, 0f,
                             spell.projectile.owner)];
@@ -189,13 +165,13 @@ namespace kRPG.Items.Glyphs
             explosions = new GlyphModifier(4, "Explosive", glyph => false, () => false, 0.85f).SetImpact(
                 delegate(ProceduralSpellProj spell, NPC npc, int damage)
                 {
-                    Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), spell.projectile.Center);
+                    Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), spell.projectile.Center);
                     var proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(),
                             spell.projectile.damage, 0f, spell.projectile.owner)];
                     proj.minion = true;
                 });
-            vanish = new GlyphModifier(5, "Discord", glyph => glyph is Star, () => Main.rand.Next(3) == 0, 1.2f, 1f);
+            vanish = new GlyphModifier(5, "Discord", glyph => glyph is Star, () => Main.rand.Next(3) == 0, 1.2f);
             crosschains = new GlyphModifier(6, "", glyph => glyph is Cross, () => Main.rand.Next(3) == 0).DefineGroup(delegate
             {
                 switch (Main.rand.Next(2))
@@ -302,12 +278,36 @@ namespace kRPG.Items.Glyphs
                 {
                     if (spell.projectile.penetrate > 0) spell.projectile.penetrate += 2;
                 });
-            bounce = new GlyphModifier(11, "Bouncing", glyph => glyph is Moon_Blue || glyph is Moon_Purple, () => Main.rand.Next(7) < 2, 0.8f, 1f).SetInit(
+            bounce = new GlyphModifier(11, "Bouncing", glyph => glyph is Moon_Blue || glyph is Moon_Purple, () => Main.rand.Next(7) < 2, 0.8f).SetInit(
                 delegate(ProceduralSpellProj spell)
                 {
                     spell.projectile.tileCollide = true;
                     spell.bounce = true;
                 });
+        }
+
+        public GlyphModifier SetDraw(Action<ProceduralSpellProj, SpriteBatch, Color> draw)
+        {
+            this.draw = draw;
+            return this;
+        }
+
+        public GlyphModifier SetImpact(Action<ProceduralSpellProj, NPC, int> impact)
+        {
+            this.impact = impact;
+            return this;
+        }
+
+        public GlyphModifier SetInit(Action<ProceduralSpellProj> init)
+        {
+            this.init = init;
+            return this;
+        }
+
+        public GlyphModifier SetMinionAI(Action<ProceduralMinion> minionAI)
+        {
+            this.minionAI = minionAI;
+            return this;
         }
     }
 }

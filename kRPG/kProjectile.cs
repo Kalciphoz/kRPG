@@ -22,7 +22,7 @@ namespace kRPG
         {
             if (elementalDamage != null || Main.netMode == 1)
                 return;
-            elementalDamage = new Dictionary<ELEMENT, int>() {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+            elementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
 
             if (Main.npc.GetUpperBound(0) >= projectile.owner)
                 if (projectile.hostile && !projectile.friendly)
@@ -35,7 +35,7 @@ namespace kRPG
                     if (bossfight) return;
 
                     var player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
-                    var haselement = new Dictionary<ELEMENT, bool>()
+                    var haselement = new Dictionary<ELEMENT, bool>
                     {
                         {
                             ELEMENT.FIRE,
@@ -107,6 +107,32 @@ namespace kRPG
             //}
         }
 
+        public int GetEleDamage(Projectile projectile, Player player, bool ignoreModifiers = false)
+        {
+            var ele = new Dictionary<ELEMENT, int>();
+            ele = GetIndividualElements(projectile, player, ignoreModifiers);
+            return ele[ELEMENT.FIRE] + ele[ELEMENT.COLD] + ele[ELEMENT.LIGHTNING] + ele[ELEMENT.SHADOW];
+        }
+
+        public Dictionary<ELEMENT, int> GetIndividualElements(Projectile projectile, Player player, bool ignoreModifiers = false)
+        {
+            var dictionary = new Dictionary<ELEMENT, int>();
+            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                dictionary[element] = 0;
+            if (elementalDamage == null)
+                elementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+            if (player.GetModPlayer<PlayerCharacter>().rituals[RITUAL.DEMON_PACT])
+                dictionary[ELEMENT.SHADOW] = GetEleDamage(projectile, player);
+            else
+                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                    dictionary[element] = (int) Math.Round(elementalDamage[element] * (ignoreModifiers
+                                                               ? 1
+                                                               : player.GetModPlayer<PlayerCharacter>().DamageMultiplier(element, projectile.melee,
+                                                                   projectile.ranged, projectile.magic, projectile.thrown, projectile.minion)));
+
+            return dictionary;
+        }
+
         public void SelectItem(Projectile projectile, Item item)
         {
             this.item = item;
@@ -123,32 +149,6 @@ namespace kRPG
 
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 elementalDamage[element] = item.GetGlobalItem<kItem>().elementalDamage[element];
-        }
-
-        public int GetEleDamage(Projectile projectile, Player player, bool ignoreModifiers = false)
-        {
-            var ele = new Dictionary<ELEMENT, int>();
-            ele = GetIndividualElements(projectile, player, ignoreModifiers);
-            return ele[ELEMENT.FIRE] + ele[ELEMENT.COLD] + ele[ELEMENT.LIGHTNING] + ele[ELEMENT.SHADOW];
-        }
-
-        public Dictionary<ELEMENT, int> GetIndividualElements(Projectile projectile, Player player, bool ignoreModifiers = false)
-        {
-            var dictionary = new Dictionary<ELEMENT, int>();
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                dictionary[element] = 0;
-            if (elementalDamage == null)
-                elementalDamage = new Dictionary<ELEMENT, int>() {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
-            if (player.GetModPlayer<PlayerCharacter>().rituals[RITUAL.DEMON_PACT])
-                dictionary[ELEMENT.SHADOW] = GetEleDamage(projectile, player);
-            else
-                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                    dictionary[element] = (int) Math.Round(elementalDamage[element] * (ignoreModifiers
-                                                               ? 1
-                                                               : player.GetModPlayer<PlayerCharacter>().DamageMultiplier(element, projectile.melee,
-                                                                   projectile.ranged, projectile.magic, projectile.thrown, projectile.minion)));
-
-            return dictionary;
         }
     }
 }

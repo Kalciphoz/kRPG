@@ -11,132 +11,134 @@ namespace kRPG
 {
     public static class GFX
     {
-        public const int BTN_WIDTH = 184;
-        public const int BTN_HEIGHT = 48;
-
-        private const string GUI_DIRECTORY = "GFX/GUI/";
-        private const string DEERSKULL = GUI_DIRECTORY + "DeerSkull";
-        private const string FLAMES_RED = GUI_DIRECTORY + "Flames_Resilience";
-        private const string FLAMES_GREEN = GUI_DIRECTORY + "Flames_Quickness";
-        private const string FLAMES_BLUE = GUI_DIRECTORY + "Flames_Potency";
-        private const string FLAMES_CONVERTED = GUI_DIRECTORY + "Flames_Converted";
-        private const string EYES_RED = GUI_DIRECTORY + "DeerSkull_Eyes_Resilience";
-        private const string EYES_GREEN = GUI_DIRECTORY + "DeerSkull_Eyes_Quickness";
-        private const string EYES_BLUE = GUI_DIRECTORY + "DeerSkull_Eyes_Potency";
+        public static Texture2D anvil;
         private const string ANVIL = GUI_DIRECTORY + "Anvil";
-        private const string CHARACTERFRAME = GUI_DIRECTORY + "CharacterFrame";
-        private const string STATUSBARS = GUI_DIRECTORY + "CharacterFrame_Bars";
+        public const int BTN_HEIGHT = 48;
+        public const int BTN_WIDTH = 184;
+        public static Texture2D bubbles;
         private const string BUBBLES = GUI_DIRECTORY + "CharacterFrame_Bubbles";
+        public static Texture2D bubbles_lava;
         private const string BUBBLES_LAVA = GUI_DIRECTORY + "CharacterFrame_Bubbles_Lava";
-        private const string STATUSBARS_BG = GUI_DIRECTORY + "CharacterFrame_Bars_Background";
-        private const string NUMERALS = GUI_DIRECTORY + "Num/Gothic_";
-        private const string LETTERS = GUI_DIRECTORY + "Char/Gothic_";
-        private const string UNSPENTPOINTS = GUI_DIRECTORY + "UnspentPoints";
-        private const string ITEMSLOT = GUI_DIRECTORY + "ItemSlot";
-        private const string ITEMSLOT_BROKEN = GUI_DIRECTORY + "ItemSlot_Broken";
-        private const string FAVOURITEDSLOT = GUI_DIRECTORY + "FavouritedSlot";
-        private const string SELECTEDSLOT = GUI_DIRECTORY + "SelectedSlot";
-        private const string SKILLSLOT = GUI_DIRECTORY + "SkillSlot";
-        private const string SELECTEDSKILLSLOT = GUI_DIRECTORY + "SelectedSkillSlot";
-        private const string SPELLGUI = GUI_DIRECTORY + "SpellGUI";
-        private const string INVENTORYFRAME = GUI_DIRECTORY + "Inventory_Frame";
-        private const string INVENTORY_SEPARATOR = GUI_DIRECTORY + "Inventory_Separator";
-        private const string INVENTORY_LIFE = GUI_DIRECTORY + "Inventory_Life";
-        private const string INVENTORY_MANA = GUI_DIRECTORY + "Inventory_Mana";
-        private const string INVENTORY_XP = GUI_DIRECTORY + "Inventory_XP";
-        private const string INVENTORY_BARCOVERS = GUI_DIRECTORY + "Inventory_BarCovers";
-        private const string INVENTORY_POINTS = GUI_DIRECTORY + "Inventory_Points";
-        private const string INVENTORY_PANEL = GUI_DIRECTORY + "Inventory_Panel";
-
-        private const string BUTTON_CONFIRM = GUI_DIRECTORY + "Button_Confirm";
-        private const string BUTTON_UPGRADE = GUI_DIRECTORY + "Button_Upgrade";
         private const string BUTTON_CANCEL = GUI_DIRECTORY + "Button_Cancel";
         private const string BUTTON_CLOSE = GUI_DIRECTORY + "Button_Close";
-        private const string BUTTON_STATS = GUI_DIRECTORY + "Button_Stats";
-        private const string BUTTON_STATS_PRESSED = GUI_DIRECTORY + "Button_Stats_Pressed";
+
+        private const string BUTTON_CONFIRM = GUI_DIRECTORY + "Button_Confirm";
+        private const string BUTTON_CROWN = GUI_DIRECTORY + "Button_Crown";
+        private const string BUTTON_CROWN_PRESSED = GUI_DIRECTORY + "Button_Crown_Pressed";
         private const string BUTTON_PAGE1 = GUI_DIRECTORY + "Button_Page1";
         private const string BUTTON_PAGE1_PRESSED = GUI_DIRECTORY + "Button_Page1_Pressed";
         private const string BUTTON_PAGE2 = GUI_DIRECTORY + "Button_Page2";
         private const string BUTTON_PAGE2_PRESSED = GUI_DIRECTORY + "Button_Page2_Pressed";
         private const string BUTTON_PAGE3 = GUI_DIRECTORY + "Button_Page3";
         private const string BUTTON_PAGE3_PRESSED = GUI_DIRECTORY + "Button_Page3_Pressed";
-        private const string BUTTON_CROWN = GUI_DIRECTORY + "Button_Crown";
-        private const string BUTTON_CROWN_PRESSED = GUI_DIRECTORY + "Button_Crown_Pressed";
-        private const string GUARDIAN_CROWN = GUI_DIRECTORY + "GuardianCrown";
-
-        private const string PROJECTILES_DIRECTORY = "GFX/Projectiles/";
-        private const string PROJECTILE_FIREBALL = PROJECTILES_DIRECTORY + "Fireball";
-        private const string PROJECTILE_FROSTBOLT = PROJECTILES_DIRECTORY + "Frostbolt";
-        private const string PROJECTILE_BOULDER = PROJECTILES_DIRECTORY + "Boulder";
-        private const string PROJECTILE_SHADOWBOLT = PROJECTILES_DIRECTORY + "Shadowbolt";
-        private const string PROJECTILE_THUNDERBOLT = PROJECTILES_DIRECTORY + "Thunderbolt";
-        private const string HEART = PROJECTILES_DIRECTORY + "Heart";
-        private const string STAR = PROJECTILES_DIRECTORY + "Star";
-        private const string THORNCHAIN = PROJECTILES_DIRECTORY + "ThornChain";
-
-        private const string LEVELUP = "GFX/LevelUP";
-
-        private const string LEVELUPSOUND = "SFX/LevelUP";
-
-        public static Texture2D deerSkull;
-        public static Dictionary<STAT, Texture2D> flames = new Dictionary<STAT, Texture2D>();
-        public static Texture2D flames_converted;
-        public static Dictionary<STAT, Texture2D> deerskull_eyes = new Dictionary<STAT, Texture2D>();
-        public static Texture2D anvil;
-        public static Texture2D characterFrame;
-        public static Texture2D statusBars;
-        public static Texture2D bubbles;
-        public static Texture2D bubbles_lava;
-        public static Texture2D statusBars_BG;
-        public static Texture2D[] gothicNumeral = new Texture2D[10];
-        public static Dictionary<Keys, Texture2D> gothicLetter = new Dictionary<Keys, Texture2D>();
-        public static Texture2D unspentPoints;
-        public static Texture2D itemSlot;
-        public static Texture2D itemSlotBroken;
-        public static Texture2D favouritedSlot;
-        public static Texture2D selectedSlot;
-        public static Texture2D skillSlot;
-        public static Texture2D selectedSkillSlot;
-        public static Texture2D spellGui;
-        public static Texture2D inventoryFrame;
-        public static Texture2D inventorySeparator;
-        public static Texture2D inventoryLife;
-        public static Texture2D inventoryMana;
-        public static Texture2D inventoryXp;
-        public static Texture2D inventoryBarCovers;
-        public static Texture2D inventoryPoints;
-        public static Texture2D inventoryPanel;
-
-        public static Texture2D buttonConfirm;
-        public static Texture2D buttonUpgrade;
+        private const string BUTTON_STATS = GUI_DIRECTORY + "Button_Stats";
+        private const string BUTTON_STATS_PRESSED = GUI_DIRECTORY + "Button_Stats_Pressed";
+        private const string BUTTON_UPGRADE = GUI_DIRECTORY + "Button_Upgrade";
         public static Texture2D buttonCancel;
         public static Texture2D buttonClose;
-        public static Texture2D buttonStats;
-        public static Texture2D buttonStatsPressed;
+
+        public static Texture2D buttonConfirm;
+        public static Texture2D buttonCrown;
+        public static Texture2D buttonCrownPressed;
         public static Texture2D buttonPage1;
         public static Texture2D buttonPage1Pressed;
         public static Texture2D buttonPage2;
         public static Texture2D buttonPage2Pressed;
         public static Texture2D buttonPage3;
         public static Texture2D buttonPage3Pressed;
-        public static Texture2D buttonCrown;
-        public static Texture2D buttonCrownPressed;
+        public static Texture2D buttonStats;
+        public static Texture2D buttonStatsPressed;
+        public static Texture2D buttonUpgrade;
+        public static Texture2D characterFrame;
+        private const string CHARACTERFRAME = GUI_DIRECTORY + "CharacterFrame";
+
+        public static Texture2D deerSkull;
+        private const string DEERSKULL = GUI_DIRECTORY + "DeerSkull";
+        public static Dictionary<STAT, Texture2D> deerskull_eyes = new Dictionary<STAT, Texture2D>();
+        private const string EYES_BLUE = GUI_DIRECTORY + "DeerSkull_Eyes_Potency";
+        private const string EYES_GREEN = GUI_DIRECTORY + "DeerSkull_Eyes_Quickness";
+        private const string EYES_RED = GUI_DIRECTORY + "DeerSkull_Eyes_Resilience";
+        public static Texture2D favouritedSlot;
+        private const string FAVOURITEDSLOT = GUI_DIRECTORY + "FavouritedSlot";
+        public static Dictionary<STAT, Texture2D> flames = new Dictionary<STAT, Texture2D>();
+        private const string FLAMES_BLUE = GUI_DIRECTORY + "Flames_Potency";
+        public static Texture2D flames_converted;
+        private const string FLAMES_CONVERTED = GUI_DIRECTORY + "Flames_Converted";
+        private const string FLAMES_GREEN = GUI_DIRECTORY + "Flames_Quickness";
+        private const string FLAMES_RED = GUI_DIRECTORY + "Flames_Resilience";
+        public static Dictionary<Keys, Texture2D> gothicLetter = new Dictionary<Keys, Texture2D>();
+        public static Texture2D[] gothicNumeral = new Texture2D[10];
+        private const string GUARDIAN_CROWN = GUI_DIRECTORY + "GuardianCrown";
         public static Texture2D guardianCrown;
 
-        public static Texture2D projectileFireball;
-        // ReSharper disable once IdentifierTypo
-        public static Texture2D projectileFrostbolt;
-        public static Texture2D projectileBoulder;
-        // ReSharper disable once IdentifierTypo
-        public static Texture2D projectileShadowbolt;
-        public static Texture2D projectileThunderbolt;
+        private const string GUI_DIRECTORY = "GFX/GUI/";
         public static Texture2D heart;
-        public static Texture2D star;
-        public static Texture2D thornChain;
+        private const string HEART = PROJECTILES_DIRECTORY + "Heart";
+        private const string INVENTORY_BARCOVERS = GUI_DIRECTORY + "Inventory_BarCovers";
+        private const string INVENTORY_LIFE = GUI_DIRECTORY + "Inventory_Life";
+        private const string INVENTORY_MANA = GUI_DIRECTORY + "Inventory_Mana";
+        private const string INVENTORY_PANEL = GUI_DIRECTORY + "Inventory_Panel";
+        private const string INVENTORY_POINTS = GUI_DIRECTORY + "Inventory_Points";
+        private const string INVENTORY_SEPARATOR = GUI_DIRECTORY + "Inventory_Separator";
+        private const string INVENTORY_XP = GUI_DIRECTORY + "Inventory_XP";
+        public static Texture2D inventoryBarCovers;
+        public static Texture2D inventoryFrame;
+        private const string INVENTORYFRAME = GUI_DIRECTORY + "Inventory_Frame";
+        public static Texture2D inventoryLife;
+        public static Texture2D inventoryMana;
+        public static Texture2D inventoryPanel;
+        public static Texture2D inventoryPoints;
+        public static Texture2D inventorySeparator;
+        public static Texture2D inventoryXp;
+        public static Texture2D itemSlot;
+        private const string ITEMSLOT = GUI_DIRECTORY + "ItemSlot";
+        private const string ITEMSLOT_BROKEN = GUI_DIRECTORY + "ItemSlot_Broken";
+        public static Texture2D itemSlotBroken;
+        private const string LETTERS = GUI_DIRECTORY + "Char/Gothic_";
 
         public static Texture2D levelUp;
 
+        private const string LEVELUP = "GFX/LevelUP";
+
+        private const string LEVELUPSOUND = "SFX/LevelUP";
+        private const string NUMERALS = GUI_DIRECTORY + "Num/Gothic_";
+        private const string PROJECTILE_BOULDER = PROJECTILES_DIRECTORY + "Boulder";
+        private const string PROJECTILE_FIREBALL = PROJECTILES_DIRECTORY + "Fireball";
+        private const string PROJECTILE_FROSTBOLT = PROJECTILES_DIRECTORY + "Frostbolt";
+        private const string PROJECTILE_SHADOWBOLT = PROJECTILES_DIRECTORY + "Shadowbolt";
+        private const string PROJECTILE_THUNDERBOLT = PROJECTILES_DIRECTORY + "Thunderbolt";
+        public static Texture2D projectileBoulder;
+
+        public static Texture2D projectileFireball;
+
+        // ReSharper disable once IdentifierTypo
+        public static Texture2D projectileFrostbolt;
+
+        private const string PROJECTILES_DIRECTORY = "GFX/Projectiles/";
+
+        // ReSharper disable once IdentifierTypo
+        public static Texture2D projectileShadowbolt;
+        public static Texture2D projectileThunderbolt;
+        public static Texture2D selectedSkillSlot;
+        private const string SELECTEDSKILLSLOT = GUI_DIRECTORY + "SelectedSkillSlot";
+        public static Texture2D selectedSlot;
+        private const string SELECTEDSLOT = GUI_DIRECTORY + "SelectedSlot";
+
         public static SoundEffect sfxLevelUp;
+        public static Texture2D skillSlot;
+        private const string SKILLSLOT = GUI_DIRECTORY + "SkillSlot";
+        public static Texture2D spellGui;
+        private const string SPELLGUI = GUI_DIRECTORY + "SpellGUI";
+        public static Texture2D star;
+        private const string STAR = PROJECTILES_DIRECTORY + "Star";
+        public static Texture2D statusBars;
+        private const string STATUSBARS = GUI_DIRECTORY + "CharacterFrame_Bars";
+        public static Texture2D statusBars_BG;
+        private const string STATUSBARS_BG = GUI_DIRECTORY + "CharacterFrame_Bars_Background";
+        public static Texture2D thornChain;
+        private const string THORNCHAIN = PROJECTILES_DIRECTORY + "ThornChain";
+        public static Texture2D unspentPoints;
+        private const string UNSPENTPOINTS = GUI_DIRECTORY + "UnspentPoints";
 
         public static Texture2D CombineTextures(List<Texture2D> textures, List<Point> origins, Point final_size)
         {
@@ -197,9 +199,9 @@ namespace kRPG
             bubbles_lava = loader.GetTexture(BUBBLES_LAVA);
             statusBars_BG = loader.GetTexture(STATUSBARS_BG);
             for (int i = 0; i < 10; i++)
-                gothicNumeral[i] = loader.GetTexture(NUMERALS + i.ToString());
+                gothicNumeral[i] = loader.GetTexture(NUMERALS + i);
             for (var k = Keys.A; k <= Keys.Z; k += 1)
-                gothicLetter[k] = loader.GetTexture(LETTERS + k.ToString());
+                gothicLetter[k] = loader.GetTexture(LETTERS + k);
             unspentPoints = loader.GetTexture(UNSPENTPOINTS);
             itemSlot = loader.GetTexture(ITEMSLOT);
             itemSlotBroken = loader.GetTexture(ITEMSLOT_BROKEN);

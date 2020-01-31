@@ -7,8 +7,8 @@ namespace kRPG.Modifiers
 {
     public class SizeModifier : NPCModifier
     {
-        private float scaleModifier;
         private float lifeModifier;
+        private float scaleModifier;
 
         public SizeModifier(kNPC kNPC, NPC npc, float scaleModifier = 1.1f, float lifeModifier = 1.4f) : base(kNPC, npc)
         {
@@ -30,10 +30,14 @@ namespace kRPG.Modifiers
             npc.GetGlobalNPC<kNPC>().speedModifier *= (float) Math.Pow(scaleModifier, 0.9);
         }
 
-        public override void Write(ModPacket packet)
+        public new static NPCModifier New(kNPC kNPC, NPC npc)
         {
-            packet.Write(scaleModifier);
-            packet.Write(lifeModifier);
+            return new SizeModifier(kNPC, npc);
+        }
+
+        public new static NPCModifier Random(kNPC kNPC, NPC npc)
+        {
+            return new SizeModifier(kNPC, npc, .5f + Main.rand.NextFloat(2), .5f + Main.rand.NextFloat(1));
         }
 
         public override void Read(BinaryReader reader)
@@ -42,14 +46,10 @@ namespace kRPG.Modifiers
             lifeModifier = reader.ReadSingle();
         }
 
-        public new static NPCModifier Random(kNPC kNPC, NPC npc)
+        public override void Write(ModPacket packet)
         {
-            return new SizeModifier(kNPC, npc, .5f + Main.rand.NextFloat(2), .5f + Main.rand.NextFloat(1));
-        }
-
-        public new static NPCModifier New(kNPC kNPC, NPC npc)
-        {
-            return new SizeModifier(kNPC, npc);
+            packet.Write(scaleModifier);
+            packet.Write(lifeModifier);
         }
     }
 }

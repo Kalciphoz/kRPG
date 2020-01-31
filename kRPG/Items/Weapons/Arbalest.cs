@@ -6,6 +6,11 @@ namespace kRPG.Items.Weapons
 {
     public class Arbalest : ModItem
     {
+        public override Vector2? HoldoutOffset()
+        {
+            return new Vector2(-4f, -2f);
+        }
+
         public override void SetDefaults()
         {
             item.damage = 18;
@@ -28,11 +33,6 @@ namespace kRPG.Items.Weapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Arbalest");
-        }
-
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-4f, -2f);
         }
     }
 }

@@ -13,36 +13,32 @@ namespace kRPG.GUI
 {
     public class StatusBar : BaseGui
     {
-        private PlayerCharacter character;
-
-        private static Vector2 GuiPosition => new Vector2(4f, 6f) * Scale;
-
-        private static float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
-
-        //private Vector2 buffposition => new Vector2(Main.playerInventory ? 560f : 24f, Main.playerInventory ? 16f : 80f);
-
-        private readonly Vector2 barLifeOrigin;
         private const int BarLifeLength = 302;
         private const int BarLifeThickness = 28;
-
-        // ReSharper disable once IdentifierTypo
-        private readonly Vector2 barManaOrigin;
 
         // ReSharper disable once IdentifierTypo
         private const int BarManaLength = 286;
 
         // ReSharper disable once IdentifierTypo
         private const int BarManaThickness = 18;
-
-        private readonly Vector2 barXpOrigin;
         private const int BarXpLength = 138;
         private const int BarXpThickness = 6;
-
-        private readonly Vector2 bubblesOrigin;
         private const int BubblesLength = 132;
         private const int BubblesThickness = 22;
 
-        private static Vector2 pointsOrigin => GuiPosition + new Vector2(242f, 112f) * Scale;
+        private static readonly MethodInfo DrawBuffIcon = typeof(Main).GetMethod("DrawBuffIcon", BindingFlags.NonPublic | BindingFlags.Static);
+
+        //private Vector2 buffposition => new Vector2(Main.playerInventory ? 560f : 24f, Main.playerInventory ? 16f : 80f);
+
+        private readonly Vector2 barLifeOrigin;
+
+        // ReSharper disable once IdentifierTypo
+        private readonly Vector2 barManaOrigin;
+
+        private readonly Vector2 barXpOrigin;
+
+        private readonly Vector2 bubblesOrigin;
+        private PlayerCharacter character;
 
         public StatusBar(PlayerCharacter character, Mod mod)
         {
@@ -69,71 +65,11 @@ namespace kRPG.GUI
                 });
         }
 
-        public override void PostDraw(SpriteBatch spriteBatch, Player player)
-        {
-            if (Main.playerInventory || Main.player[Main.myPlayer].ghost)
-                return;
+        private static Vector2 GuiPosition => new Vector2(4f, 6f) * Scale;
 
-            character = player.GetModPlayer<PlayerCharacter>();
+        private static Vector2 pointsOrigin => GuiPosition + new Vector2(242f, 112f) * Scale;
 
-            DrawHotbar();
-
-            spriteBatch.Draw(GFX.statusBars_BG, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-
-            int currentLifeLength = (int) Math.Round(player.statLife / (decimal) player.statLifeMax2 * BarLifeLength);
-            spriteBatch.Draw(GFX.statusBars, GuiPosition + barLifeOrigin * Scale,
-                new Rectangle((int) (barLifeOrigin.X + BarLifeLength - currentLifeLength), (int) barLifeOrigin.Y, currentLifeLength, BarLifeThickness),
-                Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-            int currentManaLength = (int) Math.Round(character.mana / (decimal) player.statManaMax2 * BarManaLength);
-            spriteBatch.Draw(GFX.statusBars, GuiPosition + barManaOrigin * Scale,
-                new Rectangle((int) (barManaOrigin.X + BarManaLength - currentManaLength), (int) barManaOrigin.Y, currentManaLength, BarManaThickness),
-                Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-            int currentXpLength = (int) Math.Round(BarXpLength * (decimal) character.xp / character.ExperienceToLevel());
-            spriteBatch.Draw(GFX.statusBars, GuiPosition + barXpOrigin * Scale,
-                new Rectangle((int) barXpOrigin.X, (int) barXpOrigin.Y, currentXpLength, BarXpThickness), Color.White, 0f, Vector2.Zero, Scale,
-                SpriteEffects.None, 0f);
-
-            spriteBatch.Draw(GFX.characterFrame, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife.ToString() + " / " + player.statLifeMax2.ToString(),
-                GuiPosition + new Vector2(barLifeOrigin.X * Scale + 24f * Scale, (barLifeOrigin.Y + 4f) * Scale), Color.White, Scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.mana.ToString() + " / " + player.statManaMax2.ToString(),
-                GuiPosition + new Vector2(barManaOrigin.X * Scale + 24f * Scale, barManaOrigin.Y * Scale), Color.White, 0.8f * Scale);
-
-            DrawNumerals(spriteBatch, character.level, Scale);
-
-            if (character.UnspentPoints())
-                spriteBatch.Draw(GFX.unspentPoints, pointsOrigin, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
-                RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
-
-            if (player.lavaTime < player.lavaMax)
-            {
-                int currentBubbles = (int) Math.Round((decimal) BubblesLength * player.lavaTime / player.lavaMax);
-                spriteBatch.Draw(GFX.bubbles_lava, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White,
-                    Scale);
-            }
-
-            if (player.breath < player.breathMax)
-            {
-                int currentBubbles = (int) Math.Round((decimal) BubblesLength * player.breath / player.breathMax);
-                spriteBatch.Draw(GFX.bubbles, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White,
-                    Scale);
-            }
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
-                RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
-            Main.buffString = "";
-            Main.bannerMouseOver = false;
-            if (!Main.recBigList)
-                Main.recStart = 0;
-            if (!Main.ingameOptionsWindow && !Main.playerInventory && !Main.inFancyUI)
-                DrawBuffs();
-        }
-
-        private static readonly MethodInfo DrawBuffIcon = typeof(Main).GetMethod("DrawBuffIcon", BindingFlags.NonPublic | BindingFlags.Static);
+        private static float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
 
         public static void DrawBuffs()
         {
@@ -187,32 +123,6 @@ namespace kRPG.GUI
             Main.instance.MouseTextHackZoom(Lang.GetBuffName(num4), itemRarity);
         }
 
-        public static void DrawNumerals(SpriteBatch spriteBatch, int level, float scale)
-        {
-            var origin = Main.playerInventory ? new Vector2(132f, 60f) * scale : new Vector2(190f, 58f) * scale;
-            if (level < 10)
-            {
-                spriteBatch.Draw(GFX.gothicNumeral[level], new Vector2(origin.X - 16f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
-                    SpriteEffects.None, 0f);
-            }
-            else if (level < 100)
-            {
-                spriteBatch.Draw(GFX.gothicNumeral[level / 10], new Vector2(origin.X - 34f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
-                    SpriteEffects.None, 0f);
-                spriteBatch.Draw(GFX.gothicNumeral[level % 10], new Vector2(origin.X + 2f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
-                    SpriteEffects.None, 0f);
-            }
-            else if (level < 1000)
-            {
-                spriteBatch.Draw(GFX.gothicNumeral[level / 100], new Vector2(origin.X - 52f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
-                    SpriteEffects.None, 0f);
-                spriteBatch.Draw(GFX.gothicNumeral[level % 100 / 10], new Vector2(origin.X - 16f, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
-                    SpriteEffects.None, 0f);
-                spriteBatch.Draw(GFX.gothicNumeral[level % 10], new Vector2(origin.X + 20f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
-                    SpriteEffects.None, 0f);
-            }
-        }
-
         private void DrawHotbar()
         {
             string text = "";
@@ -250,7 +160,7 @@ namespace kRPG.GUI
                     if (Main.player[Main.myPlayer].inventory[i].stack > 1)
                     {
                         object obj = Main.hoverItemName;
-                        Main.hoverItemName = string.Concat(new object[] {obj, " (", Main.player[Main.myPlayer].inventory[i].stack, ")"});
+                        Main.hoverItemName = string.Concat(obj, " (", Main.player[Main.myPlayer].inventory[i].stack, ")");
                     }
 
                     Main.rare = Main.player[Main.myPlayer].inventory[i].rare;
@@ -274,6 +184,95 @@ namespace kRPG.GUI
             Main.inventoryScale = num5;
             ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 13, selectedItem, new Vector2(posX, num6), Color.White);
             Main.inventoryScale = num7;
+        }
+
+        public static void DrawNumerals(SpriteBatch spriteBatch, int level, float scale)
+        {
+            var origin = Main.playerInventory ? new Vector2(132f, 60f) * scale : new Vector2(190f, 58f) * scale;
+            if (level < 10)
+            {
+                spriteBatch.Draw(GFX.gothicNumeral[level], new Vector2(origin.X - 16f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
+                    SpriteEffects.None, 0f);
+            }
+            else if (level < 100)
+            {
+                spriteBatch.Draw(GFX.gothicNumeral[level / 10], new Vector2(origin.X - 34f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
+                    SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.gothicNumeral[level % 10], new Vector2(origin.X + 2f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
+                    SpriteEffects.None, 0f);
+            }
+            else if (level < 1000)
+            {
+                spriteBatch.Draw(GFX.gothicNumeral[level / 100], new Vector2(origin.X - 52f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
+                    SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.gothicNumeral[level % 100 / 10], new Vector2(origin.X - 16f, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
+                    SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.gothicNumeral[level % 10], new Vector2(origin.X + 20f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
+                    SpriteEffects.None, 0f);
+            }
+        }
+
+        public override void PostDraw(SpriteBatch spriteBatch, Player player)
+        {
+            if (Main.playerInventory || Main.player[Main.myPlayer].ghost)
+                return;
+
+            character = player.GetModPlayer<PlayerCharacter>();
+
+            DrawHotbar();
+
+            spriteBatch.Draw(GFX.statusBars_BG, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+
+            int currentLifeLength = (int) Math.Round(player.statLife / (decimal) player.statLifeMax2 * BarLifeLength);
+            spriteBatch.Draw(GFX.statusBars, GuiPosition + barLifeOrigin * Scale,
+                new Rectangle((int) (barLifeOrigin.X + BarLifeLength - currentLifeLength), (int) barLifeOrigin.Y, currentLifeLength, BarLifeThickness),
+                Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+            int currentManaLength = (int) Math.Round(character.mana / (decimal) player.statManaMax2 * BarManaLength);
+            spriteBatch.Draw(GFX.statusBars, GuiPosition + barManaOrigin * Scale,
+                new Rectangle((int) (barManaOrigin.X + BarManaLength - currentManaLength), (int) barManaOrigin.Y, currentManaLength, BarManaThickness),
+                Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+            int currentXpLength = (int) Math.Round(BarXpLength * (decimal) character.xp / character.ExperienceToLevel());
+            spriteBatch.Draw(GFX.statusBars, GuiPosition + barXpOrigin * Scale,
+                new Rectangle((int) barXpOrigin.X, (int) barXpOrigin.Y, currentXpLength, BarXpThickness), Color.White, 0f, Vector2.Zero, Scale,
+                SpriteEffects.None, 0f);
+
+            spriteBatch.Draw(GFX.characterFrame, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife + " / " + player.statLifeMax2,
+                GuiPosition + new Vector2(barLifeOrigin.X * Scale + 24f * Scale, (barLifeOrigin.Y + 4f) * Scale), Color.White, Scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.mana + " / " + player.statManaMax2,
+                GuiPosition + new Vector2(barManaOrigin.X * Scale + 24f * Scale, barManaOrigin.Y * Scale), Color.White, 0.8f * Scale);
+
+            DrawNumerals(spriteBatch, character.level, Scale);
+
+            if (character.UnspentPoints())
+                spriteBatch.Draw(GFX.unspentPoints, pointsOrigin, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
+                RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+
+            if (player.lavaTime < player.lavaMax)
+            {
+                int currentBubbles = (int) Math.Round((decimal) BubblesLength * player.lavaTime / player.lavaMax);
+                spriteBatch.Draw(GFX.bubbles_lava, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White,
+                    Scale);
+            }
+
+            if (player.breath < player.breathMax)
+            {
+                int currentBubbles = (int) Math.Round((decimal) BubblesLength * player.breath / player.breathMax);
+                spriteBatch.Draw(GFX.bubbles, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White, Scale);
+            }
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
+                RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+            Main.buffString = "";
+            Main.bannerMouseOver = false;
+            if (!Main.recBigList)
+                Main.recStart = 0;
+            if (!Main.ingameOptionsWindow && !Main.playerInventory && !Main.inFancyUI)
+                DrawBuffs();
         }
     }
 }

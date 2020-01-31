@@ -12,25 +12,10 @@ namespace kRPG.GUI
 {
     public class LevelGUI : BaseGui
     {
+        public Dictionary<STAT, int> allocated = new Dictionary<STAT, int> {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}};
         private PlayerCharacter character;
 
-        private float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.5f);
-
-        private float Width => 200f * Scale;
-
-        private Vector2 GuiPosition => new Vector2(Main.screenWidth / 2f - Width, 50f * Scale + 50f);
-
-        private Dictionary<STAT, Vector2> Position =>
-            new Dictionary<STAT, Vector2>()
-            {
-                {STAT.RESILIENCE, new Vector2(GuiPosition.X + 52f * Scale, GuiPosition.Y - 40f * Scale)},
-                {STAT.QUICKNESS, new Vector2(GuiPosition.X + 172f * Scale, GuiPosition.Y)},
-                {STAT.POTENCY, new Vector2(GuiPosition.X + 292f * Scale, GuiPosition.Y - 40f * Scale)}
-            };
-
         private readonly Dictionary<STAT, StatFlame> statFlame;
-
-        public Dictionary<STAT, int> allocated = new Dictionary<STAT, int>() {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}};
 
         public LevelGUI(PlayerCharacter character, Mod mod)
         {
@@ -43,6 +28,20 @@ namespace kRPG.GUI
                 [STAT.POTENCY] = new StatFlame(mod, this, STAT.POTENCY, () => Position[STAT.POTENCY], GFX.flames[STAT.POTENCY])
             };
         }
+
+        private Vector2 GuiPosition => new Vector2(Main.screenWidth / 2f - Width, 50f * Scale + 50f);
+
+        private Dictionary<STAT, Vector2> Position =>
+            new Dictionary<STAT, Vector2>
+            {
+                {STAT.RESILIENCE, new Vector2(GuiPosition.X + 52f * Scale, GuiPosition.Y - 40f * Scale)},
+                {STAT.QUICKNESS, new Vector2(GuiPosition.X + 172f * Scale, GuiPosition.Y)},
+                {STAT.POTENCY, new Vector2(GuiPosition.X + 292f * Scale, GuiPosition.Y - 40f * Scale)}
+            };
+
+        private float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.5f);
+
+        private float Width => 200f * Scale;
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {

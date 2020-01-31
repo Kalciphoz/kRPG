@@ -10,35 +10,6 @@ namespace kRPG.NPCs
     [AutoloadHead]
     public class RetiredAdventurer : ModNPC
     {
-        public override void SetDefaults()
-        {
-            npc.townNPC = true;
-            npc.friendly = true;
-            npc.width = 18;
-            npc.height = 40;
-            npc.aiStyle = 7;
-            npc.damage = 10;
-            npc.defense = 15;
-            npc.lifeMax = 250;
-            npc.HitSound = SoundID.NPCHit1;
-            npc.DeathSound = SoundID.NPCDeath1;
-            npc.knockBackResist = 0.5f;
-            animationType = NPCID.Guide;
-        }
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Retired Adventurer");
-            Main.npcFrameCount[npc.type] = 26;
-            NPCID.Sets.ExtraFramesCount[npc.type] = NPCID.Sets.ExtraFramesCount[NPCID.Guide];
-            NPCID.Sets.AttackFrameCount[npc.type] = NPCID.Sets.AttackFrameCount[NPCID.Guide];
-            NPCID.Sets.DangerDetectRange[npc.type] = NPCID.Sets.DangerDetectRange[NPCID.Guide];
-            NPCID.Sets.AttackType[npc.type] = NPCID.Sets.AttackType[NPCID.Guide];
-            NPCID.Sets.AttackTime[npc.type] = NPCID.Sets.AttackTime[NPCID.Guide];
-            NPCID.Sets.AttackAverageChance[npc.type] = NPCID.Sets.AttackAverageChance[NPCID.Guide];
-            NPCID.Sets.HatOffsetY[npc.type] = NPCID.Sets.HatOffsetY[NPCID.Guide];
-        }
-
         public override bool CanTownNPCSpawn(int numTownNPCs, int money)
         {
             for (int i = 0; i < 255; i += 1)
@@ -52,45 +23,6 @@ namespace kRPG.NPCs
             }
 
             return false;
-        }
-
-        public override void SetupShop(Chest shop, ref int nextSlot)
-        {
-            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<ScintillatingBloodLacrima>(), true);
-            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<EyeOnAStick>(), true);
-            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<Scythe>(), true);
-            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<Arbalest>(), true);
-        }
-
-        public override string TownNPCName()
-        {
-            switch (WorldGen.genRand.Next(12))
-            {
-                default:
-                    return "Brian Alvarez";
-                case 1:
-                    return "Dylan Alvarez";
-                case 2:
-                    return "Grian";
-                case 3:
-                    return "Colonel Zabini";
-                case 4:
-                    return "General Raynor";
-                case 5:
-                    return "Red Cloud";
-                case 6:
-                    return "Arnold";
-                case 7:
-                    return "Dominus";
-                case 8:
-                    return "Avarius";
-                case 9:
-                    return "Dentarthurdent";
-                case 10:
-                    return "Harry";
-                case 11:
-                    return "Voldy";
-            }
         }
 
         public override string GetChat()
@@ -118,7 +50,6 @@ namespace kRPG.NPCs
                         case 2:
                             return "My son Emil tells me to move to a retirement home, but I feel like I'm not old enough for that.";
                     }
-
 
                 case "Dylan Alvarez" when Main.rand.Next(5) == 0:
                 {
@@ -181,15 +112,83 @@ namespace kRPG.NPCs
             }
         }
 
+        public override void OnChatButtonClicked(bool firstButton, ref bool shop)
+        {
+            if (firstButton)
+                shop = true;
+        }
+
         public override void SetChatButtons(ref string button, ref string button2)
         {
             button = Language.GetTextValue("LegacyInterface.28");
         }
 
-        public override void OnChatButtonClicked(bool firstButton, ref bool shop)
+        public override void SetDefaults()
         {
-            if (firstButton)
-                shop = true;
+            npc.townNPC = true;
+            npc.friendly = true;
+            npc.width = 18;
+            npc.height = 40;
+            npc.aiStyle = 7;
+            npc.damage = 10;
+            npc.defense = 15;
+            npc.lifeMax = 250;
+            npc.HitSound = SoundID.NPCHit1;
+            npc.DeathSound = SoundID.NPCDeath1;
+            npc.knockBackResist = 0.5f;
+            animationType = NPCID.Guide;
+        }
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Retired Adventurer");
+            Main.npcFrameCount[npc.type] = 26;
+            NPCID.Sets.ExtraFramesCount[npc.type] = NPCID.Sets.ExtraFramesCount[NPCID.Guide];
+            NPCID.Sets.AttackFrameCount[npc.type] = NPCID.Sets.AttackFrameCount[NPCID.Guide];
+            NPCID.Sets.DangerDetectRange[npc.type] = NPCID.Sets.DangerDetectRange[NPCID.Guide];
+            NPCID.Sets.AttackType[npc.type] = NPCID.Sets.AttackType[NPCID.Guide];
+            NPCID.Sets.AttackTime[npc.type] = NPCID.Sets.AttackTime[NPCID.Guide];
+            NPCID.Sets.AttackAverageChance[npc.type] = NPCID.Sets.AttackAverageChance[NPCID.Guide];
+            NPCID.Sets.HatOffsetY[npc.type] = NPCID.Sets.HatOffsetY[NPCID.Guide];
+        }
+
+        public override void SetupShop(Chest shop, ref int nextSlot)
+        {
+            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<ScintillatingBloodLacrima>(), true);
+            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<EyeOnAStick>(), true);
+            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<Scythe>(), true);
+            shop.item[nextSlot++].SetDefaults(ModContent.ItemType<Arbalest>(), true);
+        }
+
+        public override string TownNPCName()
+        {
+            switch (WorldGen.genRand.Next(12))
+            {
+                default:
+                    return "Brian Alvarez";
+                case 1:
+                    return "Dylan Alvarez";
+                case 2:
+                    return "Grian";
+                case 3:
+                    return "Colonel Zabini";
+                case 4:
+                    return "General Raynor";
+                case 5:
+                    return "Red Cloud";
+                case 6:
+                    return "Arnold";
+                case 7:
+                    return "Dominus";
+                case 8:
+                    return "Avarius";
+                case 9:
+                    return "Dentarthurdent";
+                case 10:
+                    return "Harry";
+                case 11:
+                    return "Voldy";
+            }
         }
     }
 }

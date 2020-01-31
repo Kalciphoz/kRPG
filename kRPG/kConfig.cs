@@ -8,14 +8,13 @@ namespace kRPG
 {
     public class kConfig
     {
-        public static ClientConfig clientSide => configLocal.clientside;
-
-        public static string configPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Settings.json";
-
-        public static string statsPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Stats.json";
-
         //Make this fancier?
         internal static Config _configLocal = new Config();
+
+        internal static Config _configServer = new Config();
+
+        internal static ConfigStats _stats = new ConfigStats();
+        public static ClientConfig clientSide => configLocal.clientside;
 
         public static Config configLocal
         {
@@ -30,15 +29,13 @@ namespace kRPG
             private set => _configLocal = value;
         }
 
-        internal static Config _configServer = new Config();
+        public static string configPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Settings.json";
 
         public static Config configServer
         {
             get => _configServer ?? (_configServer = new Config());
             private set => _configServer = value;
         }
-
-        internal static ConfigStats _stats = new ConfigStats();
 
         public static ConfigStats stats
         {
@@ -53,6 +50,8 @@ namespace kRPG
             }
             private set => _stats = value;
         }
+
+        public static string statsPath => Main.SavePath + Path.DirectorySeparatorChar + "kRPG_Stats.json";
 
         public static void Initialize()
         {
@@ -128,8 +127,8 @@ namespace kRPG
 
         public class ClientConfig
         {
-            public bool manualInventory = false;
             public bool arpgMinimap = false;
+            public bool manualInventory = false;
             public bool smartInventory = false;
         }
 

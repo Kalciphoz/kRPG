@@ -8,6 +8,15 @@ namespace kRPG.Projectiles
 {
     public class Explosion : ModProjectile
     {
+        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+            Lighting.AddLight(projectile.position, 0.7f, 0.4f, 0.1f);
+            projectile.frame = 9 - (int) Math.Ceiling(projectile.timeLeft / 3.0);
+            spriteBatch.Draw(Main.projectileTexture[projectile.type], projectile.position - Main.screenPosition,
+                new Rectangle(0, projectile.frame * 128, 128, 128), Color.White);
+            return false;
+        }
+
         public override void SetDefaults()
         {
             projectile.width = 128;
@@ -25,7 +34,10 @@ namespace kRPG.Projectiles
             Main.projFrames[projectile.type] = 9;
             DisplayName.SetDefault("Explosion");
         }
+    }
 
+    public class NPC_Explosion : ModProjectile
+    {
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             Lighting.AddLight(projectile.position, 0.7f, 0.4f, 0.1f);
@@ -34,10 +46,7 @@ namespace kRPG.Projectiles
                 new Rectangle(0, projectile.frame * 128, 128, 128), Color.White);
             return false;
         }
-    }
 
-    public class NPC_Explosion : ModProjectile
-    {
         public override void SetDefaults()
         {
             projectile.width = 128;
@@ -54,15 +63,6 @@ namespace kRPG.Projectiles
         {
             Main.projFrames[projectile.type] = 9;
             DisplayName.SetDefault("Exploding Enemy");
-        }
-
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
-        {
-            Lighting.AddLight(projectile.position, 0.7f, 0.4f, 0.1f);
-            projectile.frame = 9 - (int) Math.Ceiling(projectile.timeLeft / 3.0);
-            spriteBatch.Draw(Main.projectileTexture[projectile.type], projectile.position - Main.screenPosition,
-                new Rectangle(0, projectile.frame * 128, 128, 128), Color.White);
-            return false;
         }
     }
 }

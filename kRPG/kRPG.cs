@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -12,12 +11,10 @@ using kRPG.Items;
 using kRPG.Items.Glyphs;
 using kRPG.Items.Weapons;
 using kRPG.Items.Weapons.RangedDrops;
-using kRPG.Modifiers;
 using kRPG.Projectiles;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Terraria;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 
@@ -25,15 +22,11 @@ namespace kRPG
 {
     public class kRPG : Mod
     {
-        public static kRPG mod;
-
-        public static Mod overhaul;
-
-        public static Dictionary<Message, List<DataTag>> dataTags = new Dictionary<Message, List<DataTag>>()
+        public static Dictionary<Message, List<DataTag>> dataTags = new Dictionary<Message, List<DataTag>>
         {
-            {Message.AddXP, new List<DataTag>() {DataTag.amount, DataTag.npcId}},
+            {Message.AddXP, new List<DataTag> {DataTag.amount, DataTag.npcId}},
             {
-                Message.CreateProjectile, new List<DataTag>()
+                Message.CreateProjectile, new List<DataTag>
                 {
                     DataTag.playerId,
                     DataTag.projId,
@@ -47,7 +40,7 @@ namespace kRPG
                 }
             },
             {
-                Message.SwordInit, new List<DataTag>()
+                Message.SwordInit, new List<DataTag>
                 {
                     DataTag.itemId,
                     DataTag.partPrimary,
@@ -58,7 +51,7 @@ namespace kRPG
                 }
             },
             {
-                Message.StaffInit, new List<DataTag>()
+                Message.StaffInit, new List<DataTag>
                 {
                     DataTag.itemId,
                     DataTag.partPrimary,
@@ -68,12 +61,12 @@ namespace kRPG
                     DataTag.itemDef
                 }
             },
-            {Message.BowInit, new List<DataTag>() {DataTag.itemId, DataTag.itemDps, DataTag.itemDef}},
-            {Message.SyncHit, new List<DataTag>() {DataTag.playerId, DataTag.amount_single}},
-            {Message.SyncCritHit, new List<DataTag>() {DataTag.playerId, DataTag.amount_single}},
-            {Message.SyncLevel, new List<DataTag>() {DataTag.playerId, DataTag.amount}},
+            {Message.BowInit, new List<DataTag> {DataTag.itemId, DataTag.itemDps, DataTag.itemDef}},
+            {Message.SyncHit, new List<DataTag> {DataTag.playerId, DataTag.amount_single}},
+            {Message.SyncCritHit, new List<DataTag> {DataTag.playerId, DataTag.amount_single}},
+            {Message.SyncLevel, new List<DataTag> {DataTag.playerId, DataTag.amount}},
             {
-                Message.InitProjEleDmg, new List<DataTag>()
+                Message.InitProjEleDmg, new List<DataTag>
                 {
                     DataTag.projId,
                     DataTag.fire,
@@ -83,7 +76,7 @@ namespace kRPG
                 }
             },
             {
-                Message.SyncStats, new List<DataTag>()
+                Message.SyncStats, new List<DataTag>
                 {
                     DataTag.playerId,
                     DataTag.amount,
@@ -93,10 +86,10 @@ namespace kRPG
                     DataTag.wits
                 }
             },
-            {Message.SyncSpear, new List<DataTag>() {DataTag.projId, DataTag.partPrimary, DataTag.partSecondary, DataTag.partTertiary}},
-            {Message.PrefixNPC, new List<DataTag>() {DataTag.npcId, DataTag.amount}},
+            {Message.SyncSpear, new List<DataTag> {DataTag.projId, DataTag.partPrimary, DataTag.partSecondary, DataTag.partTertiary}},
+            {Message.PrefixNPC, new List<DataTag> {DataTag.npcId, DataTag.amount}},
             {
-                Message.NPCEleDmg, new List<DataTag>()
+                Message.NPCEleDmg, new List<DataTag>
                 {
                     DataTag.npcId,
                     DataTag.flag,
@@ -107,11 +100,58 @@ namespace kRPG
             }
         };
 
+        public static kRPG mod;
+
+        public static Mod overhaul;
+
+        public static Dictionary<string, RITUAL> ritualByName = new Dictionary<string, RITUAL>
+        {
+            {"demon_pact", RITUAL.DEMON_PACT},
+            {"warrior_oath", RITUAL.WARRIOR_OATH},
+            {"elan_vital", RITUAL.ELAN_VITAL},
+            {"stone_aspect", RITUAL.STONE_ASPECT},
+            {"eldritch_fury", RITUAL.ELDRITCH_FURY},
+            {"mind_fortress", RITUAL.MIND_FORTRESS},
+            {"blood_drinking", RITUAL.BLOOD_DRINKING}
+        };
+
         public Texture2D[] invslot = new Texture2D[16];
+
+        public kRPG()
+        {
+            Properties = new ModProperties {Autoload = true, AutoloadGores = true, AutoloadSounds = true};
+            mod = this;
+
+            //for (int i = 0; i < Lang.inter.Length;i++)
+            //{
+            //    var t = Lang.inter[i];
+            //    Debug.WriteLine($"{i} -- {t.Key} -- {t.Value}");
+            //}
+        }
+
+        public bool DrawInterface()
+        {
+            if (Main.netMode == 2 || Main.gameMenu) return true;
+            try
+            {
+                for (int i = 0; i < BaseGui.guiElements.Count; i += 1)
+                {
+                    var gui = BaseGui.guiElements[i];
+                    if (gui.PreDraw())
+                        gui.Draw(Main.spriteBatch, Main.LocalPlayer);
+                }
+            }
+            catch (SystemException e)
+            {
+                Logger.InfoFormat(e.ToString());
+            }
+
+            return true;
+        }
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
-            var msg = (Message)reader.ReadByte();
+            var msg = (Message) reader.ReadByte();
             var tags = dataTags[msg].ToDictionary(tag => tag, tag => tag.read(reader));
             switch (msg)
             {
@@ -137,9 +177,9 @@ namespace kRPG
                 case Message.NPCEleDmg:
                     if (Main.netMode == 1)
                     {
-                        var npc = Main.npc[(int)tags[DataTag.npcId]];
+                        var npc = Main.npc[(int) tags[DataTag.npcId]];
                         var kn = npc.GetGlobalNPC<kNPC>();
-                        var haselement = new Dictionary<ELEMENT, bool>()
+                        var haselement = new Dictionary<ELEMENT, bool>
                         {
                             {ELEMENT.FIRE, (bool) tags[DataTag.flag]},
                             {ELEMENT.COLD, (bool) tags[DataTag.flag2]},
@@ -147,7 +187,7 @@ namespace kRPG
                             {ELEMENT.SHADOW, (bool) tags[DataTag.flag4]}
                         };
                         int count = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => haselement[element]);
-                        int portionsize = (int)Math.Round((double)npc.damage * kNPC.ELE_DMG_MODIFIER / 2.0 / count);
+                        int portionsize = (int) Math.Round(npc.damage * kNPC.ELE_DMG_MODIFIER / 2.0 / count);
                         foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                             if (haselement[element])
                                 kn.elementalDamage[element] = Math.Max(1, portionsize);
@@ -158,9 +198,9 @@ namespace kRPG
                 case Message.PrefixNPC:
                     if (Main.netMode == 1)
                     {
-                        var npc = Main.npc[(int)tags[DataTag.npcId]];
+                        var npc = Main.npc[(int) tags[DataTag.npcId]];
                         var kn = npc.GetGlobalNPC<kNPC>();
-                        for (int i = 0; i < (int)tags[DataTag.amount]; i += 1)
+                        for (int i = 0; i < (int) tags[DataTag.amount]; i += 1)
                         {
                             var modifier = kn.modifierFuncs[reader.ReadInt32()].Invoke(kn, npc);
                             modifier.Read(reader);
@@ -175,36 +215,36 @@ namespace kRPG
                 case Message.SyncStats:
                     if (Main.netMode == 2)
                     {
-                        var character = Main.player[(int)tags[DataTag.playerId]].GetModPlayer<PlayerCharacter>();
-                        character.level = (int)tags[DataTag.amount];
-                        character.baseStats[STAT.RESILIENCE] = (int)tags[DataTag.resilience];
-                        character.baseStats[STAT.QUICKNESS] = (int)tags[DataTag.quickness];
-                        character.baseStats[STAT.POTENCY] = (int)tags[DataTag.potency];
-                        character.baseStats[STAT.WITS] = (int)tags[DataTag.wits];
+                        var character = Main.player[(int) tags[DataTag.playerId]].GetModPlayer<PlayerCharacter>();
+                        character.level = (int) tags[DataTag.amount];
+                        character.baseStats[STAT.RESILIENCE] = (int) tags[DataTag.resilience];
+                        character.baseStats[STAT.QUICKNESS] = (int) tags[DataTag.quickness];
+                        character.baseStats[STAT.POTENCY] = (int) tags[DataTag.potency];
+                        character.baseStats[STAT.WITS] = (int) tags[DataTag.wits];
                     }
 
                     break;
                 case Message.SyncLevel:
                     if (Main.netMode == 2)
-                        Main.player[(int)tags[DataTag.playerId]].GetModPlayer<PlayerCharacter>().level = (int)tags[DataTag.amount];
+                        Main.player[(int) tags[DataTag.playerId]].GetModPlayer<PlayerCharacter>().level = (int) tags[DataTag.amount];
                     break;
                 case Message.CreateProjectile:
                     try
                     {
                         if (Main.netMode == 1)
-                            if ((int)tags[DataTag.playerId] == Main.myPlayer)
+                            if ((int) tags[DataTag.playerId] == Main.myPlayer)
                                 break;
 
-                        int modifierCount = (int)tags[DataTag.modifierCount];
+                        int modifierCount = (int) tags[DataTag.modifierCount];
                         var modifiers = new List<GlyphModifier>();
                         for (int i = 0; i < modifierCount; i += 1)
                             modifiers.Add(GlyphModifier.modifiers[reader.ReadInt32()]);
 
-                        var projectile = Main.projectile[(int)tags[DataTag.projId]];
+                        var projectile = Main.projectile[(int) tags[DataTag.projId]];
                         if (projectile == null) break;
-                        projectile.owner = (int)tags[DataTag.playerId];
+                        projectile.owner = (int) tags[DataTag.playerId];
                         if (!(projectile.modProjectile is ProceduralSpellProj)) break;
-                        var ps = (ProceduralSpellProj)projectile.modProjectile;
+                        var ps = (ProceduralSpellProj) projectile.modProjectile;
                         ps.source = new ProceduralSpell(mod) {glyphs = new Item[3]};
                         for (int i = 0; i < ps.source.glyphs.Length; i += 1)
                         {
@@ -212,19 +252,19 @@ namespace kRPG
                             ps.source.glyphs[i].SetDefaults(0, true);
                         }
 
-                        ps.source.glyphs[(byte)GLYPHTYPE.STAR].SetDefaults((int)tags[DataTag.glyph_star], true);
-                        ps.source.glyphs[(byte)GLYPHTYPE.CROSS].SetDefaults((int)tags[DataTag.glyph_cross], true);
-                        ps.source.glyphs[(byte)GLYPHTYPE.MOON].SetDefaults((int)tags[DataTag.glyph_moon], true);
-                        projectile.damage = (int)tags[DataTag.damage];
-                        projectile.minion = (bool)tags[DataTag.flag];
+                        ps.source.glyphs[(byte) GLYPHTYPE.STAR].SetDefaults((int) tags[DataTag.glyph_star], true);
+                        ps.source.glyphs[(byte) GLYPHTYPE.CROSS].SetDefaults((int) tags[DataTag.glyph_cross], true);
+                        ps.source.glyphs[(byte) GLYPHTYPE.MOON].SetDefaults((int) tags[DataTag.glyph_moon], true);
+                        projectile.damage = (int) tags[DataTag.damage];
+                        projectile.minion = (bool) tags[DataTag.flag];
                         try
                         {
                             if (projectile.minion)
-                                ps.caster = Main.projectile[(int)tags[DataTag.entityId]];
+                                ps.caster = Main.projectile[(int) tags[DataTag.entityId]];
                             else if (projectile.hostile)
-                                ps.caster = Main.npc[(int)tags[DataTag.entityId]];
+                                ps.caster = Main.npc[(int) tags[DataTag.entityId]];
                             else
-                                ps.caster = Main.player[(int)tags[DataTag.entityId]];
+                                ps.caster = Main.player[(int) tags[DataTag.entityId]];
                         }
                         catch (SystemException e)
                         {
@@ -237,9 +277,9 @@ namespace kRPG
                         {
                             if (item == null)
                                 continue;
-                            var glyph = (Glyph)item.modItem;
-                            if (glyph.GetAIAction() != null)
-                                ps.ai.Add(glyph.GetAIAction());
+                            var glyph = (Glyph) item.modItem;
+                            if (glyph.GetAiAction() != null)
+                                ps.ai.Add(glyph.GetAiAction());
                             if (glyph.GetInitAction() != null)
                                 ps.init.Add(glyph.GetInitAction());
                             if (glyph.GetImpactAction() != null)
@@ -263,12 +303,12 @@ namespace kRPG
                         if (Main.netMode == 2)
                         {
                             var packet = mod.GetPacket();
-                            packet.Write((byte)Message.CreateProjectile);
+                            packet.Write((byte) Message.CreateProjectile);
                             packet.Write(projectile.owner);
                             packet.Write(projectile.whoAmI);
-                            packet.Write(ps.source.glyphs[(byte)GLYPHTYPE.STAR].type);
-                            packet.Write(ps.source.glyphs[(byte)GLYPHTYPE.CROSS].type);
-                            packet.Write(ps.source.glyphs[(byte)GLYPHTYPE.MOON].type);
+                            packet.Write(ps.source.glyphs[(byte) GLYPHTYPE.STAR].type);
+                            packet.Write(ps.source.glyphs[(byte) GLYPHTYPE.CROSS].type);
+                            packet.Write(ps.source.glyphs[(byte) GLYPHTYPE.MOON].type);
                             packet.Write(projectile.damage);
                             packet.Write(projectile.minion);
                             packet.Write(ps.caster.whoAmI);
@@ -293,27 +333,27 @@ namespace kRPG
                         //if (Vector2.Distance(player.Center, Main.npc[(int)tags[DataTag.npcId]].Center) > 1024)
                         //    break;
                         var character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
-                        character.AddXp((int)tags[DataTag.amount]);
+                        character.AddXp((int) tags[DataTag.amount]);
                     }
 
                     break;
                 case Message.SyncSpear:
-                    var spear = (ProceduralSpear)Main.projectile[(int)tags[DataTag.projId]].modProjectile;
-                    spear.blade = SwordBlade.blades[(int)tags[DataTag.partPrimary]];
-                    spear.hilt = SwordHilt.hilts[(int)tags[DataTag.partSecondary]];
-                    spear.accent = SwordAccent.accents[(int)tags[DataTag.partTertiary]];
+                    var spear = (ProceduralSpear) Main.projectile[(int) tags[DataTag.projId]].modProjectile;
+                    spear.blade = SwordBlade.blades[(int) tags[DataTag.partPrimary]];
+                    spear.hilt = SwordHilt.hilts[(int) tags[DataTag.partSecondary]];
+                    spear.accent = SwordAccent.accents[(int) tags[DataTag.partTertiary]];
                     if (Main.netMode == 1) spear.Initialize();
                     break;
                 case Message.SwordInit:
                     if (Main.netMode == 1)
                     {
-                        var sword = (ProceduralSword)Main.item[(int)tags[DataTag.itemId]].modItem;
-                        sword.blade = SwordBlade.blades[(int)tags[DataTag.partPrimary]];
-                        sword.hilt = SwordHilt.hilts[(int)tags[DataTag.partSecondary]];
-                        sword.accent = SwordAccent.accents[(int)tags[DataTag.partTertiary]];
-                        sword.dps = (float)tags[DataTag.itemDps];
+                        var sword = (ProceduralSword) Main.item[(int) tags[DataTag.itemId]].modItem;
+                        sword.blade = SwordBlade.blades[(int) tags[DataTag.partPrimary]];
+                        sword.hilt = SwordHilt.hilts[(int) tags[DataTag.partSecondary]];
+                        sword.accent = SwordAccent.accents[(int) tags[DataTag.partTertiary]];
+                        sword.dps = (float) tags[DataTag.itemDps];
                         Main.NewText(sword.dps.ToString(CultureInfo.InvariantCulture));
-                        sword.enemyDef = (int)tags[DataTag.itemDef];
+                        sword.enemyDef = (int) tags[DataTag.itemDef];
                         sword.Initialize();
                     }
 
@@ -321,12 +361,12 @@ namespace kRPG
                 case Message.StaffInit:
                     if (Main.netMode == 1)
                     {
-                        var staff = (ProceduralStaff)Main.item[(int)tags[DataTag.itemId]].modItem;
-                        staff.staff = Staff.staves[(int)tags[DataTag.partPrimary]];
-                        staff.gem = StaffGem.gems[(int)tags[DataTag.partSecondary]];
-                        staff.ornament = StaffOrnament.ornament[(int)tags[DataTag.partTertiary]];
-                        staff.dps = (float)tags[DataTag.itemDps];
-                        staff.enemyDef = (int)tags[DataTag.itemDef];
+                        var staff = (ProceduralStaff) Main.item[(int) tags[DataTag.itemId]].modItem;
+                        staff.staff = Staff.staves[(int) tags[DataTag.partPrimary]];
+                        staff.gem = StaffGem.gems[(int) tags[DataTag.partSecondary]];
+                        staff.ornament = StaffOrnament.ornament[(int) tags[DataTag.partTertiary]];
+                        staff.dps = (float) tags[DataTag.itemDps];
+                        staff.enemyDef = (int) tags[DataTag.itemDef];
                         staff.Initialize();
                     }
 
@@ -334,9 +374,9 @@ namespace kRPG
                 case Message.BowInit:
                     if (Main.netMode == 1)
                     {
-                        var bow = (RangedWeapon)Main.item[(int)tags[DataTag.itemId]].modItem;
-                        bow.dps = (float)tags[DataTag.itemDps];
-                        bow.enemyDef = (int)tags[DataTag.itemDef];
+                        var bow = (RangedWeapon) Main.item[(int) tags[DataTag.itemId]].modItem;
+                        bow.dps = (float) tags[DataTag.itemDps];
+                        bow.enemyDef = (int) tags[DataTag.itemDef];
                         bow.Initialize();
                     }
 
@@ -344,54 +384,20 @@ namespace kRPG
                 case Message.SyncHit:
                     if (Main.netMode == 1)
                     {
-                        var character = Main.player[(int)tags[DataTag.playerId]].GetModPlayer<PlayerCharacter>();
-                        character.accuracyCounter = (float)tags[DataTag.amount_single];
+                        var character = Main.player[(int) tags[DataTag.playerId]].GetModPlayer<PlayerCharacter>();
+                        character.accuracyCounter = (float) tags[DataTag.amount_single];
                     }
 
                     break;
                 case Message.SyncCritHit:
                     if (Main.netMode == 1)
                     {
-                        var character = Main.player[(int)tags[DataTag.playerId]].GetModPlayer<PlayerCharacter>();
-                        character.critAccuracyCounter = (float)tags[DataTag.amount_single];
+                        var character = Main.player[(int) tags[DataTag.playerId]].GetModPlayer<PlayerCharacter>();
+                        character.critAccuracyCounter = (float) tags[DataTag.amount_single];
                     }
 
                     break;
             }
-        }
-
-        public static Dictionary<string, RITUAL> ritualByName = new Dictionary<string, RITUAL>()
-        {
-            {"demon_pact", RITUAL.DEMON_PACT},
-            {"warrior_oath", RITUAL.WARRIOR_OATH},
-            {"elan_vital", RITUAL.ELAN_VITAL},
-            {"stone_aspect", RITUAL.STONE_ASPECT},
-            {"eldritch_fury", RITUAL.ELDRITCH_FURY},
-            {"mind_fortress", RITUAL.MIND_FORTRESS},
-            {"blood_drinking", RITUAL.BLOOD_DRINKING}
-        };
-
-        public kRPG()
-        {
-            Properties = new ModProperties() { Autoload = true, AutoloadGores = true, AutoloadSounds = true };
-            mod = this;
-
-
-            //for (int i = 0; i < Lang.inter.Length;i++)
-            //{
-            //    var t = Lang.inter[i];
-            //    Debug.WriteLine($"{i} -- {t.Key} -- {t.Value}");
-            //}
-
-            
-        }
-
-        public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
-        {
-            layers.Find(layer => layer.Name == "Vanilla: Resource Bars").Active = false;
-            layers[layers.FindIndex(layer => layer.Name == "Vanilla: Inventory")] =
-                new LegacyGameInterfaceLayer("kRPG", DrawInterface, InterfaceScaleType.UI);
-            layers.Find(layer => layer.Name == "Vanilla: Hotbar").Active = false;
         }
 
         public override void Load()
@@ -445,6 +451,13 @@ namespace kRPG
             GlyphModifier.Initialize(this);
         }
 
+        public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
+        {
+            layers.Find(layer => layer.Name == "Vanilla: Resource Bars").Active = false;
+            layers[layers.FindIndex(layer => layer.Name == "Vanilla: Inventory")] = new LegacyGameInterfaceLayer("kRPG", DrawInterface, InterfaceScaleType.UI);
+            layers.Find(layer => layer.Name == "Vanilla: Hotbar").Active = false;
+        }
+
         public override void Unload()
         {
             Main.inventoryBackTexture = invslot[0];
@@ -473,32 +486,12 @@ namespace kRPG
             Main.instance.invBottom = 210;
         }
 
-        public bool DrawInterface()
-        {
-            if (Main.netMode == 2 || Main.gameMenu) return true;
-            try
-            {
-                for (int i = 0; i < BaseGui.guiElements.Count; i += 1)
-                {
-                    var gui = BaseGui.guiElements[i];
-                    if (gui.PreDraw())
-                        gui.Draw(Main.spriteBatch, Main.LocalPlayer);
-                }
-            }
-            catch (SystemException e)
-            {
-                Logger.InfoFormat(e.ToString());
-            }
-
-            return true;
-        }
-
         #region UpdateCheck
 
         public class VersionInfo
         {
-            public string version;
             public string summary;
+            public string version;
         }
 
         //Mirsario's code in Mirsario's code style

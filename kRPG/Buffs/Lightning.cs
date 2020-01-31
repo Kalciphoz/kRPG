@@ -4,6 +4,9 @@ using Terraria.ModLoader;
 
 namespace kRPG.Buffs
 {
+    /// <summary>
+    ///     Lightning debuff
+    /// </summary>
     public class Lightning : ModBuff
     {
         public override void SetDefaults()

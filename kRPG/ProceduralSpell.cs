@@ -18,15 +18,142 @@ namespace kRPG
 {
     public class ProceduralSpell
     {
-        private Mod mod;
-
-        public Keys key = Keys.A;
+        public List<ProceduralSpellProj> circlingProtection = new List<ProceduralSpellProj>();
 
         public int cooldown = 120;
-        public int remaining = 0;
 
-        public List<ProceduralSpellProj> circlingProtection = new List<ProceduralSpellProj>();
+        public Item[] glyphs = new Item[3];
+
+        public Keys key = Keys.A;
+        private readonly Mod mod;
+
+        public List<GlyphModifier> modifierOverride = null;
+        public int projCountOverride = -1;
+        public int remaining;
+
+        public ProceduralSpell(Mod mod)
+        {
+            this.mod = mod;
+            for (int i = 0; i < glyphs.Length; i += 1)
+                glyphs[i] = new Item();
+        }
+
+        public Action<ProceduralSpell, Player, Vector2, Vector2, Entity> castAction
+        {
+            get
+            {
+                var glyph = (Glyph) glyphs[(byte) GLYPHTYPE.MOON].modItem;
+                return glyph.GetCastAction();
+            }
+        }
+
         public bool minion => !(glyphs[(byte) GLYPHTYPE.STAR].modItem is Star_Blue);
+
+        public List<GlyphModifier> modifiers
+        {
+            get
+            {
+                if (modifierOverride != null) return modifierOverride;
+                var list = new List<GlyphModifier>();
+                for (int i = 0; i < glyphs.Length; i += 1)
+                {
+                    var glyph = (Glyph) glyphs[i].modItem;
+                    for (int j = 0; j < glyph.modifiers.Count; j += 1)
+                        list.Add(glyph.modifiers[j]);
+                }
+
+                return list;
+            }
+        }
+
+        public int projCount => projCountOverride == -1 ? ((Moon) glyphs[(byte) GLYPHTYPE.MOON].modItem).projCount : projCountOverride;
+
+        public Action<ProceduralSpell, Player, Vector2> useAction
+        {
+            get
+            {
+                var glyph = (Glyph) glyphs[(byte) GLYPHTYPE.STAR].modItem;
+                return glyph.GetUseAbility();
+            }
+        }
+
+        public void CastSpell(Player player, Vector2 origin, Vector2 target, Entity caster)
+        {
+            Main.PlaySound(SoundID.Item8, caster.position);
+            castAction(this, player, origin, target, caster);
+        }
+
+        public bool CompleteSkill()
+        {
+            bool complete = true;
+            for (int i = 0; i < glyphs.Length; i += 1)
+                if (glyphs[i].type == 0)
+                    complete = false;
+
+            return complete;
+        }
+
+        //angle from 0f to 1f
+        public ProceduralSpellProj CreateProjectile(Player player, Vector2 velocity, float angle = 0f, Vector2? position = null, Entity caster = null)
+        {
+            if (caster == null) caster = player;
+            var projectile =
+                Main.projectile[
+                    Projectile.NewProjectile(position ?? caster.Center, velocity.RotatedBy(API.Tau * angle), ModContent.ProjectileType<ProceduralSpellProj>(),
+                        ProjectileDamage(player.GetModPlayer<PlayerCharacter>()), 3f, player.whoAmI)];
+            var ps = (ProceduralSpellProj) projectile.modProjectile;
+            ps.origin = projectile.position;
+            foreach (var item in glyphs)
+            {
+                var glyph = (Glyph) item.modItem;
+                if (glyph.GetAiAction() != null)
+                    ps.ai.Add(glyph.GetAiAction());
+                if (glyph.GetInitAction() != null)
+                    ps.init.Add(glyph.GetInitAction());
+                if (glyph.GetImpactAction() != null)
+                    ps.impact.Add(glyph.GetImpactAction());
+                if (glyph.GetKillAction() != null)
+                    ps.kill.Add(glyph.GetKillAction());
+            }
+
+            foreach (var modifier in modifiers)
+            {
+                if (modifier.impact != null)
+                    ps.impact.Add(modifier.impact);
+                if (modifier.draw != null)
+                    ps.draw.Add(modifier.draw);
+                if (modifier.init != null)
+                    ps.init.Add(modifier.init);
+            }
+
+            ps.caster = caster;
+            ps.projectile.minion = minion;
+            /*if (minion)
+            {
+                ps.projectile.melee = false;
+                ps.projectile.ranged = false;
+                ps.projectile.magic = false;
+            }*/
+            ps.source = this;
+            ps.Initialize();
+            if (Main.netMode != 1) return ps;
+            var packet = mod.GetPacket();
+            packet.Write((byte) Message.CreateProjectile);
+            packet.Write(player.whoAmI);
+            packet.Write(ps.projectile.whoAmI);
+            packet.Write(glyphs[(byte) GLYPHTYPE.STAR].type);
+            packet.Write(glyphs[(byte) GLYPHTYPE.CROSS].type);
+            packet.Write(glyphs[(byte) GLYPHTYPE.MOON].type);
+            packet.Write(ps.projectile.damage);
+            packet.Write(minion);
+            packet.Write(caster.whoAmI);
+            var mods = modifiers;
+            packet.Write(mods.Count);
+            for (int j = 0; j < mods.Count; j += 1)
+                packet.Write(mods[j].id);
+            packet.Send();
+            return ps;
+        }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position, float scale)
         {
@@ -90,43 +217,19 @@ namespace kRPG
             }
         }
 
-        public Item[] glyphs = new Item[3];
-
-        public List<GlyphModifier> modifiers
+        // ReSharper disable once IdentifierTypo
+        public int ManaCost(PlayerCharacter character)
         {
-            get
-            {
-                if (modifierOverride != null) return modifierOverride;
-                var list = new List<GlyphModifier>();
-                for (int i = 0; i < glyphs.Length; i += 1)
-                {
-                    var glyph = (Glyph) glyphs[i].modItem;
-                    for (int j = 0; j < glyph.modifiers.Count; j += 1)
-                        list.Add(glyph.modifiers[j]);
-                }
-
-                return list;
-            }
+            float multiplier = glyphs.Aggregate(0.4f, (current, item) => current * ((Glyph) item.modItem).ManaModifier());
+            return (int) Math.Round((20 + character.level) * multiplier);
         }
 
-        public List<GlyphModifier> modifierOverride = null;
-        public int projCount => projCountOverride == -1 ? ((Moon) glyphs[(byte) GLYPHTYPE.MOON].modItem).projCount : projCountOverride;
-        public int projCountOverride = -1;
-
-        public ProceduralSpell(Mod mod)
+        public int ProjectileDamage(PlayerCharacter character)
         {
-            this.mod = mod;
-            for (int i = 0; i < glyphs.Length; i += 1)
-                glyphs[i] = new Item();
-        }
-
-        public Action<ProceduralSpell, Player, Vector2> useAction
-        {
-            get
-            {
-                var glyph = (Glyph) glyphs[(byte) GLYPHTYPE.STAR].modItem;
-                return glyph.GetUseAbility();
-            }
+            int constant = Main.hardMode ? character.level / 3 : 5;
+            float multiplier = Main.expertMode ? 1f : 0.65f;
+            multiplier = glyphs.Aggregate(multiplier, (current, item) => current * ((Glyph) item.modItem).DamageModifier());
+            return (int) Math.Round(Math.Pow(1.04, Math.Min(130, character.level)) * 9f * multiplier) + constant;
         }
 
         public void UseAbility(Player player, Vector2 target)
@@ -171,108 +274,6 @@ namespace kRPG
             }
 
             useAction(this, player, vanish ? oldCenter : target);
-        }
-
-        public Action<ProceduralSpell, Player, Vector2, Vector2, Entity> castAction
-        {
-            get
-            {
-                var glyph = (Glyph) glyphs[(byte) GLYPHTYPE.MOON].modItem;
-                return glyph.GetCastAction();
-            }
-        }
-
-        public void CastSpell(Player player, Vector2 origin, Vector2 target, Entity caster)
-        {
-            Main.PlaySound(SoundID.Item8, caster.position);
-            castAction(this, player, origin, target, caster);
-        }
-
-        //angle from 0f to 1f
-        public ProceduralSpellProj CreateProjectile(Player player, Vector2 velocity, float angle = 0f, Vector2? position = null, Entity caster = null)
-        {
-            if (caster == null) caster = player;
-            var projectile =
-                Main.projectile[
-                    Projectile.NewProjectile(position ?? caster.Center, velocity.RotatedBy(API.Tau * angle),
-                        ModContent.ProjectileType<ProceduralSpellProj>(), ProjectileDamage(player.GetModPlayer<PlayerCharacter>()), 3f, player.whoAmI)];
-            var ps = (ProceduralSpellProj) projectile.modProjectile;
-            ps.origin = projectile.position;
-            foreach (var item in glyphs)
-            {
-                var glyph = (Glyph) item.modItem;
-                if (glyph.GetAIAction() != null)
-                    ps.ai.Add(glyph.GetAIAction());
-                if (glyph.GetInitAction() != null)
-                    ps.init.Add(glyph.GetInitAction());
-                if (glyph.GetImpactAction() != null)
-                    ps.impact.Add(glyph.GetImpactAction());
-                if (glyph.GetKillAction() != null)
-                    ps.kill.Add(glyph.GetKillAction());
-            }
-
-            foreach (var modifier in modifiers)
-            {
-                if (modifier.impact != null)
-                    ps.impact.Add(modifier.impact);
-                if (modifier.draw != null)
-                    ps.draw.Add(modifier.draw);
-                if (modifier.init != null)
-                    ps.init.Add(modifier.init);
-            }
-
-            ps.caster = caster;
-            ps.projectile.minion = minion;
-            /*if (minion)
-            {
-                ps.projectile.melee = false;
-                ps.projectile.ranged = false;
-                ps.projectile.magic = false;
-            }*/
-            ps.source = this;
-            ps.Initialize();
-            if (Main.netMode != 1) return ps;
-            var packet = mod.GetPacket();
-            packet.Write((byte) Message.CreateProjectile);
-            packet.Write(player.whoAmI);
-            packet.Write(ps.projectile.whoAmI);
-            packet.Write(glyphs[(byte) GLYPHTYPE.STAR].type);
-            packet.Write(glyphs[(byte) GLYPHTYPE.CROSS].type);
-            packet.Write(glyphs[(byte) GLYPHTYPE.MOON].type);
-            packet.Write(ps.projectile.damage);
-            packet.Write(minion);
-            packet.Write(caster.whoAmI);
-            var mods = modifiers;
-            packet.Write(mods.Count);
-            for (int j = 0; j < mods.Count; j += 1)
-                packet.Write(mods[j].id);
-            packet.Send();
-            return ps;
-        }
-
-        public bool CompleteSkill()
-        {
-            bool complete = true;
-            for (int i = 0; i < glyphs.Length; i += 1)
-                if (glyphs[i].type == 0)
-                    complete = false;
-
-            return complete;
-        }
-
-        public int ProjectileDamage(PlayerCharacter character)
-        {
-            int constant = Main.hardMode ? character.level / 3 : 5;
-            float multiplier = Main.expertMode ? 1f : 0.65f;
-            multiplier = glyphs.Aggregate(multiplier, (current, item) => current * ((Glyph) item.modItem).DamageModifier());
-            return (int) Math.Round(Math.Pow(1.04, Math.Min(130, character.level)) * 9f * multiplier) + constant;
-        }
-
-        // ReSharper disable once IdentifierTypo
-        public int ManaCost(PlayerCharacter character)
-        {
-            float multiplier = glyphs.Aggregate(0.4f, (current, item) => current * ((Glyph) item.modItem).ManaModifier());
-            return (int) Math.Round((20 + character.level) * multiplier);
         }
     }
 

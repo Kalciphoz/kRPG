@@ -23,14 +23,9 @@ namespace kRPG.Modifiers
             npc.defense = 1;
         }
 
-        public override void Write(ModPacket packet)
+        public new static NPCModifier New(kNPC kNPC, NPC npc)
         {
-            packet.Write(damageModifier);
-        }
-
-        public override void Read(BinaryReader reader)
-        {
-            damageModifier = reader.ReadSingle();
+            return new DamageModifier(kNPC, npc);
         }
 
         public new static NPCModifier Random(kNPC kNPC, NPC npc)
@@ -38,9 +33,14 @@ namespace kRPG.Modifiers
             return new DamageModifier(kNPC, npc, 1f + Main.rand.NextFloat(1));
         }
 
-        public new static NPCModifier New(kNPC kNPC, NPC npc)
+        public override void Read(BinaryReader reader)
         {
-            return new DamageModifier(kNPC, npc);
+            damageModifier = reader.ReadSingle();
+        }
+
+        public override void Write(ModPacket packet)
+        {
+            packet.Write(damageModifier);
         }
     }
 }

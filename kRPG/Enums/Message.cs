@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace kRPG.Enums
+﻿namespace kRPG.Enums
 {
     public enum Message : byte
     {
@@ -21,6 +15,5 @@ namespace kRPG.Enums
         SyncSpear,
         PrefixNPC,
         NPCEleDmg
-    };
-
+    }
 }

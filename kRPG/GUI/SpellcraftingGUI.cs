@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Star = kRPG.Items.Glyphs.Star;
 
 namespace kRPG.GUI
 {
@@ -19,11 +20,8 @@ namespace kRPG.GUI
 
     public class SpellcraftingGUI : BaseGui
     {
-        private readonly Func<Vector2> guiPosition;
-
         public GlyphSlot[] glyphs = new GlyphSlot[3];
-
-        private float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
+        private readonly Func<Vector2> guiPosition;
 
         public SpellcraftingGUI(Mod mod)
         {
@@ -36,6 +34,13 @@ namespace kRPG.GUI
             glyphs[2] = new GlyphSlot(() => guiPosition() + new Vector2(84f, 106f) * Scale, () => Scale, GLYPHTYPE.MOON);
 
             guiElements.Add(this);
+        }
+
+        private float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
+
+        public override void OnClose()
+        {
+            Main.LocalPlayer.GetModPlayer<PlayerCharacter>().selectedAbility = null;
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
@@ -67,28 +72,13 @@ namespace kRPG.GUI
         {
             return Main.LocalPlayer.GetModPlayer<PlayerCharacter>().selectedAbility != null;
         }
-
-        public override void OnClose()
-        {
-            Main.LocalPlayer.GetModPlayer<PlayerCharacter>().selectedAbility = null;
-        }
     }
 
     public class GlyphSlot
     {
-        private readonly GLYPHTYPE type;
-
-        private Item Glyph
-        {
-            get => Ability.glyphs[(byte) type];
-            set => Ability.glyphs[(byte) type] = value;
-        }
-
         private readonly Func<Vector2> position;
         private readonly Func<float> scale;
-        private Rectangle Bounds => new Rectangle((int) position().X, (int) position().Y, (int) (30 * scale()), (int) (30 * scale()));
-
-        private ProceduralSpell Ability => Main.LocalPlayer.GetModPlayer<PlayerCharacter>().selectedAbility;
+        private readonly GLYPHTYPE type;
 
         public GlyphSlot(Func<Vector2> position, Func<float> scale, GLYPHTYPE type)
         {
@@ -97,23 +87,13 @@ namespace kRPG.GUI
             this.scale = scale;
         }
 
-        private bool CanPlaceItem(Item item)
-        {
-            bool check = false;
-            switch (type)
-            {
-                case GLYPHTYPE.STAR:
-                    check = item.modItem is Items.Glyphs.Star;
-                    break;
-                case GLYPHTYPE.CROSS:
-                    check = item.modItem is Cross;
-                    break;
-                case GLYPHTYPE.MOON:
-                    check = item.modItem is Moon;
-                    break;
-            }
+        private ProceduralSpell Ability => Main.LocalPlayer.GetModPlayer<PlayerCharacter>().selectedAbility;
+        private Rectangle Bounds => new Rectangle((int) position().X, (int) position().Y, (int) (30 * scale()), (int) (30 * scale()));
 
-            return check || item.type == 0;
+        private Item Glyph
+        {
+            get => Ability.glyphs[(byte) type];
+            set => Ability.glyphs[(byte) type] = value;
         }
 
         public bool AttemptPlace()
@@ -138,6 +118,25 @@ namespace kRPG.GUI
             Main.mouseItem = prevItem;
             Main.PlaySound(SoundID.Item4, Main.screenPosition + Bounds.Center());
             return true;
+        }
+
+        private bool CanPlaceItem(Item item)
+        {
+            bool check = false;
+            switch (type)
+            {
+                case GLYPHTYPE.STAR:
+                    check = item.modItem is Star;
+                    break;
+                case GLYPHTYPE.CROSS:
+                    check = item.modItem is Cross;
+                    break;
+                case GLYPHTYPE.MOON:
+                    check = item.modItem is Moon;
+                    break;
+            }
+
+            return check || item.type == 0;
         }
 
         public void Draw(SpriteBatch spriteBatch)

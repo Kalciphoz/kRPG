@@ -14,30 +14,30 @@ namespace kRPG.Items.Weapons
 {
     public class SwordAccent
     {
-        public static SwordAccent none;
-        public static SwordAccent gemRed;
-        public static SwordAccent flame;
-        public static SwordAccent gemGreen;
-        public static SwordAccent gemBlue;
-        public static SwordAccent gemPurple;
-
         public static Dictionary<int, SwordAccent> accents = new Dictionary<int, SwordAccent>();
-
-        public int type = 0;
-        public Texture2D texture;
-        public Vector2 origin;
+        public static SwordAccent flame;
+        public static SwordAccent gemBlue;
+        public static SwordAccent gemGreen;
+        public static SwordAccent gemPurple;
+        public static SwordAccent gemRed;
+        public static SwordAccent none;
+        public int critBonus;
         public float dpsModifier = 1f;
-        public int critBonus = 0;
-        public string suffix = "";
-        public int mana = 0;
-
-        public Action<Player, NPC, ProceduralSword, int, bool> onHit;
         public Action<Rectangle, Player> effect;
 
-        public Dictionary<ELEMENT, float> eleDamage = new Dictionary<ELEMENT, float>()
+        public Dictionary<ELEMENT, float> eleDamage = new Dictionary<ELEMENT, float>
         {
             {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
         };
+
+        public int mana;
+
+        public Action<Player, NPC, ProceduralSword, int, bool> onHit;
+        public Vector2 origin;
+        public string suffix = "";
+        public Texture2D texture;
+
+        public int type;
 
         public SwordAccent(string texture, string suffix, int origin_x, int origin_y, int mana = 0,
             Action<Player, NPC, ProceduralSword, int, bool> onHit = null, float dpsModifier = 1f, int critBonus = 0, Action<Rectangle, Player> effect = null)
@@ -56,18 +56,6 @@ namespace kRPG.Items.Weapons
 
             if (!accents.ContainsKey(type))
                 accents.Add(type, this);
-        }
-
-        public SwordAccent setEleDamage(Dictionary<ELEMENT, float> eleDamage)
-        {
-            this.eleDamage = eleDamage;
-            return this;
-        }
-
-        public SwordAccent setEffect(Action<Rectangle, Player> effect)
-        {
-            this.effect = effect;
-            return this;
         }
 
         public static void Initialize()
@@ -101,7 +89,7 @@ namespace kRPG.Items.Weapons
             });
             flame = new SwordAccent("Flame", " of Ignition", 2, 2, 3, delegate(Player player, NPC npc, ProceduralSword sword, int damage, bool crit)
                 {
-                    Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), player.Center);
+                    Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
                     var proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(),
                             Math.Max(1, (int) Math.Round(sword.eleDamage[ELEMENT.FIRE] * damage * 2)), 0f, player.whoAmI)];
@@ -116,7 +104,7 @@ namespace kRPG.Items.Weapons
                 });
             gemGreen = new SwordAccent("GemGreen", " of Thunder", 2, 2, 2, delegate(Player player, NPC npc, ProceduralSword sword, int damage, bool crit)
                 {
-                    Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), player.Center);
+                    Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
                     var proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(),
                             Math.Max(1, damage / 6),
@@ -158,6 +146,18 @@ namespace kRPG.Items.Weapons
         public static SwordAccent RandomAccent()
         {
             return accents.Random();
+        }
+
+        public SwordAccent setEffect(Action<Rectangle, Player> effect)
+        {
+            this.effect = effect;
+            return this;
+        }
+
+        public SwordAccent setEleDamage(Dictionary<ELEMENT, float> eleDamage)
+        {
+            this.eleDamage = eleDamage;
+            return this;
         }
 
         public static void Unload()

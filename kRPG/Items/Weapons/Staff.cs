@@ -8,32 +8,33 @@ namespace kRPG.Items.Weapons
 {
     public class Staff : StaffPart
     {
-        public static Staff carved;
-        public static Staff branch;
-        public static Staff ivy;
         public static Staff arcane;
+        public static Staff bone;
+        public static Staff branch;
+        public static Staff carved;
         public static Staff gilded;
         public static Staff hellstone;
-        public static Staff bone;
+        public static Staff ivy;
 
         public static Dictionary<int, Staff> staves;
         public static Dictionary<STAFFTHEME, List<Staff>> stavesByTheme;
-
-        public int type = 0;
-        public int useTime;
-        public int iterations = 1;
-        public float knockBack;
-        public int critBonus = 0;
         public bool autoswing = true;
-        public string prefix = "";
-        public float mana = 1f;
-        public float shootSpeed = 8f;
-        public bool front = false;
+        public int critBonus;
 
-        public Dictionary<ELEMENT, float> eleDamage = new Dictionary<ELEMENT, float>()
+        public Dictionary<ELEMENT, float> eleDamage = new Dictionary<ELEMENT, float>
         {
             {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
         };
+
+        public bool front;
+        public int iterations = 1;
+        public float knockBack;
+        public float mana = 1f;
+        public string prefix = "";
+        public float shootSpeed = 8f;
+
+        public int type;
+        public int useTime;
 
         public Staff(string texture, int origin_x, int origin_y, int useTime, float knockBack, string prefix, float shootSpeed = 8f, bool front = false,
             float manaMultiplier = 1f, int critBonus = 0, int iterations = 1, bool autoswing = true)
@@ -56,12 +57,6 @@ namespace kRPG.Items.Weapons
                 staves.Add(type, this);
         }
 
-        public Staff SetEleDamage(Dictionary<ELEMENT, float> eleDamage)
-        {
-            this.eleDamage = eleDamage;
-            return this;
-        }
-
         public static void Initialize()
         {
             staves = new Dictionary<int, Staff>();
@@ -74,17 +69,23 @@ namespace kRPG.Items.Weapons
             hellstone = new Staff("Hellstone", 16, 2, 26, 5f, "Molten ", 9f, true);
             bone = new Staff("Bone", 17, 3, 36, 6f, "Underworldly ", 11f, true);
 
-            stavesByTheme = new Dictionary<STAFFTHEME, List<Staff>>()
+            stavesByTheme = new Dictionary<STAFFTHEME, List<Staff>>
             {
-                {STAFFTHEME.WOODEN, new List<Staff>() {carved, branch, ivy}},
-                {STAFFTHEME.DUNGEON, new List<Staff>() {arcane, gilded}},
-                {STAFFTHEME.UNDERWORLD, new List<Staff>() {hellstone, bone}}
+                {STAFFTHEME.WOODEN, new List<Staff> {carved, branch, ivy}},
+                {STAFFTHEME.DUNGEON, new List<Staff> {arcane, gilded}},
+                {STAFFTHEME.UNDERWORLD, new List<Staff> {hellstone, bone}}
             };
         }
 
         public static Staff RandomStaff(STAFFTHEME theme)
         {
             return stavesByTheme[theme].Random();
+        }
+
+        public Staff SetEleDamage(Dictionary<ELEMENT, float> eleDamage)
+        {
+            this.eleDamage = eleDamage;
+            return this;
         }
 
         public static void Unload()

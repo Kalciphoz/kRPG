@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace kRPG.Enums
+﻿namespace kRPG.Enums
 {
     public enum RITUAL : byte
     {
@@ -15,5 +9,5 @@ namespace kRPG.Enums
         ELDRITCH_FURY,
         MIND_FORTRESS,
         BLOOD_DRINKING
-    };
+    }
 }

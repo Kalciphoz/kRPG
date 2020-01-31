@@ -5,8 +5,8 @@ namespace kRPG.Items.Weapons
 {
     public class StaffPart
     {
-        public Texture2D texture;
         public Vector2 origin;
+        public Texture2D texture;
 
         public Point GetDrawOrigin(Point staffSize, Point staffOrigin, Point combinedSize)
         {

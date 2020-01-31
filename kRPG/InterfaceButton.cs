@@ -7,11 +7,11 @@ namespace kRPG
 {
     public class InterfaceButton
     {
-        private readonly Func<Rectangle> position;
-        private readonly Action<Player> pressAction;
         private readonly Action<Player, SpriteBatch> hoverAction;
 
-        private readonly bool hoverActionSet = false;
+        private readonly bool hoverActionSet;
+        private readonly Func<Rectangle> position;
+        private readonly Action<Player> pressAction;
 
         public InterfaceButton(Func<Rectangle> position, Action<Player> pressAction)
         {

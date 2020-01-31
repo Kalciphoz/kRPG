@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 
 namespace kRPG.GUI
 {
@@ -11,11 +10,6 @@ namespace kRPG.GUI
         private Vector2 GuiPosition => new Vector2(Main.screenWidth - GFX.skillSlot.Width * 8 * scale, Main.screenHeight - GFX.skillSlot.Height * scale - 12);
 
         private float scale => Math.Min(1f, Main.screenWidth / 1920f);
-
-        public AbilitiesGUI() 
-        {
-
-        }
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {

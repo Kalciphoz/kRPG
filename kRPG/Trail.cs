@@ -7,11 +7,11 @@ namespace kRPG
 {
     public class Trail
     {
-        private readonly Vector2 position;
-        private readonly Action<SpriteBatch, Player, Vector2, Vector2[], float> draw;
-        private int timeleft;
         public Vector2[] displacement;
+        private readonly Action<SpriteBatch, Player, Vector2, Vector2[], float> draw;
+        private readonly Vector2 position;
         public float scale = 1f;
+        private int timeleft;
 
         public Trail(Vector2 position, int timeleft, Action<SpriteBatch, Player, Vector2, Vector2[], float> draw)
         {

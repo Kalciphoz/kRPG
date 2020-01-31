@@ -15,20 +15,23 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.UI.Chat;
 using Terraria.UI.Gamepad;
-using LanguageManager = On.Terraria.Localization.LanguageManager;
 
 namespace kRPG.GUI
 {
     public class InventoryGUI : BaseGui
     {
-        public Vector2 origin => new Vector2(40f, 8f) * scale;
+        private static readonly FieldInfo AllChestStackHover = typeof(Main).GetField("allChestStackHover", BindingFlags.NonPublic | BindingFlags.Static);
+        private const int BarLength = 192;
 
-        private float scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
+        private static readonly MethodInfo DrawPvp = typeof(Main).GetMethod("DrawPVPIcons", BindingFlags.NonPublic | BindingFlags.Static);
 
-        public override bool PreDraw()
-        {
-            return Main.playerInventory;
-        }
+        private static readonly FieldInfo InventorySortMouseOver =
+            typeof(Main).GetField("inventorySortMouseOver", BindingFlags.NonPublic | BindingFlags.Static);
+
+        private static readonly FieldInfo mH = typeof(Main).GetField("mH", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly FieldInfo mouseReforge = typeof(Main).GetField("mouseReforge", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo PageIcons = typeof(Main).GetMethod("DrawPageIcons", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly FieldInfo ReforgeScale = typeof(Main).GetField("reforgeScale", BindingFlags.NonPublic | BindingFlags.Static);
 
         public InventoryGUI(PlayerCharacter character, Mod mod)
         {
@@ -71,7 +74,7 @@ namespace kRPG.GUI
                     character.CloseGuIs();
                     Main.PlaySound(SoundID.MenuTick);
                     character.levelGUI.guiActive = player.GetModPlayer<PlayerCharacter>().UnspentPoints();
-                }, delegate(Player player, SpriteBatch spriteBatch)
+                }, delegate
                 {
                     Main.LocalPlayer.mouseInterface = true;
                     string s = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>().UnspentPoints()
@@ -81,158 +84,12 @@ namespace kRPG.GUI
                 });
         }
 
-        private Vector2 pointsOrigin => origin + new Vector2(538f, 76f) * scale;
-        private const int BarLength = 192;
         private float barX => 314f * scale;
+        public Vector2 origin => new Vector2(40f, 8f) * scale;
 
-        public override void PostDraw(SpriteBatch spriteBatch, Player player)
-        {
-            var character = player.GetModPlayer<PlayerCharacter>();
+        private Vector2 pointsOrigin => origin + new Vector2(538f, 76f) * scale;
 
-            for (int i = 0; i < 40; i += 1)
-                character.inventories[character.activeInvPage][i] = player.inventory[i + 10];
-
-            if ((int) Main.time % 30 < 1)
-                API.FindRecipes();
-
-            Vanilla(!character.statPage);
-            if (character.statPage) DrawStatPage(spriteBatch, character);
-            spriteBatch.Draw(GFX.inventoryFrame, new Vector2((int) origin.X, (int) origin.Y), Color.White, scale);
-            if (!character.statPage) spriteBatch.Draw(GFX.inventorySeparator, new Vector2(origin.X + 56 * scale, origin.Y + 354 * scale), Color.White, scale);
-            DrawHotbar(spriteBatch);
-            spriteBatch.Draw(character.statPage ? GFX.buttonStatsPressed : GFX.buttonStats, origin + new Vector2(142f, 102f) * scale, Color.White, scale);
-            spriteBatch.Draw(character.activeInvPage == 0 && !character.statPage ? GFX.buttonPage1Pressed : GFX.buttonPage1,
-                origin + new Vector2(174f, 102f) * scale, Color.White, scale);
-            spriteBatch.Draw(character.activeInvPage == 1 && !character.statPage ? GFX.buttonPage2Pressed : GFX.buttonPage2,
-                origin + new Vector2(206f, 102f) * scale, Color.White, scale);
-            spriteBatch.Draw(character.activeInvPage == 2 && !character.statPage ? GFX.buttonPage3Pressed : GFX.buttonPage3,
-                origin + new Vector2(238f, 102f) * scale, Color.White, scale);
-            StatusBar.DrawNumerals(spriteBatch, player.GetModPlayer<PlayerCharacter>().level, scale);
-
-            int currentLifeLength = (int) Math.Round(player.statLife / (decimal) player.statLifeMax2 * BarLength);
-            spriteBatch.Draw(GFX.inventoryLife, origin + new Vector2(barX, 70 * scale), new Rectangle(0, 0, currentLifeLength, 20), Color.White, 0f,
-                Vector2.Zero, scale, SpriteEffects.None, 0f);
-            int currentManaLength = (int) Math.Round(character.mana / (decimal) player.statManaMax2 * BarLength);
-            spriteBatch.Draw(GFX.inventoryMana, origin + new Vector2(barX, 98 * scale), new Rectangle(0, 0, currentManaLength, 16), Color.White, 0f,
-                Vector2.Zero, scale, SpriteEffects.None, 0f);
-            int currentXPLength = (int) Math.Round(BarLength * (decimal) character.xp / (decimal) character.ExperienceToLevel());
-            spriteBatch.Draw(GFX.inventoryXp, origin + new Vector2(barX, 126 * scale), new Rectangle(0, 0, currentXPLength, 8), Color.White, 0f, Vector2.Zero,
-                scale, SpriteEffects.None, 0f);
-            spriteBatch.Draw(GFX.inventoryBarCovers, origin + new Vector2(302, 68) * scale, Color.White, scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife.ToString() + " / " + player.statLifeMax2.ToString(),
-                origin + new Vector2(barX + 16f * scale, 72f * scale), Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.mana.ToString() + " / " + player.statManaMax2.ToString(),
-                origin + new Vector2(barX + 16f * scale, 100f * scale), Color.White, 0.6f * scale);
-
-            if (character.UnspentPoints())
-                spriteBatch.Draw(GFX.inventoryPoints, pointsOrigin, Color.White, scale);
-
-            //Mod mod = ModLoader.GetMod("kRPG");
-            spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<PermanenceCrown>()], origin + new Vector2(600f, 68f) * scale, Color.White, scale);
-            spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.permanence.ToString(), origin + new Vector2(640f, 72f) * scale, Color.White,
-                scale * 1.2f);
-            spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<BlacksmithCrown>()], origin + new Vector2(600f, 108f) * scale, Color.White, scale);
-            spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.transcendence.ToString(), origin + new Vector2(640f, 112f) * scale,
-                Color.White, scale * 1.2f);
-
-            StatusBar.DrawBuffs();
-        }
-
-        private static readonly MethodInfo DrawPvp = typeof(Main).GetMethod("DrawPVPIcons", BindingFlags.NonPublic | BindingFlags.Static);
-        private static readonly MethodInfo PageIcons = typeof(Main).GetMethod("DrawPageIcons", BindingFlags.NonPublic | BindingFlags.Static);
-        private static readonly FieldInfo mH = typeof(Main).GetField("mH", BindingFlags.NonPublic | BindingFlags.Static);
-        private static readonly FieldInfo mouseReforge = typeof(Main).GetField("mouseReforge", BindingFlags.NonPublic | BindingFlags.Static);
-        private static readonly FieldInfo ReforgeScale = typeof(Main).GetField("reforgeScale", BindingFlags.NonPublic | BindingFlags.Static);
-        private static readonly FieldInfo AllChestStackHover = typeof(Main).GetField("allChestStackHover", BindingFlags.NonPublic | BindingFlags.Static);
-
-        private static readonly FieldInfo InventorySortMouseOver =
-            typeof(Main).GetField("inventorySortMouseOver", BindingFlags.NonPublic | BindingFlags.Static);
-
-        private void DrawStatPage(SpriteBatch spriteBatch, PlayerCharacter character)
-        {
-            var panelOrigin = origin + new Vector2(56, 146) * scale;
-            spriteBatch.Draw(GFX.inventoryPanel, panelOrigin, Color.White, scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.ExperienceToLevel() - character.xp + " XP to level",
-                panelOrigin + new Vector2(24f, 24f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Resilience:", panelOrigin + new Vector2(24f, 42f) * scale, new Color(223, 0, 0),
-                0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.RESILIENCE).ToString(), panelOrigin + new Vector2(128f, 42f) * scale,
-                Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Quickness:", panelOrigin + new Vector2(24f, 60f) * scale, new Color(0, 191, 31),
-                0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.QUICKNESS).ToString(), panelOrigin + new Vector2(128f, 60f) * scale,
-                Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Potency:", panelOrigin + new Vector2(24f, 78f) * scale, new Color(27, 65, 255), 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.POTENCY).ToString(), panelOrigin + new Vector2(128f, 78f) * scale,
-                Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Wits:", panelOrigin + new Vector2(24f, 96f) * scale, new Color(239, 223, 31), 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.WITS).ToString(), panelOrigin + new Vector2(128f, 96f) * scale,
-                Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Damage:", panelOrigin + new Vector2(24f, 114f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(character.damageMultiplier * 100f) + "%",
-                panelOrigin + new Vector2(128f, 114f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Melee speed:", panelOrigin + new Vector2(24f, 132f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(1f / character.player.meleeSpeed * 100f) + "%",
-                panelOrigin + new Vector2(128f, 132f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Crit chance:", panelOrigin + new Vector2(24f, 150f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "+" + character.critBoost.ToString() + "%", panelOrigin + new Vector2(120f, 150f) * scale,
-                Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Crit multiplier:", panelOrigin + new Vector2(24f, 168f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round((character.damageMultiplier + character.critMultiplier) * 200f) + "%",
-                panelOrigin + new Vector2(128f, 168f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Defense:", panelOrigin + new Vector2(24f, 184f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.player.statDefense.ToString(), panelOrigin + new Vector2(128f, 184f) * scale,
-                Color.White, 0.8f * scale);
-
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Fire resistance:", panelOrigin + new Vector2(184f, 42f) * scale, new Color(255, 63, 0),
-                0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.FIRE].ToString(), panelOrigin + new Vector2(288f, 42f) * scale,
-                Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Cold resistance:", panelOrigin + new Vector2(184f, 60f) * scale, new Color(63, 127, 255),
-                0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.COLD].ToString(), panelOrigin + new Vector2(288f, 60f) * scale,
-                Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Light. resist.:", panelOrigin + new Vector2(184f, 78f) * scale, new Color(255, 239, 0),
-                0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.LIGHTNING].ToString(),
-                panelOrigin + new Vector2(288f, 78f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Shadow resist.:", panelOrigin + new Vector2(184f, 96f) * scale, new Color(95, 0, 191),
-                0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.SHADOW].ToString(), panelOrigin + new Vector2(288f, 96f) * scale,
-                Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Evasion:", panelOrigin + new Vector2(184f, 114f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.evasion.ToString(), panelOrigin + new Vector2(288f, 114f) * scale, Color.White,
-                0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Dodge chance:", panelOrigin + new Vector2(184f, 132f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(80f - 80 * 25 / (25 + character.evasion)) + "%",
-                panelOrigin + new Vector2(288f, 132f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Crit avoidance:", panelOrigin + new Vector2(184f, 150f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText,
-                Math.Round(90f - 90 * 38 / (38 + character.evasion + character.TotalStats(STAT.WITS) * 2)).ToString() + "%",
-                panelOrigin + new Vector2(288f, 150f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Accuracy:", panelOrigin + new Vector2(184f, 168f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.accuracy.ToString(), panelOrigin + new Vector2(288f, 168f) * scale, Color.White,
-                0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Hit chance:", panelOrigin + new Vector2(184f, 186f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(character.hitChance * 100) + "%", panelOrigin + new Vector2(288f, 186f) * scale,
-                Color.White, 0.8f * scale);
-
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Life regen:", panelOrigin + new Vector2(344f, 42f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, (Math.Round(character.lifeRegen * 10) / 10).ToString(),
-                panelOrigin + new Vector2(448f, 42f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Mana regen:", panelOrigin + new Vector2(344f, 60f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, (Math.Round(character.manaRegen * 10) / 10).ToString(),
-                panelOrigin + new Vector2(448f, 60f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Movespeed:", panelOrigin + new Vector2(344f, 78f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(character.player.moveSpeed * 100) + "%",
-                panelOrigin + new Vector2(448f, 78f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Jump boost:", panelOrigin + new Vector2(344f, 96f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.player.jumpSpeedBoost.ToString(), panelOrigin + new Vector2(448f, 96f) * scale,
-                Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Life leech:", panelOrigin + new Vector2(344f, 114f) * scale, Color.White, 0.8f * scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.lifeLeech * 100 + "%", panelOrigin + new Vector2(448f, 114f) * scale, Color.White,
-                0.8f * scale);
-        }
+        private float scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
 
         private void DrawHotbar(SpriteBatch spriteBatch)
         {
@@ -240,7 +97,7 @@ namespace kRPG.GUI
             Main.inventoryScale = scale;
             for (int i = 0; i < 10; i++)
             {
-                float x2 = origin.X + 54 * scale + (float) (i * 52 * scale);
+                float x2 = origin.X + 54 * scale + i * 52 * scale;
                 float y2 = origin.Y + 364 * scale;
                 if (Main.mouseX >= x2 && Main.mouseX <= x2 + Main.inventoryBackTexture.Width * Main.inventoryScale && Main.mouseY >= y2 &&
                     Main.mouseY <= y2 + Main.inventoryBackTexture.Height * Main.inventoryScale && !PlayerInput.IgnoreMouseInterface)
@@ -267,8 +124,7 @@ namespace kRPG.GUI
                     ItemSlot.MouseHover(Main.player[Main.myPlayer].inventory, 0, i);
                 }
 
-                API.ItemSlotDrawExtension(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 0, i, new Vector2((float) x2, (float) y2), Color.White,
-                    Color.White);
+                API.ItemSlotDrawExtension(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 0, i, new Vector2(x2, y2), Color.White, Color.White);
             }
 
             Main.inventoryScale = oldInvScale;
@@ -338,6 +194,150 @@ namespace kRPG.GUI
             Main.instance.invBottom = (int) (436 * scale);
         }
 
+        private void DrawStatPage(SpriteBatch spriteBatch, PlayerCharacter character)
+        {
+            var panelOrigin = origin + new Vector2(56, 146) * scale;
+            spriteBatch.Draw(GFX.inventoryPanel, panelOrigin, Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.ExperienceToLevel() - character.xp + " XP to level",
+                panelOrigin + new Vector2(24f, 24f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Resilience:", panelOrigin + new Vector2(24f, 42f) * scale, new Color(223, 0, 0),
+                0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.RESILIENCE).ToString(), panelOrigin + new Vector2(128f, 42f) * scale,
+                Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Quickness:", panelOrigin + new Vector2(24f, 60f) * scale, new Color(0, 191, 31),
+                0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.QUICKNESS).ToString(), panelOrigin + new Vector2(128f, 60f) * scale,
+                Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Potency:", panelOrigin + new Vector2(24f, 78f) * scale, new Color(27, 65, 255), 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.POTENCY).ToString(), panelOrigin + new Vector2(128f, 78f) * scale,
+                Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Wits:", panelOrigin + new Vector2(24f, 96f) * scale, new Color(239, 223, 31), 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.WITS).ToString(), panelOrigin + new Vector2(128f, 96f) * scale,
+                Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Damage:", panelOrigin + new Vector2(24f, 114f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(character.damageMultiplier * 100f) + "%",
+                panelOrigin + new Vector2(128f, 114f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Melee speed:", panelOrigin + new Vector2(24f, 132f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(1f / character.player.meleeSpeed * 100f) + "%",
+                panelOrigin + new Vector2(128f, 132f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Crit chance:", panelOrigin + new Vector2(24f, 150f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "+" + character.critBoost + "%", panelOrigin + new Vector2(120f, 150f) * scale, Color.White,
+                0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Crit multiplier:", panelOrigin + new Vector2(24f, 168f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round((character.damageMultiplier + character.critMultiplier) * 200f) + "%",
+                panelOrigin + new Vector2(128f, 168f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Defense:", panelOrigin + new Vector2(24f, 184f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.player.statDefense.ToString(), panelOrigin + new Vector2(128f, 184f) * scale,
+                Color.White, 0.8f * scale);
+
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Fire resistance:", panelOrigin + new Vector2(184f, 42f) * scale, new Color(255, 63, 0),
+                0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.FIRE].ToString(), panelOrigin + new Vector2(288f, 42f) * scale,
+                Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Cold resistance:", panelOrigin + new Vector2(184f, 60f) * scale, new Color(63, 127, 255),
+                0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.COLD].ToString(), panelOrigin + new Vector2(288f, 60f) * scale,
+                Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Light. resist.:", panelOrigin + new Vector2(184f, 78f) * scale, new Color(255, 239, 0),
+                0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.LIGHTNING].ToString(),
+                panelOrigin + new Vector2(288f, 78f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Shadow resist.:", panelOrigin + new Vector2(184f, 96f) * scale, new Color(95, 0, 191),
+                0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.resistance[ELEMENT.SHADOW].ToString(), panelOrigin + new Vector2(288f, 96f) * scale,
+                Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Evasion:", panelOrigin + new Vector2(184f, 114f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.evasion.ToString(), panelOrigin + new Vector2(288f, 114f) * scale, Color.White,
+                0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Dodge chance:", panelOrigin + new Vector2(184f, 132f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(80f - 80 * 25 / (25 + character.evasion)) + "%",
+                panelOrigin + new Vector2(288f, 132f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Crit avoidance:", panelOrigin + new Vector2(184f, 150f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText,
+                Math.Round(90f - 90 * 38 / (38 + character.evasion + character.TotalStats(STAT.WITS) * 2)) + "%", panelOrigin + new Vector2(288f, 150f) * scale,
+                Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Accuracy:", panelOrigin + new Vector2(184f, 168f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.accuracy.ToString(), panelOrigin + new Vector2(288f, 168f) * scale, Color.White,
+                0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Hit chance:", panelOrigin + new Vector2(184f, 186f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(character.hitChance * 100) + "%", panelOrigin + new Vector2(288f, 186f) * scale,
+                Color.White, 0.8f * scale);
+
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Life regen:", panelOrigin + new Vector2(344f, 42f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, (Math.Round(character.lifeRegen * 10) / 10).ToString(),
+                panelOrigin + new Vector2(448f, 42f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Mana regen:", panelOrigin + new Vector2(344f, 60f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, (Math.Round(character.manaRegen * 10) / 10).ToString(),
+                panelOrigin + new Vector2(448f, 60f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Movespeed:", panelOrigin + new Vector2(344f, 78f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(character.player.moveSpeed * 100) + "%",
+                panelOrigin + new Vector2(448f, 78f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Jump boost:", panelOrigin + new Vector2(344f, 96f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.player.jumpSpeedBoost.ToString(), panelOrigin + new Vector2(448f, 96f) * scale,
+                Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Life leech:", panelOrigin + new Vector2(344f, 114f) * scale, Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.lifeLeech * 100 + "%", panelOrigin + new Vector2(448f, 114f) * scale, Color.White,
+                0.8f * scale);
+        }
+
+        public override void PostDraw(SpriteBatch spriteBatch, Player player)
+        {
+            var character = player.GetModPlayer<PlayerCharacter>();
+
+            for (int i = 0; i < 40; i += 1)
+                character.inventories[character.activeInvPage][i] = player.inventory[i + 10];
+
+            if ((int) Main.time % 30 < 1)
+                API.FindRecipes();
+
+            Vanilla(!character.statPage);
+            if (character.statPage) DrawStatPage(spriteBatch, character);
+            spriteBatch.Draw(GFX.inventoryFrame, new Vector2((int) origin.X, (int) origin.Y), Color.White, scale);
+            if (!character.statPage) spriteBatch.Draw(GFX.inventorySeparator, new Vector2(origin.X + 56 * scale, origin.Y + 354 * scale), Color.White, scale);
+            DrawHotbar(spriteBatch);
+            spriteBatch.Draw(character.statPage ? GFX.buttonStatsPressed : GFX.buttonStats, origin + new Vector2(142f, 102f) * scale, Color.White, scale);
+            spriteBatch.Draw(character.activeInvPage == 0 && !character.statPage ? GFX.buttonPage1Pressed : GFX.buttonPage1,
+                origin + new Vector2(174f, 102f) * scale, Color.White, scale);
+            spriteBatch.Draw(character.activeInvPage == 1 && !character.statPage ? GFX.buttonPage2Pressed : GFX.buttonPage2,
+                origin + new Vector2(206f, 102f) * scale, Color.White, scale);
+            spriteBatch.Draw(character.activeInvPage == 2 && !character.statPage ? GFX.buttonPage3Pressed : GFX.buttonPage3,
+                origin + new Vector2(238f, 102f) * scale, Color.White, scale);
+            StatusBar.DrawNumerals(spriteBatch, player.GetModPlayer<PlayerCharacter>().level, scale);
+
+            int currentLifeLength = (int) Math.Round(player.statLife / (decimal) player.statLifeMax2 * BarLength);
+            spriteBatch.Draw(GFX.inventoryLife, origin + new Vector2(barX, 70 * scale), new Rectangle(0, 0, currentLifeLength, 20), Color.White, 0f,
+                Vector2.Zero, scale, SpriteEffects.None, 0f);
+            int currentManaLength = (int) Math.Round(character.mana / (decimal) player.statManaMax2 * BarLength);
+            spriteBatch.Draw(GFX.inventoryMana, origin + new Vector2(barX, 98 * scale), new Rectangle(0, 0, currentManaLength, 16), Color.White, 0f,
+                Vector2.Zero, scale, SpriteEffects.None, 0f);
+            int currentXPLength = (int) Math.Round(BarLength * (decimal) character.xp / character.ExperienceToLevel());
+            spriteBatch.Draw(GFX.inventoryXp, origin + new Vector2(barX, 126 * scale), new Rectangle(0, 0, currentXPLength, 8), Color.White, 0f, Vector2.Zero,
+                scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(GFX.inventoryBarCovers, origin + new Vector2(302, 68) * scale, Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife + " / " + player.statLifeMax2,
+                origin + new Vector2(barX + 16f * scale, 72f * scale), Color.White, 0.8f * scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.mana + " / " + player.statManaMax2,
+                origin + new Vector2(barX + 16f * scale, 100f * scale), Color.White, 0.6f * scale);
+
+            if (character.UnspentPoints())
+                spriteBatch.Draw(GFX.inventoryPoints, pointsOrigin, Color.White, scale);
+
+            //Mod mod = ModLoader.GetMod("kRPG");
+            spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<PermanenceCrown>()], origin + new Vector2(600f, 68f) * scale, Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.permanence, origin + new Vector2(640f, 72f) * scale, Color.White,
+                scale * 1.2f);
+            spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<BlacksmithCrown>()], origin + new Vector2(600f, 108f) * scale, Color.White, scale);
+            spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.transcendence, origin + new Vector2(640f, 112f) * scale, Color.White,
+                scale * 1.2f);
+
+            StatusBar.DrawBuffs();
+        }
+
+        public override bool PreDraw()
+        {
+            return Main.playerInventory;
+        }
+
         private void Vanilla(bool drawInv)
         {
             try
@@ -364,7 +364,7 @@ namespace kRPG.GUI
                     ItemSlot.MouseHover(ref Main.player[Main.myPlayer].trashItem, 6);
                 }
 
-                ItemSlot.Draw(Main.spriteBatch, ref Main.player[Main.myPlayer].trashItem, 6, new Vector2(num, num2), default(Color));
+                ItemSlot.Draw(Main.spriteBatch, ref Main.player[Main.myPlayer].trashItem, 6, new Vector2(num, num2));
 
                 if (drawInv) DrawInventory(Main.spriteBatch);
 
@@ -383,8 +383,8 @@ namespace kRPG.GUI
                         num6 = 1;
 
                     Main.spriteBatch.Draw(Main.HBLockTexture[num6], new Vector2(num7, num8),
-                        new Rectangle?(new Rectangle(0, 0, Main.HBLockTexture[num6].Width, Main.HBLockTexture[num6].Height)), Main.inventoryBack, 0f,
-                        default(Vector2), 0.9f, SpriteEffects.None, 0f);
+                        new Rectangle(0, 0, Main.HBLockTexture[num6].Width, Main.HBLockTexture[num6].Height), Main.inventoryBack, 0f, default, 0.9f,
+                        SpriteEffects.None, 0f);
                     if (Main.mouseX > num7 && Main.mouseX < num7 + Main.HBLockTexture[num6].Width * 0.9f && Main.mouseY > num8 &&
                         Main.mouseY < num8 + Main.HBLockTexture[num6].Height * 0.9f)
                     {
@@ -392,19 +392,19 @@ namespace kRPG.GUI
                         if (!Main.player[Main.myPlayer].hbLocked)
                         {
                             //main.MouseText(Lang.inter[5].Value, 0, 0, -1, -1, -1, -1);
-                            main.MouseText(Language.GetTextValue("LegacyInterface.5"), 0, 0, -1, -1, -1, -1);
+                            main.MouseText(Language.GetTextValue("LegacyInterface.5"));
                             Main.mouseText = true;
                         }
                         else
                         {
                             //main.MouseText(Lang.inter[6].Value, 0, 0, -1, -1, -1, -1);
-                            main.MouseText(Language.GetTextValue("LegacyInterface.6"), 0, 0, -1, -1, -1, -1);
+                            main.MouseText(Language.GetTextValue("LegacyInterface.6"));
                             Main.mouseText = true;
                         }
 
                         if (Main.mouseLeft && Main.mouseLeftRelease)
                         {
-                            Main.PlaySound(22, -1, -1, 1, 1f, 0f);
+                            Main.PlaySound(22);
                             Main.player[Main.myPlayer].hbLocked = !Main.player[Main.myPlayer].hbLocked;
                         }
                     }
@@ -455,7 +455,7 @@ namespace kRPG.GUI
                                         Main.playerInventory = false;
                                         Main.player[Main.myPlayer].talkNPC = -1;
                                         Main.npcChatCornerItem = 0;
-                                        Main.PlaySound(10, -1, -1, 1, 1f, 0f);
+                                        Main.PlaySound(10);
                                         float num16 = 2.5f;
                                         Main.mapFullscreenScale = num16;
                                         Main.mapFullscreen = true;
@@ -464,22 +464,22 @@ namespace kRPG.GUI
                                     }
                                     case 1:
                                         Main.mapStyle = 0;
-                                        Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                                        Main.PlaySound(12);
                                         break;
                                     case 2:
                                         Main.mapStyle = 1;
-                                        Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                                        Main.PlaySound(12);
                                         break;
                                     case 3:
                                         Main.mapStyle = 2;
-                                        Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                                        Main.PlaySound(12);
                                         break;
                                 }
                         }
 
-                        Main.spriteBatch.Draw(Main.mapIconTexture[num14], new Vector2((float) num12, (float) num13),
-                            new Rectangle?(new Rectangle(0, 0, Main.mapIconTexture[num14].Width, Main.mapIconTexture[num14].Height)),
-                            new Color(num15, num15, num15, num15), 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                        Main.spriteBatch.Draw(Main.mapIconTexture[num14], new Vector2(num12, num13),
+                            new Rectangle(0, 0, Main.mapIconTexture[num14].Width, Main.mapIconTexture[num14].Height), new Color(num15, num15, num15, num15), 0f,
+                            default, 1f, SpriteEffects.None, 0f);
                     }
                 }
 
@@ -496,8 +496,8 @@ namespace kRPG.GUI
                         Main.armorAlpha = 1f;
                 }
 
-                new Color((int) (byte) (Main.mouseTextColor * Main.armorAlpha), (int) (byte) (Main.mouseTextColor * Main.armorAlpha),
-                    (int) (byte) (Main.mouseTextColor * Main.armorAlpha), (int) (byte) (Main.mouseTextColor * Main.armorAlpha));
+                new Color((byte) (Main.mouseTextColor * Main.armorAlpha), (byte) (Main.mouseTextColor * Main.armorAlpha),
+                    (byte) (Main.mouseTextColor * Main.armorAlpha), (byte) (Main.mouseTextColor * Main.armorAlpha));
                 Main.armorHide = false;
                 int num17 = (int) PageIcons.Invoke(main, null);
                 if (num17 > -1)
@@ -506,14 +506,16 @@ namespace kRPG.GUI
                     switch (num17)
                     {
                         case 1:
-                            Main.hoverItemName = Language.GetTextValue("LegacyInterface.80");// Lang.inter[80].Value;
+                            Main.hoverItemName = Language.GetTextValue("LegacyInterface.80"); // Lang.inter[80].Value;
                             break;
                         case 2:
-                            Main.hoverItemName = Language.GetTextValue("LegacyInterface.79");// Lang.inter[79].Value;
+                            Main.hoverItemName = Language.GetTextValue("LegacyInterface.79"); // Lang.inter[79].Value;
                             break;
                         case 3:
                             //Main.hoverItemName = Main.CaptureModeDisabled ? Lang.inter[115].Value : Lang.inter[81].Value;
-                            Main.hoverItemName = Main.CaptureModeDisabled ? Language.GetTextValue("LegacyInterface.115") : Language.GetTextValue("LegacyInterface.81");
+                            Main.hoverItemName = Main.CaptureModeDisabled
+                                ? Language.GetTextValue("LegacyInterface.115")
+                                : Language.GetTextValue("LegacyInterface.81");
                             break;
                     }
                 }
@@ -521,7 +523,7 @@ namespace kRPG.GUI
                 if (Main.EquipPage == 2)
                 {
                     var value = new Point(Main.mouseX, Main.mouseY);
-                    var r = new Rectangle(0, 0, (int) ((float) Main.inventoryBackTexture.Width * Main.inventoryScale),
+                    var r = new Rectangle(0, 0, (int) (Main.inventoryBackTexture.Width * Main.inventoryScale),
                         (int) (Main.inventoryBackTexture.Height * Main.inventoryScale));
                     var inv = Main.player[Main.myPlayer].miscEquips;
                     int num18 = Main.screenWidth - 92;
@@ -590,9 +592,9 @@ namespace kRPG.GUI
                                     }
 
                                     Main.mouseLeftRelease = false;
-                                    Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                                    Main.PlaySound(12);
                                     if (Main.netMode == 1)
-                                        NetMessage.SendData(4, -1, -1, null, Main.myPlayer, 0f, 0f, 0f, 0, 0, 0);
+                                        NetMessage.SendData(4, -1, -1, null, Main.myPlayer);
                                 }
 
                                 hiddenVisible = Main.player[Main.myPlayer].hideMisc[num20] ? 2 : 1;
@@ -605,7 +607,7 @@ namespace kRPG.GUI
                                 ItemSlot.Handle(inv, context, m);
                             }
 
-                            ItemSlot.Draw(Main.spriteBatch, inv, context, m, r.TopLeft(), default(Color));
+                            ItemSlot.Draw(Main.spriteBatch, inv, context, m, r.TopLeft());
                             if (num20 == -1)
                                 continue;
                             Main.spriteBatch.Draw(texture2D, r2.TopLeft(), Color.White * 0.7f);
@@ -663,7 +665,7 @@ namespace kRPG.GUI
                                 itemRarity = -10;
 
                             BuffLoader.ModifyBuffTip(num30, ref Main.buffString, ref itemRarity);
-                            main.MouseTextHackZoom(Lang.GetBuffName(num30), itemRarity, 0);
+                            main.MouseTextHackZoom(Lang.GetBuffName(num30), itemRarity);
                         }
                     }
                 }
@@ -671,9 +673,9 @@ namespace kRPG.GUI
                 else if (Main.EquipPage == 1)
                 {
                     UILinkPointNavigator.Shortcuts.NPCS_LastHovered = -1;
-                    if (Main.mouseX > Main.screenWidth - 64 - 28 && Main.mouseX < (int) ((float) (Main.screenWidth - 64 - 28) + 56f * Main.inventoryScale) &&
-                        Main.mouseY > 174 + (int) mH.GetValue(null) &&
-                        Main.mouseY < (int) ((float) (174 + (int) mH.GetValue(null)) + 448f * Main.inventoryScale) && !PlayerInput.IgnoreMouseInterface)
+                    if (Main.mouseX > Main.screenWidth - 64 - 28 && Main.mouseX < (int) (Main.screenWidth - 64 - 28 + 56f * Main.inventoryScale) &&
+                        Main.mouseY > 174 + (int) mH.GetValue(null) && Main.mouseY < (int) (174 + (int) mH.GetValue(null) + 448f * Main.inventoryScale) &&
+                        !PlayerInput.IgnoreMouseInterface)
                         Main.player[Main.myPlayer].mouseInterface = true;
 
                     int num32 = 0;
@@ -727,17 +729,16 @@ namespace kRPG.GUI
                             {
                                 UILinkPointNavigator.Shortcuts.NPCS_LastHovered = num36;
                                 Main.mouseText = true;
-                                
+
                                 //text = num35 == 0 ? Lang.inter[8].Value: Main.npc[num36].FullName;
                                 text = num35 == 0 ? Language.GetTextValue("LegacyInterface.8") : Main.npc[num36].FullName;
-
 
                                 if (!PlayerInput.IgnoreMouseInterface)
                                 {
                                     Main.player[Main.myPlayer].mouseInterface = true;
                                     if (Main.mouseLeftRelease && Main.mouseLeft && !PlayerInput.UsingGamepadUI && Main.mouseItem.type == 0)
                                     {
-                                        Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                                        Main.PlaySound(12);
                                         main.mouseNPC = num35;
                                         Main.mouseLeftRelease = false;
                                     }
@@ -754,25 +755,23 @@ namespace kRPG.GUI
                             }
 
                             Main.spriteBatch.Draw(texture, new Vector2(num38, num39),
-                                new Rectangle?(new Rectangle(0, 0, Main.inventoryBackTexture.Width, Main.inventoryBackTexture.Height)), white2, 0f,
-                                default(Vector2), Main.inventoryScale, SpriteEffects.None, 0f);
+                                new Rectangle(0, 0, Main.inventoryBackTexture.Width, Main.inventoryBackTexture.Height), white2, 0f, default,
+                                Main.inventoryScale, SpriteEffects.None, 0f);
                             white = Color.White;
                             int num40 = num35;
                             float s = 1f;
                             float num41;
                             if (Main.npcHeadTexture[num40].Width > Main.npcHeadTexture[num40].Height)
-                                num41 = (float) Main.npcHeadTexture[num40].Width;
+                                num41 = Main.npcHeadTexture[num40].Width;
                             else
-                                num41 = (float) Main.npcHeadTexture[num40].Height;
+                                num41 = Main.npcHeadTexture[num40].Height;
 
                             if (num41 > 36f)
                                 s = 36f / num41;
 
-                            Main.spriteBatch.Draw(Main.npcHeadTexture[num40],
-                                new Vector2((float) num38 + 26f * Main.inventoryScale, (float) num39 + 26f * Main.inventoryScale),
-                                new Rectangle?(new Rectangle(0, 0, Main.npcHeadTexture[num40].Width, Main.npcHeadTexture[num40].Height)), white, 0f,
-                                new Vector2((float) (Main.npcHeadTexture[num40].Width / 2), (float) (Main.npcHeadTexture[num40].Height / 2)), s,
-                                SpriteEffects.None, 0f);
+                            Main.spriteBatch.Draw(Main.npcHeadTexture[num40], new Vector2(num38 + 26f * Main.inventoryScale, num39 + 26f * Main.inventoryScale),
+                                new Rectangle(0, 0, Main.npcHeadTexture[num40].Width, Main.npcHeadTexture[num40].Height), white, 0f,
+                                new Vector2(Main.npcHeadTexture[num40].Width / 2, Main.npcHeadTexture[num40].Height / 2), s, SpriteEffects.None, 0f);
                             num32++;
                         }
 
@@ -780,14 +779,14 @@ namespace kRPG.GUI
                     }
 
                     if (text != "" && Main.mouseItem.type == 0)
-                        main.MouseText(text, 0, 0, -1, -1, -1, -1);
+                        main.MouseText(text);
                 }
                 else
                 {
                     int num42 = 4;
-                    if (Main.mouseX > Main.screenWidth - 64 - 28 && Main.mouseX < (int) ((float) (Main.screenWidth - 64 - 28) + 56f * Main.inventoryScale) &&
-                        Main.mouseY > 174 + (int) mH.GetValue(null) &&
-                        Main.mouseY < (int) ((float) (174 + (int) mH.GetValue(null)) + 448f * Main.inventoryScale) && !PlayerInput.IgnoreMouseInterface)
+                    if (Main.mouseX > Main.screenWidth - 64 - 28 && Main.mouseX < (int) (Main.screenWidth - 64 - 28 + 56f * Main.inventoryScale) &&
+                        Main.mouseY > 174 + (int) mH.GetValue(null) && Main.mouseY < (int) (174 + (int) mH.GetValue(null) + 448f * Main.inventoryScale) &&
+                        !PlayerInput.IgnoreMouseInterface)
                         Main.player[Main.myPlayer].mouseInterface = true;
 
                     float num43 = Main.inventoryScale;
@@ -811,7 +810,7 @@ namespace kRPG.GUI
                     {
                         bool flag5 = flag4 && num46 == num44 - 1 && Main.mouseItem.type > 0;
                         int num47 = Main.screenWidth - 64 - 28;
-                        int num48 = (int) ((float) (174 + (int) mH.GetValue(null)) + (float) (num46 * 56) * Main.inventoryScale);
+                        int num48 = (int) (174 + (int) mH.GetValue(null) + num46 * 56 * Main.inventoryScale);
                         new Color(100, 100, 100, 100);
                         if (num46 > 2)
                             num48 += num42;
@@ -823,7 +822,7 @@ namespace kRPG.GUI
                                 SpriteEffects.None, 0f);
                             var value2 = Main.fontMouseText.MeasureString(Main.player[Main.myPlayer].statDefense.ToString());
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, Main.player[Main.myPlayer].statDefense.ToString(),
-                                vector - value2 * 0.5f * Main.inventoryScale, Color.White, 0f, Vector2.Zero, new Vector2(Main.inventoryScale), -1f, 2f);
+                                vector - value2 * 0.5f * Main.inventoryScale, Color.White, 0f, Vector2.Zero, new Vector2(Main.inventoryScale));
                             if (Utils.CenteredRectangle(vector, Main.extraTexture[58].Size()).Contains(new Point(Main.mouseX, Main.mouseY)) &&
                                 !PlayerInput.IgnoreMouseInterface)
                             {
@@ -860,9 +859,9 @@ namespace kRPG.GUI
                             if (Main.mouseLeft && Main.mouseLeftRelease)
                             {
                                 Main.player[Main.myPlayer].hideVisual[num46] = !Main.player[Main.myPlayer].hideVisual[num46];
-                                Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                                Main.PlaySound(12);
                                 if (Main.netMode == 1)
-                                    NetMessage.SendData(4, -1, -1, null, Main.myPlayer, 0f, 0f, 0f, 0, 0, 0);
+                                    NetMessage.SendData(4, -1, -1, null, Main.myPlayer);
                             }
 
                             num51 = Main.player[Main.myPlayer].hideVisual[num46] ? 2 : 1;
@@ -882,7 +881,7 @@ namespace kRPG.GUI
                         if (flag4 && num46 == num44 - 1)
                             Main.inventoryBack = color2;
 
-                        ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].armor, context2, num46, new Vector2(num47, num48), default(Color));
+                        ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].armor, context2, num46, new Vector2(num47, num48));
                         if (num46 <= 2 || num46 >= num44)
                             continue;
                         Main.spriteBatch.Draw(texture2D2, new Vector2(num49, num50), Color.White * 0.7f);
@@ -891,7 +890,6 @@ namespace kRPG.GUI
                         Main.HoverItem = new Item();
                         //Main.hoverItemName = Lang.inter[58 + num51].Value;
                         Main.hoverItemName = Language.GetTextValue("LegacyInterface." + (58 + num51));
-                            
                     }
 
                     Main.inventoryBack = color;
@@ -905,7 +903,7 @@ namespace kRPG.GUI
                     {
                         bool flag6 = false || flag4 && num52 == 10 + num44 - 1 && Main.mouseItem.type > 0;
                         int num53 = Main.screenWidth - 64 - 28 - 47;
-                        int num54 = (int) ((float) (174 + (int) mH.GetValue(null)) + (float) ((num52 - 10) * 56) * Main.inventoryScale);
+                        int num54 = (int) (174 + (int) mH.GetValue(null) + (num52 - 10) * 56 * Main.inventoryScale);
                         new Color(100, 100, 100, 100);
                         if (num52 > 12)
                             num54 += num42;
@@ -934,7 +932,7 @@ namespace kRPG.GUI
                         if (flag4 && num52 == num44 + 10 - 1)
                             Main.inventoryBack = color2;
 
-                        ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].armor, context3, num52, new Vector2(num53, num54), default(Color));
+                        ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].armor, context3, num52, new Vector2(num53, num54));
                     }
 
                     Main.inventoryBack = color;
@@ -972,7 +970,7 @@ namespace kRPG.GUI
                         if (flag4 && num55 == num44 - 1)
                             Main.inventoryBack = color2;
 
-                        ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].dye, 12, num55, new Vector2((float) num56, (float) num57), default(Color));
+                        ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].dye, 12, num55, new Vector2(num56, num57));
                     }
 
                     Main.inventoryBack = color;
@@ -980,15 +978,15 @@ namespace kRPG.GUI
                 }
 
                 int num58 = (Main.screenHeight - 600) / 2;
-                int num59 = (int) ((float) Main.screenHeight / 600f * 250f);
+                int num59 = (int) (Main.screenHeight / 600f * 250f);
                 if (Main.screenHeight < 700)
                 {
                     num58 = (Main.screenHeight - 508) / 2;
-                    num59 = (int) ((float) Main.screenHeight / 600f * 200f);
+                    num59 = (int) (Main.screenHeight / 600f * 200f);
                 }
                 else if (Main.screenHeight < 850)
                 {
-                    num59 = (int) ((float) Main.screenHeight / 600f * 225f);
+                    num59 = (int) (Main.screenHeight / 600f * 225f);
                 }
 
                 if (Main.craftingHide)
@@ -1035,7 +1033,7 @@ namespace kRPG.GUI
                         {
                             int num62 = Main.reforgeItem.value;
                             if (Main.player[Main.myPlayer].discount)
-                                num62 = (int) ((double) num62 * 0.8);
+                                num62 = (int) (num62 * 0.8);
 
                             num62 /= 3;
                             string text3 = "";
@@ -1071,48 +1069,34 @@ namespace kRPG.GUI
                             if (num63 > 0)
                             {
                                 object obj = text3;
-                                text3 = string.Concat(new object[]
-                                {
-                                    //obj, "[c/", Colors.AlphaDarken(Colors.CoinPlatinum).Hex3(), ":", num63, " ", Lang.inter[15].Value, "] "
-                                    obj, "[c/", Colors.AlphaDarken(Colors.CoinPlatinum).Hex3(), ":", num63, " ",Language.GetTextValue("LegacyInterface.15"), "] "
-                                });
+                                text3 = string.Concat(obj, "[c/", Colors.AlphaDarken(Colors.CoinPlatinum).Hex3(), ":", num63, " ",
+                                    Language.GetTextValue("LegacyInterface.15"), "] ");
                             }
 
                             if (num64 > 0)
                             {
                                 object obj2 = text3;
-                                text3 = string.Concat(new object[]
-                                {
-                                    //obj2, "[c/", Colors.AlphaDarken(Colors.CoinGold).Hex3(), ":", num64, " ", Lang.inter[16].Value, "] "
-                                    obj2, "[c/", Colors.AlphaDarken(Colors.CoinGold).Hex3(), ":", num64, " ", Language.GetTextValue("LegacyInterface.16"), "] "
-                                });
+                                text3 = string.Concat(obj2, "[c/", Colors.AlphaDarken(Colors.CoinGold).Hex3(), ":", num64, " ",
+                                    Language.GetTextValue("LegacyInterface.16"), "] ");
                             }
 
                             if (num65 > 0)
                             {
                                 object obj3 = text3;
-                                text3 = string.Concat(new object[]
-                                {
-                                    //obj3, "[c/", Colors.AlphaDarken(Colors.CoinSilver).Hex3(), ":", num65, " ", Lang.inter[17].Value, "] "
-                                    obj3, "[c/", Colors.AlphaDarken(Colors.CoinSilver).Hex3(), ":", num65, " ",Language.GetTextValue("LegacyInterface.17"), "] "
-
-                                });
+                                text3 = string.Concat(obj3, "[c/", Colors.AlphaDarken(Colors.CoinSilver).Hex3(), ":", num65, " ",
+                                    Language.GetTextValue("LegacyInterface.17"), "] ");
                             }
 
                             if (num66 > 0)
                             {
                                 object obj4 = text3;
-                                text3 = string.Concat(new object[]
-                                {
-                                    //obj4, "[c/", Colors.AlphaDarken(Colors.CoinCopper).Hex3(), ":", num66, " ", Lang.inter[18].Value, "] "
-                                    obj4, "[c/", Colors.AlphaDarken(Colors.CoinCopper).Hex3(), ":", num66, " ",Language.GetTextValue("LegacyInterface.18"), "] "
-                                });
+                                text3 = string.Concat(obj4, "[c/", Colors.AlphaDarken(Colors.CoinCopper).Hex3(), ":", num66, " ",
+                                    Language.GetTextValue("LegacyInterface.18"), "] ");
                             }
 
-                            ItemSlot.DrawSavings(Main.spriteBatch, (float) (num60 + 130), (float) main.invBottom, true);
+                            ItemSlot.DrawSavings(Main.spriteBatch, num60 + 130, main.invBottom, true);
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, text3,
-                                new Vector2((float) (num60 + 50) + Main.fontMouseText.MeasureString(text2).X, (float) num61), Color.White, 0f, Vector2.Zero,
-                                Vector2.One, -1f, 2f);
+                                new Vector2(num60 + 50 + Main.fontMouseText.MeasureString(text2).X, num61), Color.White, 0f, Vector2.Zero, Vector2.One);
                             int num68 = num60 + 70;
                             int num69 = num61 + 40;
                             bool flag8 = Main.mouseX > num68 - 15 && Main.mouseX < num68 + 15 && Main.mouseY > num69 - 15 && Main.mouseY < num69 + 15 &&
@@ -1121,27 +1105,27 @@ namespace kRPG.GUI
                             if (flag8)
                                 texture2D3 = Main.reforgeTexture[1];
 
-                            Main.spriteBatch.Draw(texture2D3, new Vector2((float) num68, (float) num69), null, Color.White, 0f, texture2D3.Size() / 2f,
+                            Main.spriteBatch.Draw(texture2D3, new Vector2(num68, num69), null, Color.White, 0f, texture2D3.Size() / 2f,
                                 (float) ReforgeScale.GetValue(null), SpriteEffects.None, 0f);
-                            UILinkPointNavigator.SetPosition(304, new Vector2((float) num68, (float) num69) + texture2D3.Size() / 4f);
+                            UILinkPointNavigator.SetPosition(304, new Vector2(num68, num69) + texture2D3.Size() / 4f);
                             if (flag8)
                             {
                                 //Main.hoverItemName = Lang.inter[19].Value;
                                 Main.hoverItemName = Language.GetTextValue("LegacyInterface.19");
                                 if (!(bool) mouseReforge.GetValue(null))
-                                    Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                                    Main.PlaySound(12);
 
                                 mouseReforge.SetValue(null, true);
                                 Main.player[Main.myPlayer].mouseInterface = true;
-                                if (Main.mouseLeftRelease && Main.mouseLeft && Main.player[Main.myPlayer].CanBuyItem(num62, -1))
+                                if (Main.mouseLeftRelease && Main.mouseLeft && Main.player[Main.myPlayer].CanBuyItem(num62))
                                 {
                                     ItemLoader.PreReforge(Main.reforgeItem);
                                     Main.reforgeItem.position.X = Main.player[Main.myPlayer].position.X + (float) (Main.player[Main.myPlayer].width / 2.0) -
                                                                   (float) (Main.reforgeItem.width / 2.0);
                                     Main.reforgeItem.position.Y = Main.player[Main.myPlayer].position.Y + (float) (Main.player[Main.myPlayer].height / 2.0) -
                                                                   (float) (Main.reforgeItem.height / 2.0);
-                                    ItemText.NewText(Main.reforgeItem, Main.reforgeItem.stack, true, false);
-                                    Main.PlaySound(SoundID.Item37, -1, -1);
+                                    ItemText.NewText(Main.reforgeItem, Main.reforgeItem.stack, true);
+                                    Main.PlaySound(SoundID.Item37);
                                 }
                             }
                             else
@@ -1156,8 +1140,7 @@ namespace kRPG.GUI
                         }
 
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, text2, new Vector2(num60 + 50, num61),
-                            new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, Vector2.Zero, Vector2.One, -1f,
-                            2f);
+                            new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, Vector2.Zero, Vector2.One);
                         if (Main.mouseX >= num60 && Main.mouseX <= num60 + Main.inventoryBackTexture.Width * Main.inventoryScale && Main.mouseY >= num61 &&
                             Main.mouseY <= num61 + Main.inventoryBackTexture.Height * Main.inventoryScale && !PlayerInput.IgnoreMouseInterface)
                         {
@@ -1176,7 +1159,7 @@ namespace kRPG.GUI
                             ItemSlot.MouseHover(ref Main.reforgeItem, 5);
                         }
 
-                        ItemSlot.Draw(Main.spriteBatch, ref Main.reforgeItem, 5, new Vector2(num60, num61), default(Color));
+                        ItemSlot.Draw(Main.spriteBatch, ref Main.reforgeItem, 5, new Vector2(num60, num61));
                     }
                 }
                 else if (Main.InGuideCraftMenu)
@@ -1198,10 +1181,9 @@ namespace kRPG.GUI
                             //text4 = Lang.inter[21].Value + " " + Main.guideItem.Name;
                             text4 = Language.GetTextValue("LegacyInterface.21") + " " + Main.guideItem.Name;
 
-
                             //DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Lang.inter[22].Value,
-                            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.22"),
-                                new Vector2(num70, num71 + 118), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                            Main.spriteBatch.DrawString(Main.fontMouseText, Language.GetTextValue("LegacyInterface.22"), new Vector2(num70, num71 + 118),
+                                color3, 0f, default, 1f, SpriteEffects.None, 0f);
                             int num72 = Main.focusRecipe;
                             int num73 = 0;
                             int num74 = 0;
@@ -1214,57 +1196,56 @@ namespace kRPG.GUI
                                         !Main.recipe[Main.availableRecipe[num72]].needHoney && !Main.recipe[Main.availableRecipe[num72]].needLava &&
                                         !Main.recipe[Main.availableRecipe[num72]].needSnowBiome)
                                     {
-                                        DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.23"),
-                                            new Vector2(num70, num71 + 118 + num75), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                                        break;
+                                        Main.spriteBatch.DrawString(Main.fontMouseText, Language.GetTextValue("LegacyInterface.23"),
+                                            new Vector2(num70, num71 + 118 + num75), color3, 0f, default, 1f, SpriteEffects.None, 0f);
                                     }
 
                                     break;
                                 }
 
                                 num73++;
-                                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText,
+                                Main.spriteBatch.DrawString(Main.fontMouseText,
                                     Lang.GetMapObjectName(MapHelper.TileToLookup(Main.recipe[Main.availableRecipe[num72]].requiredTile[num74], 0)),
-                                    new Vector2(num70, num71 + 118 + num75), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                                    new Vector2(num70, num71 + 118 + num75), color3, 0f, default, 1f, SpriteEffects.None, 0f);
                                 num74++;
                             }
 
                             if (Main.recipe[Main.availableRecipe[num72]].needWater)
                             {
                                 int num76 = (num73 + 1) * 26;
-                                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.53"),
-                                    new Vector2(num70, num71 + 118 + num76), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                                Main.spriteBatch.DrawString(Main.fontMouseText, Language.GetTextValue("LegacyInterface.53"),
+                                    new Vector2(num70, num71 + 118 + num76), color3, 0f, default, 1f, SpriteEffects.None, 0f);
                             }
 
                             if (Main.recipe[Main.availableRecipe[num72]].needHoney)
                             {
                                 int num77 = (num73 + 1) * 26;
-                                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.58"),
-                                    new Vector2(num70, num71 + 118 + num77), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                                Main.spriteBatch.DrawString(Main.fontMouseText, Language.GetTextValue("LegacyInterface.58"),
+                                    new Vector2(num70, num71 + 118 + num77), color3, 0f, default, 1f, SpriteEffects.None, 0f);
                             }
 
                             if (Main.recipe[Main.availableRecipe[num72]].needLava)
                             {
                                 int num78 = (num73 + 1) * 26;
-                                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.56"),
-                                    new Vector2(num70, num71 + 118 + num78), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                                Main.spriteBatch.DrawString(Main.fontMouseText, Language.GetTextValue("LegacyInterface.56"),
+                                    new Vector2(num70, num71 + 118 + num78), color3, 0f, default, 1f, SpriteEffects.None, 0f);
                             }
 
                             if (Main.recipe[Main.availableRecipe[num72]].needSnowBiome)
                             {
                                 int num79 = (num73 + 1) * 26;
-                                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.123"),
-                                    new Vector2(num70, num71 + 118 + num79), color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                                Main.spriteBatch.DrawString(Main.fontMouseText, Language.GetTextValue("LegacyInterface.123"),
+                                    new Vector2(num70, num71 + 118 + num79), color3, 0f, default, 1f, SpriteEffects.None, 0f);
                             }
                         }
                         else
                         {
-                            text4 = Language.GetTextValue("LegacyInterface.24") ;
+                            text4 = Language.GetTextValue("LegacyInterface.24");
                         }
 
-                        DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, text4, new Vector2(num70 + 50, num71 + 12),
-                            new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, default(Vector2), 1f,
-                            SpriteEffects.None, 0f);
+                        Main.spriteBatch.DrawString(Main.fontMouseText, text4, new Vector2(num70 + 50, num71 + 12),
+                            new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, default, 1f, SpriteEffects.None,
+                            0f);
                         new Color(100, 100, 100, 100);
                         if (Main.mouseX >= num70 && Main.mouseX <= num70 + Main.inventoryBackTexture.Width * Main.inventoryScale && Main.mouseY >= num71 &&
                             Main.mouseY <= num71 + Main.inventoryBackTexture.Height * Main.inventoryScale && !PlayerInput.IgnoreMouseInterface)
@@ -1284,7 +1265,7 @@ namespace kRPG.GUI
                             ItemSlot.MouseHover(ref Main.guideItem, 7);
                         }
 
-                        ItemSlot.Draw(Main.spriteBatch, ref Main.guideItem, 7, new Vector2(num70, num71), default(Color));
+                        ItemSlot.Draw(Main.spriteBatch, ref Main.guideItem, 7, new Vector2(num70, num71));
                     }
                 }
 
@@ -1293,8 +1274,8 @@ namespace kRPG.GUI
                     UILinkPointNavigator.Shortcuts.CRAFT_CurrentRecipeBig = -1;
                     UILinkPointNavigator.Shortcuts.CRAFT_CurrentRecipeSmall = -1;
                     if (Main.numAvailableRecipes > 0)
-                        DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.25"), new Vector2(76f, 414 + num58),
-                            color3, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                        Main.spriteBatch.DrawString(Main.fontMouseText, Language.GetTextValue("LegacyInterface.25"), new Vector2(76f, 414 + num58), color3, 0f,
+                            default, 1f, SpriteEffects.None, 0f);
 
                     for (int num80 = 0; num80 < Recipe.maxRecipes; num80++)
                     {
@@ -1308,7 +1289,7 @@ namespace kRPG.GUI
                         if (Main.availableRecipeY[num80] < (num80 - Main.focusRecipe) * 65)
                         {
                             if (Main.availableRecipeY[num80] == 0f && !Main.recFastScroll)
-                                Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                                Main.PlaySound(12);
 
                             Main.availableRecipeY[num80] += 6.5f;
                             if (Main.recFastScroll)
@@ -1320,7 +1301,7 @@ namespace kRPG.GUI
                         else if (Main.availableRecipeY[num80] > (num80 - Main.focusRecipe) * 65f)
                         {
                             if (Main.availableRecipeY[num80] == 0f && !Main.recFastScroll)
-                                Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                                Main.PlaySound(12);
 
                             Main.availableRecipeY[num80] -= 6.5f;
                             if (Main.recFastScroll)
@@ -1338,12 +1319,12 @@ namespace kRPG.GUI
                         {
                             int num81 = (int) (46f - 26f * Main.inventoryScale);
                             int num82 = (int) (410f + Main.availableRecipeY[num80] * Main.inventoryScale - 30f * Main.inventoryScale + num58);
-                            double num83 = (double) (Main.inventoryBack.A + 50);
+                            double num83 = Main.inventoryBack.A + 50;
                             double num84 = 255.0;
                             if (Math.Abs(Main.availableRecipeY[num80]) > num59 - 100f)
                             {
-                                num83 = (double) (150f * (100f - (Math.Abs(Main.availableRecipeY[num80]) - (num59 - 100f)))) * 0.01;
-                                num84 = (double) (255f * (100f - (Math.Abs(Main.availableRecipeY[num80]) - (num59 - 100f)))) * 0.01;
+                                num83 = 150f * (100f - (Math.Abs(Main.availableRecipeY[num80]) - (num59 - 100f))) * 0.01;
+                                num84 = 255f * (100f - (Math.Abs(Main.availableRecipeY[num80]) - (num59 - 100f))) * 0.01;
                             }
 
                             new Color((byte) num83, (byte) num83, (byte) num83, (byte) num83);
@@ -1382,8 +1363,7 @@ namespace kRPG.GUI
                                 if (Main.recipe[Main.availableRecipe[num80]].createItem.stack > 1)
                                 {
                                     object obj5 = Main.hoverItemName;
-                                    Main.hoverItemName =
-                                        string.Concat(new object[] {obj5, " (", Main.recipe[Main.availableRecipe[num80]].createItem.stack, ")"});
+                                    Main.hoverItemName = string.Concat(obj5, " (", Main.recipe[Main.availableRecipe[num80]].createItem.stack, ")");
                                 }
                             }
 
@@ -1422,7 +1402,7 @@ namespace kRPG.GUI
                             double num88 = Main.inventoryBack.A + 50.0;
                             var white3 = Color.White;
                             var white4 = Color.White;
-                            num88 = (double) ((float) (Main.inventoryBack.A + 50) - Math.Abs(Main.availableRecipeY[Main.focusRecipe]) * 2f);
+                            num88 = Main.inventoryBack.A + 50 - Math.Abs(Main.availableRecipeY[Main.focusRecipe]) * 2f;
                             double num89 = 255f - Math.Abs(Main.availableRecipeY[Main.focusRecipe]) * 2f;
                             if (num88 < 0.0)
                                 num88 = 0.0;
@@ -1465,18 +1445,18 @@ namespace kRPG.GUI
                                     Main.HoverItem.SetNameOverride(Language.GetTextValue("LegacyInterface.37") + " " + Lang.GetItemNameValue(169));
                                 else if (Main.recipe[Main.availableRecipe[Main.focusRecipe]].anyFragment &&
                                          Main.recipe[Main.availableRecipe[Main.focusRecipe]].requiredItem[num85].type == 3458)
-                                    Main.HoverItem.SetNameOverride(Language.GetTextValue("LegacyInterface.37") + " " + Language.GetTextValue("LegacyInterface.51"));
+                                    Main.HoverItem.SetNameOverride(Language.GetTextValue("LegacyInterface.37") + " " +
+                                                                   Language.GetTextValue("LegacyInterface.51"));
                                 else if (Main.recipe[Main.availableRecipe[Main.focusRecipe]].anyPressurePlate &&
                                          Main.recipe[Main.availableRecipe[Main.focusRecipe]].requiredItem[num85].type == 542)
-                                    Main.HoverItem.SetNameOverride(Language.GetTextValue("LegacyInterface.37") + " " + Language.GetTextValue("LegacyInterface.38"));
+                                    Main.HoverItem.SetNameOverride(Language.GetTextValue("LegacyInterface.37") + " " +
+                                                                   Language.GetTextValue("LegacyInterface.38"));
 
                                 if (Main.recipe[Main.availableRecipe[Main.focusRecipe]].requiredItem[num85].stack > 1)
                                 {
                                     object obj6 = Main.hoverItemName;
-                                    Main.hoverItemName = string.Concat(new object[]
-                                    {
-                                        obj6, " (", Main.recipe[Main.availableRecipe[Main.focusRecipe]].requiredItem[num85].stack, ")"
-                                    });
+                                    Main.hoverItemName = string.Concat(obj6, " (",
+                                        Main.recipe[Main.availableRecipe[Main.focusRecipe]].requiredItem[num85].stack, ")");
                                 }
                             }
 
@@ -1488,7 +1468,7 @@ namespace kRPG.GUI
                             var color5 = Main.inventoryBack;
                             Main.inventoryBack = new Color((byte) num88, (byte) num88, (byte) num88, (byte) num88);
                             ItemSlot.Draw(Main.spriteBatch, ref Main.recipe[Main.availableRecipe[Main.focusRecipe]].requiredItem[num85], 22,
-                                new Vector2(num86, num87), default(Color));
+                                new Vector2(num86, num87));
                             Main.inventoryBack = color5;
                         }
                     }
@@ -1511,19 +1491,19 @@ namespace kRPG.GUI
                             Main.craftToggleTexture[num92].Size() / 2f, 1f, SpriteEffects.None, 0f);
                         if (flag9)
                         {
-                            main.MouseText(Language.GetTextValue("GameUI.CraftingWindow"), 0, 0, -1, -1, -1, -1);
+                            main.MouseText(Language.GetTextValue("GameUI.CraftingWindow"));
                             Main.player[Main.myPlayer].mouseInterface = true;
                             if (Main.mouseLeft && Main.mouseLeftRelease)
                             {
                                 if (!Main.recBigList)
                                 {
                                     Main.recBigList = true;
-                                    Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                                    Main.PlaySound(12);
                                 }
                                 else
                                 {
                                     Main.recBigList = false;
-                                    Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                                    Main.PlaySound(12);
                                 }
                             }
                         }
@@ -1569,14 +1549,14 @@ namespace kRPG.GUI
                                 if (Main.recStart < 0)
                                     Main.recStart = 0;
 
-                                Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                                Main.PlaySound(12);
                                 Main.mouseLeftRelease = false;
                             }
                         }
 
                         Main.spriteBatch.Draw(Main.craftUpButtonTexture, new Vector2(num102, num103),
-                            new Rectangle?(new Rectangle(0, 0, Main.craftUpButtonTexture.Width, Main.craftUpButtonTexture.Height)),
-                            new Color(200, 200, 200, 200), 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                            new Rectangle(0, 0, Main.craftUpButtonTexture.Width, Main.craftUpButtonTexture.Height), new Color(200, 200, 200, 200), 0f, default,
+                            1f, SpriteEffects.None, 0f);
                     }
 
                     if (Main.recStart < Main.numAvailableRecipes - num96 * num97)
@@ -1589,7 +1569,7 @@ namespace kRPG.GUI
                             if (Main.mouseLeftRelease && Main.mouseLeft)
                             {
                                 Main.recStart += num96;
-                                Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                                Main.PlaySound(12);
                                 if (Main.recStart > Main.numAvailableRecipes - num96)
                                     Main.recStart = Main.numAvailableRecipes - num96;
 
@@ -1598,8 +1578,8 @@ namespace kRPG.GUI
                         }
 
                         Main.spriteBatch.Draw(Main.craftDownButtonTexture, new Vector2(num102, num103),
-                            new Rectangle?(new Rectangle(0, 0, Main.craftUpButtonTexture.Width, Main.craftUpButtonTexture.Height)),
-                            new Color(200, 200, 200, 200), 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                            new Rectangle(0, 0, Main.craftUpButtonTexture.Width, Main.craftUpButtonTexture.Height), new Color(200, 200, 200, 200), 0f, default,
+                            1f, SpriteEffects.None, 0f);
                     }
 
                     int num104 = Main.recStart;
@@ -1607,7 +1587,7 @@ namespace kRPG.GUI
                     {
                         int num105 = num100;
                         int num106 = num101;
-                        double num107 = (double) (Main.inventoryBack.A + 50);
+                        double num107 = Main.inventoryBack.A + 50;
                         double num108 = 255.0;
                         new Color((byte) num107, (byte) num107, (byte) num107, (byte) num107);
                         new Color((byte) num108, (byte) num108, (byte) num108, (byte) num108);
@@ -1620,7 +1600,7 @@ namespace kRPG.GUI
                                 Main.focusRecipe = num104;
                                 Main.recFastScroll = true;
                                 Main.recBigList = false;
-                                Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                                Main.PlaySound(12);
                                 Main.mouseLeftRelease = false;
                                 if (PlayerInput.UsingGamepadUI)
                                     UILinkPointNavigator.ChangePage(9);
@@ -1632,7 +1612,7 @@ namespace kRPG.GUI
                             if (Main.recipe[Main.availableRecipe[num104]].createItem.stack > 1)
                             {
                                 object obj7 = Main.hoverItemName;
-                                Main.hoverItemName = string.Concat(new object[] {obj7, " (", Main.recipe[Main.availableRecipe[num104]].createItem.stack, ")"});
+                                Main.hoverItemName = string.Concat(obj7, " (", Main.recipe[Main.availableRecipe[num104]].createItem.stack, ")");
                             }
                         }
 
@@ -1645,8 +1625,7 @@ namespace kRPG.GUI
                             UILinkPointNavigator.Shortcuts.CRAFT_CurrentRecipeBig = num104 - Main.recStart;
                             var color6 = Main.inventoryBack;
                             Main.inventoryBack = new Color((byte) num107, (byte) num107, (byte) num107, (byte) num107);
-                            ItemSlot.Draw(Main.spriteBatch, ref Main.recipe[Main.availableRecipe[num104]].createItem, 22, new Vector2(num105, num106),
-                                default(Color));
+                            ItemSlot.Draw(Main.spriteBatch, ref Main.recipe[Main.availableRecipe[num104]].createItem, 22, new Vector2(num105, num106));
                             Main.inventoryBack = color6;
                         }
 
@@ -1669,9 +1648,9 @@ namespace kRPG.GUI
                 var vector2 = Main.fontMouseText.MeasureString("Coins");
                 var vector3 = Main.fontMouseText.MeasureString(Language.GetTextValue("LegacyInterface.26"));
                 float num109 = vector2.X / vector3.X;
-                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.26"),
+                Main.spriteBatch.DrawString(Main.fontMouseText, Language.GetTextValue("LegacyInterface.26"),
                     new Vector2(39 + (int) (600 * scale), 140f + (vector2.Y - vector2.Y * num109) / 2f),
-                    new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, default(Vector2), 0.75f * num109,
+                    new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, default, 0.75f * num109,
                     SpriteEffects.None, 0f);
                 Main.inventoryScale = 0.6f;
                 for (int num110 = 0; num110 < 4; num110++)
@@ -1698,21 +1677,21 @@ namespace kRPG.GUI
                         ItemSlot.MouseHover(Main.player[Main.myPlayer].inventory, 1, slot);
                     }
 
-                    ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 1, slot, new Vector2(num111, num112), default(Color));
+                    ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 1, slot, new Vector2(num111, num112));
                 }
 
                 var vector4 = Main.fontMouseText.MeasureString("Ammo");
                 var vector5 = Main.fontMouseText.MeasureString(Language.GetTextValue("LegacyInterface.27"));
                 float num113 = vector4.X / vector5.X;
-                DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.27"),
+                Main.spriteBatch.DrawString(Main.fontMouseText, Language.GetTextValue("LegacyInterface.27"),
                     new Vector2(76 + (int) (600 * scale), 140f + (vector4.Y - vector4.Y * num113) / 2f),
-                    new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, default(Vector2), 0.75f * num113,
+                    new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, default, 0.75f * num113,
                     SpriteEffects.None, 0f);
                 Main.inventoryScale = 0.6f;
                 for (int num114 = 0; num114 < 4; num114++)
                 {
                     int num115 = 78 + (int) (600 * scale);
-                    int num116 = (int) (140f + (float) (num114 * 56) * Main.inventoryScale + 20f); //was 85
+                    int num116 = (int) (140f + num114 * 56 * Main.inventoryScale + 20f); //was 85
                     int slot2 = 54 + num114;
                     new Color(100, 100, 100, 100);
                     if (Main.mouseX >= num115 && Main.mouseX <= num115 + Main.inventoryBackTexture.Width * Main.inventoryScale && Main.mouseY >= num116 &&
@@ -1733,8 +1712,7 @@ namespace kRPG.GUI
                         ItemSlot.MouseHover(Main.player[Main.myPlayer].inventory, 2, slot2);
                     }
 
-                    ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 2, slot2, new Vector2((float) num115, (float) num116),
-                        default(Color));
+                    ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 2, slot2, new Vector2(num115, num116));
                 }
 
                 if (Main.npcShop > 0 && (!Main.playerInventory || Main.player[Main.myPlayer].talkNPC == -1))
@@ -1742,9 +1720,9 @@ namespace kRPG.GUI
 
                 if (Main.npcShop > 0 && !Main.recBigList)
                 {
-                    Utils.DrawBorderStringFourWay(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.28"), 504f, (float) main.invBottom,
-                        Color.White * ((float) Main.mouseTextColor / 255f), Color.Black, Vector2.Zero, 1f);
-                    ItemSlot.DrawSavings(Main.spriteBatch, 504f, main.invBottom, false);
+                    Utils.DrawBorderStringFourWay(Main.spriteBatch, Main.fontMouseText, Language.GetTextValue("LegacyInterface.28"), 504f, main.invBottom,
+                        Color.White * (Main.mouseTextColor / 255f), Color.Black, Vector2.Zero);
+                    ItemSlot.DrawSavings(Main.spriteBatch, 504f, main.invBottom);
                     Main.inventoryScale = 0.755f;
                     if (Main.mouseX > 73 && Main.mouseX < (int) (73f + 560f * Main.inventoryScale) && Main.mouseY > main.invBottom &&
                         Main.mouseY < (int) (main.invBottom + 224f * Main.inventoryScale) && !PlayerInput.IgnoreMouseInterface)
@@ -1769,12 +1747,12 @@ namespace kRPG.GUI
                             ItemSlot.MouseHover(main.shop[Main.npcShop].item, 15, slot3);
                         }
 
-                        ItemSlot.Draw(Main.spriteBatch, main.shop[Main.npcShop].item, 15, slot3, new Vector2(num119, num120), default(Color));
+                        ItemSlot.Draw(Main.spriteBatch, main.shop[Main.npcShop].item, 15, slot3, new Vector2(num119, num120));
                     }
                 }
 
                 if (Main.player[Main.myPlayer].chest > -1 &&
-                    !Main.tileContainer[(int) Main.tile[Main.player[Main.myPlayer].chestX, Main.player[Main.myPlayer].chestY].type])
+                    !Main.tileContainer[Main.tile[Main.player[Main.myPlayer].chestX, Main.player[Main.myPlayer].chestY].type])
                 {
                     Main.player[Main.myPlayer].chest = -1;
                     API.FindRecipes();
@@ -1800,7 +1778,7 @@ namespace kRPG.GUI
                         num121 = 1;
                         if (!(bool) AllChestStackHover.GetValue(null))
                         {
-                            Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                            Main.PlaySound(12);
                             AllChestStackHover.SetValue(null, true);
                         }
 
@@ -1815,15 +1793,15 @@ namespace kRPG.GUI
                     }
                     else if ((bool) AllChestStackHover.GetValue(null))
                     {
-                        Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                        Main.PlaySound(12);
                         AllChestStackHover.SetValue(null, false);
                     }
 
                     Main.spriteBatch.Draw(Main.chestStackTexture[num121], new Vector2(num122, num123),
-                        new Rectangle?(new Rectangle(0, 0, Main.chestStackTexture[num121].Width, Main.chestStackTexture[num121].Height)), Color.White, 0f,
-                        default(Vector2), 1f, SpriteEffects.None, 0f);
+                        new Rectangle(0, 0, Main.chestStackTexture[num121].Width, Main.chestStackTexture[num121].Height), Color.White, 0f, default, 1f,
+                        SpriteEffects.None, 0f);
                     if (!Main.mouseText && num121 == 1)
-                        main.MouseText(Language.GetTextValue("GameUI.ToNearby"), 0, 0, -1, -1, -1, -1);
+                        main.MouseText(Language.GetTextValue("GameUI.ToNearby"));
                 }
 
                 if (Main.player[Main.myPlayer].chest == -1 && Main.npcShop == 0)
@@ -1851,14 +1829,14 @@ namespace kRPG.GUI
 
                     if (flag10 != (bool) InventorySortMouseOver.GetValue(null))
                     {
-                        Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                        Main.PlaySound(12);
                         InventorySortMouseOver.SetValue(null, flag10);
                     }
 
                     var texture2 = Main.inventorySortTexture[(bool) InventorySortMouseOver.GetValue(null) ? 1 : 0];
-                    Main.spriteBatch.Draw(texture2, new Vector2(num125, num126), null, Color.White, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                    Main.spriteBatch.Draw(texture2, new Vector2(num125, num126), null, Color.White, 0f, default, 1f, SpriteEffects.None, 0f);
                     if (!Main.mouseText && num124 == 1)
-                        main.MouseText(Language.GetTextValue("GameUI.SortInventory"), 0, 0, -1, -1, -1, -1);
+                        main.MouseText(Language.GetTextValue("GameUI.SortInventory"));
                 }
             }
             catch (SystemException e)

@@ -9,8 +9,8 @@ namespace kRPG.Modifiers
 {
     public class ExplosiveModifier : NPCModifier
     {
-        private float lifeModifier = 0.5f;
         private kNPC kNPC;
+        private float lifeModifier = 0.5f;
 
         public ExplosiveModifier(kNPC kNPC, NPC npc, float lifeModifier = 0.5f) : base(kNPC, npc)
         {
@@ -26,21 +26,16 @@ namespace kRPG.Modifiers
             npc.life = (int) (npc.life * lifeModifier);
         }
 
+        public new static NPCModifier New(kNPC kNPC, NPC npc)
+        {
+            return new ExplosiveModifier(kNPC, npc);
+        }
+
         public override void NPCLoot(NPC npc)
         {
-            Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), npc.Center);
+            Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), npc.Center);
             var proj = Main.projectile[
                 Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<NPC_Explosion>(), npc.damage * 5 / 4, 0f)];
-        }
-
-        public override void Write(ModPacket packet)
-        {
-            packet.Write(lifeModifier);
-        }
-
-        public override void Read(BinaryReader reader)
-        {
-            lifeModifier = reader.ReadSingle();
         }
 
         public new static NPCModifier Random(kNPC kNPC, NPC npc)
@@ -48,9 +43,14 @@ namespace kRPG.Modifiers
             return new ExplosiveModifier(kNPC, npc, Main.rand.NextFloat(0.5f, 0.9f));
         }
 
-        public new static NPCModifier New(kNPC kNPC, NPC npc)
+        public override void Read(BinaryReader reader)
         {
-            return new ExplosiveModifier(kNPC, npc);
+            lifeModifier = reader.ReadSingle();
+        }
+
+        public override void Write(ModPacket packet)
+        {
+            packet.Write(lifeModifier);
         }
     }
 }

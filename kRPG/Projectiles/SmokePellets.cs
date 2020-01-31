@@ -9,6 +9,20 @@ namespace kRPG.Projectiles
 {
     public class SmokePellets : ModProjectile
     {
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            target.AddBuff(BuffID.Confused, 210);
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+            projectile.frame = 19 - (int) Math.Ceiling(projectile.timeLeft / 3.0);
+            var text = Main.projectileTexture[projectile.type];
+            int height = text.Height / Main.projFrames[projectile.type];
+            spriteBatch.Draw(text, projectile.position - Main.screenPosition, new Rectangle(0, projectile.frame * height, text.Width, height), Color.White);
+            return false;
+        }
+
         public override void SetDefaults()
         {
             projectile.width = 192;
@@ -26,20 +40,6 @@ namespace kRPG.Projectiles
         {
             Main.projFrames[projectile.type] = 19;
             DisplayName.SetDefault("Smoke Pellets");
-        }
-
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
-        {
-            projectile.frame = 19 - (int) Math.Ceiling(projectile.timeLeft / 3.0);
-            var text = Main.projectileTexture[projectile.type];
-            int height = text.Height / Main.projFrames[projectile.type];
-            spriteBatch.Draw(text, projectile.position - Main.screenPosition, new Rectangle(0, projectile.frame * height, text.Width, height), Color.White);
-            return false;
-        }
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(BuffID.Confused, 210);
         }
     }
 }

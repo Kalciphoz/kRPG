@@ -16,18 +16,7 @@ namespace kRPG.Items
 {
     public class kItem : GlobalItem
     {
-        private static byte reforgelevel = 0;
-        public static SwordHilt reforgehilt;
-        public static SwordBlade reforgeblade;
-        public static SwordAccent reforgeaccent;
-        public static Staff reforgestaff;
-        public static StaffGem reforgegem;
-        public static StaffOrnament reforgeornament;
-        public static float reforgedps;
-        public static int reforgedef;
-        public static string reforgename;
-
-        public static Dictionary<ELEMENT, string> elementNames = new Dictionary<ELEMENT, string>()
+        public static Dictionary<ELEMENT, string> elementNames = new Dictionary<ELEMENT, string>
         {
             {ELEMENT.FIRE, "255063000 fire "},
             {ELEMENT.COLD, "063127255 cold "},
@@ -35,7 +24,18 @@ namespace kRPG.Items
             {ELEMENT.SHADOW, "095000191 shadow "}
         };
 
-        public static Dictionary<STAT, string> statNames = new Dictionary<STAT, string>()
+        public static SwordAccent reforgeaccent;
+        public static SwordBlade reforgeblade;
+        public static int reforgedef;
+        public static float reforgedps;
+        public static StaffGem reforgegem;
+        public static SwordHilt reforgehilt;
+        private static byte reforgelevel = 0;
+        public static string reforgename;
+        public static StaffOrnament reforgeornament;
+        public static Staff reforgestaff;
+
+        public static Dictionary<STAT, string> statNames = new Dictionary<STAT, string>
         {
             {STAT.RESILIENCE, "223000000 resilience"},
             {STAT.QUICKNESS, "000191031 quickness"},
@@ -43,36 +43,35 @@ namespace kRPG.Items
             {STAT.WITS, "239223031 wits"}
         };
 
-        public override bool InstancePerEntity => true;
-
-        public byte upgradeLevel = 255;
-        public byte kPrefix = 0;
-        public bool enhanced => kPrefix != 0;
-
-        public Dictionary<ELEMENT, int> elementalDamage = new Dictionary<ELEMENT, int>()
-        {
-            {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
-        };
-
-        public Dictionary<STAT, int> statBonus = new Dictionary<STAT, int>() {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}, {STAT.WITS, 0}};
-
-        public Dictionary<ELEMENT, int> resBonus = new Dictionary<ELEMENT, int>()
-        {
-            {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
-        };
+        public int bonusAccuracy;
+        public int bonusAllres;
+        public int bonusCrit;
 
         public int bonusDef;
         public int bonusEva;
-        public int bonusAccuracy;
+        public float bonusLeech;
         public int bonusLife;
         public int bonusMana;
-        public float bonusLeech;
-        public int bonusCrit;
         public float bonusMult;
         public float bonusRegen;
-        public int bonusAllres;
+
+        public Dictionary<ELEMENT, int> elementalDamage = new Dictionary<ELEMENT, int>
+        {
+            {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
+        };
+
+        public byte kPrefix;
 
         private List<string> prefixTooltips = new List<string>();
+
+        public Dictionary<ELEMENT, int> resBonus = new Dictionary<ELEMENT, int>
+        {
+            {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
+        };
+
+        public Dictionary<STAT, int> statBonus = new Dictionary<STAT, int> {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}, {STAT.WITS, 0}};
+
+        public byte upgradeLevel = 255;
 
         public kItem()
         {
@@ -82,36 +81,172 @@ namespace kRPG.Items
             ClearPrefixes();
         }
 
-        public override void OnCraft(Item item, Recipe recipe)
+        public bool enhanced => kPrefix != 0;
+
+        public override bool InstancePerEntity => true;
+
+        public kItem ApplyStats(Item item, bool clean = false)
         {
-            if (NeedsSaving(item))
-                Initialize(item);
+            if (item.maxStack > 1) return this;
+            bool fav = item.favorited;
+
+            if (!clean)
+                try
+                {
+                    switch (item.modItem)
+                    {
+                        case ProceduralSword osword:
+                            osword.ResetStats();
+                            break;
+                        case ProceduralStaff ostaff:
+                            ostaff.ResetStats();
+                            break;
+                        case RangedWeapon oweapon:
+                            oweapon.SetStats();
+                            break;
+                        default:
+                            item.SetItemDefaults(item.type);
+                            break;
+                    }
+                }
+                catch (SystemException e)
+                {
+                    ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                }
+
+            if (item.defense > 0 || item.accessory)
+            {
+                item.ClearNameOverride();
+                if (item.accessory)
+                    PrefixAccessory(item);
+                else
+                    PrefixArmour(item);
+            }
+            else if (item.damage > 0)
+            {
+                if (upgradeLevel == 255) return this;
+                ApplyUpgradeLevel(item);
+                Prefix(item);
+                Elementalize(item);
+            }
+
+            item.favorited = fav;
+            return this;
+        }
+
+        public void ApplyUpgradeLevel(Item item)
+        {
+            double animationDps = 60f * item.damage / item.useAnimation;
+            double usetimeDps = 60f * item.damage / item.useTime;
+            double dpsModifier = 1.0;
+            switch (upgradeLevel)
+            {
+                default:
+                    dpsModifier = 0.85;
+                    break;
+                case 1:
+                    dpsModifier = 1;
+                    break;
+                case 2:
+                    dpsModifier = 1.12;
+                    break;
+                case 3:
+                    dpsModifier = 1.25;
+                    break;
+                case 4:
+                    dpsModifier = 1.4;
+                    break;
+                case 5:
+                    dpsModifier = 1.6;
+                    break;
+                case 6:
+                    dpsModifier = 1.8;
+                    break;
+                case 7:
+                    dpsModifier = 2;
+                    break;
+                case 8:
+                    dpsModifier = 2.25;
+                    break;
+            }
+
+            animationDps *= dpsModifier;
+            usetimeDps *= dpsModifier;
+
+            item.damage = (int) Math.Round(animationDps / 60 * item.useAnimation);
+
+            int i = item.useTime - item.useAnimation;
+
+            item.useAnimation = (int) Math.Round(60 / animationDps * item.damage);
+            item.useTime = (int) Math.Round(60 / usetimeDps * item.damage);
+
+            if (i >= 0 && item.useTime < item.useAnimation)
+                item.useTime = item.useAnimation + i;
+            if (i >= 0 && item.useTime < item.useAnimation)
+                item.useTime = item.useAnimation;
+
+            item.crit = item.crit + upgradeLevel - 1;
+
+            if (upgradeLevel < 3)
+                item.scale *= 0.95f;
+            else if (upgradeLevel >= 6 && upgradeLevel < 8)
+                item.scale *= 1.05f;
+            else if (upgradeLevel == 8)
+                item.scale *= 1.1f;
+        }
+
+        public override bool CanPickup(Item item, Player player)
+        {
+            return ItemSpace(item, player);
+        }
+
+        public override bool CanUseItem(Item item, Player player)
+        {
+            return item.healMana <= 0 || player.GetModPlayer<PlayerCharacter>().canHealMana;
+        }
+
+        public void ClearPrefixes()
+        {
+            elementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+            statBonus = new Dictionary<STAT, int> {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}, {STAT.WITS, 0}};
+            resBonus = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+            bonusEva = 0;
+            bonusDef = 0;
+            bonusLife = 0;
+            bonusMana = 0;
+            bonusAccuracy = 0;
+            bonusLeech = 0f;
+            bonusCrit = 0;
+            bonusMult = 0f;
+            bonusRegen = 0f;
+            bonusAllres = 0;
+            prefixTooltips = new List<string>();
         }
 
         public override GlobalItem Clone(Item item, Item itemClone)
         {
             var copy = (kItem) base.Clone(item, itemClone);
             if (itemClone.type == 0) return copy;
-            copy.elementalDamage = new Dictionary<ELEMENT, int>()
+            copy.elementalDamage = new Dictionary<ELEMENT, int>
             {
                 {ELEMENT.FIRE, elementalDamage[ELEMENT.FIRE]},
                 {ELEMENT.COLD, elementalDamage[ELEMENT.COLD]},
                 {ELEMENT.LIGHTNING, elementalDamage[ELEMENT.LIGHTNING]},
-                {ELEMENT.SHADOW, elementalDamage[ELEMENT.SHADOW]},
+                {ELEMENT.SHADOW, elementalDamage[ELEMENT.SHADOW]}
             };
-            copy.statBonus = new Dictionary<STAT, int>()
+            copy.statBonus = new Dictionary<STAT, int>
             {
                 {STAT.RESILIENCE, statBonus[STAT.RESILIENCE]},
                 {STAT.QUICKNESS, statBonus[STAT.QUICKNESS]},
                 {STAT.POTENCY, statBonus[STAT.POTENCY]},
-                {STAT.WITS, statBonus[STAT.WITS]},
+                {STAT.WITS, statBonus[STAT.WITS]}
             };
-            copy.resBonus = new Dictionary<ELEMENT, int>()
+            copy.resBonus = new Dictionary<ELEMENT, int>
             {
                 {ELEMENT.FIRE, resBonus[ELEMENT.FIRE]},
                 {ELEMENT.COLD, resBonus[ELEMENT.COLD]},
                 {ELEMENT.LIGHTNING, resBonus[ELEMENT.LIGHTNING]},
-                {ELEMENT.SHADOW, resBonus[ELEMENT.SHADOW]},
+                {ELEMENT.SHADOW, resBonus[ELEMENT.SHADOW]}
             };
             copy.prefixTooltips = new List<string>();
             foreach (string s in prefixTooltips)
@@ -132,53 +267,103 @@ namespace kRPG.Items
             return copy;
         }
 
-        public override bool NewPreReforge(Item item)
+        public void Destroy(Item item)
         {
-            //if (item.type == mod.ItemType<ProceduralSword>())
-            //{
-            //    ProceduralSword sword = (ProceduralSword)item.modItem;
-            //    reforgehilt = sword.hilt;
-            //    reforgeblade = sword.blade;
-            //    reforgeaccent = sword.accent;
-            //    reforgedps = sword.dps;
-            //    reforgedef = sword.enemyDef;
-            //}
-            //else if (item.type == mod.ItemType<ProceduralStaff>())
-            //{
-            //    ProceduralStaff staff = (ProceduralStaff)item.modItem;
-            //    reforgestaff = staff.staff;
-            //    reforgegem = staff.gem;
-            //    reforgeornament = staff.ornament;
-            //    //reforgedps = staff.dps;
-            //    //reforgedef = staff.enemyDef;
-            //}
-            //else if (item.modItem is RangedWeapon)
-            //{
-            //    RangedWeapon weapon = (RangedWeapon)item.modItem;
-            //    reforgedps = weapon.dps;
-            //    reforgedef = weapon.enemyDef;
-            //    reforgename = weapon.name;
-            //}
-            //reforgelevel = upgradeLevel;
+            Main.NewText("Failed to upgrade - item was destroyed", 255, 0, 0);
+            item.SetDefaults(0, true);
+        }
 
-            //if (item.type == mod.ItemType<ProceduralSword>())
-            //    ((ProceduralSword)item.modItem).Initialize();
-            //else if (item.type == mod.ItemType<ProceduralStaff>())
-            //    ((ProceduralStaff)item.modItem).Initialize();
-            //else if (item.modItem is RangedWeapon)
-            //    ((RangedWeapon)item.modItem).SetStats();
-            //else
-            //    item.SetItemDefaults(item.type);
+        public void Downgrade(Item item)
+        {
+            SetUpgradeLevel(item, (byte) Math.Max(upgradeLevel - 1, 0));
+            Main.NewText("Failed to upgrade - item was downgraded to +" + upgradeLevel, 255, 0, 0);
+        }
 
-            if (item.accessory)
-                kPrefix = (byte) (Main.rand.Next(27) + 1);
-            else if (item.damage > 0)
-                kPrefix = (byte) (Main.rand.Next(29) + 1);
-            else if (item.defense > 0)
-                kPrefix = (byte) (Main.rand.Next(19) + 1);
+        public void Elementalize(Item item)
+        {
+            if (item.type == mod.GetItem("ProceduralStaff").item.type)
+            {
+                var staff = (ProceduralStaff) item.modItem;
+                float totalReduction = 0f;
+                int totalElements = 0;
+                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                {
+                    if (!(staff.eleDamage[element] > 0f))
+                        continue;
+                    elementalDamage[element] += Math.Max((int) (item.damage * staff.eleDamage[element]), 1);
+                    totalReduction += staff.eleDamage[element];
+                    totalElements += 1;
+                }
 
-            ApplyStats(item);
-            return false;
+                item.damage -= Math.Max((int) (item.damage * totalReduction), totalElements);
+            }
+            else if (item.type == mod.GetItem("ProceduralSword").item.type)
+            {
+                var sword = (ProceduralSword) item.modItem;
+                float totalReduction = 0f;
+                int totalElements = 0;
+                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                {
+                    if (!(sword.eleDamage[element] > 0f))
+                        continue;
+                    elementalDamage[element] += Math.Max((int) (item.damage * sword.eleDamage[element]), 1);
+                    totalReduction += sword.eleDamage[element];
+                    totalElements += 1;
+                }
+
+                item.damage -= Math.Max((int) (item.damage * totalReduction), totalElements);
+            }
+
+            if (item.type == mod.GetItem("EyeOnAStick").item.type)
+                elementalDamage[ELEMENT.SHADOW] += 10;
+
+            if (item.Name.Contains("Hellfire") || item.Name.Contains("Molten") || item.Name.Contains("Fiery"))
+            {
+                elementalDamage[ELEMENT.FIRE] += (int) (item.damage * 0.5);
+                item.damage = (int) (item.damage * 0.5);
+            }
+
+            if (item.Name.Contains("Clockwork") || item.type == ItemID.BreakerBlade || item.Name.Contains("Phase") || item.Name.Contains("Thunder"))
+            {
+                elementalDamage[ELEMENT.LIGHTNING] += (int) (item.damage * 0.3);
+                item.damage = (int) (item.damage * 0.7);
+            }
+
+            if (item.damage < 1) item.damage = 1;
+        }
+
+        public int GetEleDamage(Item item, Player player, bool ignoreModifiers = false)
+        {
+            var ele = new Dictionary<ELEMENT, int>();
+            ele = GetIndividualElements(item, player, ignoreModifiers);
+            return ele[ELEMENT.FIRE] + ele[ELEMENT.COLD] + ele[ELEMENT.LIGHTNING] + ele[ELEMENT.SHADOW];
+        }
+
+        public Dictionary<ELEMENT, int> GetIndividualElements(Item item, Player player, bool ignoreModifiers = false)
+        {
+            var dictionary = new Dictionary<ELEMENT, int>();
+            if (player.GetModPlayer<PlayerCharacter>().rituals[RITUAL.DEMON_PACT])
+            {
+                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                    dictionary[element] = 0;
+
+                dictionary[ELEMENT.SHADOW] = GetEleDamage(item, player);
+            }
+            else
+            {
+                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                    dictionary[element] = (int) Math.Round(elementalDamage[element] * (ignoreModifiers
+                                                               ? 1
+                                                               : player.GetModPlayer<PlayerCharacter>().DamageMultiplier(element, item.melee, item.ranged,
+                                                                   item.magic, item.thrown, item.summon)));
+            }
+
+            return dictionary;
+        }
+
+        public Mod getMod()
+        {
+            return mod;
         }
 
         /*public override void PostReforge(Item item)
@@ -253,365 +438,321 @@ namespace kRPG.Items
             ApplyStats(item, true);
         }
 
-        public kItem ApplyStats(Item item, bool clean = false)
+        public override bool ItemSpace(Item newItem, Player player)
         {
-            if (item.maxStack > 1) return this;
-            bool fav = item.favorited;
-
-            if (!clean)
-                try
+            var character = player.GetModPlayer<PlayerCharacter>();
+            try
+            {
+                if (ItemID.Sets.NebulaPickup[newItem.type] || newItem.type == ItemID.Heart || newItem.type == ItemID.CandyApple ||
+                    newItem.type == ItemID.CandyCane || newItem.type == ItemID.Star || newItem.type == ItemID.SoulCake || newItem.type == ItemID.SugarPlum ||
+                    newItem.type == ModContent.ItemType<PermanenceCrown>() || newItem.type == ModContent.ItemType<BlacksmithCrown>())
+                    return true;
+                int num = 50;
+                if (newItem.type == 71 || newItem.type == 72 || newItem.type == 73 || newItem.type == 74)
+                    num = 54;
+                for (int i = 0; i < num; i++)
                 {
-                    switch (item.modItem)
-                    {
-                        case ProceduralSword osword:
-                            osword.ResetStats();
-                            break;
-                        case ProceduralStaff ostaff:
-                            ostaff.ResetStats();
-                            break;
-                        case RangedWeapon oweapon:
-                            oweapon.SetStats();
-                            break;
-                        default:
-                            item.SetItemDefaults(item.type);
-                            break;
-                    }
-                }
-                catch (SystemException e)
-                {
-                    ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                    var item = player.inventory[i];
+                    if ((item.type == 0 || item.stack == 0) && (!kConfig.configLocal.clientside.manualInventory || num > 50 || character.activeInvPage == 0) ||
+                        item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
+                        return true;
                 }
 
+                for (int i = 0; i < character.inventories.Length; i++)
+                for (int j = 0; j < character.inventories[i].Length; j += 1)
+                {
+                    var item = character.inventories[i][j];
+                    if ((item.type == 0 || item.stack == 0) && (!kConfig.configLocal.clientside.manualInventory || i == 0) ||
+                        item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
+                        //Main.NewText((!kConfig.configLocal.clientSide.manualInventory) + "||" + (i == 0));
+                        return true;
+                }
+            }
+            catch (SystemException e)
+            {
+                ModLoader.GetMod("kRPG").Logger
+                    .InfoFormat(
+                        "ItemSpace() failed - TO FIX THE PROBLEM: Delete the kRPG_Settings.json file in Documents/My Games/Terraria/ModLoader. Full error trace: " +
+                        e);
+            }
+
+            return false;
+        }
+
+        public override void Load(Item item, TagCompound tag)
+        {
+            upgradeLevel = tag.GetByte("upgrade level");
+            kPrefix = tag.GetByte("prefix");
+            ApplyStats(item);
+        }
+
+        //Seems to work fine now
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            if (Main.netMode == 2) return;
             if (item.defense > 0 || item.accessory)
             {
-                item.ClearNameOverride();
-                if (item.accessory)
-                    PrefixAccessory(item);
-                else
-                    PrefixArmour(item);
+                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                {
+                    if (resBonus[element] == 0)
+                        continue;
+                    string color = elementNames[element].Substring(0, 9);
+                    string eleName = elementNames[element].Substring(9);
+                    var line = new TooltipLine(mod, "Res" + element, resBonus[element] + eleName + " resistance")
+                    {
+                        overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)), int.Parse(color.Substring(6, 3)))
+                    };
+                    tooltips.Insert(1, line);
+                }
+
+                foreach (STAT stat in Enum.GetValues(typeof(STAT)))
+                    if (statBonus[stat] != 0)
+                    {
+                        string color = statNames[stat].Substring(0, 9);
+                        string statName = statNames[stat].Substring(9);
+                        var line = new TooltipLine(mod, "Stat" + stat, statBonus[stat] + statName)
+                        {
+                            overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)), int.Parse(color.Substring(6, 3)))
+                        };
+                        tooltips.Insert(1, line);
+                    }
+
+                if (bonusEva > 0)
+                {
+                    var line = new TooltipLine(mod, "Evasion", bonusEva + " evasion rating") {overrideColor = new Color(159, 159, 159)};
+                    tooltips.Insert(1, line);
+                }
+
+                if (bonusMana > 0)
+                {
+                    var line = new TooltipLine(mod, "Mana", bonusMana + " maximum mana") {overrideColor = new Color(0, 63, 255)};
+                    tooltips.Insert(1, line);
+                }
+
+                if (bonusLife > 0)
+                {
+                    var line = new TooltipLine(mod, "Life", bonusLife + " maximum life") {overrideColor = new Color(255, 31, 31)};
+                    tooltips.Insert(1, line);
+                }
+
+                for (int i = 0; i < prefixTooltips.Count; i += 1)
+                {
+                    var line = new TooltipLine(mod, "prefixline" + i, prefixTooltips[i]) {overrideColor = new Color(127, 191, 127)};
+                    tooltips.Add(line);
+                }
             }
+
             else if (item.damage > 0)
             {
-                if (upgradeLevel == 255) return this;
-                ApplyUpgradeLevel(item);
-                Prefix(item);
-                Elementalize(item);
-            }
-
-            item.favorited = fav;
-            return this;
-        }
-
-        public void Elementalize(Item item)
-        {
-            if (item.type == mod.GetItem("ProceduralStaff").item.type)
-            {
-                var staff = (ProceduralStaff) item.modItem;
-                float totalReduction = 0f;
-                int totalElements = 0;
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 {
-                    if (!(staff.eleDamage[element] > 0f))
-                        continue;
-                    elementalDamage[element] += Math.Max((int) (item.damage * staff.eleDamage[element]), 1);
-                    totalReduction += staff.eleDamage[element];
-                    totalElements += 1;
+                    int eleDamage = GetIndividualElements(item, Main.player[Main.myPlayer])[element];
+                    if (eleDamage != 0)
+                    {
+                        string color = elementNames[element].Substring(0, 9);
+                        string eleName = elementNames[element].Substring(9);
+                        var line = new TooltipLine(mod, "Element" + element, eleDamage + eleName + "damage")
+                        {
+                            overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)), int.Parse(color.Substring(6, 3)))
+                        };
+                        tooltips.Insert(tooltips.FindIndex(tooltip => tooltip.Name == "Damage"), line);
+                    }
                 }
 
-                item.damage -= Math.Max((int) (item.damage * totalReduction), totalElements);
-            }
-            else if (item.type == mod.GetItem("ProceduralSword").item.type)
-            {
-                var sword = (ProceduralSword) item.modItem;
-                float totalReduction = 0f;
-                int totalElements = 0;
-                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                for (int i = 0; i < prefixTooltips.Count; i += 1)
                 {
-                    if (!(sword.eleDamage[element] > 0f))
-                        continue;
-                    elementalDamage[element] += Math.Max((int) (item.damage * sword.eleDamage[element]), 1);
-                    totalReduction += sword.eleDamage[element];
-                    totalElements += 1;
+                    var line = new TooltipLine(mod, "prefixline" + i, prefixTooltips[i]) {overrideColor = new Color(127, 191, 127)};
+                    tooltips.Add(line);
                 }
-
-                item.damage -= Math.Max((int) (item.damage * totalReduction), totalElements);
-            }
-
-            if (item.type == mod.GetItem("EyeOnAStick").item.type)
-                elementalDamage[ELEMENT.SHADOW] += 10;
-
-            if (item.Name.Contains("Hellfire") || item.Name.Contains("Molten") || item.Name.Contains("Fiery"))
-            {
-                elementalDamage[ELEMENT.FIRE] += (int) (item.damage * 0.5);
-                item.damage = (int) (item.damage * 0.5);
-            }
-
-            if (item.Name.Contains("Clockwork") || item.type == ItemID.BreakerBlade || item.Name.Contains("Phase") || item.Name.Contains("Thunder"))
-            {
-                elementalDamage[ELEMENT.LIGHTNING] += (int) (item.damage * 0.3);
-                item.damage = (int) (item.damage * 0.7);
-            }
-
-            if (item.damage < 1) item.damage = 1;
-        }
-
-        public void ClearPrefixes()
-        {
-            elementalDamage = new Dictionary<ELEMENT, int>()
-            {
-                {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0},
-            };
-            statBonus = new Dictionary<STAT, int>()
-            {
-                {STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}, {STAT.WITS, 0},
-            };
-            resBonus = new Dictionary<ELEMENT, int>()
-            {
-                {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0},
-            };
-            bonusEva = 0;
-            bonusDef = 0;
-            bonusLife = 0;
-            bonusMana = 0;
-            bonusAccuracy = 0;
-            bonusLeech = 0f;
-            bonusCrit = 0;
-            bonusMult = 0f;
-            bonusRegen = 0f;
-            bonusAllres = 0;
-            prefixTooltips = new List<string>();
-        }
-
-        public void PrefixAccessory(Item item)
-        {
-            ClearPrefixes();
-
-            switch (kPrefix - 1)
-            {
-                case 0:
-                    item.SetNameOverride("Sturdy " + item.Name);
-                    statBonus[STAT.RESILIENCE] = 2;
-                    break;
-                case 1:
-                    item.SetNameOverride("Elusive " + item.Name);
-                    statBonus[STAT.QUICKNESS] = 2;
-                    break;
-                case 2:
-                    item.SetNameOverride("Volatile " + item.Name);
-                    statBonus[STAT.POTENCY] = 2;
-                    break;
-                case 3:
-                    item.SetNameOverride("Cunning " + item.Name);
-                    statBonus[STAT.WITS] = 2;
-                    break;
-                case 4:
-                    item.SetNameOverride("Sage " + item.Name);
-                    statBonus[STAT.WITS] = 3;
-                    item.rare += 1;
-                    break;
-                case 5:
-                    item.SetNameOverride("Armored " + item.Name);
-                    bonusDef = 4;
-                    prefixTooltips.Add("+4 defence");
-                    break;
-                case 6:
-                    item.SetNameOverride("Elegant " + item.Name);
-                    bonusEva = 5;
-                    break;
-                case 7:
-                    item.SetNameOverride("Vampiric " + item.Name);
-                    bonusLeech = 0.02f;
-                    prefixTooltips.Add("+2% life Leech");
-                    break;
-                case 8:
-                    item.SetNameOverride("Focused " + item.Name);
-                    bonusAccuracy = 3;
-                    prefixTooltips.Add("+3 accuracy");
-                    break;
-                case 9:
-                    item.SetNameOverride("Precise " + item.Name);
-                    bonusAccuracy = 4;
-                    prefixTooltips.Add("+4 accuracy");
-                    break;
-                case 10:
-                    item.SetNameOverride("Single-minded " + item.Name);
-                    bonusAccuracy = 6;
-                    item.rare += 1;
-                    prefixTooltips.Add("+6 accuracy");
-                    break;
-                case 11:
-                    item.SetNameOverride("Organic " + item.Name);
-                    bonusRegen = 1.4f;
-                    prefixTooltips.Add("+1.4 life regen");
-                    break;
-                case 12:
-                    item.SetNameOverride("Arcane " + item.Name);
-                    bonusMana = 20;
-                    break;
-                case 13:
-                    item.SetNameOverride("Frenetic " + item.Name);
-                    bonusCrit = 4;
-                    prefixTooltips.Add("+4 crit chance");
-                    break;
-                case 14:
-                    item.SetNameOverride("Brutal " + item.Name);
-                    bonusMult = 0.20f;
-                    prefixTooltips.Add("+40 crit multiplier");
-                    break;
-                case 15:
-                    item.SetNameOverride("Warding " + item.Name);
-                    bonusAllres = 3;
-                    prefixTooltips.Add("+4 to all resistances");
-                    break;
-                case 16:
-                    item.SetNameOverride("Flame Retardant " + item.Name);
-                    resBonus[ELEMENT.FIRE] = 10;
-                    break;
-                case 17:
-                    item.SetNameOverride("Waterproof " + item.Name);
-                    resBonus[ELEMENT.COLD] = 10;
-                    break;
-                case 18:
-                    item.SetNameOverride("Insulated " + item.Name);
-                    resBonus[ELEMENT.LIGHTNING] = 10;
-                    break;
-                case 19:
-                    item.SetNameOverride("Hexproof " + item.Name);
-                    resBonus[ELEMENT.SHADOW] = 7;
-                    break;
-                case 20:
-                    item.SetNameOverride("Hardened " + item.Name);
-                    bonusDef = 3;
-                    prefixTooltips.Add("+3 defence");
-                    break;
-                case 21:
-                    item.SetNameOverride("Protective " + item.Name);
-                    bonusAllres = 2;
-                    prefixTooltips.Add("+3 to all resistances");
-                    break;
-                case 22:
-                    item.SetNameOverride("Lava-Infused " + item.Name);
-                    resBonus[ELEMENT.FIRE] = 15;
-                    item.rare += 1;
-                    break;
-                case 23:
-                    item.SetNameOverride("Snowforged " + item.Name);
-                    resBonus[ELEMENT.COLD] = 15;
-                    item.rare += 1;
-                    break;
-                case 24:
-                    item.SetNameOverride("Lightning-Coiled " + item.Name);
-                    resBonus[ELEMENT.LIGHTNING] = 15;
-                    item.rare += 1;
-                    break;
-                case 25:
-                    item.SetNameOverride("Blackheart " + item.Name);
-                    resBonus[ELEMENT.SHADOW] = 12;
-                    item.rare += 1;
-                    break;
-                case 26:
-                    item.SetNameOverride("Enchanted " + item.Name);
-                    bonusAllres = 4;
-                    prefixTooltips.Add("+5 to all resistances");
-                    item.rare += 1;
-                    break;
             }
         }
 
-        public void PrefixArmour(Item item)
+        public override bool NeedsSaving(Item item)
         {
-            ClearPrefixes();
+            return item.maxStack == 1 && (item.damage > 0 || item.defense > 0 || item.accessory);
+        }
 
-            switch (kPrefix - 1)
+        public override void NetReceive(Item item, BinaryReader reader)
+        {
+            upgradeLevel = reader.ReadByte();
+            kPrefix = reader.ReadByte();
+            ApplyStats(item);
+        }
+
+        public override void NetSend(Item item, BinaryWriter writer)
+        {
+            writer.Write(upgradeLevel);
+            writer.Write(kPrefix);
+        }
+
+        public override bool NewPreReforge(Item item)
+        {
+            //if (item.type == mod.ItemType<ProceduralSword>())
+            //{
+            //    ProceduralSword sword = (ProceduralSword)item.modItem;
+            //    reforgehilt = sword.hilt;
+            //    reforgeblade = sword.blade;
+            //    reforgeaccent = sword.accent;
+            //    reforgedps = sword.dps;
+            //    reforgedef = sword.enemyDef;
+            //}
+            //else if (item.type == mod.ItemType<ProceduralStaff>())
+            //{
+            //    ProceduralStaff staff = (ProceduralStaff)item.modItem;
+            //    reforgestaff = staff.staff;
+            //    reforgegem = staff.gem;
+            //    reforgeornament = staff.ornament;
+            //    //reforgedps = staff.dps;
+            //    //reforgedef = staff.enemyDef;
+            //}
+            //else if (item.modItem is RangedWeapon)
+            //{
+            //    RangedWeapon weapon = (RangedWeapon)item.modItem;
+            //    reforgedps = weapon.dps;
+            //    reforgedef = weapon.enemyDef;
+            //    reforgename = weapon.name;
+            //}
+            //reforgelevel = upgradeLevel;
+
+            //if (item.type == mod.ItemType<ProceduralSword>())
+            //    ((ProceduralSword)item.modItem).Initialize();
+            //else if (item.type == mod.ItemType<ProceduralStaff>())
+            //    ((ProceduralStaff)item.modItem).Initialize();
+            //else if (item.modItem is RangedWeapon)
+            //    ((RangedWeapon)item.modItem).SetStats();
+            //else
+            //    item.SetItemDefaults(item.type);
+
+            if (item.accessory)
+                kPrefix = (byte) (Main.rand.Next(27) + 1);
+            else if (item.damage > 0)
+                kPrefix = (byte) (Main.rand.Next(29) + 1);
+            else if (item.defense > 0)
+                kPrefix = (byte) (Main.rand.Next(19) + 1);
+
+            ApplyStats(item);
+            return false;
+        }
+
+        public override void OnCraft(Item item, Recipe recipe)
+        {
+            if (NeedsSaving(item))
+                Initialize(item);
+        }
+
+        public override bool OnPickup(Item item, Player player)
+        {
+            var character = player.GetModPlayer<PlayerCharacter>();
+
+            try
             {
-                case 0:
-                    item.SetNameOverride("Carnelian " + item.Name);
-                    statBonus[STAT.RESILIENCE] = 1 + item.rare / 2;
-                    break;
-                case 1:
-                    item.SetNameOverride("Viridian " + item.Name);
-                    statBonus[STAT.QUICKNESS] = 1 + item.rare / 2;
-                    break;
-                case 2:
-                    item.SetNameOverride("Cerulean " + item.Name);
-                    statBonus[STAT.POTENCY] = 1 + item.rare / 2;
-                    break;
-                case 3:
-                    item.SetNameOverride("Arylide " + item.Name);
-                    statBonus[STAT.WITS] = 1 + item.rare / 3;
-                    break;
-                case 4:
-                    item.SetNameOverride("Glaucous " + item.Name);
-                    bonusDef = 2 + item.rare;
-                    prefixTooltips.Add("+" + bonusDef + " defence");
-                    break;
-                case 5:
-                    item.SetNameOverride("Cinereous " + item.Name);
-                    bonusDef = 1 + item.rare / 2;
-                    prefixTooltips.Add("+" + bonusDef + " defence");
-                    bonusLife = 10 + item.rare * 5;
-                    break;
-                case 6:
-                    item.SetNameOverride("Sanguine " + item.Name);
-                    bonusLife = 15 + item.rare * 10;
-                    break;
-                case 7:
-                    item.SetNameOverride("Azure " + item.Name);
-                    bonusMana = 10 + item.rare * 3;
-                    break;
-                case 8:
-                    item.SetNameOverride("Cerise " + item.Name);
-                    bonusMana = 6 + item.rare * 2;
-                    bonusLife = 10 + item.rare * 5;
-                    break;
-                case 9:
-                    item.SetNameOverride("Amaranth " + item.Name);
-                    bonusLife = 10 + item.rare * 4;
-                    statBonus[STAT.RESILIENCE] = 1 + item.rare / 3;
-                    break;
-                case 10:
-                    item.SetNameOverride("Icterine " + item.Name);
-                    bonusLife = 10 + item.rare * 3;
-                    statBonus[STAT.QUICKNESS] = 1 + item.rare / 3;
-                    break;
-                case 11:
-                    item.SetNameOverride("Byzantine " + item.Name);
-                    bonusLife = 8 + item.rare * 3;
-                    statBonus[STAT.POTENCY] = 1 + item.rare / 3;
-                    break;
-                case 12:
-                    item.SetNameOverride("Silver " + item.Name);
-                    bonusEva = 2 + item.rare;
-                    break;
-                case 13:
-                    item.SetNameOverride("Ebony " + item.Name);
-                    bonusEva = 1 + item.rare / 2;
-                    bonusLife = 9 + item.rare * 5;
-                    break;
-                case 14:
-                    item.SetNameOverride("Onyx " + item.Name);
-                    bonusEva = 1 + item.rare / 2;
-                    bonusDef = 1 + item.rare / 2;
-                    prefixTooltips.Add("+" + bonusDef + " defence");
-                    break;
-                case 15:
-                    item.SetNameOverride("Scarlet " + item.Name);
-                    resBonus[ELEMENT.FIRE] = 6 + item.rare * 2;
-                    break;
-                case 16:
-                    item.SetNameOverride("Celeste " + item.Name);
-                    resBonus[ELEMENT.COLD] = 6 + item.rare * 2;
-                    break;
-                case 17:
-                    item.SetNameOverride("Golden " + item.Name);
-                    resBonus[ELEMENT.LIGHTNING] = 6 + item.rare * 2;
-                    break;
-                case 18:
-                    item.SetNameOverride("Prismatic " + item.Name);
-                    bonusAllres = 3 + item.rare / 2;
-                    prefixTooltips.Add("+" + bonusAllres + " to all resistances");
-                    break;
+                if (player.whoAmI == Main.myPlayer && (player.inventory[player.selectedItem].type != 0 || player.itemAnimation <= 0))
+                {
+                    if (ItemID.Sets.NebulaPickup[item.type])
+                    {
+                        Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
+                        item = new Item();
+                        if (Main.netMode == 1)
+                        {
+                            NetMessage.SendData(102, -1, -1, null, player.whoAmI, item.buffType, player.Center.X, player.Center.Y);
+                            NetMessage.SendData(21, -1, -1, null, item.whoAmI);
+                        }
+                        else
+                        {
+                            player.NebulaLevelup(item.buffType);
+                        }
+                    }
+
+                    switch (item.type)
+                    {
+                        case ItemID.Heart:
+                        case ItemID.CandyApple:
+                        case ItemID.CandyCane:
+                        {
+                            Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
+                            int healAmount = 10 + player.GetModPlayer<PlayerCharacter>().level / 2;
+                            player.statLife += healAmount;
+                            if (Main.myPlayer == player.whoAmI)
+                                player.HealEffect(healAmount);
+                            if (player.statLife > player.statLifeMax2)
+                                player.statLife = player.statLifeMax2;
+                            item = new Item();
+                            if (Main.netMode == 1)
+                                NetMessage.SendData(21, -1, -1, null, item.whoAmI);
+
+                            break;
+                        }
+                        case ItemID.Star:
+                        case ItemID.SoulCake:
+                        case ItemID.SugarPlum:
+                        {
+                            Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
+                            int healAmount = 5 + character.TotalStats(STAT.WITS);
+                            character.mana += healAmount;
+                            player.statMana += healAmount;
+                            if (Main.myPlayer == player.whoAmI)
+                                player.ManaEffect(healAmount);
+                            item = new Item();
+                            if (Main.netMode == 1)
+                                NetMessage.SendData(21, -1, -1, null, item.whoAmI);
+
+                            break;
+                        }
+                        default:
+                        {
+                            if (item.type == ModContent.ItemType<PermanenceCrown>())
+                            {
+                                character.permanence += 1;
+                                ItemText.NewText(item, item.stack);
+                                Main.PlaySound(7, player.position);
+                                return false;
+                            }
+
+                            if (item.type == ModContent.ItemType<BlacksmithCrown>())
+                            {
+                                character.transcendence += 1;
+                                ItemText.NewText(item, item.stack);
+                                Main.PlaySound(7, player.position);
+                                return false;
+                            }
+
+                            item = player.GetItem(item);
+                            if (Main.netMode == 1)
+                                NetMessage.SendData(21, -1, -1, null, item.whoAmI);
+
+                            break;
+                        }
+                    }
+                }
             }
+            catch (SystemException e)
+            {
+                ModLoader.GetMod("kRPG").Logger
+                    .InfoFormat(
+                        "OnPickup() failed - TO FIX THE PROBLEM: Delete the kRPG_Settings.json file in Documents/My Games/Terraria/ModLoader. Full error trace: " +
+                        e);
+            }
+
+            return false;
+        }
+
+        public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor,
+            Vector2 origin, float scale)
+        {
+            var player = Main.LocalPlayer;
+            bool flag = false;
+            if (player.chest >= 0)
+                if (Main.chest[player.chest].item.Contains(item))
+                    flag = true;
+            if (NeedsSaving(item) && !enhanced && !WorldGen.gen && !Main.gameMenu &&
+                (player.inventory.Contains(item) || flag || player.bank.item.Contains(item) || player.bank2.item.Contains(item) ||
+                 player.bank3.item.Contains(item)))
+                Initialize(item);
+            var character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
+
+            if (Upgradeable(item) && Main.mouseRight && Main.mouseRightRelease &&
+                new Rectangle((int) position.X, (int) position.Y, 38, 38).Contains(Main.mouseX, Main.mouseY))
+                character.anvilGUI.AttemptSelectItem(this, item);
         }
 
         public void Prefix(Item item)
@@ -862,151 +1003,241 @@ namespace kRPG.Items
             if (i >= 0 && item.useTime < item.useAnimation)
                 item.useTime = item.useAnimation;
 
-            item.SetNameOverride(item.Name + "+" + upgradeLevel.ToString());
+            item.SetNameOverride(item.Name + "+" + upgradeLevel);
 
             if (item.damage < 1) item.damage = 1;
         }
 
-        //Seems to work fine now
-        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        public void PrefixAccessory(Item item)
         {
-            if (Main.netMode == 2) return;
-            if (item.defense > 0 || item.accessory)
+            ClearPrefixes();
+
+            switch (kPrefix - 1)
             {
-                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                {
-                    if (resBonus[element] == 0)
-                        continue;
-                    string color = elementNames[element].Substring(0, 9);
-                    string eleName = elementNames[element].Substring(9);
-                    var line = new TooltipLine(mod, "Res" + element.ToString(), resBonus[element].ToString() + eleName + " resistance")
-                    {
-                        overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)), int.Parse(color.Substring(6, 3)))
-                    };
-                    tooltips.Insert(1, line);
-                }
-
-                foreach (STAT stat in Enum.GetValues(typeof(STAT)))
-                    if (statBonus[stat] != 0)
-                    {
-                        string color = statNames[stat].Substring(0, 9);
-                        string statName = statNames[stat].Substring(9);
-                        var line = new TooltipLine(mod, "Stat" + stat.ToString(), statBonus[stat].ToString() + statName)
-                        {
-                            overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)), int.Parse(color.Substring(6, 3)))
-                        };
-                        tooltips.Insert(1, line);
-                    }
-
-                if (bonusEva > 0)
-                {
-                    var line = new TooltipLine(mod, "Evasion", bonusEva.ToString() + " evasion rating") {overrideColor = new Color(159, 159, 159)};
-                    tooltips.Insert(1, line);
-                }
-
-                if (bonusMana > 0)
-                {
-                    var line = new TooltipLine(mod, "Mana", bonusMana.ToString() + " maximum mana") {overrideColor = new Color(0, 63, 255)};
-                    tooltips.Insert(1, line);
-                }
-
-                if (bonusLife > 0)
-                {
-                    var line = new TooltipLine(mod, "Life", bonusLife.ToString() + " maximum life") {overrideColor = new Color(255, 31, 31)};
-                    tooltips.Insert(1, line);
-                }
-
-                for (int i = 0; i < prefixTooltips.Count; i += 1)
-                {
-                    var line = new TooltipLine(mod, "prefixline" + i, prefixTooltips[i]) {overrideColor = new Color(127, 191, 127)};
-                    tooltips.Add(line);
-                }
-            }
-
-            else if (item.damage > 0)
-            {
-                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                {
-                    int eleDamage = GetIndividualElements(item, Main.player[Main.myPlayer])[element];
-                    if (eleDamage != 0)
-                    {
-                        string color = elementNames[element].Substring(0, 9);
-                        string eleName = elementNames[element].Substring(9);
-                        var line = new TooltipLine(mod, "Element" + element.ToString(), eleDamage.ToString() + eleName + "damage")
-                        {
-                            overrideColor = new Color(int.Parse(color.Substring(0, 3)), int.Parse(color.Substring(3, 3)), int.Parse(color.Substring(6, 3)))
-                        };
-                        tooltips.Insert(tooltips.FindIndex(tooltip => tooltip.Name == "Damage"), line);
-                    }
-                }
-
-                for (int i = 0; i < prefixTooltips.Count; i += 1)
-                {
-                    var line = new TooltipLine(mod, "prefixline" + i, prefixTooltips[i]) {overrideColor = new Color(127, 191, 127)};
-                    tooltips.Add(line);
-                }
+                case 0:
+                    item.SetNameOverride("Sturdy " + item.Name);
+                    statBonus[STAT.RESILIENCE] = 2;
+                    break;
+                case 1:
+                    item.SetNameOverride("Elusive " + item.Name);
+                    statBonus[STAT.QUICKNESS] = 2;
+                    break;
+                case 2:
+                    item.SetNameOverride("Volatile " + item.Name);
+                    statBonus[STAT.POTENCY] = 2;
+                    break;
+                case 3:
+                    item.SetNameOverride("Cunning " + item.Name);
+                    statBonus[STAT.WITS] = 2;
+                    break;
+                case 4:
+                    item.SetNameOverride("Sage " + item.Name);
+                    statBonus[STAT.WITS] = 3;
+                    item.rare += 1;
+                    break;
+                case 5:
+                    item.SetNameOverride("Armored " + item.Name);
+                    bonusDef = 4;
+                    prefixTooltips.Add("+4 defence");
+                    break;
+                case 6:
+                    item.SetNameOverride("Elegant " + item.Name);
+                    bonusEva = 5;
+                    break;
+                case 7:
+                    item.SetNameOverride("Vampiric " + item.Name);
+                    bonusLeech = 0.02f;
+                    prefixTooltips.Add("+2% life Leech");
+                    break;
+                case 8:
+                    item.SetNameOverride("Focused " + item.Name);
+                    bonusAccuracy = 3;
+                    prefixTooltips.Add("+3 accuracy");
+                    break;
+                case 9:
+                    item.SetNameOverride("Precise " + item.Name);
+                    bonusAccuracy = 4;
+                    prefixTooltips.Add("+4 accuracy");
+                    break;
+                case 10:
+                    item.SetNameOverride("Single-minded " + item.Name);
+                    bonusAccuracy = 6;
+                    item.rare += 1;
+                    prefixTooltips.Add("+6 accuracy");
+                    break;
+                case 11:
+                    item.SetNameOverride("Organic " + item.Name);
+                    bonusRegen = 1.4f;
+                    prefixTooltips.Add("+1.4 life regen");
+                    break;
+                case 12:
+                    item.SetNameOverride("Arcane " + item.Name);
+                    bonusMana = 20;
+                    break;
+                case 13:
+                    item.SetNameOverride("Frenetic " + item.Name);
+                    bonusCrit = 4;
+                    prefixTooltips.Add("+4 crit chance");
+                    break;
+                case 14:
+                    item.SetNameOverride("Brutal " + item.Name);
+                    bonusMult = 0.20f;
+                    prefixTooltips.Add("+40 crit multiplier");
+                    break;
+                case 15:
+                    item.SetNameOverride("Warding " + item.Name);
+                    bonusAllres = 3;
+                    prefixTooltips.Add("+4 to all resistances");
+                    break;
+                case 16:
+                    item.SetNameOverride("Flame Retardant " + item.Name);
+                    resBonus[ELEMENT.FIRE] = 10;
+                    break;
+                case 17:
+                    item.SetNameOverride("Waterproof " + item.Name);
+                    resBonus[ELEMENT.COLD] = 10;
+                    break;
+                case 18:
+                    item.SetNameOverride("Insulated " + item.Name);
+                    resBonus[ELEMENT.LIGHTNING] = 10;
+                    break;
+                case 19:
+                    item.SetNameOverride("Hexproof " + item.Name);
+                    resBonus[ELEMENT.SHADOW] = 7;
+                    break;
+                case 20:
+                    item.SetNameOverride("Hardened " + item.Name);
+                    bonusDef = 3;
+                    prefixTooltips.Add("+3 defence");
+                    break;
+                case 21:
+                    item.SetNameOverride("Protective " + item.Name);
+                    bonusAllres = 2;
+                    prefixTooltips.Add("+3 to all resistances");
+                    break;
+                case 22:
+                    item.SetNameOverride("Lava-Infused " + item.Name);
+                    resBonus[ELEMENT.FIRE] = 15;
+                    item.rare += 1;
+                    break;
+                case 23:
+                    item.SetNameOverride("Snowforged " + item.Name);
+                    resBonus[ELEMENT.COLD] = 15;
+                    item.rare += 1;
+                    break;
+                case 24:
+                    item.SetNameOverride("Lightning-Coiled " + item.Name);
+                    resBonus[ELEMENT.LIGHTNING] = 15;
+                    item.rare += 1;
+                    break;
+                case 25:
+                    item.SetNameOverride("Blackheart " + item.Name);
+                    resBonus[ELEMENT.SHADOW] = 12;
+                    item.rare += 1;
+                    break;
+                case 26:
+                    item.SetNameOverride("Enchanted " + item.Name);
+                    bonusAllres = 4;
+                    prefixTooltips.Add("+5 to all resistances");
+                    item.rare += 1;
+                    break;
             }
         }
 
-        public void ApplyUpgradeLevel(Item item)
+        public void PrefixArmour(Item item)
         {
-            double animationDps = 60f * item.damage / item.useAnimation;
-            double usetimeDps = 60f * item.damage / item.useTime;
-            double dpsModifier = 1.0;
-            switch (upgradeLevel)
+            ClearPrefixes();
+
+            switch (kPrefix - 1)
             {
-                default:
-                    dpsModifier = 0.85;
+                case 0:
+                    item.SetNameOverride("Carnelian " + item.Name);
+                    statBonus[STAT.RESILIENCE] = 1 + item.rare / 2;
                     break;
                 case 1:
-                    dpsModifier = 1;
+                    item.SetNameOverride("Viridian " + item.Name);
+                    statBonus[STAT.QUICKNESS] = 1 + item.rare / 2;
                     break;
                 case 2:
-                    dpsModifier = 1.12;
+                    item.SetNameOverride("Cerulean " + item.Name);
+                    statBonus[STAT.POTENCY] = 1 + item.rare / 2;
                     break;
                 case 3:
-                    dpsModifier = 1.25;
+                    item.SetNameOverride("Arylide " + item.Name);
+                    statBonus[STAT.WITS] = 1 + item.rare / 3;
                     break;
                 case 4:
-                    dpsModifier = 1.4;
+                    item.SetNameOverride("Glaucous " + item.Name);
+                    bonusDef = 2 + item.rare;
+                    prefixTooltips.Add("+" + bonusDef + " defence");
                     break;
                 case 5:
-                    dpsModifier = 1.6;
+                    item.SetNameOverride("Cinereous " + item.Name);
+                    bonusDef = 1 + item.rare / 2;
+                    prefixTooltips.Add("+" + bonusDef + " defence");
+                    bonusLife = 10 + item.rare * 5;
                     break;
                 case 6:
-                    dpsModifier = 1.8;
+                    item.SetNameOverride("Sanguine " + item.Name);
+                    bonusLife = 15 + item.rare * 10;
                     break;
                 case 7:
-                    dpsModifier = 2;
+                    item.SetNameOverride("Azure " + item.Name);
+                    bonusMana = 10 + item.rare * 3;
                     break;
                 case 8:
-                    dpsModifier = 2.25;
+                    item.SetNameOverride("Cerise " + item.Name);
+                    bonusMana = 6 + item.rare * 2;
+                    bonusLife = 10 + item.rare * 5;
+                    break;
+                case 9:
+                    item.SetNameOverride("Amaranth " + item.Name);
+                    bonusLife = 10 + item.rare * 4;
+                    statBonus[STAT.RESILIENCE] = 1 + item.rare / 3;
+                    break;
+                case 10:
+                    item.SetNameOverride("Icterine " + item.Name);
+                    bonusLife = 10 + item.rare * 3;
+                    statBonus[STAT.QUICKNESS] = 1 + item.rare / 3;
+                    break;
+                case 11:
+                    item.SetNameOverride("Byzantine " + item.Name);
+                    bonusLife = 8 + item.rare * 3;
+                    statBonus[STAT.POTENCY] = 1 + item.rare / 3;
+                    break;
+                case 12:
+                    item.SetNameOverride("Silver " + item.Name);
+                    bonusEva = 2 + item.rare;
+                    break;
+                case 13:
+                    item.SetNameOverride("Ebony " + item.Name);
+                    bonusEva = 1 + item.rare / 2;
+                    bonusLife = 9 + item.rare * 5;
+                    break;
+                case 14:
+                    item.SetNameOverride("Onyx " + item.Name);
+                    bonusEva = 1 + item.rare / 2;
+                    bonusDef = 1 + item.rare / 2;
+                    prefixTooltips.Add("+" + bonusDef + " defence");
+                    break;
+                case 15:
+                    item.SetNameOverride("Scarlet " + item.Name);
+                    resBonus[ELEMENT.FIRE] = 6 + item.rare * 2;
+                    break;
+                case 16:
+                    item.SetNameOverride("Celeste " + item.Name);
+                    resBonus[ELEMENT.COLD] = 6 + item.rare * 2;
+                    break;
+                case 17:
+                    item.SetNameOverride("Golden " + item.Name);
+                    resBonus[ELEMENT.LIGHTNING] = 6 + item.rare * 2;
+                    break;
+                case 18:
+                    item.SetNameOverride("Prismatic " + item.Name);
+                    bonusAllres = 3 + item.rare / 2;
+                    prefixTooltips.Add("+" + bonusAllres + " to all resistances");
                     break;
             }
-
-            animationDps *= dpsModifier;
-            usetimeDps *= dpsModifier;
-
-            item.damage = (int) Math.Round(animationDps / 60 * item.useAnimation);
-
-            int i = item.useTime - item.useAnimation;
-
-            item.useAnimation = (int) Math.Round(60 / animationDps * item.damage);
-            item.useTime = (int) Math.Round(60 / usetimeDps * item.damage);
-
-            if (i >= 0 && item.useTime < item.useAnimation)
-                item.useTime = item.useAnimation + i;
-            if (i >= 0 && item.useTime < item.useAnimation)
-                item.useTime = item.useAnimation;
-
-            item.crit = item.crit + upgradeLevel - 1;
-
-            if (upgradeLevel < 3)
-                item.scale *= 0.95f;
-            else if (upgradeLevel >= 6 && upgradeLevel < 8)
-                item.scale *= 1.05f;
-            else if (upgradeLevel == 8)
-                item.scale *= 1.1f;
         }
 
         public byte RandomizeUpgradeLevel(Item item, bool bonus)
@@ -1020,33 +1251,25 @@ namespace kRPG.Items
             return 2;
         }
 
-        public void Upgrade(Item item)
+        public override TagCompound Save(Item item)
         {
-            SetUpgradeLevel(item, (byte) (upgradeLevel + 1));
-            Main.NewText("Successfully upgraded item to +" + upgradeLevel.ToString(), 0, 255, 0);
+            return new TagCompound {{"upgrade level", upgradeLevel}, {"prefix", kPrefix}};
+        }
+
+        public override void SetDefaults(Item item)
+        {
+            int h = item.healLife;
+            if (h > 0)
+                item.healLife = 10 * (int) Math.Round((73.56 - 0.4 * h + 0.018 * h * h) / 10.0);
+            h = item.healMana;
+            if (h > 0)
+                item.healMana /= 2;
         }
 
         public void SetUpgradeLevel(Item item, byte level)
         {
             upgradeLevel = level;
             ApplyStats(item);
-        }
-
-        public void Downgrade(Item item)
-        {
-            SetUpgradeLevel(item, (byte) Math.Max(upgradeLevel - 1, 0));
-            Main.NewText("Failed to upgrade - item was downgraded to +" + upgradeLevel.ToString(), 255, 0, 0);
-        }
-
-        public void Destroy(Item item)
-        {
-            Main.NewText("Failed to upgrade - item was destroyed", 255, 0, 0);
-            item.SetDefaults(0, true);
-        }
-
-        public bool Upgradeable(Item item)
-        {
-            return item.damage > 0 && item.ammo == 0;
         }
 
         public override void UpdateEquip(Item item, Player player)
@@ -1080,239 +1303,15 @@ namespace kRPG.Items
                 modPlayer.evasion += bonusEva;
         }
 
-        public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor,
-            Vector2 origin, float scale)
+        public void Upgrade(Item item)
         {
-            var player = Main.LocalPlayer;
-            bool flag = false;
-            if (player.chest >= 0)
-                if (Main.chest[player.chest].item.Contains(item))
-                    flag = true;
-            if (NeedsSaving(item) && !enhanced && !WorldGen.gen && !Main.gameMenu &&
-                (player.inventory.Contains(item) || flag || player.bank.item.Contains(item) || player.bank2.item.Contains(item) ||
-                 player.bank3.item.Contains(item)))
-                Initialize(item);
-            var character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
-
-            if (Upgradeable(item) && Main.mouseRight && Main.mouseRightRelease &&
-                new Rectangle((int) position.X, (int) position.Y, 38, 38).Contains(Main.mouseX, Main.mouseY))
-                character.anvilGUI.AttemptSelectItem(this, item);
+            SetUpgradeLevel(item, (byte) (upgradeLevel + 1));
+            Main.NewText("Successfully upgraded item to +" + upgradeLevel, 0, 255, 0);
         }
 
-        public override bool CanPickup(Item item, Player player)
+        public bool Upgradeable(Item item)
         {
-            return ItemSpace(item, player);
-        }
-
-        public override bool ItemSpace(Item newItem, Player player)
-        {
-            var character = player.GetModPlayer<PlayerCharacter>();
-            try
-            {
-                if (ItemID.Sets.NebulaPickup[newItem.type] || newItem.type == ItemID.Heart || newItem.type == ItemID.CandyApple ||
-                    newItem.type == ItemID.CandyCane || newItem.type == ItemID.Star || newItem.type == ItemID.SoulCake || newItem.type == ItemID.SugarPlum ||
-                    newItem.type == ModContent.ItemType<PermanenceCrown>() || newItem.type == ModContent.ItemType<BlacksmithCrown>())
-                    return true;
-                int num = 50;
-                if (newItem.type == 71 || newItem.type == 72 || newItem.type == 73 || newItem.type == 74)
-                    num = 54;
-                for (int i = 0; i < num; i++)
-                {
-                    var item = player.inventory[i];
-                    if ((item.type == 0 || item.stack == 0) && (!kConfig.configLocal.clientside.manualInventory || num > 50 || character.activeInvPage == 0) ||
-                        item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
-                        return true;
-                }
-
-                for (int i = 0; i < character.inventories.Length; i++)
-                for (int j = 0; j < character.inventories[i].Length; j += 1)
-                {
-                    var item = character.inventories[i][j];
-                    if ((item.type == 0 || item.stack == 0) && (!kConfig.configLocal.clientside.manualInventory || i == 0) ||
-                        item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
-                        //Main.NewText((!kConfig.configLocal.clientSide.manualInventory) + "||" + (i == 0));
-                        return true;
-                }
-            }
-            catch (SystemException e)
-            {
-                ModLoader.GetMod("kRPG").Logger
-                    .InfoFormat(
-                        "ItemSpace() failed - TO FIX THE PROBLEM: Delete the kRPG_Settings.json file in Documents/My Games/Terraria/ModLoader. Full error trace: " +
-                        e);
-            }
-
-            return false;
-        }
-
-        public override bool OnPickup(Item item, Player player)
-        {
-            var character = player.GetModPlayer<PlayerCharacter>();
-
-            try
-            {
-                if (player.whoAmI == Main.myPlayer && (player.inventory[player.selectedItem].type != 0 || player.itemAnimation <= 0))
-                {
-                    if (ItemID.Sets.NebulaPickup[item.type])
-                    {
-                        Main.PlaySound(7, (int) player.position.X, (int) player.position.Y, 1, 1f, 0f);
-                        item = new Item();
-                        if (Main.netMode == 1)
-                        {
-                            NetMessage.SendData(102, -1, -1, null, player.whoAmI, (float) item.buffType, player.Center.X, player.Center.Y, 0, 0, 0);
-                            NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
-                        }
-                        else
-                        {
-                            player.NebulaLevelup(item.buffType);
-                        }
-                    }
-
-                    switch (item.type)
-                    {
-                        case ItemID.Heart:
-                        case ItemID.CandyApple:
-                        case ItemID.CandyCane:
-                        {
-                            Main.PlaySound(7, (int) player.position.X, (int) player.position.Y, 1, 1f, 0f);
-                            int healAmount = 10 + player.GetModPlayer<PlayerCharacter>().level / 2;
-                            player.statLife += healAmount;
-                            if (Main.myPlayer == player.whoAmI)
-                                player.HealEffect(healAmount);
-                            if (player.statLife > player.statLifeMax2)
-                                player.statLife = player.statLifeMax2;
-                            item = new Item();
-                            if (Main.netMode == 1)
-                                NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
-
-                            break;
-                        }
-                        case ItemID.Star:
-                        case ItemID.SoulCake:
-                        case ItemID.SugarPlum:
-                        {
-                            Main.PlaySound(7, (int) player.position.X, (int) player.position.Y, 1, 1f, 0f);
-                            int healAmount = 5 + character.TotalStats(STAT.WITS);
-                            character.mana += healAmount;
-                            player.statMana += healAmount;
-                            if (Main.myPlayer == player.whoAmI)
-                                player.ManaEffect(healAmount);
-                            item = new Item();
-                            if (Main.netMode == 1)
-                                NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
-
-                            break;
-                        }
-                        default:
-                        {
-                            if (item.type == ModContent.ItemType<PermanenceCrown>())
-                            {
-                                character.permanence += 1;
-                                ItemText.NewText(item, item.stack);
-                                Main.PlaySound(7, player.position);
-                                return false;
-                            }
-
-                            if (item.type == ModContent.ItemType<BlacksmithCrown>())
-                            {
-                                character.transcendence += 1;
-                                ItemText.NewText(item, item.stack);
-                                Main.PlaySound(7, player.position);
-                                return false;
-                            }
-
-                            item = player.GetItem(item);
-                            if (Main.netMode == 1)
-                                NetMessage.SendData(21, -1, -1, null, item.whoAmI, 0f, 0f, 0f, 0, 0, 0);
-
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (SystemException e)
-            {
-                ModLoader.GetMod("kRPG").Logger
-                    .InfoFormat(
-                        "OnPickup() failed - TO FIX THE PROBLEM: Delete the kRPG_Settings.json file in Documents/My Games/Terraria/ModLoader. Full error trace: " +
-                        e);
-            }
-
-            return false;
-        }
-
-        public override bool NeedsSaving(Item item)
-        {
-            return item.maxStack == 1 && (item.damage > 0 || item.defense > 0 || item.accessory);
-        }
-
-        public override TagCompound Save(Item item)
-        {
-            return new TagCompound {{"upgrade level", upgradeLevel}, {"prefix", kPrefix}};
-        }
-
-        public override void NetSend(Item item, BinaryWriter writer)
-        {
-            writer.Write(upgradeLevel);
-            writer.Write(kPrefix);
-        }
-
-        public override void Load(Item item, TagCompound tag)
-        {
-            upgradeLevel = tag.GetByte("upgrade level");
-            kPrefix = tag.GetByte("prefix");
-            ApplyStats(item);
-        }
-
-        public override void NetReceive(Item item, BinaryReader reader)
-        {
-            upgradeLevel = reader.ReadByte();
-            kPrefix = reader.ReadByte();
-            ApplyStats(item);
-        }
-
-        public Mod getMod()
-        {
-            return mod;
-        }
-
-        public int GetEleDamage(Item item, Player player, bool ignoreModifiers = false)
-        {
-            var ele = new Dictionary<ELEMENT, int>();
-            ele = GetIndividualElements(item, player, ignoreModifiers);
-            return ele[ELEMENT.FIRE] + ele[ELEMENT.COLD] + ele[ELEMENT.LIGHTNING] + ele[ELEMENT.SHADOW];
-        }
-
-        public Dictionary<ELEMENT, int> GetIndividualElements(Item item, Player player, bool ignoreModifiers = false)
-        {
-            var dictionary = new Dictionary<ELEMENT, int>();
-            if (player.GetModPlayer<PlayerCharacter>().rituals[RITUAL.DEMON_PACT])
-            {
-                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                    dictionary[element] = 0;
-
-                dictionary[ELEMENT.SHADOW] = GetEleDamage(item, player);
-            }
-            else
-            {
-                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                    dictionary[element] = (int) Math.Round(elementalDamage[element] * (ignoreModifiers
-                                                               ? 1
-                                                               : player.GetModPlayer<PlayerCharacter>().DamageMultiplier(element, item.melee, item.ranged,
-                                                                   item.magic, item.thrown, item.summon)));
-            }
-
-            return dictionary;
-        }
-
-        public override void SetDefaults(Item item)
-        {
-            int h = item.healLife;
-            if (h > 0)
-                item.healLife = 10 * (int) Math.Round((73.56 - 0.4 * h + 0.018 * h * h) / 10.0);
-            h = item.healMana;
-            if (h > 0)
-                item.healMana /= 2;
+            return item.damage > 0 && item.ammo == 0;
         }
 
         public override bool UseItem(Item item, Player player)
@@ -1324,11 +1323,6 @@ namespace kRPG.Items
             player.statMana = character.mana;
             player.AddBuff(ModContent.BuffType<ManaCooldown>(), 600);
             return true;
-        }
-
-        public override bool CanUseItem(Item item, Player player)
-        {
-            return item.healMana <= 0 || player.GetModPlayer<PlayerCharacter>().canHealMana;
         }
     }
 }
