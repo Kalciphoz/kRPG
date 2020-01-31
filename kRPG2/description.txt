@@ -1,0 +1,1 @@
+kRPG2 is an updated version of kRPG which was written by Kalciphoz and his team.  This mod extends the original work and makes it compatable with the latest tmod loader.

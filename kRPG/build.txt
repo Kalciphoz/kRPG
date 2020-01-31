@@ -1,3 +1,0 @@
-displayName = kRPG
-author = Vincent Gee
-version = 0.1
