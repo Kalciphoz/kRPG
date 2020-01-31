@@ -42,7 +42,7 @@ namespace kRPG
         {
             get
             {
-                var glyph = (Glyph) glyphs[(byte) GLYPHTYPE.MOON].modItem;
+                Glyph glyph = (Glyph) glyphs[(byte) GLYPHTYPE.MOON].modItem;
                 return glyph.GetCastAction();
             }
         }
@@ -54,10 +54,10 @@ namespace kRPG
             get
             {
                 if (modifierOverride != null) return modifierOverride;
-                var list = new List<GlyphModifier>();
+                List<GlyphModifier> list = new List<GlyphModifier>();
                 for (int i = 0; i < glyphs.Length; i += 1)
                 {
-                    var glyph = (Glyph) glyphs[i].modItem;
+                    Glyph glyph = (Glyph) glyphs[i].modItem;
                     for (int j = 0; j < glyph.modifiers.Count; j += 1)
                         list.Add(glyph.modifiers[j]);
                 }
@@ -72,7 +72,7 @@ namespace kRPG
         {
             get
             {
-                var glyph = (Glyph) glyphs[(byte) GLYPHTYPE.STAR].modItem;
+                Glyph glyph = (Glyph) glyphs[(byte) GLYPHTYPE.STAR].modItem;
                 return glyph.GetUseAbility();
             }
         }
@@ -97,15 +97,15 @@ namespace kRPG
         public ProceduralSpellProj CreateProjectile(Player player, Vector2 velocity, float angle = 0f, Vector2? position = null, Entity caster = null)
         {
             if (caster == null) caster = player;
-            var projectile =
+            Projectile projectile =
                 Main.projectile[
                     Projectile.NewProjectile(position ?? caster.Center, velocity.RotatedBy(API.Tau * angle), ModContent.ProjectileType<ProceduralSpellProj>(),
                         ProjectileDamage(player.GetModPlayer<PlayerCharacter>()), 3f, player.whoAmI)];
-            var ps = (ProceduralSpellProj) projectile.modProjectile;
+            ProceduralSpellProj ps = (ProceduralSpellProj) projectile.modProjectile;
             ps.origin = projectile.position;
-            foreach (var item in glyphs)
+            foreach (Item item in glyphs)
             {
-                var glyph = (Glyph) item.modItem;
+                Glyph glyph = (Glyph) item.modItem;
                 if (glyph.GetAiAction() != null)
                     ps.ai.Add(glyph.GetAiAction());
                 if (glyph.GetInitAction() != null)
@@ -116,7 +116,7 @@ namespace kRPG
                     ps.kill.Add(glyph.GetKillAction());
             }
 
-            foreach (var modifier in modifiers)
+            foreach (GlyphModifier modifier in modifiers)
             {
                 if (modifier.impact != null)
                     ps.impact.Add(modifier.impact);
@@ -137,7 +137,7 @@ namespace kRPG
             ps.source = this;
             ps.Initialize();
             if (Main.netMode != 1) return ps;
-            var packet = mod.GetPacket();
+            ModPacket packet = mod.GetPacket();
             packet.Write((byte) Message.CreateProjectile);
             packet.Write(player.whoAmI);
             packet.Write(ps.projectile.whoAmI);
@@ -147,7 +147,7 @@ namespace kRPG
             packet.Write(ps.projectile.damage);
             packet.Write(minion);
             packet.Write(caster.whoAmI);
-            var mods = modifiers;
+            List<GlyphModifier> mods = modifiers;
             packet.Write(mods.Count);
             for (int j = 0; j < mods.Count; j += 1)
                 packet.Write(mods[j].id);
@@ -167,8 +167,8 @@ namespace kRPG
                 if (remaining > 0)
                     remaining -= 1;
 
-                var bounds = new Rectangle((int) position.X, (int) position.Y, (int) (GFX.skillSlot.Width * scale), (int) (GFX.skillSlot.Height * scale));
-                var character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
+                Rectangle bounds = new Rectangle((int) position.X, (int) position.Y, (int) (GFX.skillSlot.Width * scale), (int) (GFX.skillSlot.Height * scale));
+                PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
 
                 if (spriteBatch == null || character == null) return;
 
@@ -188,7 +188,7 @@ namespace kRPG
                     if (character.selectedAbility.Equals(this))
                     {
                         spriteBatch.Draw(GFX.selectedSkillSlot, position, Color.White, scale);
-                        for (var k = Keys.A; k <= Keys.Z; k += 1)
+                        for (Keys k = Keys.A; k <= Keys.Z; k += 1)
                             if (Main.keyState.IsKeyDown(k) && (Main.keyState.IsKeyDown(Keys.LeftShift) || Main.keyState.IsKeyDown(Keys.RightShift)))
                             {
                                 for (int i = 0; i < character.abilities.Length; i += 1)
@@ -209,7 +209,7 @@ namespace kRPG
                 }
 
                 if (full && remaining == 0 && character.mana >= ManaCost(character)) spriteBatch.Draw(GFX.gothicLetter[key], position, Color.White, scale);
-                else if (full || character.spellcraftingGUI.guiActive) spriteBatch.Draw(GFX.gothicLetter[key], position, new Color(143, 143, 151), scale);
+                else if (full || character.spellCraftingGui.guiActive) spriteBatch.Draw(GFX.gothicLetter[key], position, new Color(143, 143, 151), scale);
             }
             catch (Exception e)
             {
@@ -235,7 +235,7 @@ namespace kRPG
         public void UseAbility(Player player, Vector2 target)
         {
             bool vanish = modifiers.Contains(GlyphModifier.vanish);
-            var oldCenter = player.Center;
+            Vector2 oldCenter = player.Center;
             if (vanish)
             {
                 Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), oldCenter);
@@ -259,7 +259,7 @@ namespace kRPG
                         if (player.chaosState)
                         {
                             player.statLife -= player.statLifeMax2 / 7;
-                            var damageSource = PlayerDeathReason.ByOther(13);
+                            PlayerDeathReason damageSource = PlayerDeathReason.ByOther(13);
                             if (Main.rand.Next(2) == 0)
                                 damageSource = PlayerDeathReason.ByOther(player.Male ? 14 : 15);
                             if (player.statLife <= 0)

@@ -14,10 +14,10 @@ namespace kRPG.NPCs
         {
             for (int i = 0; i < 255; i += 1)
             {
-                var player = Main.player[i];
+                Player player = Main.player[i];
                 if (!player.active)
                     continue;
-                var character = player.GetModPlayer<PlayerCharacter>();
+                PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
                 if (character.level >= 20)
                     return true;
             }

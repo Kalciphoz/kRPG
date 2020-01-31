@@ -41,22 +41,22 @@ namespace kRPG.Modifiers
                     else
                         rotMissile.projectile.Kill();
 
-                var proj1 = Main.projectile[
+                Projectile proj1 = Main.projectile[
                     Projectile.NewProjectile(npc.Center, new Vector2(0f, -1.5f), ModContent.ProjectileType<ProceduralSpellProj>(), npc.damage, 3f)];
                 proj1.hostile = true;
                 proj1.friendly = false;
-                var ps1 = (ProceduralSpellProj) proj1.modProjectile;
+                ProceduralSpellProj ps1 = (ProceduralSpellProj) proj1.modProjectile;
                 ps1.origin = proj1.position;
-                var cross1 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Red() : new Cross_Violet();
+                Cross cross1 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Red() : new Cross_Violet();
                 ps1.ai.Add(delegate(ProceduralSpellProj spell)
                 {
                     cross1.GetAiAction()(spell);
 
                     float displacementAngle = (float) API.Tau / 4f;
-                    var displacementVelocity = Vector2.Zero;
+                    Vector2 displacementVelocity = Vector2.Zero;
                     if (rotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
                     {
-                        var unitRelativePos = spell.RelativePos(spell.caster.Center);
+                        Vector2 unitRelativePos = spell.RelativePos(spell.caster.Center);
                         unitRelativePos.Normalize();
                         spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
                         displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.caster.Center).ToRotation() + (float) API.Tau / 4f);
@@ -88,22 +88,22 @@ namespace kRPG.Modifiers
                     else
                         rotSecondary.projectile.Kill();
 
-                var proj2 = Main.projectile[
+                Projectile proj2 = Main.projectile[
                     Projectile.NewProjectile(npc.Center, new Vector2(0f, 1.5f), ModContent.ProjectileType<ProceduralSpellProj>(), npc.damage, 3f)];
                 proj2.hostile = true;
                 proj2.friendly = false;
-                var ps2 = (ProceduralSpellProj) proj2.modProjectile;
+                ProceduralSpellProj ps2 = (ProceduralSpellProj) proj2.modProjectile;
                 ps2.origin = proj2.position;
-                var cross2 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Blue() : new Cross_Purple();
+                Cross cross2 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Blue() : new Cross_Purple();
                 ps2.ai.Add(delegate(ProceduralSpellProj spell)
                 {
                     cross2.GetAiAction()(spell);
 
                     float displacementAngle = (float) API.Tau / 4f + (float) Math.PI;
-                    var displacementVelocity = Vector2.Zero;
+                    Vector2 displacementVelocity = Vector2.Zero;
                     if (rotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
                     {
-                        var unitRelativePos = spell.RelativePos(spell.caster.Center);
+                        Vector2 unitRelativePos = spell.RelativePos(spell.caster.Center);
                         unitRelativePos.Normalize();
                         spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
                         displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.caster.Center).ToRotation() + (float) API.Tau / 4f);

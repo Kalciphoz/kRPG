@@ -32,18 +32,18 @@ namespace kRPG.Items.Weapons
         private static readonly Action<Player, Item, int, Cross, float> spellEffect =
             delegate(Player player, Item item, int projCount, Cross cross, float scale)
             {
-                var mod = ModLoader.GetMod("kRPG");
+                Mod mod = ModLoader.GetMod("kRPG");
                 float spread = 0.030f - projCount * 0.002f;
-                var unitVelocity = Main.MouseWorld - player.Center;
+                Vector2 unitVelocity = Main.MouseWorld - player.Center;
                 unitVelocity.Normalize();
-                var velocity = unitVelocity * item.shootSpeed;
+                Vector2 velocity = unitVelocity * item.shootSpeed;
                 for (int i = 0; i < projCount; i += 1)
                 {
-                    var projectile =
+                    Projectile projectile =
                         Main.projectile[
                             Projectile.NewProjectile(player.Center, velocity.RotatedBy(API.Tau * (-spread / 2f + i * spread + spread / 2f)),
                                 ModContent.ProjectileType<ProceduralSpellProj>(), item.damage, item.knockBack, player.whoAmI)];
-                    var ps = (ProceduralSpellProj) projectile.modProjectile;
+                    ProceduralSpellProj ps = (ProceduralSpellProj) projectile.modProjectile;
                     ps.origin = projectile.position;
                     if (cross.GetAiAction() != null)
                         ps.ai.Add(cross.GetAiAction());
@@ -172,7 +172,7 @@ namespace kRPG.Items.Weapons
 
         public static void Unload()
         {
-            foreach (var gem in gems.Values)
+            foreach (StaffGem gem in gems.Values)
                 gem.texture = null;
         }
     }

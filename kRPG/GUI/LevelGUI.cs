@@ -10,14 +10,14 @@ using Terraria.ModLoader;
 
 namespace kRPG.GUI
 {
-    public class LevelGUI : BaseGui
+    public class LevelGui : BaseGui
     {
         public Dictionary<STAT, int> allocated = new Dictionary<STAT, int> {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}};
         private PlayerCharacter character;
 
         private readonly Dictionary<STAT, StatFlame> statFlame;
 
-        public LevelGUI(PlayerCharacter character, Mod mod)
+        public LevelGui(PlayerCharacter character, Mod mod)
         {
             this.character = character;
 
@@ -56,7 +56,7 @@ namespace kRPG.GUI
 
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, text, GuiPosition - new Vector2(width / 2f - 200f, 38f * Scale + 38f), Color.White, Scale);
 
-            var buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 320f * Scale);
+            Vector2 buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 320f * Scale);
             spriteBatch.Draw(GFX.buttonCancel, buttonPosition, Color.White, Scale);
 
             if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.buttonConfirm.Width * Scale &&
@@ -89,7 +89,7 @@ namespace kRPG.GUI
                     try
                     {
                         Main.PlaySound(SoundID.MenuTick);
-                        foreach (var s in allocated.Keys)
+                        foreach (STAT s in allocated.Keys)
                             character.baseStats[s] += allocated[s];
                         foreach (STAT stat in Enum.GetValues(typeof(STAT)))
                             allocated[stat] = 0;
@@ -105,7 +105,7 @@ namespace kRPG.GUI
             }
 
             STAT? hoverStat = null;
-            foreach (var s in statFlame.Keys.Where(s => statFlame[s].CheckHover()))
+            foreach (STAT s in statFlame.Keys.Where(s => statFlame[s].CheckHover()))
                 hoverStat = s;
 
             if (hoverStat != null) spriteBatch.Draw(GFX.deerskull_eyes[hoverStat.Value], GuiPosition, Color.White, Scale);

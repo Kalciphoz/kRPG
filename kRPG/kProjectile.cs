@@ -28,14 +28,14 @@ namespace kRPG
                 if (projectile.hostile && !projectile.friendly)
                 {
                     bool bossfight = false;
-                    foreach (var n in Main.npc)
+                    foreach (NPC n in Main.npc)
                         if (n.active)
                             if (n.boss)
                                 bossfight = true;
                     if (bossfight) return;
 
-                    var player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
-                    var haselement = new Dictionary<ELEMENT, bool>
+                    Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
+                    Dictionary<ELEMENT, bool> haselement = new Dictionary<ELEMENT, bool>
                     {
                         {
                             ELEMENT.FIRE,
@@ -68,15 +68,15 @@ namespace kRPG
 
             if (projectile.type == ModContent.ProjectileType<ProceduralSpellProj>())
             {
-                var character = Main.player[projectile.owner].GetModPlayer<PlayerCharacter>();
-                var spell = (ProceduralSpellProj) projectile.modProjectile;
+                PlayerCharacter character = Main.player[projectile.owner].GetModPlayer<PlayerCharacter>();
+                ProceduralSpellProj spell = (ProceduralSpellProj) projectile.modProjectile;
                 if (spell.source == null)
                 {
                     SelectItem(projectile);
                 }
                 else
                 {
-                    var cross = (Cross) spell.source.glyphs[(int) GLYPHTYPE.CROSS].modItem;
+                    Cross cross = (Cross) spell.source.glyphs[(int) GLYPHTYPE.CROSS].modItem;
                     if (cross is Cross_Orange)
                         SelectItem(projectile, character.lastSelectedWeapon);
                     else
@@ -86,7 +86,7 @@ namespace kRPG
             }
             else if (projectile.friendly && !projectile.hostile && Main.player[projectile.owner] != null)
             {
-                var player = Main.player[projectile.owner];
+                Player player = Main.player[projectile.owner];
                 if (!player.active)
                     return;
                 if (player.inventory[player.selectedItem] == null)
@@ -109,14 +109,14 @@ namespace kRPG
 
         public int GetEleDamage(Projectile projectile, Player player, bool ignoreModifiers = false)
         {
-            var ele = new Dictionary<ELEMENT, int>();
+            Dictionary<ELEMENT, int> ele = new Dictionary<ELEMENT, int>();
             ele = GetIndividualElements(projectile, player, ignoreModifiers);
             return ele[ELEMENT.FIRE] + ele[ELEMENT.COLD] + ele[ELEMENT.LIGHTNING] + ele[ELEMENT.SHADOW];
         }
 
         public Dictionary<ELEMENT, int> GetIndividualElements(Projectile projectile, Player player, bool ignoreModifiers = false)
         {
-            var dictionary = new Dictionary<ELEMENT, int>();
+            Dictionary<ELEMENT, int> dictionary = new Dictionary<ELEMENT, int>();
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 dictionary[element] = 0;
             if (elementalDamage == null)
@@ -143,7 +143,7 @@ namespace kRPG
 
         public void SelectItem(Projectile projectile)
         {
-            var owner = Main.player[projectile.owner];
+            Player owner = Main.player[projectile.owner];
             item = owner.inventory[owner.selectedItem];
             projectile.minion = item.summon || projectile.minion;
 

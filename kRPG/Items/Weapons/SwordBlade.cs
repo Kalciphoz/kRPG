@@ -242,7 +242,7 @@ namespace kRPG.Items.Weapons
 
         public static void Unload()
         {
-            foreach (var blade in blades.Values)
+            foreach (SwordBlade blade in blades.Values)
                 blade.texture = null;
         }
     }

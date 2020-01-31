@@ -34,7 +34,7 @@ namespace kRPG.Modifiers
         public override void NPCLoot(NPC npc)
         {
             Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), npc.Center);
-            var proj = Main.projectile[
+            Projectile proj = Main.projectile[
                 Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<NPC_Explosion>(), npc.damage * 5 / 4, 0f)];
         }
 

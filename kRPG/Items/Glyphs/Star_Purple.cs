@@ -20,7 +20,7 @@ namespace kRPG.Items.Glyphs
                 for (int y = (int) (Main.screenPosition.Y / 16); y < (int) ((Main.screenPosition.Y + Main.screenHeight) / 16); y += 1)
                 {
                     int x = (int) (target.X / 16f);
-                    var tile = Main.tile[x, y];
+                    Tile tile = Main.tile[x, y];
                     if ((!tile.active() || !Main.tileSolidTop[tile.type]) && (tile.collisionType != 1 || Main.tile[x, y - 1].collisionType == 1))
                         continue;
                     placeable = true;
@@ -30,18 +30,18 @@ namespace kRPG.Items.Glyphs
                 }
 
                 if (!placeable) return;
-                var character = player.GetModPlayer<PlayerCharacter>();
+                PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
                 if (character.minions.Exists(minion => minion is Obelisk))
-                    foreach (var obelisk in character.minions.Where(minions => minions.projectile.type == ModContent.ProjectileType<Obelisk>()))
+                    foreach (ProceduralMinion obelisk in character.minions.Where(minions => minions.projectile.type == ModContent.ProjectileType<Obelisk>()))
                     {
-                        foreach (var psp in obelisk.circlingProtection)
+                        foreach (ProceduralSpellProj psp in obelisk.circlingProtection)
                             psp.projectile.Kill();
                         obelisk.circlingProtection.Clear();
                         obelisk.smallProt?.projectile.Kill();
                         obelisk.projectile.Kill();
                     }
 
-                var totem = Main.projectile[
+                Projectile totem = Main.projectile[
                     Projectile.NewProjectile(new Vector2((int) (target.X / 16) * 16, placementHeight * 16) + new Vector2(8f, -32f), Vector2.Zero,
                         ModContent.GetInstance<Obelisk>().projectile.type, 0, 0f, player.whoAmI)];
                 totem.position = new Vector2((int) (target.X / 16) * 16, placementHeight * 16) - new Vector2(8f, 62f);

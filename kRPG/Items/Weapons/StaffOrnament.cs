@@ -71,14 +71,14 @@ namespace kRPG.Items.Weapons
             twig = new StaffOrnament("Twig", 2, 7, " of Longevity", true, 1.3f, 1f, 0.9f, 1f).SetEffect(
                 delegate(Player player, NPC npc, Item item, int damage, bool crit)
                 {
-                    var character = player.GetModPlayer<PlayerCharacter>();
+                    PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
                     float distance = Vector2.Distance(npc.Center, character.player.Center);
                     int count = (int) (distance / 32);
-                    var trail = new Trail(npc.Center, 60, delegate(SpriteBatch spriteBatch, Player p, Vector2 end, Vector2[] displacement, float scale)
+                    Trail trail = new Trail(npc.Center, 60, delegate(SpriteBatch spriteBatch, Player p, Vector2 end, Vector2[] displacement, float scale)
                     {
                         for (int i = 0; i < count; i += 1)
                         {
-                            var position = (npc.position - p.Center) * i / count + p.Center;
+                            Vector2 position = (npc.position - p.Center) * i / count + p.Center;
                             spriteBatch.Draw(GFX.heart, position - Main.screenPosition + displacement[i], null, Color.White, 0f, Vector2.Zero, scale,
                                 SpriteEffects.None, 0f);
                         }
@@ -99,7 +99,7 @@ namespace kRPG.Items.Weapons
                 delegate(Player player, NPC npc, Item item, int damage, bool crit)
                 {
                     Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
-                    var proj = Main.projectile[
+                    Projectile proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(), damage / 2, 0f,
                             player.whoAmI)];
                 });
@@ -131,7 +131,7 @@ namespace kRPG.Items.Weapons
 
         public static void Unload()
         {
-            foreach (var o in ornament.Values)
+            foreach (StaffOrnament o in ornament.Values)
                 o.texture = null;
         }
     }

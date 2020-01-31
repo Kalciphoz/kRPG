@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using kRPG.Enums;
 using kRPG.GUI;
 using kRPG.Items;
 using kRPG.Items.Glyphs;
@@ -55,7 +56,7 @@ namespace kRPG.Projectiles
 
         public static Action<ProceduralSpellProj> aiWhirlcast = delegate(ProceduralSpellProj spell)
         {
-            var owner = Main.player[spell.projectile.owner];
+            Player owner = Main.player[spell.projectile.owner];
         };
 
         public List<Action<ProceduralSpellProj>> ai = new List<Action<ProceduralSpellProj>>(); // <=== Look here:
@@ -91,7 +92,7 @@ namespace kRPG.Projectiles
             if (alpha < 1f) alpha += 0.02f;
             if (caster == null) projectile.Kill();
             else if (!caster.active) projectile.Kill();
-            foreach (var action in ai.Where(action => action != null))
+            foreach (Action<ProceduralSpellProj> action in ai.Where(action => action != null))
                 action(this);
         }
 
@@ -102,21 +103,21 @@ namespace kRPG.Projectiles
 
         public override ModProjectile Clone()
         {
-            var copy = (ProceduralSpellProj) MemberwiseClone();
+            ProceduralSpellProj copy = (ProceduralSpellProj) MemberwiseClone();
             copy.ai = new List<Action<ProceduralSpellProj>>();
-            foreach (var action in ai) copy.ai.Add(action);
+            foreach (Action<ProceduralSpellProj> action in ai) copy.ai.Add(action);
             copy.impact = new List<Action<ProceduralSpellProj, NPC, int>>();
-            foreach (var action in impact) copy.impact.Add(action);
+            foreach (Action<ProceduralSpellProj, NPC, int> action in impact) copy.impact.Add(action);
             copy.init = new List<Action<ProceduralSpellProj>>();
-            foreach (var action in init) copy.init.Add(action);
+            foreach (Action<ProceduralSpellProj> action in init) copy.init.Add(action);
             copy.kill = new List<Action<ProceduralSpellProj>>();
-            foreach (var action in kill) copy.kill.Add(action);
+            foreach (Action<ProceduralSpellProj> action in kill) copy.kill.Add(action);
             return copy;
         }
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            foreach (var action in draw.Where(action => action != null))
+            foreach (Action<ProceduralSpellProj, SpriteBatch, Color> action in draw.Where(action => action != null))
                 action(this, spriteBatch, color);
             if (texture == null)
             {
@@ -146,7 +147,7 @@ namespace kRPG.Projectiles
 
         public override void Initialize()
         {
-            foreach (var action in init.Where(action => action != null))
+            foreach (Action<ProceduralSpellProj> action in init.Where(action => action != null))
                 action(this);
             if (!minion)
                 return;
@@ -157,7 +158,7 @@ namespace kRPG.Projectiles
 
         public override void Kill(int timeLeft)
         {
-            foreach (var action in kill.Where(action => action != null))
+            foreach (Action<ProceduralSpellProj> action in kill.Where(action => action != null))
                 action(this);
             if (timeLeft > 0)
                 Main.PlaySound(SoundID.Dig, projectile.position);
@@ -166,7 +167,7 @@ namespace kRPG.Projectiles
         // ReSharper disable once IdentifierTypo
         public override void OnHitNPC(NPC target, int damage, float knockBack, bool crit)
         {
-            foreach (var action in impact.Where(action => action != null))
+            foreach (Action<ProceduralSpellProj, NPC, int> action in impact.Where(action => action != null))
                 action(this, target, damage);
         }
 
@@ -194,7 +195,7 @@ namespace kRPG.Projectiles
             projectile.damage = reader.ReadInt32();
             bool minionCaster = reader.ReadBoolean();
             caster = minionCaster ? Main.projectile[reader.ReadInt32()] : (Entity) Main.player[reader.ReadInt32()];
-            var modifiers = new List<GlyphModifier>();
+            List<GlyphModifier> modifiers = new List<GlyphModifier>();
             int count = reader.ReadInt32();
             for (int i = 0; i < count; i += 1)
                 modifiers.Add(GlyphModifier.modifiers[reader.ReadInt32()]);
@@ -207,9 +208,9 @@ namespace kRPG.Projectiles
                 source.modifierOverride = modifiers;
             }
 
-            foreach (var item in source.glyphs)
+            foreach (Item item in source.glyphs)
             {
-                var glyph = (Glyph) item.modItem;
+                Glyph glyph = (Glyph) item.modItem;
                 if (glyph.GetAiAction() != null)
                     ai.Add(glyph.GetAiAction());
                 if (glyph.GetInitAction() != null)
@@ -220,7 +221,7 @@ namespace kRPG.Projectiles
                     kill.Add(glyph.GetKillAction());
             }
 
-            foreach (var modifier in modifiers)
+            foreach (GlyphModifier modifier in modifiers)
             {
                 if (modifier.impact != null)
                     impact.Add(modifier.impact);
@@ -248,7 +249,7 @@ namespace kRPG.Projectiles
             writer.Write(projectile.damage);
             writer.Write(minion);
             writer.Write(caster.whoAmI);
-            var modifiers = source.modifiers;
+            List<GlyphModifier> modifiers = source.modifiers;
             writer.Write(modifiers.Count);
             for (int j = 0; j < modifiers.Count; j += 1)
                 writer.Write(modifiers[j].id);
@@ -322,9 +323,9 @@ namespace kRPG.Projectiles
         {
             attack = false;
             target = Main.npc.First();
-            var player = Main.player[projectile.owner];
+            Player player = Main.player[projectile.owner];
             distance = Vector2.Distance(projectile.Center, target.Center);
-            foreach (var npc in Main.npc)
+            foreach (NPC npc in Main.npc)
             {
                 float f = Vector2.Distance(projectile.Center, npc.Center);
                 if (!(f < distance) || !npc.active || npc.life <= 0 || npc.friendly || npc.damage <= 0)
@@ -344,7 +345,7 @@ namespace kRPG.Projectiles
 
         public override void Kill(int timeLeft)
         {
-            foreach (var spell in circlingProtection)
+            foreach (ProceduralSpellProj spell in circlingProtection)
                 spell.projectile.Kill();
             circlingProtection.Clear();
             smallProt?.projectile.Kill();
@@ -352,7 +353,7 @@ namespace kRPG.Projectiles
 
         public override void PostAI()
         {
-            foreach (var modifier in glyphModifiers)
+            foreach (Action<ProceduralMinion> modifier in glyphModifiers)
                 modifier(this);
         }
 
@@ -366,7 +367,7 @@ namespace kRPG.Projectiles
     {
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            var t = Main.projectileTexture[ModContent.ProjectileType<Obelisk>()];
+            Texture2D t = Main.projectileTexture[ModContent.ProjectileType<Obelisk>()];
             spriteBatch.Draw(t, position + t.Bounds.Center(), null, Color.White, rotation, t.Bounds.Center(), scale, SpriteEffects.None, 0f);
         }
 
@@ -389,11 +390,11 @@ namespace kRPG.Projectiles
         public override void AI()
         {
             base.AI();
-            var player = Main.player[projectile.owner];
+            Player player = Main.player[projectile.owner];
 
             float acceleration = 0.4f;
             projectile.tileCollide = false;
-            var v = player.Center - projectile.Center;
+            Vector2 v = player.Center - projectile.Center;
             v.X += Main.rand.Next(-10, 21);
             v.X += Main.rand.Next(-10, 21);
             v.X += 60f * -player.direction;
@@ -476,7 +477,7 @@ namespace kRPG.Projectiles
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            var t = Main.projectileTexture[ModContent.ProjectileType<WingedEyeball>()];
+            Texture2D t = Main.projectileTexture[ModContent.ProjectileType<WingedEyeball>()];
             spriteBatch.Draw(t, position + t.Bounds.Center(), new Rectangle(0, projectile.frame * 40, 90, 40), color, rotation, t.Bounds.Center(), scale,
                 projectile.spriteDirection < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
         }
@@ -591,7 +592,7 @@ namespace kRPG.Projectiles
             {
                 // Since we access the owner player instance so much, it's useful to create a helper local variable for this
                 // Sadly, Projectile/ModProjectile does not have its own
-                var projOwner = Main.player[projectile.owner];
+                Player projOwner = Main.player[projectile.owner];
                 // Here we set some of the projectile's owner properties, such as held item and itemtime, along with projectile directio and playerPosition based on the player
                 //Vector2 ownerMountedCenter = projOwner.RotatedRelativePoint(projOwner.MountedCenter, true);
 
@@ -622,7 +623,7 @@ namespace kRPG.Projectiles
                 }
 
                 projectile.position += projectile.velocity * movementFactor;
-                var unitVelocity = projectile.velocity;
+                Vector2 unitVelocity = projectile.velocity;
                 unitVelocity.Normalize();
                 projectile.position += unitVelocity * (blade.origin.Y * 2.8f + 8f);
 
@@ -635,7 +636,7 @@ namespace kRPG.Projectiles
                 if (projectile.spriteDirection == -1)
                     projectile.rotation += MathHelper.ToRadians(90f);
 
-                var rect = new Rectangle((int) projectile.position.X, (int) projectile.position.Y, texture.Width, texture.Height);
+                Rectangle rect = new Rectangle((int) projectile.position.X, (int) projectile.position.Y, texture.Width, texture.Height);
                 blade.effect?.Invoke(rect, projOwner);
                 accent.effect?.Invoke(rect, projOwner);
             }
@@ -647,7 +648,7 @@ namespace kRPG.Projectiles
 
         public override bool? CanHitNPC(NPC target)
         {
-            var owner = Main.player[projectile.owner];
+            Player owner = Main.player[projectile.owner];
             return (target.position.X - owner.position.X) * owner.direction > -1f ? base.CanHitNPC(target) : false;
         }
 
@@ -695,7 +696,7 @@ namespace kRPG.Projectiles
                     break;
                 case 1:
                 {
-                    var t2d = Main.projectileTexture[projectile.type];
+                    Texture2D t2d = Main.projectileTexture[projectile.type];
                     spriteBatch.Draw(t2d, position + t2d.Size() / 2f, null, color, rotation,
                         projectile.spriteDirection > 0 ? t2d.Bounds.TopRight() : Vector2.Zero, scale,
                         projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
@@ -721,7 +722,7 @@ namespace kRPG.Projectiles
         // ReSharper disable once IdentifierTypo
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
-            var owner = Main.player[projectile.owner];
+            Player owner = Main.player[projectile.owner];
             hitbox = new Rectangle((int) projectile.position.X - 2, (int) projectile.position.Y - 2, (int) (projectile.Right.X - projectile.Left.X) + 2,
                 (int) (projectile.Bottom.Y - projectile.Top.Y + 2));
             if (owner.direction < 0) hitbox.X += hitbox.Width / 2;
@@ -732,7 +733,7 @@ namespace kRPG.Projectiles
         {
             try
             {
-                var owner = Main.player[projectile.owner];
+                Player owner = Main.player[projectile.owner];
                 accent.onHit?.Invoke(owner, target, (ProceduralSword) owner.inventory[owner.selectedItem].modItem, damage, crit);
             }
             catch (SystemException e)

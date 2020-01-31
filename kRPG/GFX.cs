@@ -142,14 +142,14 @@ namespace kRPG
 
         public static Texture2D CombineTextures(List<Texture2D> textures, List<Point> origins, Point final_size)
         {
-            var texture = new Texture2D(Main.spriteBatch.GraphicsDevice, final_size.X * 2, final_size.Y * 2);
-            var combinedTexture = new Color[texture.Width * texture.Height];
+            Texture2D texture = new Texture2D(Main.spriteBatch.GraphicsDevice, final_size.X * 2, final_size.Y * 2);
+            Color[] combinedTexture = new Color[texture.Width * texture.Height];
 
             for (int tex = 0; tex < textures.Count; tex += 1)
             {
                 if (textures[tex] == null) continue;
 
-                var pixels = new Color[textures[tex].Width * textures[tex].Height];
+                Color[] pixels = new Color[textures[tex].Width * textures[tex].Height];
                 textures[tex].GetData(pixels);
 
                 for (int x = 0; x < textures[tex].Width; x += 1)
@@ -166,7 +166,7 @@ namespace kRPG
 
         public static void LoadGfx()
         {
-            var loader = ModLoader.GetMod("kRPG");
+            Mod loader = ModLoader.GetMod("kRPG");
 
             buttonConfirm = loader.GetTexture(BUTTON_CONFIRM);
             buttonUpgrade = loader.GetTexture(BUTTON_UPGRADE);
@@ -200,7 +200,7 @@ namespace kRPG
             statusBars_BG = loader.GetTexture(STATUSBARS_BG);
             for (int i = 0; i < 10; i++)
                 gothicNumeral[i] = loader.GetTexture(NUMERALS + i);
-            for (var k = Keys.A; k <= Keys.Z; k += 1)
+            for (Keys k = Keys.A; k <= Keys.Z; k += 1)
                 gothicLetter[k] = loader.GetTexture(LETTERS + k);
             unspentPoints = loader.GetTexture(UNSPENTPOINTS);
             itemSlot = loader.GetTexture(ITEMSLOT);
@@ -266,7 +266,7 @@ namespace kRPG
             statusBars_BG = null;
             for (int i = 0; i < 10; i++)
                 gothicNumeral[i] = null;
-            for (var k = Keys.A; k <= Keys.Z; k += 1)
+            for (Keys k = Keys.A; k <= Keys.Z; k += 1)
                 gothicLetter[k] = null;
             unspentPoints = null;
             itemSlot = null;

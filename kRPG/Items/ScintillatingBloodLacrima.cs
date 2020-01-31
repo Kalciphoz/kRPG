@@ -36,7 +36,7 @@ namespace kRPG.Items
 
         public override bool UseItem(Player player)
         {
-            var character = player.GetModPlayer<PlayerCharacter>();
+            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
             foreach (STAT stat in Enum.GetValues(typeof(STAT)))
                 character.baseStats[stat] = 0;
             return true;

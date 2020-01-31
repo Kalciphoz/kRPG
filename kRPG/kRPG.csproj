@@ -11,8 +11,7 @@
     <Version>2.0.3</Version>
   </PropertyGroup>
   <Target Name="BuildMod" AfterTargets="Build">
-    <Exec
-      Command="&quot;$(tMLBuildServerPath)&quot; -build $(ProjectDir) -eac $(TargetPath) -define $(DefineConstants) -unsafe $(AllowUnsafeBlocks)" />
+    <Exec Command="&quot;$(tMLBuildServerPath)&quot; -build $(ProjectDir) -eac $(TargetPath) -define $(DefineConstants) -unsafe $(AllowUnsafeBlocks)" />
   </Target>
   <ItemGroup>
     <None Remove="Buffs\Cold.png" />
@@ -541,5 +540,17 @@
     <Content Include="Projectiles\SmokePellets.png" />
     <Content Include="Projectiles\WingedEyeball.png" />
     <Content Include="RetiredAdventurer.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="Telerik.WinControls">
+      <HintPath>..\lib\RCWF\2019.3.1022.40\Telerik.WinControls.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.WinControls.UI">
+      <HintPath>..\lib\RCWF\2019.3.1022.40\Telerik.WinControls.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="TelerikCommon">
+      <HintPath>..\lib\RCWF\2019.3.1022.40\TelerikCommon.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

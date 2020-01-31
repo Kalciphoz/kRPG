@@ -202,7 +202,7 @@ namespace kRPG.Items.Weapons
 
         public static void Unload()
         {
-            foreach (var hilt in hilts.Values)
+            foreach (SwordHilt hilt in hilts.Values)
                 hilt.texture = null;
         }
     }

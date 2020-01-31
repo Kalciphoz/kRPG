@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kRPG.Enums;
 using Terraria.ModLoader;
 
 namespace kRPG.Commands
@@ -16,8 +17,8 @@ namespace kRPG.Commands
         {
             try
             {
-                var ritual = kRPG.ritualByName[args[0]];
-                var character = caller.Player.GetModPlayer<PlayerCharacter>();
+                RITUAL ritual = kRPG.ritualByName[args[0]];
+                PlayerCharacter character = caller.Player.GetModPlayer<PlayerCharacter>();
                 character.rituals[ritual] = !character.rituals[ritual];
             }
             catch (KeyNotFoundException)

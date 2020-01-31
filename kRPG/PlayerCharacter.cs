@@ -9,6 +9,7 @@ using kRPG.Items.Dusts;
 using kRPG.Items.Glyphs;
 using kRPG.Projectiles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.DataStructures;
@@ -74,7 +75,7 @@ namespace kRPG
         private bool initialized;
 
         public Item[][] inventories = new Item[3][] {new Item[40], new Item[40], new Item[40]};
-        public InventoryGUI inventoryGUI;
+        public InventoryGui inventoryGUI;
 
         public double itemRotation;
         public Item lastSelectedWeapon;
@@ -83,7 +84,7 @@ namespace kRPG
         public int level = 1;
 
         private int levelAnimation;
-        public LevelGUI levelGUI;
+        public LevelGui levelGUI;
         public float lifeDegen;
 
         public float lifeLeech;
@@ -98,7 +99,7 @@ namespace kRPG
         private float regenTimer;
         public Dictionary<RITUAL, bool> rituals = new Dictionary<RITUAL, bool>();
         public ProceduralSpell selectedAbility = null;
-        public SpellcraftingGUI spellcraftingGUI;
+        public SpellCraftingGui spellCraftingGui;
         public List<SpellEffect> spellEffects = new List<SpellEffect>();
         public bool statPage = true;
         public StatusBar statusBar;
@@ -173,7 +174,7 @@ namespace kRPG
         {
             get
             {
-                var dict = new Dictionary<ELEMENT, int>();
+                Dictionary<ELEMENT, int> dict = new Dictionary<ELEMENT, int>();
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                     dict[element] = eleres[element] + allres;
                 return dict;
@@ -261,9 +262,9 @@ namespace kRPG
                 }
 
             if (Main.netMode == 2) return;
-            var spriteBatch = Main.spriteBatch;
+            SpriteBatch spriteBatch = Main.spriteBatch;
 
-            foreach (var trail in trails.ToArray())
+            foreach (Trail trail in trails.ToArray())
                 trail.Draw(spriteBatch, player);
 
             if (levelAnimation >= 60)
@@ -296,10 +297,10 @@ namespace kRPG
 
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
         {
-            foreach (var projectile in Main.projectile)
+            foreach (Projectile projectile in Main.projectile)
                 if (projectile.modProjectile is ProceduralSpear || projectile.modProjectile is ProceduralMinion)
                     projectile.Kill();
-            foreach (var spell in circlingProtection)
+            foreach (ProceduralSpellProj spell in circlingProtection)
                 spell.projectile.Kill();
             circlingProtection.Clear();
         }
@@ -331,7 +332,7 @@ namespace kRPG
             if (!Main.gameMenu) GFX.sfxLevelUp.Play(0.5f * Main.soundVolume, 0f, 0f);
             if (Main.netMode == 1)
             {
-                var packet = mod.GetPacket();
+                ModPacket packet = mod.GetPacket();
                 packet.Write((byte) Message.SyncLevel);
                 packet.Write(player.whoAmI);
                 packet.Write(level);
@@ -352,17 +353,17 @@ namespace kRPG
                 damage = (int) (damage * damageBoost);
             }
 
-            var eleDmg = new Dictionary<ELEMENT, int>();
+            Dictionary<ELEMENT, int> eleDmg = new Dictionary<ELEMENT, int>();
 
             if (item != null)
             {
-                var ki = item.GetGlobalItem<kItem>();
+                kItem ki = item.GetGlobalItem<kItem>();
                 damage += ki.GetEleDamage(item, player);
                 eleDmg = ki.GetIndividualElements(item, player);
             }
             else if (proj != null)
             {
-                var kp = proj.GetGlobalProjectile<kProjectile>();
+                kProjectile kp = proj.GetGlobalProjectile<kProjectile>();
                 damage += kp.GetEleDamage(proj, player);
                 eleDmg = kp.GetIndividualElements(proj, player);
             }
@@ -371,7 +372,7 @@ namespace kRPG
                 damage = Math.Min(damage * 2 / 5, damage - ailmentIntensity[ELEMENT.SHADOW]);
             //    damage = damage * (20 + 9360 / (130 + ailmentIntensity[ELEMENT.SHADOW])) / 100;
 
-            var victim = target.GetGlobalNPC<kNPC>();
+            kNPC victim = target.GetGlobalNPC<kNPC>();
 
             if (!crit && Main.netMode == 0)
                 crit = Main.rand.Next(500) < 50 + victim.ailmentIntensity[ELEMENT.COLD];
@@ -399,7 +400,7 @@ namespace kRPG
                     continue;
                 if (eleDmg[element] <= 0)
                     continue;
-                var t = ailments[element];
+                Type t = ailments[element];
                 ModBuff buff;
                 if (ailments[element] == typeof(Fire))
                     buff = ModContent.GetInstance<Fire>();
@@ -418,7 +419,7 @@ namespace kRPG
         public void ModifyDamageTakenFromNPC(ref int damage, ref bool crit, Dictionary<ELEMENT, int> eleDmg)
         {
             double dmg = 0.5 * Math.Pow(damage, 1.35);
-            var originalEle = eleDmg;
+            Dictionary<ELEMENT, int> originalEle = eleDmg;
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 eleDmg[element] = (int) (0.5 * Math.Pow(eleDmg[element], 1.35));
             if (!Main.expertMode)
@@ -432,7 +433,7 @@ namespace kRPG
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 eleDmg[element] = Math.Min(originalEle[element] * 3, eleDmg[element]);
             bool bossfight = false;
-            foreach (var n in Main.npc)
+            foreach (NPC n in Main.npc)
                 if (n.active)
                     if (n.boss)
                         bossfight = true;
@@ -445,7 +446,7 @@ namespace kRPG
                     continue;
                 if (eleDmg[element] <= 0)
                     continue;
-                var t = ailments[element];
+                Type t = ailments[element];
                 ModBuff buff;
                 if (ailments[element] == typeof(Fire))
                     buff = ModContent.GetInstance<Fire>();
@@ -481,9 +482,9 @@ namespace kRPG
                         {
                             if (Main.gameMenu) return;
 
-                            var staff = (ProceduralStaff) player.HeldItem.modItem;
+                            ProceduralStaff staff = (ProceduralStaff) player.HeldItem.modItem;
 
-                            var pos = player.Center - Main.screenPosition;
+                            Vector2 pos = player.Center - Main.screenPosition;
                             staff.DrawHeld(drawinfo, Lighting.GetColor((int) (player.Center.X / 16f), (int) (player.Center.Y / 16f)),
                                 player.itemRotation + (float) API.Tau * player.direction / 8, staff.item.scale, pos);
                         }
@@ -491,11 +492,11 @@ namespace kRPG
                         {
                             if (Main.gameMenu) return;
 
-                            var sword = (ProceduralSword) player.HeldItem.modItem;
+                            ProceduralSword sword = (ProceduralSword) player.HeldItem.modItem;
 
                             if (sword.spear) return;
 
-                            var pos = player.Center - Main.screenPosition;
+                            Vector2 pos = player.Center - Main.screenPosition;
                             sword.DrawHeld(drawinfo, Lighting.GetColor((int) (player.Center.X / 16f), (int) (player.Center.Y / 16f)),
                                 player.itemRotation + (float) API.Tau, sword.item.scale, pos);
                         }
@@ -504,7 +505,7 @@ namespace kRPG
 
         public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit)
         {
-            var dict = new Dictionary<ELEMENT, int>();
+            Dictionary<ELEMENT, int> dict = new Dictionary<ELEMENT, int>();
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 dict[element] = npc.GetGlobalNPC<kNPC>().elementalDamage[element];
             ModifyDamageTakenFromNPC(ref damage, ref crit, dict);
@@ -512,7 +513,7 @@ namespace kRPG
 
         public override void ModifyHitByProjectile(Projectile proj, ref int damage, ref bool crit)
         {
-            var dict = new Dictionary<ELEMENT, int>();
+            Dictionary<ELEMENT, int> dict = new Dictionary<ELEMENT, int>();
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 dict[element] = proj.GetGlobalProjectile<kProjectile>().GetIndividualElements(proj, player)[element];
             ModifyDamageTakenFromNPC(ref damage, ref crit, dict);
@@ -538,11 +539,11 @@ namespace kRPG
 
         public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
         {
-            var item = player.inventory[player.selectedItem];
+            Item item = player.inventory[player.selectedItem];
             LeechLife(item, damage);
             if (item.type == ModContent.ItemType<ProceduralStaff>())
             {
-                var staff = (ProceduralStaff) item.modItem;
+                ProceduralStaff staff = (ProceduralStaff) item.modItem;
                 bool proceed = false;
                 if (proj.type == item.shoot)
                     proceed = true;
@@ -553,7 +554,7 @@ namespace kRPG
             }
             else if (proj.type == ModContent.ProjectileType<ProceduralSpear>() && item.type == ModContent.ItemType<ProceduralSword>())
             {
-                var spear = (ProceduralSword) item.modItem;
+                ProceduralSword spear = (ProceduralSword) item.modItem;
                 spear.accent?.onHit?.Invoke(player, target, spear, damage, crit);
             }
         }
@@ -572,7 +573,7 @@ namespace kRPG
 
         public override void PlayerConnect(Player player)
         {
-            var packet = mod.GetPacket();
+            ModPacket packet = mod.GetPacket();
             packet.Write((byte) Message.SyncLevel);
             packet.Write(player.whoAmI);
             packet.Write(level);
@@ -587,7 +588,7 @@ namespace kRPG
 
             try
             {
-                var item = player.inventory[player.selectedItem];
+                Item item = player.inventory[player.selectedItem];
                 if (item.type != ModContent.ItemType<ProceduralStaff>() || item.shoot > 0)
                     return;
                 player.releaseUseItem = true;
@@ -609,8 +610,8 @@ namespace kRPG
 
                 if (player.itemTime < 2)
                 {
-                    var pos = player.RotatedRelativePoint(player.MountedCenter);
-                    var relativeMousePos = Main.MouseWorld - pos;
+                    Vector2 pos = player.RotatedRelativePoint(player.MountedCenter);
+                    Vector2 relativeMousePos = Main.MouseWorld - pos;
                     itemRotation = Math.Atan2(relativeMousePos.Y * player.direction, relativeMousePos.X * player.direction) - player.fullRotation;
                     NetMessage.SendData(13, -1, -1, null, player.whoAmI);
                     NetMessage.SendData(41, -1, -1, null, player.whoAmI);
@@ -637,7 +638,7 @@ namespace kRPG
                     return;
             }
 
-            var item = player.inventory[player.selectedItem];
+            Item item = player.inventory[player.selectedItem];
             if (item.damage > 0 && (item.melee || !item.noMelee || item.modItem is ProceduralSword))
                 lastSelectedWeapon = item;
 
@@ -698,9 +699,9 @@ namespace kRPG
                     if (abilities[i].CompleteSkill())
                     {
                         bool useable = true;
-                        foreach (var item in abilities[i].glyphs)
+                        foreach (Item item in abilities[i].glyphs)
                         {
-                            var glyph = (Glyph) item.modItem;
+                            Glyph glyph = (Glyph) item.modItem;
                             if (!glyph.CanUse()) useable = false;
                         }
 
@@ -879,7 +880,7 @@ namespace kRPG
 
             if (Main.netMode != 1 || (int) Main.time % 300 != 0)
                 return;
-            var packet = mod.GetPacket();
+            ModPacket packet = mod.GetPacket();
             packet.Write((byte) Message.SyncStats);
             packet.Write(player.whoAmI);
             packet.Write(level);
@@ -892,7 +893,7 @@ namespace kRPG
 
         public override void SetupStartInventory(IList<Item> items, bool mediumcoreDeath)
         {
-            var rand = new Random();
+            Random rand = new Random();
             switch (rand.Next(8))
             {
                 default:
@@ -909,7 +910,7 @@ namespace kRPG
                     break;
                 case 4:
                     items[0].SetDefaults(rand.Next(2) == 0 ? ItemID.TinBow : ItemID.CopperBow, true);
-                    var arrows = new Item();
+                    Item arrows = new Item();
                     arrows.SetDefaults(rand.Next(2) == 0 ? ItemID.FlamingArrow : ItemID.WoodenArrow, true);
                     arrows.stack = rand.Next(2) == 0 ? 150 : 200;
                     items.Add(arrows);
@@ -917,7 +918,7 @@ namespace kRPG
                 case 5:
                     items[0].SetDefaults(ItemID.Shuriken, true);
                     items[0].stack = rand.Next(2) == 0 ? 150 : 100;
-                    var knives = new Item();
+                    Item knives = new Item();
                     knives.SetDefaults(rand.Next(2) == 0 ? ItemID.PoisonedKnife : ItemID.ThrowingKnife, true);
                     knives.stack = 50;
                     items.Add(knives);
@@ -935,9 +936,9 @@ namespace kRPG
             items[2].SetDefaults(rand.Next(2) == 0 ? ItemID.TinAxe : ItemID.CopperAxe);
             items[2].GetGlobalItem<kItem>().Initialize(items[2]);
 
-            var star = new Item();
+            Item star = new Item();
             star.SetDefaults(ModContent.ItemType<Star_Blue>(), true);
-            var cross = new Item();
+            Item cross = new Item();
             switch (rand.Next(4))
             {
                 default:
@@ -955,7 +956,7 @@ namespace kRPG
             }
 
             ((Glyph) cross.modItem).Randomize();
-            var moon = new Item();
+            Item moon = new Item();
             switch (rand.Next(5))
             {
                 default:
@@ -1119,18 +1120,18 @@ namespace kRPG
             if (Main.netMode == 2) return;
             BaseGui.guiElements.Clear();
             anvilGUI = new AnvilGUI(this);
-            levelGUI = new LevelGUI(this, mod);
+            levelGUI = new LevelGui(this, mod);
             statusBar = new StatusBar(this, mod) {guiActive = true};
-            inventoryGUI = new InventoryGUI(this, mod);
+            inventoryGUI = new InventoryGui(this);
             abilitiesGUI = new AbilitiesGUI {guiActive = true};
-            spellcraftingGUI = new SpellcraftingGUI(mod /*, glyphs, this*/);
+            spellCraftingGui = new SpellCraftingGui(mod /*, glyphs, this*/);
         }
 
         public void CloseGuIs()
         {
             anvilGUI.CloseGui();
             levelGUI.CloseGui();
-            spellcraftingGUI.CloseGui();
+            spellCraftingGui.CloseGui();
         }
 
         public override void OnEnterWorld(Player player)
@@ -1143,7 +1144,7 @@ namespace kRPG
 
         public override TagCompound Save()
         {
-            var tagCompound = new TagCompound
+            TagCompound tagCompound = new TagCompound
             {
                 {"level", level},
                 {"xp", xp},

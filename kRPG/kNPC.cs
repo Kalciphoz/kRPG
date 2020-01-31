@@ -67,7 +67,7 @@ namespace kRPG
         public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
         {
             if (immuneTime > 0) return false;
-            var ps = projectile.modProjectile as ProceduralSpellProj;
+            ProceduralSpellProj ps = projectile.modProjectile as ProceduralSpellProj;
             if (ps?.source == null)
                 return null;
             if (!invincibilityTime.ContainsKey(ps.source))
@@ -78,7 +78,7 @@ namespace kRPG
 
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
-            foreach (var t in modifiers)
+            foreach (NPCModifier t in modifiers)
                 t.DrawEffects(npc, ref drawColor);
 
             if (hasAilment[ELEMENT.FIRE])
@@ -131,13 +131,13 @@ namespace kRPG
 
         public int GetEleDamage(Player player, bool ignoreModifiers = false)
         {
-            var ele = new Dictionary<ELEMENT, int>();
+            Dictionary<ELEMENT, int> ele = new Dictionary<ELEMENT, int>();
             return elementalDamage[ELEMENT.FIRE] + elementalDamage[ELEMENT.COLD] + elementalDamage[ELEMENT.LIGHTNING] + elementalDamage[ELEMENT.SHADOW];
         }
 
         public static int GetLevel(int type)
         {
-            var npc = new NPC();
+            NPC npc = new NPC();
             npc.SetDefaults(type);
             npc.active = false;
             return Math.Min(Main.expertMode ? (npc.damage + npc.defense * 4) / 3 : (npc.damage * 2 + npc.defense * 4) / 3, npc.boss ? 120 : 110);
@@ -178,13 +178,13 @@ namespace kRPG
             for (int i = 0; i < amount; i++)
             {
                 int random = Main.rand.Next(modifierFuncs.Count);
-                var modifier = modifierFuncs[random].Invoke(this, npc);
+                NPCModifier modifier = modifierFuncs[random].Invoke(this, npc);
                 modifiers.Add(modifier);
             }
 
             if (Main.netMode == 2)
             {
-                var packet = mod.GetPacket();
+                ModPacket packet = mod.GetPacket();
                 packet.Write((byte) Message.PrefixNPC);
                 packet.Write(npc.whoAmI);
                 packet.Write(amount);
@@ -209,7 +209,7 @@ namespace kRPG
 
         public override void ModifyHitPlayer(NPC npc, Player target, ref int damage, ref bool crit)
         {
-            foreach (var t in modifiers)
+            foreach (NPCModifier t in modifiers)
                 t.ModifyHitPlayer(npc, target, ref damage, ref crit);
 
             if (hasAilment[ELEMENT.SHADOW])
@@ -218,7 +218,7 @@ namespace kRPG
 
         public override void NPCLoot(NPC npc)
         {
-            foreach (var t in modifiers)
+            foreach (NPCModifier t in modifiers)
                 t.NPCLoot(npc);
 
             if (npc.lifeMax < 10) return;
@@ -230,7 +230,7 @@ namespace kRPG
 
             int level = GetLevel(npc.netID);
 
-            var player = Array.Find(Main.player, p => p.active);
+            Player player = Array.Find(Main.player, p => p.active);
             if (Main.netMode == 0)
             {
                 player = Main.LocalPlayer;
@@ -241,8 +241,8 @@ namespace kRPG
             }
             else
             {
-                var c = player.GetModPlayer<PlayerCharacter>();
-                foreach (var p in Main.player)
+                PlayerCharacter c = player.GetModPlayer<PlayerCharacter>();
+                foreach (Player p in Main.player)
                     if (p != null)
                         if (p.active)
                             if (p.GetModPlayer<PlayerCharacter>() != null)
@@ -250,7 +250,7 @@ namespace kRPG
                                     player = p;
             }
 
-            var character = player.GetModPlayer<PlayerCharacter>();
+            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
             int life = npc.type == NPCID.SolarCrawltipedeTail || npc.type == NPCID.SolarCrawltipedeBody || npc.type == NPCID.SolarCrawltipedeHead
                 ? npc.lifeMax / 8
                 : npc.lifeMax;
@@ -259,7 +259,7 @@ namespace kRPG
             int scaled = Main.expertMode ? (int) (baseExp * 0.5) : baseExp;
             if (Main.netMode == 2)
             {
-                var packet = mod.GetPacket();
+                ModPacket packet = mod.GetPacket();
                 packet.Write((byte) Message.AddXP);
                 packet.Write(scaled);
                 packet.Write(npc.target);
@@ -300,7 +300,7 @@ namespace kRPG
 
             else if (Main.rand.Next(40) == 0)
             {
-                var item = Main.item[
+                Item item = Main.item[
                     Item.NewItem(new Rectangle((int) npc.position.X, (int) npc.position.Y, npc.width, npc.height), mod.ItemType(Glyph.GetRandom()))];
                 if (item.modItem is Glyph && Main.netMode == 0)
                     ((Glyph) item.modItem).Randomize();
@@ -319,12 +319,12 @@ namespace kRPG
 
         public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
         {
-            foreach (var t in modifiers)
+            foreach (NPCModifier t in modifiers)
                 t.OnHitByProjectile(npc, projectile, damage, knockback, crit);
 
             if (!(projectile.modProjectile is ProceduralSpellProj))
                 return;
-            var ps = (ProceduralSpellProj) projectile.modProjectile;
+            ProceduralSpellProj ps = (ProceduralSpellProj) projectile.modProjectile;
             if (invincibilityTime.ContainsKey(ps.source))
                 invincibilityTime[ps.source] = 30;
             else
@@ -333,11 +333,11 @@ namespace kRPG
 
         public override void PostAI(NPC npc)
         {
-            foreach (var t in modifiers)
+            foreach (NPCModifier t in modifiers)
                 t.PostAI(npc);
 
-            var keys = new List<ProceduralSpell>(invincibilityTime.Keys);
-            foreach (var spell in keys)
+            List<ProceduralSpell> keys = new List<ProceduralSpell>(invincibilityTime.Keys);
+            foreach (ProceduralSpell spell in keys)
                 if (invincibilityTime[spell] > 0) invincibilityTime[spell] -= 1;
                 else invincibilityTime.Remove(spell);
             if (immuneTime > 0) immuneTime -= 1;
@@ -350,7 +350,7 @@ namespace kRPG
             if (npc.lifeMax < 10) return;
 
             invincibilityTime = new Dictionary<ProceduralSpell, int>();
-            var player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
+            Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
             int playerlevel = Main.netMode == 0 ? player.GetModPlayer<PlayerCharacter>().level : 20;
             npc.lifeMax = (int) Math.Round(npc.lifeMax * (GetLevel(npc.netID) / 30f + 0.4f + playerlevel * 0.025f));
             npc.life = (int) Math.Round(npc.life * (GetLevel(npc.netID) / 30f + 0.4f + playerlevel * 0.025f));
@@ -359,7 +359,7 @@ namespace kRPG
 
             if (npc.damage > 0 && !npc.boss && Main.rand.Next(3) != 0 || Main.netMode != 0)
             {
-                var haselement = new Dictionary<ELEMENT, bool>
+                Dictionary<ELEMENT, bool> haselement = new Dictionary<ELEMENT, bool>
                 {
                     {
                         ELEMENT.FIRE,
@@ -445,13 +445,13 @@ namespace kRPG
 
         public override bool StrikeNPC(NPC npc, ref double damage, int defense, ref float knockback, int hitDirection, ref bool crit)
         {
-            var player = Main.player[npc.target];
-            var character = player.GetModPlayer<PlayerCharacter>();
+            Player player = Main.player[npc.target];
+            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
             character.accuracyCounter += character.hitChance;
 
             float dodgeChanceModifier = 1f;
 
-            foreach (var t in modifiers)
+            foreach (NPCModifier t in modifiers)
                 dodgeChanceModifier *= t.StrikeNPC(npc, damage, defense, knockback, hitDirection, crit);
 
             if (character.accuracyCounter < 1 * dodgeChanceModifier && !character.rituals[RITUAL.WARRIOR_OATH])
@@ -490,7 +490,7 @@ namespace kRPG
         {
             if (Main.netMode != 2) return;
 
-            var packet = mod.GetPacket();
+            ModPacket packet = mod.GetPacket();
             packet.Write((byte) (crit ? Message.SyncCritHit : Message.SyncHit));
             packet.Write(player);
             packet.Write(crit ? character.critAccuracyCounter : character.accuracyCounter);
@@ -502,7 +502,7 @@ namespace kRPG
             if (npc.aiStyle == 3 && Math.Abs(npc.velocity.Y) < .01)
                 npc.velocity.X = MathHelper.Lerp(npc.velocity.X, npc.direction * Math.Max(Math.Abs(npc.velocity.X), 8f), 1f * speedModifier / 20f);
 
-            foreach (var t in modifiers)
+            foreach (NPCModifier t in modifiers)
                 t.Update(npc);
         }
 

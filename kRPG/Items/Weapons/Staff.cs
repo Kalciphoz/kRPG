@@ -90,7 +90,7 @@ namespace kRPG.Items.Weapons
 
         public static void Unload()
         {
-            foreach (var staff in staves.Values)
+            foreach (Staff staff in staves.Values)
                 staff.texture = null;
         }
     }

@@ -7,15 +7,21 @@ namespace kRPG.GUI
 {
     public class AbilitiesGUI : BaseGui
     {
-        private Vector2 GuiPosition => new Vector2(Main.screenWidth - GFX.skillSlot.Width * 8 * scale, Main.screenHeight - GFX.skillSlot.Height * scale - 12);
 
-        private float scale => Math.Min(1f, Main.screenWidth / 1920f);
+        public AbilitiesGUI()
+        {
+            GuiPosition = new Vector2(Main.screenWidth - GFX.skillSlot.Width * 8 * Scale, Main.screenHeight - GFX.skillSlot.Height * Scale - 12);
+        }
+
+        private Vector2 GuiPosition { get; }
+
+        private float Scale { get; } = Math.Min(1f, Main.screenWidth / 1920f);
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
-            var modPlayer = player.GetModPlayer<PlayerCharacter>();
+            PlayerCharacter modPlayer = player.GetModPlayer<PlayerCharacter>();
             for (int i = 0; i < modPlayer.abilities.Length; i += 1)
-                modPlayer.abilities[i].Draw(spriteBatch, GuiPosition + new Vector2(i * (GFX.skillSlot.Width + 8f) * scale, 0), scale);
+                modPlayer.abilities[i].Draw(spriteBatch, GuiPosition + new Vector2(i * (GFX.skillSlot.Width + 8f) * Scale, 0), Scale);
         }
     }
 }

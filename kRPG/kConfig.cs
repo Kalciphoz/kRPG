@@ -95,7 +95,7 @@ namespace kRPG
             {
                 if (!File.Exists(path))
                     return;
-                using (var reader = new StreamReader(path))
+                using (StreamReader reader = new StreamReader(path))
                 {
                     config = JsonConvert.DeserializeObject<T>(reader.ReadToEnd());
                 }

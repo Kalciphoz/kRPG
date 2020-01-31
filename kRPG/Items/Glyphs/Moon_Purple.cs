@@ -30,7 +30,7 @@ namespace kRPG.Items.Glyphs
                 {
                     if (timeLeft % 10 != 0)
                         return;
-                    var proj = spell.CreateProjectile(player, new Vector2(0, -9f), Main.rand.NextFloat(-0.07f, 0.07f), caster.Center + new Vector2(0, -16f),
+                    ProceduralSpellProj proj = spell.CreateProjectile(player, new Vector2(0, -9f), Main.rand.NextFloat(-0.07f, 0.07f), caster.Center + new Vector2(0, -16f),
                         caster);
                     if (proj.alpha < 1f) proj.alpha = 0.5f;
                     proj.projectile.tileCollide = true;

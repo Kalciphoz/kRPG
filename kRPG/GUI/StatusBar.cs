@@ -128,7 +128,7 @@ namespace kRPG.GUI
             string text = "";
             if (!string.IsNullOrEmpty(Main.player[Main.myPlayer].inventory[Main.player[Main.myPlayer].selectedItem].Name))
                 text = Main.player[Main.myPlayer].inventory[Main.player[Main.myPlayer].selectedItem].AffixName();
-            var vector = Main.fontMouseText.MeasureString(text) / 2;
+            Vector2 vector = Main.fontMouseText.MeasureString(text) / 2;
             Main.spriteBatch.DrawStringWithShadow(Main.fontMouseText, text, new Vector2(Main.screenWidth - 240 - vector.X - 16f, 0f),
                 new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor));
             int posX = Main.screenWidth - 480;
@@ -179,7 +179,7 @@ namespace kRPG.GUI
             float num5 = 1f;
             int num6 = (int) (20f + 22f * (1f - num5));
             int a2 = (int) (75f + 150f * num5);
-            var lightColor2 = new Color(255, 255, 255, a2);
+            Color lightColor2 = new Color(255, 255, 255, a2);
             float num7 = Main.inventoryScale;
             Main.inventoryScale = num5;
             ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 13, selectedItem, new Vector2(posX, num6), Color.White);
@@ -188,7 +188,7 @@ namespace kRPG.GUI
 
         public static void DrawNumerals(SpriteBatch spriteBatch, int level, float scale)
         {
-            var origin = Main.playerInventory ? new Vector2(132f, 60f) * scale : new Vector2(190f, 58f) * scale;
+            Vector2 origin = Main.playerInventory ? new Vector2(132f, 60f) * scale : new Vector2(190f, 58f) * scale;
             if (level < 10)
             {
                 spriteBatch.Draw(GFX.gothicNumeral[level], new Vector2(origin.X - 16f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,

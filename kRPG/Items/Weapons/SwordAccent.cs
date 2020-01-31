@@ -67,14 +67,14 @@ namespace kRPG.Items.Weapons
             {
                 if (Main.rand.Next(4) == 0)
                 {
-                    var character = player.GetModPlayer<PlayerCharacter>();
+                    PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
                     float distance = Vector2.Distance(npc.Center, character.player.Center);
                     int count = (int) (distance / 20);
-                    var trail = new Trail(npc.Center, 60, delegate(SpriteBatch spriteBatch, Player p, Vector2 end, Vector2[] displacement, float scale)
+                    Trail trail = new Trail(npc.Center, 60, delegate(SpriteBatch spriteBatch, Player p, Vector2 end, Vector2[] displacement, float scale)
                     {
                         for (int i = 0; i < count; i += 1)
                         {
-                            var position = (npc.position - p.Center) * i / count + p.Center;
+                            Vector2 position = (npc.position - p.Center) * i / count + p.Center;
                             spriteBatch.Draw(GFX.heart, position - Main.screenPosition + displacement[i], null, Color.White, 0f, Vector2.Zero, scale,
                                 SpriteEffects.None, 0f);
                         }
@@ -90,7 +90,7 @@ namespace kRPG.Items.Weapons
             flame = new SwordAccent("Flame", " of Ignition", 2, 2, 3, delegate(Player player, NPC npc, ProceduralSword sword, int damage, bool crit)
                 {
                     Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
-                    var proj = Main.projectile[
+                    Projectile proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(),
                             Math.Max(1, (int) Math.Round(sword.eleDamage[ELEMENT.FIRE] * damage * 2)), 0f, player.whoAmI)];
                 }, 1.05f).setEleDamage(new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0.2f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}})
@@ -105,7 +105,7 @@ namespace kRPG.Items.Weapons
             gemGreen = new SwordAccent("GemGreen", " of Thunder", 2, 2, 2, delegate(Player player, NPC npc, ProceduralSword sword, int damage, bool crit)
                 {
                     Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
-                    var proj = Main.projectile[
+                    Projectile proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(),
                             Math.Max(1, damage / 6),
                             0f, player.whoAmI)];
@@ -162,7 +162,7 @@ namespace kRPG.Items.Weapons
 
         public static void Unload()
         {
-            foreach (var accent in accents.Values)
+            foreach (SwordAccent accent in accents.Values)
                 accent.texture = null;
         }
     }

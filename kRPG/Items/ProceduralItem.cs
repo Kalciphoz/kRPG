@@ -21,7 +21,7 @@ namespace kRPG.Items
 
         public override ModItem Clone(Item item)
         {
-            var copy = (ProceduralItem) base.Clone(item);
+            ProceduralItem copy = (ProceduralItem) base.Clone(item);
             copy.texture = texture;
             return copy;
         }

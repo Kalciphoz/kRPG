@@ -21,9 +21,9 @@ namespace kRPG.Items.Glyphs
             return delegate(ProceduralSpell spell, Player player, Vector2 origin, Vector2 target, Entity caster)
             {
                 float spread = GetSpread(spell.projCount);
-                var unitVelocity = target - origin;
+                Vector2 unitVelocity = target - origin;
                 unitVelocity.Normalize();
-                var velocity = unitVelocity * 6f;
+                Vector2 velocity = unitVelocity * 6f;
                 for (int i = 0; i < spell.projCount; i += 1)
                     spell.CreateProjectile(player, velocity, spell.projCount * -spread / 2f + i * spread + spread / 2f, origin, caster);
             };

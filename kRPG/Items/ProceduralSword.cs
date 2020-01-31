@@ -37,7 +37,7 @@ namespace kRPG.Items
 
         public override ModItem Clone(Item item)
         {
-            var copy = (ProceduralSword) base.Clone(item);
+            ProceduralSword copy = (ProceduralSword) base.Clone(item);
             copy.hilt = hilt;
             copy.blade = blade;
             copy.accent = accent;
@@ -72,16 +72,16 @@ namespace kRPG.Items
         {
             try
             {
-                var player = Main.player[Main.myPlayer];
-                var position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
+                Player player = Main.player[Main.myPlayer];
+                Vector2 position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
                 if (texture == null)
                 {
                     item.SetDefaults();
                     return;
                 }
 
-                var effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-                var draw = new DrawData(texture, position, null, lighted ? Color.White : color, rotation,
+                SpriteEffects effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+                DrawData draw = new DrawData(texture, position, null, lighted ? Color.White : color, rotation,
                     new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale, effects, 0);
                 for (int i = 0; i < Main.playerDrawData.Count; i += 1)
                 {
@@ -205,7 +205,7 @@ namespace kRPG.Items
         public static ProceduralSword NewSword(Mod mod, Vector2 position, SwordHilt hilt, SwordBlade blade, SwordAccent accent, float dps, int enemyDef)
         {
             int id = Item.NewItem(position, mod.GetItem("ProceduralSword").item.type);
-            var sword = (ProceduralSword) Main.item[id].modItem;
+            ProceduralSword sword = (ProceduralSword) Main.item[id].modItem;
             sword.hilt = hilt;
             sword.blade = blade;
             sword.accent = accent;
@@ -214,7 +214,7 @@ namespace kRPG.Items
             sword.Initialize();
             if (Main.netMode != 2)
                 return sword;
-            var packet = mod.GetPacket();
+            ModPacket packet = mod.GetPacket();
             packet.Write((byte) Message.SwordInit);
             packet.Write(id);
             packet.Write(blade.type);
@@ -341,24 +341,24 @@ namespace kRPG.Items
             {
                 if (spear /* && player.altFunctionUse != 2*/)
                 {
-                    var pos = player.position;
-                    var unitVelocity = new Vector2(Main.mouseX - 12f, Main.mouseY - 24f) + Main.screenPosition - pos;
+                    Vector2 pos = player.position;
+                    Vector2 unitVelocity = new Vector2(Main.mouseX - 12f, Main.mouseY - 24f) + Main.screenPosition - pos;
                     unitVelocity.Normalize();
-                    var velocity = unitVelocity * 60f / item.useAnimation;
-                    var projectile =
+                    Vector2 velocity = unitVelocity * 60f / item.useAnimation;
+                    Projectile projectile =
                         Main.projectile[
                             Projectile.NewProjectile(pos, velocity, GetInstance<ProceduralSpear>().projectile.type, item.damage, item.knockBack,
                                 player.whoAmI)];
                     projectile.GetGlobalProjectile<kProjectile>().elementalDamage = item.GetGlobalItem<kItem>().elementalDamage;
                     projectile.scale = item.scale;
-                    var ps = (ProceduralSpear) projectile.modProjectile;
+                    ProceduralSpear ps = (ProceduralSpear) projectile.modProjectile;
                     ps.hilt = hilt;
                     ps.blade = blade;
                     ps.accent = accent;
                     if (Main.netMode != 2) ps.Initialize();
                     if (Main.netMode != 1)
                         return true;
-                    var packet = mod.GetPacket();
+                    ModPacket packet = mod.GetPacket();
                     packet.Write((byte) Message.SyncSpear);
                     packet.Write(blade.type);
                     packet.Write(hilt.type);

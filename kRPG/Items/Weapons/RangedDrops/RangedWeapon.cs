@@ -23,7 +23,7 @@ namespace kRPG.Items.Weapons.RangedDrops
 
         public override ModItem Clone(Item item)
         {
-            var copy = (RangedWeapon) base.Clone(item);
+            RangedWeapon copy = (RangedWeapon) base.Clone(item);
             copy.dps = dps;
             copy.name = name;
             copy.enemyDef = enemyDef;
@@ -129,13 +129,13 @@ namespace kRPG.Items.Weapons.RangedDrops
                         break;
                 }
 
-            var item = (RangedWeapon) Main.item[Item.NewItem(position, mod.ItemType(weapon))].modItem;
+            RangedWeapon item = (RangedWeapon) Main.item[Item.NewItem(position, mod.ItemType(weapon))].modItem;
             item.dps = dps;
             item.enemyDef = enemyDef;
             item.Initialize();
             if (Main.netMode == 2)
             {
-                var packet = mod.GetPacket();
+                ModPacket packet = mod.GetPacket();
                 packet.Write((byte) Message.BowInit);
                 packet.Write(item.item.whoAmI);
                 packet.Write(item.dps);

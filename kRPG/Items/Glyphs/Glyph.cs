@@ -35,11 +35,11 @@ namespace kRPG.Items.Glyphs
 
         public override ModItem Clone(Item tItem)
         {
-            var copy = (Glyph) base.Clone(tItem);
+            Glyph copy = (Glyph) base.Clone(tItem);
             copy.modifiers = new List<GlyphModifier>();
             if (modifiers == null)
                 return copy;
-            foreach (var modifier in modifiers)
+            foreach (GlyphModifier modifier in modifiers)
                 copy.modifiers.Add(modifier);
             return copy;
         }
@@ -183,13 +183,13 @@ namespace kRPG.Items.Glyphs
         public virtual void Randomize()
         {
             initialized = true;
-            foreach (var modifier in GlyphModifier.modifiers.Where(modifier => modifier.match(this) && modifier.odds()))
+            foreach (GlyphModifier modifier in GlyphModifier.modifiers.Where(modifier => modifier.match(this) && modifier.odds()))
                 modifiers.Add(modifier.group == null ? modifier : modifier.group());
         }
 
         public override TagCompound Save()
         {
-            var compound = new TagCompound {{"ModifierCount", modifiers.Count}};
+            TagCompound compound = new TagCompound {{"ModifierCount", modifiers.Count}};
             for (int i = 0; i < modifiers.Count; i += 1)
                 compound.Add("Modifier_" + i, modifiers[i].id);
             return compound;

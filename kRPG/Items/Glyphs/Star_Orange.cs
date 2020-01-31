@@ -26,23 +26,23 @@ namespace kRPG.Items.Glyphs
             {
                 Main.PlaySound(SoundID.Item6, player.position);
                 spell.remaining = spell.cooldown;
-                var character = player.GetModPlayer<PlayerCharacter>();
+                PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
                 if (character.minions.Exists(minion => minion is WingedEyeball))
-                    foreach (var eyeball in character.minions.Where(minion => minion.projectile.type == ModContent.ProjectileType<WingedEyeball>()))
+                    foreach (ProceduralMinion eyeball in character.minions.Where(minion => minion.projectile.type == ModContent.ProjectileType<WingedEyeball>()))
                     {
-                        foreach (var psp in eyeball.circlingProtection)
+                        foreach (ProceduralSpellProj psp in eyeball.circlingProtection)
                             psp.projectile.Kill();
                         eyeball.circlingProtection.Clear();
                         eyeball.smallProt?.projectile.Kill();
                         eyeball.projectile.Kill();
                     }
 
-                var eye = Main.projectile[
+                Projectile eye = Main.projectile[
                     Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<WingedEyeball>(), 0, 0f, player.whoAmI)];
                 eye.Center = target;
-                var we = (WingedEyeball) eye.modProjectile;
+                WingedEyeball we = (WingedEyeball) eye.modProjectile;
                 we.source = spell;
-                foreach (var modifier in spell.modifiers.Where(modifier => modifier.minionAI != null))
+                foreach (GlyphModifier modifier in spell.modifiers.Where(modifier => modifier.minionAI != null))
                     we.glyphModifiers.Add(modifier.minionAI);
                 character.minions.Add((WingedEyeball) eye.modProjectile);
             };

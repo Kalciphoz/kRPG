@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kRPG.Enums;
 using kRPG.GUI;
 using kRPG.Projectiles;
 using Microsoft.Xna.Framework;
@@ -68,16 +69,16 @@ namespace kRPG.Items.Glyphs
                 if (minion.projectile.timeLeft % 50 != 0)
                     return;
 
-                var proj = minion.projectile;
-                var target = minion.GetTarget();
-                var unitVelocity = target.Center - proj.Center;
+                Projectile proj = minion.projectile;
+                NPC target = minion.GetTarget();
+                Vector2 unitVelocity = target.Center - proj.Center;
                 if (!minion.attack) return;
                 if (Vector2.Distance(minion.projectile.Center, target.Center) < 400f)
                     unitVelocity.Normalize();
-                var velocity = unitVelocity * 5f;
-                var spell = minion.source.CreateProjectile(Main.player[minion.projectile.owner], velocity, 0, proj.Center, proj);
+                Vector2 velocity = unitVelocity * 5f;
+                ProceduralSpellProj spell = minion.source.CreateProjectile(Main.player[minion.projectile.owner], velocity, 0, proj.Center, proj);
                 spell.projectile.minion = true;
-                var moon = (Moon) minion.source.glyphs[(int) GLYPHTYPE.MOON].modItem;
+                Moon moon = (Moon) minion.source.glyphs[(int) GLYPHTYPE.MOON].modItem;
                 spell.ai.Remove(moon.GetAiAction());
             });
             smallProt = new GlyphModifier(1, "Orbiting fire", glyph => glyph.minion, () => Main.rand.Next(4) == 0, 0.95f).SetMinionAI(
@@ -89,14 +90,14 @@ namespace kRPG.Items.Glyphs
                         else
                             minion.smallProt.projectile.Kill();
 
-                    var m = minion.projectile;
-                    var player = Main.player[m.owner];
-                    var projectile =
+                    Projectile m = minion.projectile;
+                    Player player = Main.player[m.owner];
+                    Projectile projectile =
                         Main.projectile[
                             Projectile.NewProjectile(m.Center, new Vector2(0f, -1.5f), ModContent.ProjectileType<ProceduralSpellProj>(),
                                 minion.source.ProjectileDamage(player.GetModPlayer<PlayerCharacter>()), 3f, m.owner)];
                     projectile.minion = true;
-                    var ps = (ProceduralSpellProj) projectile.modProjectile;
+                    ProceduralSpellProj ps = (ProceduralSpellProj) projectile.modProjectile;
                     ps.origin = projectile.position;
                     Cross cross = new Cross_Red();
                     ps.ai.Add(delegate(ProceduralSpellProj spell)
@@ -106,10 +107,10 @@ namespace kRPG.Items.Glyphs
                         int rotDistance = 40;
                         int rotTimeLeft = 3600;
                         float displacementAngle = (float) API.Tau / 4f;
-                        var displacementVelocity = Vector2.Zero;
+                        Vector2 displacementVelocity = Vector2.Zero;
                         if (rotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
                         {
-                            var unitRelativePos = spell.RelativePos(spell.caster.Center);
+                            Vector2 unitRelativePos = spell.RelativePos(spell.caster.Center);
                             unitRelativePos.Normalize();
                             spell.projectile.Center = spell.caster.Center + unitRelativePos * rotDistance;
                             displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.caster.Center).ToRotation() + (float) API.Tau / 4f);
@@ -157,7 +158,7 @@ namespace kRPG.Items.Glyphs
                 delegate(ProceduralSpellProj spell, NPC npc, int damage)
                 {
                     Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), spell.projectile.Center);
-                    var proj = Main.projectile[
+                    Projectile proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(), 2, 0f,
                             spell.projectile.owner)];
                     proj.minion = true;
@@ -166,7 +167,7 @@ namespace kRPG.Items.Glyphs
                 delegate(ProceduralSpellProj spell, NPC npc, int damage)
                 {
                     Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), spell.projectile.Center);
-                    var proj = Main.projectile[
+                    Projectile proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(),
                             spell.projectile.damage, 0f, spell.projectile.owner)];
                     proj.minion = true;
@@ -187,14 +188,14 @@ namespace kRPG.Items.Glyphs
                 {
                     if (Main.rand.Next(3) != 0)
                         return;
-                    var character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
+                    PlayerCharacter character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
                     float distance = Vector2.Distance(npc.Center, character.player.Center);
                     int count = (int) (distance / 20);
-                    var trail = new Trail(npc.Center, 60, delegate(SpriteBatch spriteBatch, Player player, Vector2 end, Vector2[] displacement, float scale)
+                    Trail trail = new Trail(npc.Center, 60, delegate(SpriteBatch spriteBatch, Player player, Vector2 end, Vector2[] displacement, float scale)
                     {
                         for (int i = 0; i < count; i += 1)
                         {
-                            var position = (npc.position - player.Center) * i / count + player.Center;
+                            Vector2 position = (npc.position - player.Center) * i / count + player.Center;
                             spriteBatch.Draw(GFX.heart, position - Main.screenPosition + displacement[i], null, Color.White, 0f, Vector2.Zero, scale,
                                 SpriteEffects.None, 0f);
                         }
@@ -212,14 +213,14 @@ namespace kRPG.Items.Glyphs
                 {
                     if (Main.rand.Next(2) != 0)
                         return;
-                    var character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
+                    PlayerCharacter character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
                     float distance = Vector2.Distance(npc.Center, character.player.Center);
                     int count = (int) (distance / 20);
-                    var trail = new Trail(npc.Center, 60, delegate(SpriteBatch spriteBatch, Player player, Vector2 end, Vector2[] displacement, float scale)
+                    Trail trail = new Trail(npc.Center, 60, delegate(SpriteBatch spriteBatch, Player player, Vector2 end, Vector2[] displacement, float scale)
                     {
                         for (int i = 0; i < count; i += 1)
                         {
-                            var position = (npc.position - player.Center) * i / count + player.Center;
+                            Vector2 position = (npc.position - player.Center) * i / count + player.Center;
                             spriteBatch.Draw(GFX.star, position - Main.screenPosition + displacement[i], null, Color.White, 0f, Vector2.Zero, scale,
                                 SpriteEffects.None, 0f);
                         }
@@ -236,28 +237,28 @@ namespace kRPG.Items.Glyphs
             thornchains = new GlyphModifier(9, "Thorny Chains", glyph => glyph is Moon && !(glyph is Moon_Violet), () => Main.rand.Next(4) == 0, 0.9f).SetDraw(
                 delegate(ProceduralSpellProj spell, SpriteBatch spriteBatch, Color color)
                 {
-                    var proj = spell.projectile;
-                    var player = Main.player[proj.owner];
-                    var caster = spell.caster;
-                    var npcs = new List<NPC>();
+                    Projectile proj = spell.projectile;
+                    Player player = Main.player[proj.owner];
+                    Entity caster = spell.caster;
+                    List<NPC> npcs = new List<NPC>();
                     for (int i = 0; i < Main.npc.Length; i += 1)
                         if (new Rectangle((int) Math.Min(caster.Center.X, proj.Center.X), (int) Math.Min(caster.Center.Y, proj.Center.Y),
                                 (int) Math.Abs(proj.Center.X - caster.Center.X), (int) Math.Abs(proj.Center.Y - caster.Center.Y))
                             .Intersects(new Rectangle((int) Main.npc[i].position.X, (int) Main.npc[i].position.Y, Main.npc[i].width, Main.npc[i].height)))
                             npcs.Add(Main.npc[i]);
-                    var relativePos = proj.Center - caster.Center;
+                    Vector2 relativePos = proj.Center - caster.Center;
                     if (relativePos.Length() > 480f) return;
                     int count = (int) (relativePos.Length() / 24);
                     for (int i = 0; i < count; i += 1)
                     {
-                        var chainpos = caster.Center + relativePos * (i + 0.5f) / count;
-                        var bounds = new Rectangle((int) Math.Round(chainpos.X) - 12, (int) Math.Round(chainpos.Y) - 12, 24, 24);
-                        foreach (var npc in npcs)
+                        Vector2 chainpos = caster.Center + relativePos * (i + 0.5f) / count;
+                        Rectangle bounds = new Rectangle((int) Math.Round(chainpos.X) - 12, (int) Math.Round(chainpos.Y) - 12, 24, 24);
+                        foreach (NPC npc in npcs)
                             if (npc.active)
                                 if (bounds.Intersects(new Rectangle((int) npc.position.X, (int) npc.position.Y, npc.width, npc.height)) && !npc.friendly &&
                                     !npc.townNPC)
                                 {
-                                    var kn = npc.GetGlobalNPC<kNPC>();
+                                    kNPC kn = npc.GetGlobalNPC<kNPC>();
                                     bool canHit = !(kn.immuneTime > 0);
                                     if (kn.invincibilityTime.ContainsKey(spell.source))
                                         if (kn.invincibilityTime[spell.source] > 0)

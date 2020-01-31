@@ -23,14 +23,14 @@ namespace kRPG
 
         public InterfaceButton AddButton(Func<Rectangle> position, Action<Player> pressAction)
         {
-            var button = new InterfaceButton(position, pressAction);
+            InterfaceButton button = new InterfaceButton(position, pressAction);
             buttons.Add(button);
             return button;
         }
 
         public InterfaceButton AddButton(Func<Rectangle> position, Action<Player> pressAction, Action<Player, SpriteBatch> hoverAction)
         {
-            var button = new InterfaceButton(position, pressAction, hoverAction);
+            InterfaceButton button = new InterfaceButton(position, pressAction, hoverAction);
             buttons.Add(button);
             return button;
         }
@@ -46,7 +46,7 @@ namespace kRPG
         {
             PostDraw(spriteBatch, player);
 
-            foreach (var button in buttons)
+            foreach (InterfaceButton button in buttons)
                 button.Update(spriteBatch, player);
         }
 
