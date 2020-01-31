@@ -45,7 +45,7 @@ namespace kRPG2.Items.Weapons
             Type = Accents.Count;
             if (Main.netMode != 2)
                 if (texture != null)
-                    this.Texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Accents/" + texture);
+                    this.Texture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Items/Accents/" + texture);
             this.Suffix = suffix;
             Origin = new Vector2(originX, originY);
             this.OnHit = onHit;

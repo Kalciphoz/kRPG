@@ -71,7 +71,7 @@ namespace kRPG2.Items.Weapons
         {
             Type = Blades.Count() + 1;
             if (Main.netMode != 2)
-                this.Texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Blades/" + texture);
+                this.Texture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Items/Blades/" + texture);
             Origin = new Vector2(originX, originY);
             this.Name = name;
             this.UseTime = useTime;

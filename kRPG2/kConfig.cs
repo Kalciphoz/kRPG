@@ -58,7 +58,7 @@ namespace kRPG2
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod("kRPG2").Logger.InfoFormat(e.ToString());
             }
         }
 
@@ -80,7 +80,7 @@ namespace kRPG2
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod("kRPG2").Logger.InfoFormat(e.ToString());
             }
         }
 
@@ -97,7 +97,7 @@ namespace kRPG2
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod("kRPG2").Logger.InfoFormat(e.ToString());
             }
         }
 
@@ -110,7 +110,7 @@ namespace kRPG2
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod("kRPG2").Logger.InfoFormat(e.ToString());
             }
         }
 

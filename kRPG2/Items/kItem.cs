@@ -110,7 +110,7 @@ namespace kRPG2.Items
                 }
                 catch (SystemException e)
                 {
-                    ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                    ModLoader.GetMod("kRPG2").Logger.InfoFormat(e.ToString());
                 }
 
             if (item.defense > 0 || item.accessory)
@@ -469,7 +469,7 @@ namespace kRPG2.Items
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger
+                ModLoader.GetMod("kRPG2").Logger
                     .InfoFormat(
                         "ItemSpace() failed - TO FIX THE PROBLEM: Delete the kRPG_Settings.json file in Documents/My Games/Terraria/ModLoader. Full error trace: " +
                         e);
@@ -726,7 +726,7 @@ namespace kRPG2.Items
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger
+                ModLoader.GetMod("kRPG2").Logger
                     .InfoFormat(
                         "OnPickup() failed - TO FIX THE PROBLEM: Delete the kRPG_Settings.json file in Documents/My Games/Terraria/ModLoader. Full error trace: " +
                         e);

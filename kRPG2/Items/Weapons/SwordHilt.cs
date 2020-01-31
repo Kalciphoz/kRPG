@@ -66,7 +66,7 @@ namespace kRPG2.Items.Weapons
         {
             Type = Hilts.Count + 1;
             if (Main.netMode != 2)
-                this.Texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Swordhilts/" + texture);
+                this.Texture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Items/Swordhilts/" + texture);
             Origin = new Vector2(originX, originY);
             this.DpsModifier = dpsModifier;
             this.SpeedModifier = speedModifier;
@@ -86,7 +86,7 @@ namespace kRPG2.Items.Weapons
         public SwordHilt DefineSpear(string texture, int origin_x, int origin_y)
         {
             if (Main.netMode != 2)
-                SpearTexture = ModLoader.GetMod("kRPG").GetTexture("GFX/Projectiles/SpearMounts/" + texture);
+                SpearTexture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Projectiles/SpearMounts/" + texture);
             SpearOrigin = new Vector2(origin_x, origin_y);
             return this;
         }

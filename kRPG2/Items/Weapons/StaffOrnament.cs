@@ -48,7 +48,7 @@ namespace kRPG2.Items.Weapons
             Type = Ornament.Count;
             if (Main.netMode != 2)
                 if (texture != null)
-                    this.Texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Ornaments/" + texture);
+                    this.Texture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Items/Ornaments/" + texture);
             Origin = new Vector2(originX, originY);
             this.DpsModifier = dpsModifier;
             this.SpeedModifier = speedModifier;

@@ -38,7 +38,7 @@ namespace kRPG2.Items.Weapons
         {
             Type = Staffs.Count + 1;
             if (Main.netMode != 2)
-                this.Texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Staves/" + texture);
+                this.Texture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Items/Staves/" + texture);
             Origin = new Vector2(originX, originY);
             this.UseTime = useTime;
             this.KnockBack = knockBack;

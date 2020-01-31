@@ -169,7 +169,7 @@ namespace kRPG2.GUI
                     }
                     catch (SystemException e)
                     {
-                        ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                        ModLoader.GetMod("kRPG2").Logger.InfoFormat(e.ToString());
 
                         if (!(Main.LocalPlayer.inventory[id].modItem is ProceduralItem))
                             continue;
@@ -180,10 +180,10 @@ namespace kRPG2.GUI
                         }
                         catch (SystemException e2)
                         {
-                            ModLoader.GetMod("kRPG").Logger.InfoFormat("Failed to initialize: " + e2);
+                            ModLoader.GetMod("kRPG2").Logger.InfoFormat("Failed to initialize: " + e2);
                             spriteBatch.Draw(GFX.ItemSlotBroken, new Vector2(x2, y2), Color.White, Main.inventoryScale);
                             Main.LocalPlayer.inventory[id].SetDefaults();
-                            ModLoader.GetMod("kRPG").Logger.InfoFormat("ITEM " + id + " WAS DESTROYED.");
+                            ModLoader.GetMod("kRPG2").Logger.InfoFormat("ITEM " + id + " WAS DESTROYED.");
                         }
                     }
                 }
@@ -320,7 +320,7 @@ namespace kRPG2.GUI
             if (character.UnspentPoints())
                 spriteBatch.Draw(GFX.InventoryPoints, PointsOrigin, Color.White, Scale);
 
-            //Mod mod = ModLoader.GetMod("kRPG");
+            //Mod mod = ModLoader.GetMod("kRPG2");
             spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<PermanenceCrown>()], Origin + new Vector2(600f, 68f) * Scale, Color.White, Scale);
             spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.Permanence, Origin + new Vector2(640f, 72f) * Scale, Color.White,
                 Scale * 1.2f);

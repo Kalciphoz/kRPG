@@ -45,7 +45,7 @@ namespace kRPG2.Items.Glyphs
                 }
                 catch (SystemException e)
                 {
-                    ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                    ModLoader.GetMod("kRPG2").Logger.InfoFormat(e.ToString());
                 }
             };
         }

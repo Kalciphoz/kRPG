@@ -22,7 +22,7 @@ namespace kRPG2.Items.Weapons
         {
             Type = Gems.Count + 1;
             if (Main.netMode != 2)
-                this.Texture = ModLoader.GetMod("kRPG").GetTexture("GFX/Items/Gemstones/" + texture);
+                this.Texture = ModLoader.GetMod("kRPG2").GetTexture("GFX/Items/Gemstones/" + texture);
             Origin = new Vector2(originX, originY);
             DpsModifier = dpsModifier;
             SpeedModifier = speedModifier;

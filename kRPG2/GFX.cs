@@ -156,7 +156,7 @@ namespace kRPG2
 
         public static void LoadGfx()
         {
-            Mod loader = ModLoader.GetMod("kRPG");
+            Mod loader = ModLoader.GetMod("kRPG2");
 
             ButtonConfirm = loader.GetTexture(BUTTON_CONFIRM);
             ButtonUpgrade = loader.GetTexture(BUTTON_UPGRADE);

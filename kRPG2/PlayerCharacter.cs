@@ -625,7 +625,7 @@ namespace kRPG2
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod("kRPG2").Logger.InfoFormat(e.ToString());
             }
         }
 
@@ -1177,7 +1177,7 @@ namespace kRPG2
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Abilities :: " + e);
+                ModLoader.GetMod("kRPG2").Logger.InfoFormat("@Abilities :: " + e);
             }
 
             try
@@ -1188,7 +1188,7 @@ namespace kRPG2
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Inventories :: " + e);
+                ModLoader.GetMod("kRPG2").Logger.InfoFormat("@Inventories :: " + e);
             }
 
             return tagCompound;
@@ -1203,7 +1203,7 @@ namespace kRPG2
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Level&XP :: " + e);
+                ModLoader.GetMod("kRPG2").Logger.InfoFormat("@Level&XP :: " + e);
             }
 
             try
@@ -1215,7 +1215,7 @@ namespace kRPG2
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Stats&Rituals :: " + e);
+                ModLoader.GetMod("kRPG2").Logger.InfoFormat("@Stats&Rituals :: " + e);
             }
 
             try
@@ -1232,7 +1232,7 @@ namespace kRPG2
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Abilities :: " + e);
+                ModLoader.GetMod("kRPG2").Logger.InfoFormat("@Abilities :: " + e);
             }
 
             try
@@ -1244,7 +1244,7 @@ namespace kRPG2
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Inventory :: " + e);
+                ModLoader.GetMod("kRPG2").Logger.InfoFormat("@Inventory :: " + e);
             }
 
             try
@@ -1257,7 +1257,7 @@ namespace kRPG2
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Miscellaneous :: " + e);
+                ModLoader.GetMod("kRPG2").Logger.InfoFormat("@Miscellaneous :: " + e);
             }
         }
 
