@@ -30,9 +30,13 @@ namespace kRPG2.GUI
         private static readonly FieldInfo MouseReforge = typeof(Main).GetField("mouseReforge", BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly MethodInfo PageIcons = typeof(Main).GetMethod("DrawPageIcons", BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly FieldInfo ReforgeScale = typeof(Main).GetField("reforgeScale", BindingFlags.NonPublic | BindingFlags.Static);
-        private static float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
+
+        private static float Scale => Math.Min(1f, (Main.screenWidth / Constants.MaxScreenWidth) + 0.4f);
+        
         private float BarX => 314f * Scale;
+
         public Vector2 Origin => new Vector2(40f, 8f) * Scale;
+
         private Vector2 PointsOrigin => Origin + new Vector2(538f, 76f) * Scale;
 
 
