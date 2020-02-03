@@ -27,7 +27,7 @@ Special thanks goes to raydeejay, Mirsario, jopojelly and bluemagic123 for helpi
 
 If I have forgotten anybody from this list, I sincerely apologize. Please inform me and I will correct it asap.
 
-[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://youtu.be/QldqCHEaqCc)
+[![YouTube Video]](https://youtu.be/QldqCHEaqCc)
 
 Open Source
 The mod is open source. The source code can be acquired by three means: Going to the github page here, or by using ModLoader to decompile it, or by using ILSpy. Any of my content may be used, but please give proper attribution (credits) and if using a larger part of my mod (such as a major mechanic), please refer people to the original. If you're unsure about anything, you may contact me through PM or in this thread.
