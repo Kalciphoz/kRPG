@@ -32,6 +32,10 @@ If I have forgotten anybody from this list, I sincerely apologize. Please inform
 Open Source
 The mod is open source. The source code can be acquired by three means: Going to the github page here, or by using ModLoader to decompile it, or by using ILSpy. Any of my content may be used, but please give proper attribution (credits) and if using a larger part of my mod (such as a major mechanic), please refer people to the original. If you're unsure about anything, you may contact me through PM or in this thread.
 
+Version 2.0.1
+    -Renamed kRPG2 back to kRPG, the kRPG2 project is no more.
+    -Fixed UI bug in the spell crafting ui, there were two instances of the GUI being loaded due to a call in the constructor.  This is fixed.
+    -Replaced var with variable type.
 
 Version 2.0
   -Upgraded code to be compatible with latest version of TMOD.
