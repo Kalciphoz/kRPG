@@ -1,0 +1,129 @@
+﻿0 -- LegacyInterface.0 -- Life:
+1 -- LegacyInterface.1 -- Breath
+2 -- LegacyInterface.2 -- Mana
+3 -- LegacyInterface.3 -- Trash Can
+4 -- LegacyInterface.4 -- Inventory
+5 -- LegacyInterface.5 -- Hotbar unlocked
+6 -- LegacyInterface.6 -- Hotbar locked
+7 -- LegacyInterface.7 -- Housing
+8 -- LegacyInterface.8 -- Housing Query
+9 -- LegacyInterface.9 -- Accessory
+10 -- LegacyInterface.10 -- Defense
+11 -- LegacyInterface.11 -- Social
+12 -- LegacyInterface.12 -- Helmet
+13 -- LegacyInterface.13 -- Shirt
+14 -- LegacyInterface.14 -- Pants
+15 -- LegacyInterface.15 -- platinum
+16 -- LegacyInterface.16 -- gold
+17 -- LegacyInterface.17 -- silver
+18 -- LegacyInterface.18 -- copper
+19 -- LegacyInterface.19 -- Reforge
+20 -- LegacyInterface.20 -- Place an item here to reforge
+21 -- LegacyInterface.21 -- Showing recipes that use
+22 -- LegacyInterface.22 -- Required objects:
+23 -- LegacyInterface.23 -- None
+24 -- LegacyInterface.24 -- Place a material here
+25 -- LegacyInterface.25 -- Crafting
+26 -- LegacyInterface.26 -- Coins
+27 -- LegacyInterface.27 -- Ammo
+28 -- LegacyInterface.28 -- Shop
+29 -- LegacyInterface.29 -- Loot All
+30 -- LegacyInterface.30 -- Deposit All
+31 -- LegacyInterface.31 -- Quick Stack
+32 -- LegacyInterface.32 -- Piggy Bank
+33 -- LegacyInterface.33 -- Safe
+34 -- LegacyInterface.34 -- Time
+35 -- LegacyInterface.35 -- Save & Exit
+36 -- LegacyInterface.36 -- Disconnect
+37 -- LegacyInterface.37 -- Items
+38 -- LegacyInterface.38 -- You were slain...
+39 -- LegacyInterface.39 -- This housing is suitable.
+40 -- LegacyInterface.40 -- This is not valid housing.
+41 -- LegacyInterface.41 -- This housing is already occupied.
+42 -- LegacyInterface.42 -- This housing is corrupted.
+43 -- LegacyInterface.43 -- Connection timed out
+44 -- LegacyInterface.44 -- Receiving tile data
+45 -- LegacyInterface.45 -- Equip
+46 -- LegacyInterface.46 -- Cost
+47 -- LegacyInterface.47 -- Save
+48 -- LegacyInterface.48 -- Edit
+49 -- LegacyInterface.49 -- Status
+50 -- LegacyInterface.50 -- Curse
+51 -- LegacyInterface.51 -- Help
+52 -- LegacyInterface.52 -- Close
+53 -- LegacyInterface.53 -- Water
+54 -- LegacyInterface.54 -- Heal
+55 -- LegacyInterface.55 -- This housing does not meet the requirements for a
+56 -- LegacyInterface.56 -- Lava
+57 -- LegacyInterface.57 -- Dye
+58 -- LegacyInterface.58 -- Honey
+59 -- LegacyInterface.59 -- Visible
+60 -- LegacyInterface.60 -- Hidden
+61 -- LegacyInterface.61 -- Rename
+62 -- LegacyInterface.62 -- Settings
+63 -- LegacyInterface.63 -- Cancel
+64 -- LegacyInterface.64 -- Quest
+65 -- LegacyInterface.65 -- Quest Item
+66 -- LegacyInterface.66 -- Savings
+67 -- LegacyInterface.67 -- Take Snapshot
+68 -- LegacyInterface.68 -- Settings
+69 -- LegacyInterface.69 -- Pin Frame
+70 -- LegacyInterface.70 -- Set Frame
+71 -- LegacyInterface.71 -- Close
+72 -- LegacyInterface.72 -- On
+73 -- LegacyInterface.73 -- Off
+74 -- LegacyInterface.74 -- Image Packing
+75 -- LegacyInterface.75 -- Capture Entities
+76 -- LegacyInterface.76 -- Capture Background
+77 -- LegacyInterface.77 -- Biome Pick
+78 -- LegacyInterface.78 -- Reset Frame
+79 -- LegacyInterface.79 -- Equipment
+80 -- LegacyInterface.80 -- Housing
+81 -- LegacyInterface.81 -- Camera Mode
+82 -- LegacyInterface.82 -- Restock
+83 -- LegacyInterface.83 -- Frost Moon
+84 -- LegacyInterface.84 -- Pumpkin Moon
+85 -- LegacyInterface.85 -- Martian Madness
+86 -- LegacyInterface.86 -- Pirate Invasion
+87 -- LegacyInterface.87 -- Frost Legion
+88 -- LegacyInterface.88 -- Goblin Army
+89 -- LegacyInterface.89 -- Collect
+90 -- LegacyInterface.90 -- Grappling Hook
+91 -- LegacyInterface.91 -- Mount
+92 -- LegacyInterface.92 -- Pet
+93 -- LegacyInterface.93 -- Minecart
+94 -- LegacyInterface.94 -- Light Pet
+95 -- LegacyInterface.95 -- Time
+96 -- LegacyInterface.96 -- Weather
+97 -- LegacyInterface.97 -- Fishing
+98 -- LegacyInterface.98 -- Position
+99 -- LegacyInterface.99 -- Depth
+100 -- LegacyInterface.100 -- Creature Count
+101 -- LegacyInterface.101 -- Kill Count
+102 -- LegacyInterface.102 -- Moon Phase
+103 -- LegacyInterface.103 -- Movement Speed
+104 -- LegacyInterface.104 -- Treasure
+105 -- LegacyInterface.105 -- Rare Creatures
+106 -- LegacyInterface.106 -- Damage Per Second
+107 -- LegacyInterface.107 -- Strange Plants
+108 -- LegacyInterface.108 -- Open Map
+109 -- LegacyInterface.109 -- Close Map
+110 -- LegacyInterface.110 -- Open Folder
+111 -- LegacyInterface.111 -- Take Screenshot
+112 -- LegacyInterface.112 -- You must first set a frame
+113 -- LegacyInterface.113 -- Only available in windowed mode
+114 -- LegacyInterface.114 -- Only available if map is enabled
+115 -- LegacyInterface.115 -- Camera Mode Disabled
+116 -- LegacyInterface.116 -- Highlight New Items Off
+117 -- LegacyInterface.117 -- Highlight New Items On
+118 -- LegacyInterface.118 -- Zoom In
+119 -- LegacyInterface.119 -- Zoom Out
+120 -- LegacyInterface.120 -- Teleport to ally
+121 -- LegacyInterface.121 -- Drop Item
+122 -- LegacyInterface.122 -- Sort Items
+123 -- LegacyInterface.123 -- Cold Weather
+124 -- LegacyInterface.124 -- LegacyInterface.124
+125 -- LegacyInterface.125 -- LegacyInterface.125
+126 -- LegacyInterface.126 -- LegacyInterface.126
+127 -- LegacyInterface.127 -- LegacyInterface.127
+128 -- LegacyInterface.128 -- LegacyInterface.128
