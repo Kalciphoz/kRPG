@@ -54,6 +54,10 @@ namespace kRPG2.GUI
         private const int BubblesLength = 132;
         private const int BubblesThickness = 22;
 
+
+        /// <summary>
+        /// They are using a reference to the function since this function is not public.
+        /// </summary>
         private static readonly MethodInfo DrawBuffIcon = typeof(Main).GetMethod("DrawBuffIcon", BindingFlags.NonPublic | BindingFlags.Static);
 
         private readonly Vector2 barLifeOrigin;
@@ -103,31 +107,41 @@ namespace kRPG2.GUI
 
         public static void DrawBuffs()
         {
-            int num = -1;
-            int num2 = 11;
-            for (int i = 0; i < 22; i++)
-                if (Main.player[Main.myPlayer].buffType[i] > 0)
+            int leftOffset = 320;
+            int iconWidth = 38;
+            int maxSlots = 21;
+
+            int buffTypeId = -1;
+            int secondRowOfBuffsStartIndex = 11;
+
+            for (int buffSlot = 0; buffSlot <= maxSlots; buffSlot++)
+
+                if (Main.player[Main.myPlayer].buffType[buffSlot] > 0)
                 {
-                    int b = Main.player[Main.myPlayer].buffType[i];
-                    int x = 320 + i * 38;
-                    int num3 = 8;
-                    if (i >= num2)
+                    int buff = Main.player[Main.myPlayer].buffType[buffSlot];
+                    int xPosition = leftOffset + buffSlot * iconWidth;
+
+                    int yPosition = 8;//The y offset for the first row...
+
+                    if (buffSlot >= secondRowOfBuffsStartIndex)
                     {
-                        x = 32 + (i - num2) * 38;
-                        num3 += 50;
+                        xPosition = 32 + (buffSlot - secondRowOfBuffsStartIndex) * iconWidth;
+                        yPosition += 50;//put icon on second row.
                     }
 
-                    num = (int)DrawBuffIcon.Invoke(null, new object[] { num, i, b, x, num3 }); // Main.DrawBuffIcon(num, i, b, x, num3);
+
+
+                    buffTypeId = (int)DrawBuffIcon.Invoke(null, new object[] { buffTypeId, buffSlot, buff, xPosition, yPosition }); // Main.DrawBuffIcon(num, i, b, x, num3);
                 }
                 else
                 {
-                    Main.buffAlpha[i] = 0.4f;
+                    Main.buffAlpha[buffSlot] = 0.4f;
                 }
 
-            if (num < 0)
+            if (buffTypeId < 0)
                 return;
 
-            int buffId = Main.player[Main.myPlayer].buffType[num];
+            int buffId = Main.player[Main.myPlayer].buffType[buffTypeId];
 
             if (buffId <= 0)
                 return;
@@ -312,75 +326,100 @@ namespace kRPG2.GUI
 
 
 
-
+        /// <summary>
+        /// This happens after the draw event
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        /// <param name="player"></param>
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
+            //If the player is a ghost, than skip out.
             if (Main.playerInventory || Main.player[Main.myPlayer].ghost)
                 return;
-
-
 
             character = player.GetModPlayer<PlayerCharacter>();
 
             DrawHotbar();
 
+            //Draw the health, mana and exp bar background.  If you change the color it will only effect the exp bar.
             spriteBatch.Draw(GFX.StatusBarsBg, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
+            //Calculate the current life bar length.
             int currentLifeLength = (int)Math.Round(player.statLife / (decimal)player.statLifeMax2 * BarLifeLength);
 
-            spriteBatch.Draw(GFX.StatusBars, GuiPosition + barLifeOrigin * Scale,
-                new Rectangle((int)(barLifeOrigin.X + BarLifeLength - currentLifeLength), (int)barLifeOrigin.Y, currentLifeLength, BarLifeThickness),
-                Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
+            spriteBatch.Draw(GFX.StatusBars, GuiPosition + barLifeOrigin * Scale,
+                new Rectangle((int)(barLifeOrigin.X + BarLifeLength - currentLifeLength),//This how much of the bar should be blacked out.
+                    (int)barLifeOrigin.Y, currentLifeLength, BarLifeThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+
+            //Calculate the current length of the mana bar
             int currentManaLength = (int)Math.Round(character.Mana / (decimal)player.statManaMax2 * BarManaLength);
 
             spriteBatch.Draw(GFX.StatusBars, GuiPosition + barManaOrigin * Scale,
-                new Rectangle((int)(barManaOrigin.X + BarManaLength - currentManaLength), (int)barManaOrigin.Y, currentManaLength, BarManaThickness),
-                Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+                new Rectangle((int)(barManaOrigin.X + BarManaLength - currentManaLength), //How much of the bar should be blacked out.
+                    (int)barManaOrigin.Y, currentManaLength, BarManaThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
+            //calculate the exp bar length
             int currentXpLength = (int)Math.Round(BarXpLength * (decimal)character.Experience / character.ExperienceToLevel());
 
-            spriteBatch.Draw(GFX.StatusBars, GuiPosition + barXpOrigin * Scale,
-                new Rectangle((int)barXpOrigin.X, (int)barXpOrigin.Y, currentXpLength, BarXpThickness), Color.White, 0f, Vector2.Zero, Scale,
-                SpriteEffects.None, 0f);
+            //Draw the exp bar
+            spriteBatch.Draw(GFX.StatusBars, GuiPosition + barXpOrigin * Scale, new Rectangle((int)barXpOrigin.X, (int)barXpOrigin.Y, currentXpLength, BarXpThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
+            //Draw the image that is the background for the hud hp/mana/exp bar
             spriteBatch.Draw(GFX.CharacterFrame, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife + " / " + player.statLifeMax2,
-                GuiPosition + new Vector2(barLifeOrigin.X * Scale + 24f * Scale, (barLifeOrigin.Y + 4f) * Scale), Color.White, Scale);
+            //Draw text showing there health
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife + " / " + player.statLifeMax2, GuiPosition + new Vector2(barLifeOrigin.X * Scale + 24f * Scale, (barLifeOrigin.Y + 4f) * Scale), Color.White, Scale);
 
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Mana + " / " + player.statManaMax2,
-                GuiPosition + new Vector2(barManaOrigin.X * Scale + 24f * Scale, barManaOrigin.Y * Scale), Color.White, 0.8f * Scale);
+            //Draw text showing there manag
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Mana + " / " + player.statManaMax2, GuiPosition + new Vector2(barManaOrigin.X * Scale + 24f * Scale, barManaOrigin.Y * Scale), Color.White, 0.8f * Scale);
 
+            //This should draw roman numerals for the characters level.... but doesn't seem to work.
             DrawNumerals(spriteBatch, character.Level, Scale);
 
+            //If they have unspent level points, draw the icon
             if (character.UnspentPoints())
                 spriteBatch.Draw(GFX.UnspentPoints, PointsOrigin, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
             Main.spriteBatch.End();
 
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
 
-            if (player.lavaTime < player.lavaMax)
+
+            if ((player.lavaTime < player.lavaMax) || (player.breath < player.breathMax))
             {
-                int currentBubbles = (int)Math.Round((decimal)BubblesLength * player.lavaTime / player.lavaMax);
-                spriteBatch.Draw(GFX.bubbles_lava, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White, Scale);
+
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
+                    RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+
+                if (player.lavaTime < player.lavaMax)
+                {
+                    int currentBubbles = (int)Math.Round((decimal)BubblesLength * player.lavaTime / player.lavaMax);
+                    spriteBatch.Draw(GFX.bubbles_lava, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White,
+                        Scale);
+                }
+
+                if (player.breath < player.breathMax)
+                {
+                    int currentBubbles = (int)Math.Round((decimal)BubblesLength * player.breath / player.breathMax);
+                    spriteBatch.Draw(GFX.bubbles, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White,
+                        Scale);
+                }
+                Main.spriteBatch.End();
             }
 
-            if (player.breath < player.breathMax)
-            {
-                int currentBubbles = (int)Math.Round((decimal)BubblesLength * player.breath / player.breathMax);
-                spriteBatch.Draw(GFX.bubbles, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White, Scale);
-            }
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+            
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
+                RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
             Main.buffString = "";
             Main.bannerMouseOver = false;
             if (!Main.recBigList)
                 Main.recStart = 0;
             if (!Main.ingameOptionsWindow && !Main.playerInventory && !Main.inFancyUI)
                 DrawBuffs();
+
+            //todo This was missing.  Well, apparently, they rely on the spritebatch being open to do other draws.  
+           // Main.spriteBatch.End();
+
         }
     }
 }
