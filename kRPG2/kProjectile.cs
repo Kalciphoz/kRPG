@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using kRPG2.Enums;
 using kRPG2.Items;
@@ -40,13 +41,13 @@ namespace kRPG2
         public Dictionary<ELEMENT, int> ElementalDamage { get; set; }
 
         public override bool InstancePerEntity => true;
-        private Item Item { get; set; }
+        private Item SelectedItem { get; set; }
 
         public override void AI(Projectile projectile)
         {
             if (ElementalDamage != null || Main.netMode == 1)
                 return;
-            ElementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+            ElementalDamage = new Dictionary<ELEMENT, int> { { ELEMENT.FIRE, 0 }, { ELEMENT.COLD, 0 }, { ELEMENT.LIGHTNING, 0 }, { ELEMENT.SHADOW, 0 } };
 
             if (Main.npc.GetUpperBound(0) >= projectile.owner)
                 if (projectile.hostile && !projectile.friendly)
@@ -83,7 +84,7 @@ namespace kRPG2
                         }
                     };
                     int count = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => haselement[element]);
-                    int portionsize = (int) Math.Round(projectile.damage * kNPC.EleDmgModifier / 3.0 / count);
+                    int portionsize = (int)Math.Round(projectile.damage * kNPC.EleDmgModifier / 3.0 / count);
                     foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                         if (haselement[element])
                             ElementalDamage[element] = Math.Max(1, portionsize);
@@ -93,19 +94,19 @@ namespace kRPG2
             if (projectile.type == ModContent.ProjectileType<ProceduralSpellProj>())
             {
                 var character = Main.player[projectile.owner].GetModPlayer<PlayerCharacter>();
-                var spell = (ProceduralSpellProj) projectile.modProjectile;
+                var spell = (ProceduralSpellProj)projectile.modProjectile;
                 if (spell.Source == null)
                 {
                     SelectItem(projectile);
                 }
                 else
                 {
-                    var cross = (Cross) spell.Source.Glyphs[(int) GLYPHTYPE.CROSS].modItem;
+                    var cross = (Cross)spell.Source.Glyphs[(int)GLYPHTYPE.CROSS].modItem;
                     if (cross is Cross_Orange)
                         SelectItem(projectile, character.LastSelectedWeapon);
                     else
                         foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                            ElementalDamage[element] = (int) Math.Round(cross.EleDmg[element] * projectile.damage);
+                            ElementalDamage[element] = (int)Math.Round(cross.EleDmg[element] * projectile.damage);
                 }
             }
             else if (projectile.friendly && !projectile.hostile && Main.player[projectile.owner] != null)
@@ -131,10 +132,18 @@ namespace kRPG2
             //}
         }
 
+        /// <summary>
+        /// Returns the total elemental damage, something doesn't seem right with the code though.
+        /// Cause this adds up all there elemental damages into one value.... kinda not sure yet what
+        /// the author was thinking, since each type of damage does different type of damage
+        /// </summary>
+        /// <param name="projectile"></param>
+        /// <param name="player"></param>
+        /// <param name="ignoreModifiers"></param>
+        /// <returns></returns>
         public int GetEleDamage(Projectile projectile, Player player, bool ignoreModifiers = false)
         {
-            var ele = new Dictionary<ELEMENT, int>();
-            ele = GetIndividualElements(projectile, player, ignoreModifiers);
+            Dictionary<ELEMENT, int> ele = GetIndividualElements(projectile, player, ignoreModifiers);
             return ele[ELEMENT.FIRE] + ele[ELEMENT.COLD] + ele[ELEMENT.LIGHTNING] + ele[ELEMENT.SHADOW];
         }
 
@@ -143,13 +152,19 @@ namespace kRPG2
             var dictionary = new Dictionary<ELEMENT, int>();
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                 dictionary[element] = 0;
+
             if (ElementalDamage == null)
-                ElementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+                ElementalDamage = new Dictionary<ELEMENT, int> { { ELEMENT.FIRE, 0 }, { ELEMENT.COLD, 0 }, { ELEMENT.LIGHTNING, 0 }, { ELEMENT.SHADOW, 0 } };
+
             if (player.GetModPlayer<PlayerCharacter>().Rituals[RITUAL.DEMON_PACT])
+
                 dictionary[ELEMENT.SHADOW] = GetEleDamage(projectile, player);
+
             else
+
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                    dictionary[element] = (int) Math.Round(ElementalDamage[element] * (ignoreModifiers
+
+                    dictionary[element] = (int)Math.Round(ElementalDamage[element] * (ignoreModifiers
                                                                ? 1
                                                                : player.GetModPlayer<PlayerCharacter>().DamageMultiplier(element, projectile.melee,
                                                                    projectile.ranged, projectile.magic, projectile.thrown, projectile.minion)));
@@ -159,20 +174,42 @@ namespace kRPG2
 
         public void SelectItem(Projectile projectile, Item item)
         {
-            Item = item;
+            //Set the selected item.
+            SelectedItem = item;
 
+            //Figure out what the element damage is for the item.
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                ElementalDamage[element] = Item.GetGlobalItem<kItem>().ElementalDamage[element];
+
+                ElementalDamage[element] = item.GetGlobalItem<kItem>().ElementalDamage[element];
         }
 
         public void SelectItem(Projectile projectile)
         {
             var owner = Main.player[projectile.owner];
-            Item = owner.inventory[owner.selectedItem];
-            projectile.minion = Item.summon || projectile.minion;
+            SelectedItem = owner.inventory[owner.selectedItem];
+            projectile.minion = SelectedItem.summon || projectile.minion;
 
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                ElementalDamage[element] = Item.GetGlobalItem<kItem>().ElementalDamage[element];
+            {
+                //I normally do not like try/catches, but in this case there is no way around it.
+                //TMod throws a null reference error occasionally when you try to get globalitem.
+                try
+                {
+                    kItem t = SelectedItem.GetGlobalItem<kItem>();
+                    if (t == null)
+                        continue;
+                    if (t.ElementalDamage.ContainsKey(element))
+                        ElementalDamage[element] = t.ElementalDamage[element];
+                    else
+                        ElementalDamage[element] = 0;
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e);
+                }
+
+            }
+
         }
     }
 }

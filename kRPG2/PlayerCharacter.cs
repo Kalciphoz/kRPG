@@ -50,6 +50,7 @@ namespace kRPG2
 
         public PlayerCharacter()
         {
+            
             foreach (STAT stat in Enum.GetValues(typeof(STAT)))
             {
                 BaseStats[stat] = 0;
@@ -425,20 +426,30 @@ namespace kRPG2
             {
                 if (Main.rand.Next(target.boss ? 500 : 200) >= 30 + eleDmg[element])
                     continue;
+
                 if (eleDmg[element] <= 0)
                     continue;
+
                 var t = Ailments[element];
+
                 ModBuff buff;
+
                 if (Ailments[element] == typeof(Fire))
                     buff = ModContent.GetInstance<Fire>();
+
                 else if (Ailments[element] == typeof(Cold))
                     buff = ModContent.GetInstance<Cold>();
+
                 else if (Ailments[element] == typeof(Lightning))
                     buff = ModContent.GetInstance<Lightning>();
+
                 else
                     buff = ModContent.GetInstance<Shadow>();
+
                 target.AddBuff(buff.Type, target.boss ? 30 + Math.Min(eleDmg[element], 30) * 3 : 120 + Math.Min(eleDmg[element], 15) * 12);
+                
                 victim.AilmentIntensity[element] = target.boss ? eleDmg[element] / 2 : eleDmg[element];
+                
                 victim.HasAilment[element] = true;
             }
         }

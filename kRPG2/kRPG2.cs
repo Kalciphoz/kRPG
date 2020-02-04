@@ -466,6 +466,8 @@ namespace kRPG2
                 Main.inventoryBack16Texture = GFX.ItemSlot;
             }
 
+            Main.player[Main.myPlayer].hbLocked = false;
+
             SwordHilt.Initialize();
             SwordBlade.Initialize();
             SwordAccent.Initialize();

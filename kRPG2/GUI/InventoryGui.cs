@@ -24,6 +24,7 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using kRPG2.Enums;
@@ -456,6 +457,7 @@ namespace kRPG2.GUI
                         if (Main.mouseLeft && Main.mouseLeftRelease)
                         {
                             Main.PlaySound(22);
+                            Debug.WriteLine("---------------------------------->Changing HBLOCK!!!!");
                             Main.player[Main.myPlayer].hbLocked = !Main.player[Main.myPlayer].hbLocked;
                         }
                     }

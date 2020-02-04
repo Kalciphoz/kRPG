@@ -25,7 +25,9 @@
 
 using System;
 using System.Diagnostics;
+using System.Net.Mail;
 using System.Reflection;
+using kRPG2.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -54,8 +56,6 @@ namespace kRPG2.GUI
 
         private static readonly MethodInfo DrawBuffIcon = typeof(Main).GetMethod("DrawBuffIcon", BindingFlags.NonPublic | BindingFlags.Static);
 
-        //private Vector2 buffposition => new Vector2(Main.playerInventory ? 560f : 24f, Main.playerInventory ? 16f : 80f);
-
         private readonly Vector2 barLifeOrigin;
 
         // ReSharper disable once IdentifierTypo
@@ -68,6 +68,7 @@ namespace kRPG2.GUI
 
         public StatusBar(PlayerCharacter character, Mod mod)
         {
+            Main.player[Main.myPlayer].hbLocked = false;
             this.character = character;
             barLifeOrigin = new Vector2(278f, 50f);
             barManaOrigin = new Vector2(254f, 92f);
@@ -75,27 +76,30 @@ namespace kRPG2.GUI
             bubblesOrigin = new Vector2(284, 134);
 
             AddButton(
-                () => new Rectangle((int) pointsOrigin.X, (int) pointsOrigin.Y, (int) (GFX.UnspentPoints.Width * Scale),
-                    (int) (GFX.UnspentPoints.Height * Scale)), delegate(Player player)
-                {
-                    character.CloseGuIs();
-                    Main.PlaySound(SoundID.MenuTick);
-                    character.LevelGui.GuiActive = player.GetModPlayer<PlayerCharacter>().UnspentPoints() && !Main.playerInventory;
-                }, delegate
-                {
-                    Main.LocalPlayer.mouseInterface = true;
-                    string s = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>().UnspentPoints()
-                        ? "Click here to allocate stat points"
-                        : "You have no unspent stat points";
-                    Main.instance.MouseText(s);
-                });
+                () => new Rectangle((int)PointsOrigin.X, (int)PointsOrigin.Y, (int)(GFX.UnspentPoints.Width * Scale),
+                    (int)(GFX.UnspentPoints.Height * Scale)), delegate (Player player)
+               {
+                   character.CloseGuIs();
+                   Main.PlaySound(SoundID.MenuTick);
+                   character.LevelGui.GuiActive = player.GetModPlayer<PlayerCharacter>().UnspentPoints() && !Main.playerInventory;
+               }, delegate
+               {
+                   Main.LocalPlayer.mouseInterface = true;
+                   string s = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>().UnspentPoints()
+                       ? "Click here to allocate stat points"
+                       : "You have no unspent stat points";
+                   Main.instance.MouseText(s);
+               });
         }
 
         private static Vector2 GuiPosition => new Vector2(4f, 6f) * Scale;
 
-        private static Vector2 pointsOrigin => GuiPosition + new Vector2(242f, 112f) * Scale;
+        private static Vector2 PointsOrigin => GuiPosition + new Vector2(242f, 112f) * Scale;
 
         private static float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
+
+
+
 
         public static void DrawBuffs()
         {
@@ -113,7 +117,7 @@ namespace kRPG2.GUI
                         num3 += 50;
                     }
 
-                    num = (int) DrawBuffIcon.Invoke(null, new object[] {num, i, b, x, num3}); // Main.DrawBuffIcon(num, i, b, x, num3);
+                    num = (int)DrawBuffIcon.Invoke(null, new object[] { num, i, b, x, num3 }); // Main.DrawBuffIcon(num, i, b, x, num3);
                 }
                 else
                 {
@@ -122,151 +126,199 @@ namespace kRPG2.GUI
 
             if (num < 0)
                 return;
-            int num4 = Main.player[Main.myPlayer].buffType[num];
-            if (num4 <= 0)
+
+            int buffId = Main.player[Main.myPlayer].buffType[num];
+
+            if (buffId <= 0)
                 return;
-            Main.buffString = Lang.GetBuffDescription(num4);
+
+            Main.buffString = Lang.GetBuffDescription(buffId);
+
             int itemRarity = 0;
-            switch (num4)
+
+            switch ((VanillaBuffId)buffId)
             {
-                case 26 when Main.expertMode:
+                case VanillaBuffId.WellFed when Main.expertMode:
                     Main.buffString = Language.GetTextValue("BuffDescription.WellFed_Expert");
                     break;
-                case 147:
+                case VanillaBuffId.MonsterBanner:
                     Main.bannerMouseOver = true;
                     break;
-                case 94:
-                {
-                    int num5 = (int) (Main.player[Main.myPlayer].manaSickReduction * 100f) + 1;
-                    Main.buffString = Main.buffString + num5 + "%";
-                    break;
-                }
+                case VanillaBuffId.ManaSickness:
+                    {
+                        int percent = (int)(Main.player[Main.myPlayer].manaSickReduction * 100f) + 1;
+                        Main.buffString = Main.buffString + percent + "%";
+                        break;
+                    }
             }
 
-            if (Main.meleeBuff[num4])
+            if (Main.meleeBuff[buffId])
                 itemRarity = -10;
-            BuffLoader.ModifyBuffTip(num4, ref Main.buffString, ref itemRarity);
-            Main.instance.MouseTextHackZoom(Lang.GetBuffName(num4), itemRarity);
+
+            BuffLoader.ModifyBuffTip(buffId, ref Main.buffString, ref itemRarity);
+
+            Main.instance.MouseTextHackZoom(Lang.GetBuffName(buffId), itemRarity);
         }
 
-        private void DrawHotbar()
+        /// <summary>
+        /// Draws the selected item's name above the toolbar
+        /// </summary>
+        public void DrawSelectedItemName()
         {
             string text = "";
             if (!string.IsNullOrEmpty(Main.player[Main.myPlayer].inventory[Main.player[Main.myPlayer].selectedItem].Name))
                 text = Main.player[Main.myPlayer].inventory[Main.player[Main.myPlayer].selectedItem].AffixName();
+
             var vector = Main.fontMouseText.MeasureString(text) / 2;
-            Main.spriteBatch.DrawStringWithShadow(Main.fontMouseText, text, new Vector2(Main.screenWidth - 240 - vector.X - 16f, 0f),
-                new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor));
-            int posX = Main.screenWidth - 480;
-            for (int i = 0; i < 10; i++)
+
+            Main.spriteBatch.DrawStringWithShadow(Main.fontMouseText, text, new Vector2(Main.screenWidth - 240 - vector.X - 16f, 0f), new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor));
+        }
+
+
+
+        /// <summary>
+        /// This function draws the hotbar in the upper left screen when the user DOES NOT have the inventory window open.
+        /// </summary>
+        private void DrawHotbar()
+        {
+            DrawSelectedItemName();
+
+
+            //Get the width of the screen, subtract 480 from it which will be the distance from the left we need to be able to draw the bar
+            int leftOffset = Main.screenWidth - 480;
+
+            //For each slot
+            for (int slotIndex = 0; slotIndex < 10; slotIndex++)
             {
-                if (i == Main.player[Main.myPlayer].selectedItem)
+                //This code provides the animation of the selected item growing and shrinking as they scroll through the hotbar
+                //The selected item will grow from .75 to 1 in scale when it is selected
+                //and it will shrink from 1 to .75 when deselected.
+
+                //If this slot is selected by the player
+                if (slotIndex == Main.player[Main.myPlayer].selectedItem)
                 {
-                    if (Main.hotbarScale[i] < 1f)
-                        Main.hotbarScale[i] += 0.05f;
+                    //if the hotbar scale is less that 1
+                    if (Main.hotbarScale[slotIndex] < 1f)
+                        //Add .05 to it to make it larger
+                        Main.hotbarScale[slotIndex] += 0.05f;
                 }
-                else if (Main.hotbarScale[i] > 0.75)
+                //Otherwise it is a slot that isn't selected.
+                //So we check if the scale is greater that .75
+                else if (Main.hotbarScale[slotIndex] > 0.75)
                 {
-                    Main.hotbarScale[i] -= 0.05f;
+                    //We shrink the scale of the slot.
+                    Main.hotbarScale[slotIndex] -= 0.05f;
                 }
 
-                float num2 = Main.hotbarScale[i];
-                int num3 = (int) (20f + 22f * (1f - num2));
-                int a = (int) (75f + 150f * num2);
-                new Color(255, 255, 255, a);
+                float itemHotbarScale = Main.hotbarScale[slotIndex];
 
+                int topOffset = (int)(20f + 22f * (1f - itemHotbarScale));
 
-                //
+                // int a = (int)(75f + 150f * itemHotbarScale);
 
-                //if (i == 0)
-                //{
-                //    Debug.WriteLine("*********************************");
-                //    Debug.WriteLine($"Y:{Main.mouseY} >= {num3}");
-                //    Debug.WriteLine($"Y:{Main.mouseY} <= {num3 + Main.inventoryBackTexture.Height * Main.hotbarScale[i]}");
-                //    Debug.WriteLine("!Main.player[Main.myPlayer].hbLocked = " + !Main.player[Main.myPlayer].hbLocked);
-                //    Debug.WriteLine("!PlayerInput.IgnoreMouseInterface = " + !PlayerInput.IgnoreMouseInterface);
-                //    Debug.WriteLine("Main.mouseX >= posX >>>> " + (Main.mouseX >= posX));
-                //    Debug.WriteLine("Main.mouseX <= posX + Main.inventoryBackTexture.Width * Main.hotbarScale[i] >>>>>" + (Main.mouseX <= posX + Main.inventoryBackTexture.Width * Main.hotbarScale[i]));
-                //    Debug.WriteLine("&& Main.mouseY >= num3 >>>>>" + (Main.mouseY >= num3));
-                //    Debug.WriteLine("Main.mouseY <= num3 + Main.inventoryBackTexture.Height * Main.hotbarScale[i] >>>>>>" + (Main.mouseY <= num3 + Main.inventoryBackTexture.Height * Main.hotbarScale[i]));
-                //    Debug.WriteLine("!Main.player[Main.myPlayer].channel)>>>>>" + (!Main.player[Main.myPlayer].channel));
-                //}
+                //var color= new Color(200, 255, 255, a);
 
+                //If the user is mousing over the slot.
                 if (
-                    //!Main.player[Main.myPlayer].hbLocked && 
-                    !PlayerInput.IgnoreMouseInterface 
-                                                         && Main.mouseX >= posX 
-                                                         && Main.mouseX <= posX + Main.inventoryBackTexture.Width * Main.hotbarScale[i] 
-                                                         && Main.mouseY >= num3 
-                                                         && Main.mouseY <= num3 + Main.inventoryBackTexture.Height * Main.hotbarScale[i] 
-                                                         && !Main.player[Main.myPlayer].channel)
+                    !Main.player[Main.myPlayer].hbLocked &&
+                    !PlayerInput.IgnoreMouseInterface
+                    && Main.mouseX >= leftOffset
+                    && Main.mouseX <= leftOffset + Main.inventoryBackTexture.Width * Main.hotbarScale[slotIndex]
+                    && Main.mouseY >= topOffset
+                    && Main.mouseY <= topOffset + Main.inventoryBackTexture.Height * Main.hotbarScale[slotIndex]
+                    && !Main.player[Main.myPlayer].channel)
                 {
                     Main.player[Main.myPlayer].mouseInterface = true;
                     Main.player[Main.myPlayer].showItemIcon = false;
-                    if (Main.mouseLeft 
-                        //&& !Main.player[Main.myPlayer].hbLocked 
-                        && !Main.blockMouse)
-                        Main.player[Main.myPlayer].changeItem = i;
-                    Main.hoverItemName = Main.player[Main.myPlayer].inventory[i].AffixName();
-                    if (Main.player[Main.myPlayer].inventory[i].stack > 1)
-                    {
-                        object obj = Main.hoverItemName;
-                        Main.hoverItemName = string.Concat(obj, " (", Main.player[Main.myPlayer].inventory[i].stack, ")");
-                    }
 
-                    Main.rare = Main.player[Main.myPlayer].inventory[i].rare;
+                    //If the user clicked the left mouse button on the item...
+                    if (Main.mouseLeft
+                        && !Main.player[Main.myPlayer].hbLocked
+                        && !Main.blockMouse)
+                        //Change the user's active item slot to this slot.
+                        Main.player[Main.myPlayer].changeItem = slotIndex;
+
+                    //Not sure what affixname does, but this sets the mouse text = to the item in the slot that you are hovering over.
+                    Main.hoverItemName = Main.player[Main.myPlayer].inventory[slotIndex].AffixName();
+
+                    //If they have more than one, show in parens the amount.
+                    if (Main.player[Main.myPlayer].inventory[slotIndex].stack > 1)
+                        Main.hoverItemName = string.Concat(Main.hoverItemName, " (", Main.player[Main.myPlayer].inventory[slotIndex].stack, ")");
+
+                    //If the item is rare, set the rare flag.
+                    Main.rare = Main.player[Main.myPlayer].inventory[slotIndex].rare;
                 }
 
-                float num4 = Main.inventoryScale;
-                Main.inventoryScale = num2;
-                ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 13, i, new Vector2(posX, num3), Color.White);
-                Main.inventoryScale = num4;
-                posX += (int) (Main.inventoryBackTexture.Width * Main.hotbarScale[i]) + 4;
-            }
+                //save InventoryScale
+                float originalInventoryScale = Main.inventoryScale;
 
+                Main.inventoryScale = itemHotbarScale;
+                ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 13, slotIndex, new Vector2(leftOffset, topOffset), Color.White);
+
+                //Restore Inventory Scale.
+                Main.inventoryScale = originalInventoryScale;
+
+                //Move to the left offset for the next button.
+                leftOffset += (int)(Main.inventoryBackTexture.Width * Main.hotbarScale[slotIndex]) + 4;
+            }
+#if NOTUSED
             int selectedItem = Main.player[Main.myPlayer].selectedItem;
+
+            Debug.WriteLine("Selected Item=>"+ selectedItem);
+            //Not sure what this condition is to check for, since the selectedItem is always less that 10.
             if (selectedItem < 10 || selectedItem == 58 && Main.mouseItem.type <= 0)
                 return;
+
+            //Ok, so this draws a box at the end of the statusbar which shows which one is selected.
+            //Since the selected item already is highlighted, I really don't see a purpose for this.
+
+
             float num5 = 1f;
-            int num6 = (int) (20f + 22f * (1f - num5));
+            int num6 = (int)(20f + 22f * (1f - num5));
             int a2 = (int) (75f + 150f * num5);
             var lightColor2 = new Color(255, 255, 255, a2);
             float num7 = Main.inventoryScale;
             Main.inventoryScale = num5;
-            ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 13, selectedItem, new Vector2(posX, num6), Color.White);
+            ItemSlot.Draw(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 13, selectedItem, new Vector2(posX, num6), lightColor2);// Color.White);
             Main.inventoryScale = num7;
+#endif
         }
 
+        /// <summary>
+        /// Draws Roman Numerals
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        /// <param name="level"></param>
+        /// <param name="scale"></param>
         public static void DrawNumerals(SpriteBatch spriteBatch, int level, float scale)
         {
             var origin = Main.playerInventory ? new Vector2(132f, 60f) * scale : new Vector2(190f, 58f) * scale;
             if (level < 10)
             {
-                spriteBatch.Draw(GFX.GothicNumeral[level], new Vector2(origin.X - 16f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
-                    SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.GothicNumeral[level], new Vector2(origin.X - 16f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
             }
             else if (level < 100)
             {
-                spriteBatch.Draw(GFX.GothicNumeral[level / 10], new Vector2(origin.X - 34f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
-                    SpriteEffects.None, 0f);
-                spriteBatch.Draw(GFX.GothicNumeral[level % 10], new Vector2(origin.X + 2f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
-                    SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.GothicNumeral[level / 10], new Vector2(origin.X - 34f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.GothicNumeral[level % 10], new Vector2(origin.X + 2f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
             }
             else if (level < 1000)
             {
-                spriteBatch.Draw(GFX.GothicNumeral[level / 100], new Vector2(origin.X - 52f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
-                    SpriteEffects.None, 0f);
-                spriteBatch.Draw(GFX.GothicNumeral[level % 100 / 10], new Vector2(origin.X - 16f, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
-                    SpriteEffects.None, 0f);
-                spriteBatch.Draw(GFX.GothicNumeral[level % 10], new Vector2(origin.X + 20f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale,
-                    SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.GothicNumeral[level / 100], new Vector2(origin.X - 52f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.GothicNumeral[level % 100 / 10], new Vector2(origin.X - 16f, origin.Y), null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.GothicNumeral[level % 10], new Vector2(origin.X + 20f * scale, origin.Y), null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
             }
         }
+
+
+
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
             if (Main.playerInventory || Main.player[Main.myPlayer].ghost)
                 return;
+
+
 
             character = player.GetModPlayer<PlayerCharacter>();
 
@@ -274,50 +326,55 @@ namespace kRPG2.GUI
 
             spriteBatch.Draw(GFX.StatusBarsBg, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
-            int currentLifeLength = (int) Math.Round(player.statLife / (decimal) player.statLifeMax2 * BarLifeLength);
+            int currentLifeLength = (int)Math.Round(player.statLife / (decimal)player.statLifeMax2 * BarLifeLength);
+
             spriteBatch.Draw(GFX.StatusBars, GuiPosition + barLifeOrigin * Scale,
-                new Rectangle((int) (barLifeOrigin.X + BarLifeLength - currentLifeLength), (int) barLifeOrigin.Y, currentLifeLength, BarLifeThickness),
+                new Rectangle((int)(barLifeOrigin.X + BarLifeLength - currentLifeLength), (int)barLifeOrigin.Y, currentLifeLength, BarLifeThickness),
                 Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-            int currentManaLength = (int) Math.Round(character.Mana / (decimal) player.statManaMax2 * BarManaLength);
+
+            int currentManaLength = (int)Math.Round(character.Mana / (decimal)player.statManaMax2 * BarManaLength);
+
             spriteBatch.Draw(GFX.StatusBars, GuiPosition + barManaOrigin * Scale,
-                new Rectangle((int) (barManaOrigin.X + BarManaLength - currentManaLength), (int) barManaOrigin.Y, currentManaLength, BarManaThickness),
+                new Rectangle((int)(barManaOrigin.X + BarManaLength - currentManaLength), (int)barManaOrigin.Y, currentManaLength, BarManaThickness),
                 Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-            int currentXpLength = (int) Math.Round(BarXpLength * (decimal) character.Experience / character.ExperienceToLevel());
+
+            int currentXpLength = (int)Math.Round(BarXpLength * (decimal)character.Experience / character.ExperienceToLevel());
+
             spriteBatch.Draw(GFX.StatusBars, GuiPosition + barXpOrigin * Scale,
-                new Rectangle((int) barXpOrigin.X, (int) barXpOrigin.Y, currentXpLength, BarXpThickness), Color.White, 0f, Vector2.Zero, Scale,
+                new Rectangle((int)barXpOrigin.X, (int)barXpOrigin.Y, currentXpLength, BarXpThickness), Color.White, 0f, Vector2.Zero, Scale,
                 SpriteEffects.None, 0f);
 
             spriteBatch.Draw(GFX.CharacterFrame, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife + " / " + player.statLifeMax2,
                 GuiPosition + new Vector2(barLifeOrigin.X * Scale + 24f * Scale, (barLifeOrigin.Y + 4f) * Scale), Color.White, Scale);
+
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Mana + " / " + player.statManaMax2,
                 GuiPosition + new Vector2(barManaOrigin.X * Scale + 24f * Scale, barManaOrigin.Y * Scale), Color.White, 0.8f * Scale);
 
             DrawNumerals(spriteBatch, character.Level, Scale);
 
             if (character.UnspentPoints())
-                spriteBatch.Draw(GFX.UnspentPoints, pointsOrigin, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(GFX.UnspentPoints, PointsOrigin, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
-                RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
 
             if (player.lavaTime < player.lavaMax)
             {
-                int currentBubbles = (int) Math.Round((decimal) BubblesLength * player.lavaTime / player.lavaMax);
-                spriteBatch.Draw(GFX.bubbles_lava, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White,
-                    Scale);
+                int currentBubbles = (int)Math.Round((decimal)BubblesLength * player.lavaTime / player.lavaMax);
+                spriteBatch.Draw(GFX.bubbles_lava, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White, Scale);
             }
 
             if (player.breath < player.breathMax)
             {
-                int currentBubbles = (int) Math.Round((decimal) BubblesLength * player.breath / player.breathMax);
+                int currentBubbles = (int)Math.Round((decimal)BubblesLength * player.breath / player.breathMax);
                 spriteBatch.Draw(GFX.bubbles, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White, Scale);
             }
 
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
-                RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
             Main.buffString = "";
             Main.bannerMouseOver = false;
             if (!Main.recBigList)
