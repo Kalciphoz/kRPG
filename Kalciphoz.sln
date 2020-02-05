@@ -6,9 +6,10 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EA28824C-5CCD-4965-AEF7-7E077250B9DF}"
 	ProjectSection(SolutionItems) = preProject
 		kRPG_VersionInfo.json = kRPG_VersionInfo.json
+		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kRPG2", "kRPG2\kRPG2.csproj", "{37CA9EAD-BF31-4DBC-AD0C-39FBD465F367}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kRPG", "kRPG\kRPG.csproj", "{F07BE206-5E77-44E4-B400-221F7DEA8399}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,18 +21,18 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{37CA9EAD-BF31-4DBC-AD0C-39FBD465F367}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{37CA9EAD-BF31-4DBC-AD0C-39FBD465F367}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{37CA9EAD-BF31-4DBC-AD0C-39FBD465F367}.Debug|x64.ActiveCfg = Debug|x64
-		{37CA9EAD-BF31-4DBC-AD0C-39FBD465F367}.Debug|x64.Build.0 = Debug|x64
-		{37CA9EAD-BF31-4DBC-AD0C-39FBD465F367}.Debug|x86.ActiveCfg = Debug|x86
-		{37CA9EAD-BF31-4DBC-AD0C-39FBD465F367}.Debug|x86.Build.0 = Debug|x86
-		{37CA9EAD-BF31-4DBC-AD0C-39FBD465F367}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{37CA9EAD-BF31-4DBC-AD0C-39FBD465F367}.Release|Any CPU.Build.0 = Release|Any CPU
-		{37CA9EAD-BF31-4DBC-AD0C-39FBD465F367}.Release|x64.ActiveCfg = Release|x64
-		{37CA9EAD-BF31-4DBC-AD0C-39FBD465F367}.Release|x64.Build.0 = Release|x64
-		{37CA9EAD-BF31-4DBC-AD0C-39FBD465F367}.Release|x86.ActiveCfg = Release|x86
-		{37CA9EAD-BF31-4DBC-AD0C-39FBD465F367}.Release|x86.Build.0 = Release|x86
+		{F07BE206-5E77-44E4-B400-221F7DEA8399}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F07BE206-5E77-44E4-B400-221F7DEA8399}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F07BE206-5E77-44E4-B400-221F7DEA8399}.Debug|x64.ActiveCfg = Debug|x64
+		{F07BE206-5E77-44E4-B400-221F7DEA8399}.Debug|x64.Build.0 = Debug|x64
+		{F07BE206-5E77-44E4-B400-221F7DEA8399}.Debug|x86.ActiveCfg = Debug|x86
+		{F07BE206-5E77-44E4-B400-221F7DEA8399}.Debug|x86.Build.0 = Debug|x86
+		{F07BE206-5E77-44E4-B400-221F7DEA8399}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F07BE206-5E77-44E4-B400-221F7DEA8399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F07BE206-5E77-44E4-B400-221F7DEA8399}.Release|x64.ActiveCfg = Release|x64
+		{F07BE206-5E77-44E4-B400-221F7DEA8399}.Release|x64.Build.0 = Release|x64
+		{F07BE206-5E77-44E4-B400-221F7DEA8399}.Release|x86.ActiveCfg = Release|x86
+		{F07BE206-5E77-44E4-B400-221F7DEA8399}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
