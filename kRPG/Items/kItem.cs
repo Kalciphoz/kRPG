@@ -679,8 +679,8 @@ namespace kRPG.Items
                         item = new Item();
                         if (Main.netMode == 1)
                         {
-                            NetMessage.SendData(102, -1, -1, null, player.whoAmI, item.buffType, player.Center.X, player.Center.Y);
-                            NetMessage.SendData(21, -1, -1, null, item.whoAmI);
+                            NetMessage.SendData((int)PacketTypes.NebulaLevelUp, -1, -1, null, player.whoAmI, item.buffType, player.Center.X, player.Center.Y);
+                            NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, item.whoAmI);
                         }
                         else
                         {
@@ -703,7 +703,7 @@ namespace kRPG.Items
                                 player.statLife = player.statLifeMax2;
                             item = new Item();
                             if (Main.netMode == 1)
-                                NetMessage.SendData(21, -1, -1, null, item.whoAmI);
+                                NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, item.whoAmI);
 
                             break;
                         }
@@ -719,7 +719,7 @@ namespace kRPG.Items
                                 player.ManaEffect(healAmount);
                             item = new Item();
                             if (Main.netMode == 1)
-                                NetMessage.SendData(21, -1, -1, null, item.whoAmI);
+                                NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, item.whoAmI);
 
                             break;
                         }
@@ -743,7 +743,7 @@ namespace kRPG.Items
 
                             item = player.GetItem(item);
                             if (Main.netMode == 1)
-                                NetMessage.SendData(21, -1, -1, null, item.whoAmI);
+                                NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, item.whoAmI);
 
                             break;
                         }

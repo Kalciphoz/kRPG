@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 namespace kRPG.Enums
 {
 
+
+
+
+
     /// <summary>
     ///     Specified the type of a packet.
     /// </summary>

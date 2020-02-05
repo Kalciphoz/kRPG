@@ -651,8 +651,8 @@ namespace kRPG
                     Vector2 pos = player.RotatedRelativePoint(player.MountedCenter);
                     Vector2 relativeMousePos = Main.MouseWorld - pos;
                     ItemRotation = Math.Atan2(relativeMousePos.Y * player.direction, relativeMousePos.X * player.direction) - player.fullRotation;
-                    NetMessage.SendData(13, -1, -1, null, player.whoAmI);
-                    NetMessage.SendData(41, -1, -1, null, player.whoAmI);
+                    NetMessage.SendData((int)PacketTypes.PlayerUpdate, -1, -1, null, player.whoAmI);
+                    NetMessage.SendData((int)PacketTypes.PlayerAnimation, -1, -1, null, player.whoAmI);
                 }
 
                 float scaleFactor = 6f;

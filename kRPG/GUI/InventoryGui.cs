@@ -646,7 +646,7 @@ namespace kRPG.GUI
                                     Main.mouseLeftRelease = false;
                                     Main.PlaySound(12);
                                     if (Main.netMode == 1)
-                                        NetMessage.SendData(4, -1, -1, null, Main.myPlayer);
+                                        NetMessage.SendData((int)PacketTypes.PlayerInfo, -1, -1, null, Main.myPlayer);
                                 }
 
                                 hiddenVisible = Main.player[Main.myPlayer].hideMisc[num20] ? 2 : 1;
@@ -913,7 +913,7 @@ namespace kRPG.GUI
                                 Main.player[Main.myPlayer].hideVisual[num46] = !Main.player[Main.myPlayer].hideVisual[num46];
                                 Main.PlaySound(12);
                                 if (Main.netMode == 1)
-                                    NetMessage.SendData(4, -1, -1, null, Main.myPlayer);
+                                    NetMessage.SendData((int)PacketTypes.PlayerInfo, -1, -1, null, Main.myPlayer);
                             }
 
                             num51 = Main.player[Main.myPlayer].hideVisual[num46] ? 2 : 1;
