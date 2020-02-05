@@ -1,20 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace kRPG.Enums
 {
-
-
-
-
-
     /// <summary>
     ///     Specified the type of a packet.
     /// </summary>
-
     public enum PacketTypes
     {
 #pragma warning disable 1591
@@ -33,8 +23,7 @@ namespace kRPG.Enums
         PlayerUpdate = 13,
         PlayerActive = 14,
 
-        [Obsolete]
-        SyncPlayers = 15,
+        [Obsolete] SyncPlayers = 15,
         PlayerHp = 16,
         Tile = 17,
         TimeSet = 18,
