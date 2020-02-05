@@ -23,11 +23,11 @@ namespace kRPG.GUI
         {
             guiPosition = () => new Vector2(Main.screenWidth / 2f - 100f * Scale, 192f * Scale);
 
-            glyphs[0] = new GlyphSlot(() => guiPosition() + new Vector2(84f, 36f) * Scale, () => Scale, GLYPHTYPE.STAR);
+            glyphs[0] = new GlyphSlot(() => guiPosition() + new Vector2(84f, 36f) * Scale, () => Scale, GlyphType.Star);
 
-            glyphs[1] = new GlyphSlot(() => guiPosition() + new Vector2(84f, 70f) * Scale, () => Scale, GLYPHTYPE.CROSS);
+            glyphs[1] = new GlyphSlot(() => guiPosition() + new Vector2(84f, 70f) * Scale, () => Scale, GlyphType.Cross);
 
-            glyphs[2] = new GlyphSlot(() => guiPosition() + new Vector2(84f, 106f) * Scale, () => Scale, GLYPHTYPE.MOON);
+            glyphs[2] = new GlyphSlot(() => guiPosition() + new Vector2(84f, 106f) * Scale, () => Scale, GlyphType.Moon);
 
             //not needed, the base class does this.
             // GuiElements.Add(this);
@@ -82,9 +82,9 @@ namespace kRPG.GUI
     {
         private readonly Func<Vector2> position;
         private readonly Func<float> scale;
-        private readonly GLYPHTYPE type;
+        private readonly GlyphType type;
 
-        public GlyphSlot(Func<Vector2> position, Func<float> scale, GLYPHTYPE type)
+        public GlyphSlot(Func<Vector2> position, Func<float> scale, GlyphType type)
         {
             this.type = type;
             this.position = position;
@@ -130,13 +130,13 @@ namespace kRPG.GUI
             bool check = false;
             switch (type)
             {
-                case GLYPHTYPE.STAR:
+                case GlyphType.Star:
                     check = item.modItem is Star;
                     break;
-                case GLYPHTYPE.CROSS:
+                case GlyphType.Cross:
                     check = item.modItem is Cross;
                     break;
-                case GLYPHTYPE.MOON:
+                case GlyphType.Moon:
                     check = item.modItem is Moon;
                     break;
             }

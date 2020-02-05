@@ -168,9 +168,9 @@ namespace kRPG.Projectiles
             if (Source == null)
             {
                 Source = new ProceduralSpell(mod);
-                Source.Glyphs[(byte) GLYPHTYPE.STAR].SetDefaults(starType, true);
-                Source.Glyphs[(byte) GLYPHTYPE.CROSS].SetDefaults(crossType, true);
-                Source.Glyphs[(byte) GLYPHTYPE.MOON].SetDefaults(moonType, true);
+                Source.Glyphs[(byte)GlyphType.Star].SetDefaults(starType, true);
+                Source.Glyphs[(byte)GlyphType.Cross].SetDefaults(crossType, true);
+                Source.Glyphs[(byte)GlyphType.Moon].SetDefaults(moonType, true);
                 Source.ModifierOverride = modifiers;
             }
 
@@ -209,9 +209,9 @@ namespace kRPG.Projectiles
         {
             if (Source == null) return;
             writer.Write(projectile.owner);
-            writer.Write(Source.Glyphs[(byte) GLYPHTYPE.STAR].type);
-            writer.Write(Source.Glyphs[(byte) GLYPHTYPE.CROSS].type);
-            writer.Write(Source.Glyphs[(byte) GLYPHTYPE.MOON].type);
+            writer.Write(Source.Glyphs[(byte)GlyphType.Star].type);
+            writer.Write(Source.Glyphs[(byte)GlyphType.Cross].type);
+            writer.Write(Source.Glyphs[(byte)GlyphType.Moon].type);
             writer.Write(projectile.damage);
             writer.Write(Minion);
             writer.Write(Caster.whoAmI);

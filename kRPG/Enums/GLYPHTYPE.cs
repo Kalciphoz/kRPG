@@ -1,9 +1,9 @@
 ﻿namespace kRPG.Enums
 {
-    public enum GLYPHTYPE : byte
+    public enum GlyphType : byte
     {
-        STAR,
-        CROSS,
-        MOON
+        Star,
+        Cross,
+        Moon
     }
 }

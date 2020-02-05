@@ -12,7 +12,7 @@ namespace kRPG.Items.Weapons
 {
     public class SwordBlade
     {
-        private static Dictionary<SWORDTHEME, List<SwordBlade>> bladeByTheme;
+        private static Dictionary<SwordTheme, List<SwordBlade>> bladeByTheme;
 
         public SwordBlade(string texture, int originX, int originY, string name, int useTime, float knockBack, float dpsModifier = 1f, int critBonus = 0,
             bool autoSwing = false, float scale = 0f, bool spearable = true, bool lighted = false, Action<Rectangle, Player> effect = null)
@@ -52,9 +52,9 @@ namespace kRPG.Items.Weapons
         public float DpsModifier { get; set; }
         public Action<Rectangle, Player> Effect { get; set; }
 
-        public Dictionary<ELEMENT, float> EleDamage { get; set; } = new Dictionary<ELEMENT, float>
+        public Dictionary<Element, float> EleDamage { get; set; } = new Dictionary<Element, float>
         {
-            {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
+            {Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0f}
         };
 
         public static SwordBlade Executioner { get; set; }
@@ -93,7 +93,7 @@ namespace kRPG.Items.Weapons
         public static void Initialize()
         {
             Blades = new Dictionary<int, SwordBlade>();
-            bladeByTheme = new Dictionary<SWORDTHEME, List<SwordBlade>>();
+            bladeByTheme = new Dictionary<SwordTheme, List<SwordBlade>>();
 
             SlimeBlue = new SwordBlade("BlueSlimeBlade", 1, 10, "Slime Sword", 28, 7f, 1.05f, -3, false, 0.05f, false);
             SlimeGreen = new SwordBlade("GreenSlimeBlade", 1, 10, "Slime Sword", 30, 7f, 1.03f, -3, false, 0f, false);
@@ -105,22 +105,22 @@ namespace kRPG.Items.Weapons
             StoneSword = new SwordBlade("StoneSword", 2, 16, "Stone Sword", 34, 6f, 0.97f);
             CrescentSword = new SwordBlade("CrescentSword", 1, 13, "Crescent Sword", 29, 3f, 1.05f, -2);
             FieldSword = new SwordBlade("ClaymoreBlade", 2, 17, "Field Sword", 41, 4f, 0.9f, 2, true);
-            EyeMallet = new SwordBlade("EyeMallet", 2, 18, "Eye Mallet", 42, 6f, 0.9f, -1, false, 0f, false).SetEleDamage(new Dictionary<ELEMENT, float>
+            EyeMallet = new SwordBlade("EyeMallet", 2, 18, "Eye Mallet", 42, 6f, 0.9f, -1, false, 0f, false).SetEleDamage(new Dictionary<Element, float>
             {
-                {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0.25f}
+                {Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0.25f}
             });
-            BroadswordVile = new SwordBlade("VileBroadsword", 1, 15, "Meatfang", 29, 4.5f).SetEleDamage(new Dictionary<ELEMENT, float>
+            BroadswordVile = new SwordBlade("VileBroadsword", 1, 15, "Meatfang", 29, 4.5f).SetEleDamage(new Dictionary<Element, float>
             {
-                {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0.15f}
+                {Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0.15f}
             });
             SlumTwirl = new SwordBlade("SlumTwirl", 2, 18, "Twirlsword", 32, 3f, 1f, -3);
-            BroadswordBone = new SwordBlade("BoneBroadsword", 1, 15, "Bone Sword", 28, 4f, 0.95f, 0, true).SetEleDamage(new Dictionary<ELEMENT, float>
+            BroadswordBone = new SwordBlade("BoneBroadsword", 1, 15, "Bone Sword", 28, 4f, 0.95f, 0, true).SetEleDamage(new Dictionary<Element, float>
             {
-                {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0.2f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0.1f}
+                {Element.Fire, 0f}, {Element.Cold, 0.2f}, {Element.Lightning, 0f}, {Element.Shadow, 0.1f}
             });
-            DemonEye = new SwordBlade("EyeSword", 1, 17, "Eyes on a Stick", 22, 4f).SetEleDamage(new Dictionary<ELEMENT, float>
+            DemonEye = new SwordBlade("EyeSword", 1, 17, "Eyes on a Stick", 22, 4f).SetEleDamage(new Dictionary<Element, float>
             {
-                {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0.2f}
+                {Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0.2f}
             });
             WizardSword = new SwordBlade("WizardSword", 2, 18, "Wizard Sword", 19, 1f, 1.15f, 0, true, 0f, true, true);
             RunicswordViolet = new SwordBlade("VioletRunicSword", 2, 13, "Sword", 28, 5f, 1f, 0, false, 0.1f, true, true);
@@ -132,7 +132,7 @@ namespace kRPG.Items.Weapons
                 int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f,
                     player.velocity.Y * 0.2f, 63);
                 Main.dust[dust].noGravity = true;
-            }).SetEleDamage(new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0.4f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0.1f}});
+            }).SetEleDamage(new Dictionary<Element, float> {{Element.Fire, 0.4f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0.1f}});
             Executioner = new SwordBlade("ExecutionerBlade", 2, 20, "Execution Sword", 33, 7f, 1f, 0, false, 0.2f, false);
             ObsidianBroadsword = new SwordBlade("ObsidianGreatsword", 2, 15, "Obsidian Sword", 26, 5.5f, 1.1f, 1, false, 0.1f);
             ObsidianMaul = new SwordBlade("ObsidianMaul", 2, 18, "Obsidian Maul", 44, 8.5f, 0.95f, 0, false, 0.15f, false);
@@ -145,7 +145,7 @@ namespace kRPG.Items.Weapons
                     int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f,
                         player.velocity.Y * 0.2f, 63, new Color(), 2f);
                     Main.dust[dust].noGravity = true;
-                }).SetEleDamage(new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0.5f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}});
+                }).SetEleDamage(new Dictionary<Element, float> {{Element.Fire, 0.5f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0f}});
             FieryGreatsword = new SwordBlade("FieryGreatsword", 2, 16, "Fiery Greatsword", 36, 6f, 0.96f, 0, false, 0.2f, true, true,
                 delegate(Rectangle rect, Player player)
                 {
@@ -154,24 +154,24 @@ namespace kRPG.Items.Weapons
                     int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f,
                         player.velocity.Y * 0.2f, 63, new Color(), 2f);
                     Main.dust[dust].noGravity = true;
-                }).SetEleDamage(new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0.5f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}});
+                }).SetEleDamage(new Dictionary<Element, float> {{Element.Fire, 0.5f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0f}});
             ClockSword = new SwordBlade("ClockSword", 6, 25, "Chronosword", 19, 4f, 1f, 0, true);
-            GrassBreaker = new SwordBlade("GrassBreaker", 3, 32, "Buster Claymore", 31, 7.5f).SetEleDamage(new Dictionary<ELEMENT, float>
+            GrassBreaker = new SwordBlade("GrassBreaker", 3, 32, "Buster Claymore", 31, 7.5f).SetEleDamage(new Dictionary<Element, float>
             {
-                {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0.2f}, {ELEMENT.SHADOW, 0f}
+                {Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0.2f}, {Element.Shadow, 0f}
             });
-            LazerCutter = new SwordBlade("LazerCutter", 3, 33, "Laser Cutter", 40, 5f).SetEleDamage(new Dictionary<ELEMENT, float>
+            LazerCutter = new SwordBlade("LazerCutter", 3, 33, "Laser Cutter", 40, 5f).SetEleDamage(new Dictionary<Element, float>
             {
-                {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0.5f}, {ELEMENT.SHADOW, 0f}
+                {Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0.5f}, {Element.Shadow, 0f}
             });
             PhaseSword = new SwordBlade("PhaseSword", 2, 21, "Phase Sword", 25, 5f, 1.06f, 0, true, 0f, true, true).SetEleDamage(
-                new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0.4f}, {ELEMENT.SHADOW, 0f}});
+                new Dictionary<Element, float> {{Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0.4f}, {Element.Shadow, 0f}});
             Terra = new SwordBlade("ElementalNeedle", 2, 21, "Elemental Needle", 15, 5f, 1.1f);
 
-            bladeByTheme = new Dictionary<SWORDTHEME, List<SwordBlade>>
+            bladeByTheme = new Dictionary<SwordTheme, List<SwordBlade>>
             {
                 {
-                    SWORDTHEME.GENERIC, new List<SwordBlade>
+                    SwordTheme.Generic, new List<SwordBlade>
                     {
                         BrutishDagger,
                         Chokuto,
@@ -184,7 +184,7 @@ namespace kRPG.Items.Weapons
                     }
                 },
                 {
-                    SWORDTHEME.MONSTROUS, new List<SwordBlade>
+                    SwordTheme.Monstrous, new List<SwordBlade>
                     {
                         Chokuto,
                         BroadswordSilver,
@@ -196,7 +196,7 @@ namespace kRPG.Items.Weapons
                     }
                 },
                 {
-                    SWORDTHEME.RUNIC, new List<SwordBlade>
+                    SwordTheme.Runic, new List<SwordBlade>
                     {
                         WizardSword,
                         RunicswordViolet,
@@ -206,7 +206,7 @@ namespace kRPG.Items.Weapons
                     }
                 },
                 {
-                    SWORDTHEME.HELLISH, new List<SwordBlade>
+                    SwordTheme.Hellish, new List<SwordBlade>
                     {
                         Executioner,
                         ObsidianBroadsword,
@@ -218,7 +218,7 @@ namespace kRPG.Items.Weapons
                     }
                 },
                 {
-                    SWORDTHEME.HARDMODE, new List<SwordBlade>
+                    SwordTheme.Hardmode, new List<SwordBlade>
                     {
                         ClockSword,
                         GrassBreaker,
@@ -231,12 +231,12 @@ namespace kRPG.Items.Weapons
             };
         }
 
-        public static SwordBlade RandomBlade(SWORDTHEME theme)
+        public static SwordBlade RandomBlade(SwordTheme theme)
         {
             return bladeByTheme[theme].Random();
         }
 
-        public SwordBlade SetEleDamage(Dictionary<ELEMENT, float> eleDamage)
+        public SwordBlade SetEleDamage(Dictionary<Element, float> eleDamage)
         {
             EleDamage = eleDamage;
             return this;

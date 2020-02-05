@@ -36,8 +36,8 @@ namespace kRPG.Items.Weapons
         public static Staff Carved { get; set; }
         public int CritBonus { get; set; }
 
-        public Dictionary<ELEMENT, float> EleDamage { get; set; } =
-            new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}};
+        public Dictionary<Element, float> EleDamage { get; set; } =
+            new Dictionary<Element, float> {{Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0f}};
 
         public bool Front { get; set; }
         public static Staff Gilded { get; set; }
@@ -50,7 +50,7 @@ namespace kRPG.Items.Weapons
         public float ShootSpeed { get; set; }
 
         public static Dictionary<int, Staff> Staffs { get; set; }
-        public static Dictionary<STAFFTHEME, List<Staff>> StaffsByTheme { get; set; }
+        public static Dictionary<StaffTheme, List<Staff>> StaffsByTheme { get; set; }
 
         public int Type { get; set; }
         public int UseTime { get; set; }
@@ -67,20 +67,20 @@ namespace kRPG.Items.Weapons
             Hellstone = new Staff("Hellstone", 16, 2, 26, 5f, "Molten ", 9f, true);
             Bone = new Staff("Bone", 17, 3, 36, 6f, "Underworldly ", 11f, true);
 
-            StaffsByTheme = new Dictionary<STAFFTHEME, List<Staff>>
+            StaffsByTheme = new Dictionary<StaffTheme, List<Staff>>
             {
-                {STAFFTHEME.WOODEN, new List<Staff> {Carved, Branch, Ivy}},
-                {STAFFTHEME.DUNGEON, new List<Staff> {Arcane, Gilded}},
-                {STAFFTHEME.UNDERWORLD, new List<Staff> {Hellstone, Bone}}
+                {StaffTheme.Wooden, new List<Staff> {Carved, Branch, Ivy}},
+                {StaffTheme.Dungeon, new List<Staff> {Arcane, Gilded}},
+                {StaffTheme.Underworld, new List<Staff> {Hellstone, Bone}}
             };
         }
 
-        public static Staff RandomStaff(STAFFTHEME theme)
+        public static Staff RandomStaff(StaffTheme theme)
         {
             return StaffsByTheme[theme].Random();
         }
 
-        public Staff SetEleDamage(Dictionary<ELEMENT, float> eleDamage)
+        public Staff SetEleDamage(Dictionary<Element, float> eleDamage)
         {
             EleDamage = eleDamage;
             return this;

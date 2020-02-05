@@ -100,15 +100,15 @@ namespace kRPG
             }
         };
 
-        public static Dictionary<string, RITUAL> ritualByName = new Dictionary<string, RITUAL>
+        public static Dictionary<string, Ritual> ritualByName = new Dictionary<string, Ritual>
         {
-            {"demon_pact", RITUAL.DEMON_PACT},
-            {"warrior_oath", RITUAL.WARRIOR_OATH},
-            {"elan_vital", RITUAL.ELAN_VITAL},
-            {"stone_aspect", RITUAL.STONE_ASPECT},
-            {"eldritch_fury", RITUAL.ELDRITCH_FURY},
-            {"mind_fortress", RITUAL.MIND_FORTRESS},
-            {"blood_drinking", RITUAL.BLOOD_DRINKING}
+            {"demon_pact", Ritual.DemonPact},
+            {"warrior_oath", Ritual.WarriorOath},
+            {"elan_vital", Ritual.ElanVital},
+            {"stone_aspect", Ritual.StoneAspect},
+            {"eldritch_fury", Ritual.EldritchFury},
+            {"mind_fortress", Ritual.MindFortress},
+            {"blood_drinking", Ritual.BloodDrinking}
         };
 
         public kRPG()
@@ -179,16 +179,16 @@ namespace kRPG
                     {
                         NPC npc = Main.npc[(int) tags[DataTag.NpcId]];
                         kNPC kn = npc.GetGlobalNPC<kNPC>();
-                        Dictionary<ELEMENT, bool> haselement = new Dictionary<ELEMENT, bool>
+                        Dictionary<Element, bool> haselement = new Dictionary<Element, bool>
                         {
-                            {ELEMENT.FIRE, (bool) tags[DataTag.Flag]},
-                            {ELEMENT.COLD, (bool) tags[DataTag.Flag2]},
-                            {ELEMENT.LIGHTNING, (bool) tags[DataTag.Flag3]},
-                            {ELEMENT.SHADOW, (bool) tags[DataTag.Flag4]}
+                            {Element.Fire, (bool) tags[DataTag.Flag]},
+                            {Element.Cold, (bool) tags[DataTag.Flag2]},
+                            {Element.Lightning, (bool) tags[DataTag.Flag3]},
+                            {Element.Shadow, (bool) tags[DataTag.Flag4]}
                         };
-                        int count = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => haselement[element]);
+                        int count = Enum.GetValues(typeof(Element)).Cast<Element>().Count(element => haselement[element]);
                         int portionsize = (int) Math.Round(npc.damage * kNPC.EleDmgModifier / 2.0 / count);
-                        foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                        foreach (Element element in Enum.GetValues(typeof(Element)))
                             if (haselement[element])
                                 kn.ElementalDamage[element] = Math.Max(1, portionsize);
                         kn.DealsEleDmg = count > 0;
@@ -217,10 +217,10 @@ namespace kRPG
                     {
                         PlayerCharacter character = Main.player[(int) tags[DataTag.PlayerId]].GetModPlayer<PlayerCharacter>();
                         character.Level = (int) tags[DataTag.Amount];
-                        character.BaseStats[STAT.RESILIENCE] = (int) tags[DataTag.Resilience];
-                        character.BaseStats[STAT.QUICKNESS] = (int) tags[DataTag.Quickness];
-                        character.BaseStats[STAT.POTENCY] = (int) tags[DataTag.Potency];
-                        character.BaseStats[STAT.WITS] = (int) tags[DataTag.Wits];
+                        character.BaseStats[PlayerStats.Resilience] = (int) tags[DataTag.Resilience];
+                        character.BaseStats[PlayerStats.Quickness] = (int) tags[DataTag.Quickness];
+                        character.BaseStats[PlayerStats.Potency] = (int) tags[DataTag.Potency];
+                        character.BaseStats[PlayerStats.Wits] = (int) tags[DataTag.Wits];
                     }
 
                     break;
@@ -252,9 +252,9 @@ namespace kRPG
                             ps.Source.Glyphs[i].SetDefaults(0, true);
                         }
 
-                        ps.Source.Glyphs[(byte) GLYPHTYPE.STAR].SetDefaults((int) tags[DataTag.GlyphStar], true);
-                        ps.Source.Glyphs[(byte) GLYPHTYPE.CROSS].SetDefaults((int) tags[DataTag.GlyphCross], true);
-                        ps.Source.Glyphs[(byte) GLYPHTYPE.MOON].SetDefaults((int) tags[DataTag.GlyphMoon], true);
+                        ps.Source.Glyphs[(byte)GlyphType.Star].SetDefaults((int) tags[DataTag.GlyphStar], true);
+                        ps.Source.Glyphs[(byte)GlyphType.Cross].SetDefaults((int) tags[DataTag.GlyphCross], true);
+                        ps.Source.Glyphs[(byte)GlyphType.Moon].SetDefaults((int) tags[DataTag.GlyphMoon], true);
                         projectile.damage = (int) tags[DataTag.Damage];
                         projectile.minion = (bool) tags[DataTag.Flag];
                         try
@@ -306,9 +306,9 @@ namespace kRPG
                             packet.Write((byte) Message.CreateProjectile);
                             packet.Write(projectile.owner);
                             packet.Write(projectile.whoAmI);
-                            packet.Write(ps.Source.Glyphs[(byte) GLYPHTYPE.STAR].type);
-                            packet.Write(ps.Source.Glyphs[(byte) GLYPHTYPE.CROSS].type);
-                            packet.Write(ps.Source.Glyphs[(byte) GLYPHTYPE.MOON].type);
+                            packet.Write(ps.Source.Glyphs[(byte)GlyphType.Star].type);
+                            packet.Write(ps.Source.Glyphs[(byte)GlyphType.Cross].type);
+                            packet.Write(ps.Source.Glyphs[(byte)GlyphType.Moon].type);
                             packet.Write(projectile.damage);
                             packet.Write(projectile.minion);
                             packet.Write(ps.Caster.whoAmI);

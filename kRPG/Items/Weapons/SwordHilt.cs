@@ -58,7 +58,7 @@ namespace kRPG.Items.Weapons
 
         public static Dictionary<int, SwordHilt> Hilts { get; set; } = new Dictionary<int, SwordHilt>();
 
-        private static Dictionary<SWORDTHEME, List<SwordHilt>> HiltsByTheme { get; set; }
+        private static Dictionary<SwordTheme, List<SwordHilt>> HiltsByTheme { get; set; }
         public static SwordHilt IronBasket { get; set; }
         public float KnockBack { get; set; }
         public static SwordHilt Lead { get; set; }
@@ -94,7 +94,7 @@ namespace kRPG.Items.Weapons
         public static void Initialize()
         {
             Hilts = new Dictionary<int, SwordHilt>();
-            HiltsByTheme = new Dictionary<SWORDTHEME, List<SwordHilt>>();
+            HiltsByTheme = new Dictionary<SwordTheme, List<SwordHilt>>();
 
             Ceremonial = new SwordHilt("CeremonialHilt", 6, 2, "Ceremonial ", 1f, 1.1f);
             CopperCrossguard = new SwordHilt("CopperCrossHilt", 6, 2, "Crude ", 1.05f, 0.95f, 0f, 0, false, false, 0, 0.1f);
@@ -128,10 +128,10 @@ namespace kRPG.Items.Weapons
             ChlorophyteMount = new SwordHilt("ChlorophyteMount", 19, 4, "Mounted ", 0.9f, 0.9f, 1f, 0, true).DefineSpear("ChlorophyteMount", 35, 4);
             OminousHilt = new SwordHilt("OminousHilt", 8, 6, "Ominous ", 1f, 0.9f, 2f, 2, false, true, 2, 0.08f);
 
-            HiltsByTheme = new Dictionary<SWORDTHEME, List<SwordHilt>>
+            HiltsByTheme = new Dictionary<SwordTheme, List<SwordHilt>>
             {
                 {
-                    SWORDTHEME.GENERIC, new List<SwordHilt>
+                    SwordTheme.Generic, new List<SwordHilt>
                     {
                         Ceremonial,
                         CopperCrossguard,
@@ -146,7 +146,7 @@ namespace kRPG.Items.Weapons
                     }
                 },
                 {
-                    SWORDTHEME.MONSTROUS, new List<SwordHilt>
+                    SwordTheme.Monstrous, new List<SwordHilt>
                     {
                         Eyes,
                         Coe,
@@ -156,7 +156,7 @@ namespace kRPG.Items.Weapons
                     }
                 },
                 {
-                    SWORDTHEME.RUNIC, new List<SwordHilt>
+                    SwordTheme.Runic, new List<SwordHilt>
                     {
                         PurpleCrossguard,
                         VioletCrossguard,
@@ -166,7 +166,7 @@ namespace kRPG.Items.Weapons
                     }
                 },
                 {
-                    SWORDTHEME.HELLISH, new List<SwordHilt>
+                    SwordTheme.Hellish, new List<SwordHilt>
                     {
                         HellstoneBasket,
                         HellstoneCrossguard,
@@ -177,7 +177,7 @@ namespace kRPG.Items.Weapons
                     }
                 },
                 {
-                    SWORDTHEME.HARDMODE, new List<SwordHilt>
+                    SwordTheme.Hardmode, new List<SwordHilt>
                     {
                         Clock,
                         Carbon,
@@ -189,7 +189,7 @@ namespace kRPG.Items.Weapons
             };
         }
 
-        public static SwordHilt RandomHilt(SWORDTHEME theme)
+        public static SwordHilt RandomHilt(SwordTheme theme)
         {
             return HiltsByTheme[theme].Random();
         }

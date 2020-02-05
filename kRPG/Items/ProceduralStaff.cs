@@ -21,9 +21,9 @@ namespace kRPG.Items
             tooltips.Add(new TooltipLine(mod, "enemyDef", "average enemy defense " + dps.ToString()));
         }*/
 
-        public Dictionary<ELEMENT, float> EleDamage { get; set; } = new Dictionary<ELEMENT, float>
+        public Dictionary<Element, float> EleDamage { get; set; } = new Dictionary<Element, float>
         {
-            {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
+            {Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0f}
         };
 
         public StaffGem Gem { get; set; }
@@ -38,8 +38,8 @@ namespace kRPG.Items
             copy.Ornament = Ornament;
             copy.Dps = Dps;
             copy.EnemyDef = EnemyDef;
-            copy.EleDamage = new Dictionary<ELEMENT, float>();
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+            copy.EleDamage = new Dictionary<Element, float>();
+            foreach (Element element in Enum.GetValues(typeof(Element)))
                 copy.EleDamage[element] = EleDamage[element];
             copy.item.SetNameOverride(tItem.Name);
             return copy;
@@ -115,7 +115,7 @@ namespace kRPG.Items
             return staff;
         }
 
-        public static Item GenerateStaff(Mod mod, Vector2 position, STAFFTHEME theme, float dps, int enemyDef)
+        public static Item GenerateStaff(Mod mod, Vector2 position, StaffTheme theme, float dps, int enemyDef)
         {
             ProceduralStaff staff;
             staff = DropStaff(mod, position, Staff.RandomStaff(theme), StaffGem.RandomGem(theme),
@@ -228,8 +228,8 @@ namespace kRPG.Items
                 item.value = (int) (Dps * 315);
                 item.crit = Staff.CritBonus + Gem.CritBonus + Ornament.CritBonus;
                 item.mana = (int) Math.Round(item.damage * Ornament.Mana * Staff.Mana * Gem.Mana / 5);
-                EleDamage = new Dictionary<ELEMENT, float>();
-                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                EleDamage = new Dictionary<Element, float>();
+                foreach (Element element in Enum.GetValues(typeof(Element)))
                     EleDamage[element] = Staff.EleDamage[element] + Gem.eleDamage[element] + Ornament.EleDamage[element];
             }
             catch (SystemException e)

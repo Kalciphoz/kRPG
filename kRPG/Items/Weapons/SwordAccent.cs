@@ -38,9 +38,9 @@ namespace kRPG.Items.Weapons
         public float DpsModifier { get; set; }
         public Action<Rectangle, Player> Effect { get; set; }
 
-        public Dictionary<ELEMENT, float> EleDamage { get; set; } = new Dictionary<ELEMENT, float>
+        public Dictionary<Element, float> EleDamage { get; set; } = new Dictionary<Element, float>
         {
-            {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
+            {Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0f}
         };
 
         public static SwordAccent Flame { get; set; }
@@ -92,8 +92,8 @@ namespace kRPG.Items.Weapons
                     Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
                     Projectile proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(),
-                            Math.Max(1, (int) Math.Round(sword.EleDamage[ELEMENT.FIRE] * damage * 2)), 0f, player.whoAmI)];
-                }, 1.05f).SetEleDamage(new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0.2f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}})
+                            Math.Max(1, (int) Math.Round(sword.EleDamage[Element.Fire] * damage * 2)), 0f, player.whoAmI)];
+                }, 1.05f).SetEleDamage(new Dictionary<Element, float> {{Element.Fire, 0.2f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0f}})
                 .SetEffect(delegate(Rectangle rect, Player player)
                 {
                     if (Main.rand.Next(2) != 0)
@@ -109,9 +109,9 @@ namespace kRPG.Items.Weapons
                         Projectile.NewProjectile(npc.Center - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(),
                             Math.Max(1, damage / 6),
                             0f, player.whoAmI)];
-                }, 1.1f, 4).SetEleDamage(new Dictionary<ELEMENT, float>
+                }, 1.1f, 4).SetEleDamage(new Dictionary<Element, float>
                     {
-                        {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0.2f}, {ELEMENT.SHADOW, 0f}
+                        {Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0.2f}, {Element.Shadow, 0f}
                     })
                 .SetEffect(delegate(Rectangle rect, Player player)
                 {
@@ -132,7 +132,7 @@ namespace kRPG.Items.Weapons
                 }
 
                 Lighting.AddLight(rect.Center(), 0f, 0.4f, 1f);
-            }).SetEleDamage(new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0.3f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}});
+            }).SetEleDamage(new Dictionary<Element, float> {{Element.Fire, 0f}, {Element.Cold, 0.3f}, {Element.Lightning, 0f}, {Element.Shadow, 0f}});
             GemPurple = new SwordAccent("GemPurple", " of Starlight", 2, 1, 3, null, 1.1f).SetEffect(delegate(Rectangle rect, Player player)
             {
                 if (Main.rand.Next(2) != 0)
@@ -154,7 +154,7 @@ namespace kRPG.Items.Weapons
             return this;
         }
 
-        public SwordAccent SetEleDamage(Dictionary<ELEMENT, float> eleDamage)
+        public SwordAccent SetEleDamage(Dictionary<Element, float> eleDamage)
         {
             EleDamage = eleDamage;
             return this;

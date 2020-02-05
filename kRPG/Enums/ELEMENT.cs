@@ -1,10 +1,10 @@
 ﻿namespace kRPG.Enums
 {
-    public enum ELEMENT : byte
+    public enum Element : byte
     {
-        FIRE,
-        COLD,
-        LIGHTNING,
-        SHADOW
+        Fire,
+        Cold,
+        Lightning,
+        Shadow
     }
 }

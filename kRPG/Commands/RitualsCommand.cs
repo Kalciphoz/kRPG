@@ -17,7 +17,7 @@ namespace kRPG.Commands
         {
             try
             {
-                RITUAL ritual = kRPG.ritualByName[args[0]];
+                Ritual ritual = kRPG.ritualByName[args[0]];
                 PlayerCharacter character = caller.Player.GetModPlayer<PlayerCharacter>();
                 character.Rituals[ritual] = !character.Rituals[ritual];
             }

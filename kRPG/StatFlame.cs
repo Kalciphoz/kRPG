@@ -14,7 +14,7 @@ namespace kRPG
     {
         private readonly int animationTime = 5;
 
-        public StatFlame(Mod mod, LevelGui levelGui, STAT id, Func<Vector2> position, Texture2D texture)
+        public StatFlame(Mod mod, LevelGui levelGui, PlayerStats id, Func<Vector2> position, Texture2D texture)
         {
             Mod = mod;
             LevelGui = levelGui;
@@ -32,7 +32,7 @@ namespace kRPG
 
         private int Counter { get; set; }
         private int FrameNumber { get; set; }
-        private STAT Id { get; }
+        private PlayerStats Id { get; }
         private LevelGui LevelGui { get; }
         private Mod Mod { get; }
         private Func<Vector2> Position { get; }
@@ -49,7 +49,7 @@ namespace kRPG
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
             if (Counter > 8 * animationTime - 1) Counter = 0;
             FrameNumber = (int) Math.Floor(Counter / (double) animationTime);
-            spriteBatch.Draw(character.Rituals[RITUAL.DEMON_PACT] && Id == STAT.RESILIENCE ? GFX.FlamesConverted : Texture, Position(),
+            spriteBatch.Draw(character.Rituals[Ritual.DemonPact] && Id == PlayerStats.Resilience ? GFX.FlamesConverted : Texture, Position(),
                 new Rectangle(0, FrameNumber * 68, 56, 68), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
             string text = (Allocated + character.BaseStats[Id]).ToString();
             float width = Main.fontItemStack.MeasureString(text).X;
@@ -66,22 +66,22 @@ namespace kRPG
                 return;
             switch (Id)
             {
-                case STAT.RESILIENCE:
+                case PlayerStats.Resilience:
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Resilience", new Vector2(Main.screenWidth / 2f - 96f, Main.screenHeight / 2f + 128f),
                         Color.Red);
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText,
-                        character.Rituals[RITUAL.DEMON_PACT]
+                        character.Rituals[Ritual.DemonPact]
                             ? "Converted into Potency by Demon Pact"
                             : "Increases your defence, life regeneration, and maximum life",
                         new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 152f), Color.White);
                     break;
-                case STAT.QUICKNESS:
+                case PlayerStats.Quickness:
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Quickness", new Vector2(Main.screenWidth / 2f - 96f, Main.screenHeight / 2f + 128f),
                         Color.Lime);
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Increases your speed, evasion, and crit chance",
                         new Vector2(Main.screenWidth / 2f - 128f, Main.screenHeight / 2f + 152f), Color.White);
                     break;
-                case STAT.POTENCY:
+                case PlayerStats.Potency:
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Potency", new Vector2(Main.screenWidth / 2f - 96f, Main.screenHeight / 2f + 128f),
                         Color.Blue);
                     spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Increases your damage, leech, and crit multiplier",

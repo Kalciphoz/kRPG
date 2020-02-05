@@ -26,9 +26,9 @@ namespace kRPG.Items
         //    tooltips.Add(new TooltipLine(mod, "enemyDef", "average enemy defense " + dps.ToString()));
         //}
 
-        public Dictionary<ELEMENT, float> EleDamage { get; set; } = new Dictionary<ELEMENT, float>
+        public Dictionary<Element, float> EleDamage { get; set; } = new Dictionary<Element, float>
         {
-            {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
+            {Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0f}
         };
 
         public SwordHilt Hilt { get; set; }
@@ -44,8 +44,8 @@ namespace kRPG.Items
             copy.Dps = Dps;
             copy.EnemyDef = EnemyDef;
             copy.Spear = Spear;
-            copy.EleDamage = new Dictionary<ELEMENT, float>();
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+            copy.EleDamage = new Dictionary<Element, float>();
+            foreach (Element element in Enum.GetValues(typeof(Element)))
                 copy.EleDamage[element] = EleDamage[element];
             copy.item.SetNameOverride(tItem.Name);
             return copy;
@@ -99,7 +99,7 @@ namespace kRPG.Items
             }
         }
 
-        public static Item GenerateSword(Mod mod, Vector2 position, SWORDTHEME theme, float dps, int enemyDef)
+        public static Item GenerateSword(Mod mod, Vector2 position, SwordTheme theme, float dps, int enemyDef)
         {
             ProceduralSword sword;
             sword = NewSword(mod, position, SwordHilt.RandomHilt(theme), SwordBlade.RandomBlade(theme),
@@ -258,8 +258,8 @@ namespace kRPG.Items
                 item.crit = Blade.CritBonus + Hilt.CritBonus + Accent.CritBonus;
                 item.scale = 1f + Blade.Scale + Hilt.Scale;
                 item.mana = Hilt.Mana + Accent.Mana;
-                EleDamage = new Dictionary<ELEMENT, float>();
-                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                EleDamage = new Dictionary<Element, float>();
+                foreach (Element element in Enum.GetValues(typeof(Element)))
                     EleDamage[element] = Blade.EleDamage[element] + Accent.EleDamage[element];
             }
             catch (SystemException e)

@@ -28,7 +28,7 @@ namespace kRPG
         {
             get
             {
-                Glyph glyph = (Glyph) Glyphs[(byte) GLYPHTYPE.MOON].modItem;
+                Glyph glyph = (Glyph) Glyphs[(byte)GlyphType.Moon].modItem;
                 return glyph.GetCastAction();
             }
         }
@@ -41,7 +41,7 @@ namespace kRPG
 
         public Keys Key { get; set; } = Keys.A;
 
-        public bool Minion => !(Glyphs[(byte) GLYPHTYPE.STAR].modItem is Star_Blue);
+        public bool Minion => !(Glyphs[(byte)GlyphType.Star].modItem is Star_Blue);
         private Mod Mod { get; }
 
         public List<GlyphModifier> ModifierOverride { get; set; } = null;
@@ -63,7 +63,7 @@ namespace kRPG
             }
         }
 
-        public int ProjCount => ProjCountOverride == -1 ? ((Moon) Glyphs[(byte) GLYPHTYPE.MOON].modItem).ProjCount : ProjCountOverride;
+        public int ProjCount => ProjCountOverride == -1 ? ((Moon) Glyphs[(byte)GlyphType.Moon].modItem).ProjCount : ProjCountOverride;
         public int ProjCountOverride { get; set; } = -1;
         public int Remaining { get; set; }
 
@@ -71,7 +71,7 @@ namespace kRPG
         {
             get
             {
-                Glyph glyph = (Glyph) Glyphs[(byte) GLYPHTYPE.STAR].modItem;
+                Glyph glyph = (Glyph) Glyphs[(byte)GlyphType.Star].modItem;
                 return glyph.GetUseAbility();
             }
         }
@@ -142,9 +142,9 @@ namespace kRPG
             packet.Write((byte) Message.CreateProjectile);
             packet.Write(player.whoAmI);
             packet.Write(ps.projectile.whoAmI);
-            packet.Write(Glyphs[(byte) GLYPHTYPE.STAR].type);
-            packet.Write(Glyphs[(byte) GLYPHTYPE.CROSS].type);
-            packet.Write(Glyphs[(byte) GLYPHTYPE.MOON].type);
+            packet.Write(Glyphs[(byte)GlyphType.Star].type);
+            packet.Write(Glyphs[(byte)GlyphType.Cross].type);
+            packet.Write(Glyphs[(byte)GlyphType.Moon].type);
             packet.Write(ps.projectile.damage);
             packet.Write(Minion);
             packet.Write(caster.whoAmI);

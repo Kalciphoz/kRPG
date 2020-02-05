@@ -5,8 +5,8 @@ namespace kRPG.Items.Glyphs
 {
     public class Cross : Glyph
     {
-        public virtual Dictionary<ELEMENT, float> EleDmg { get; set; } =
-            new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+        public virtual Dictionary<Element, float> EleDmg { get; set; } =
+            new Dictionary<Element, float> {{Element.Fire, 0}, {Element.Cold, 0}, {Element.Lightning, 0}, {Element.Shadow, 0}};
 
         public override void SetStaticDefaults()
         {

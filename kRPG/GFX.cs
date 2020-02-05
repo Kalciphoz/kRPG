@@ -93,9 +93,9 @@ namespace kRPG
         public static Texture2D ButtonUpgrade { get; set; }
         public static Texture2D CharacterFrame { get; set; }
         public static Texture2D DeerSkull { get; set; }
-        public static Dictionary<STAT, Texture2D> DeerSkullEyes { get; set; } = new Dictionary<STAT, Texture2D>();
+        public static Dictionary<PlayerStats, Texture2D> DeerSkullEyes { get; set; } = new Dictionary<PlayerStats, Texture2D>();
         public static Texture2D FavouritedSlot { get; set; }
-        public static Dictionary<STAT, Texture2D> Flames { get; set; } = new Dictionary<STAT, Texture2D>();
+        public static Dictionary<PlayerStats, Texture2D> Flames { get; set; } = new Dictionary<PlayerStats, Texture2D>();
         public static Texture2D FlamesConverted { get; set; }
         public static Dictionary<Keys, Texture2D> GothicLetter { get; set; } = new Dictionary<Keys, Texture2D>();
         public static Texture2D[] GothicNumeral { get; set; } = new Texture2D[10];
@@ -173,13 +173,13 @@ namespace kRPG
             GuardianCrown = loader.GetTexture(GUARDIAN_CROWN);
 
             DeerSkull = loader.GetTexture(DEERSKULL);
-            Flames[STAT.RESILIENCE] = loader.GetTexture(FLAMES_RED);
-            Flames[STAT.QUICKNESS] = loader.GetTexture(FLAMES_GREEN);
-            Flames[STAT.POTENCY] = loader.GetTexture(FLAMES_BLUE);
+            Flames[PlayerStats.Resilience] = loader.GetTexture(FLAMES_RED);
+            Flames[PlayerStats.Quickness] = loader.GetTexture(FLAMES_GREEN);
+            Flames[PlayerStats.Potency] = loader.GetTexture(FLAMES_BLUE);
             FlamesConverted = loader.GetTexture(FLAMES_CONVERTED);
-            DeerSkullEyes[STAT.RESILIENCE] = loader.GetTexture(EYES_RED);
-            DeerSkullEyes[STAT.QUICKNESS] = loader.GetTexture(EYES_GREEN);
-            DeerSkullEyes[STAT.POTENCY] = loader.GetTexture(EYES_BLUE);
+            DeerSkullEyes[PlayerStats.Resilience] = loader.GetTexture(EYES_RED);
+            DeerSkullEyes[PlayerStats.Quickness] = loader.GetTexture(EYES_GREEN);
+            DeerSkullEyes[PlayerStats.Potency] = loader.GetTexture(EYES_BLUE);
             anvil = loader.GetTexture(ANVIL);
             CharacterFrame = loader.GetTexture(CHARACTERFRAME);
             StatusBars = loader.GetTexture(STATUSBARS);
@@ -239,13 +239,13 @@ namespace kRPG
             ButtonCrownPressed = null;
 
             DeerSkull = null;
-            Flames[STAT.RESILIENCE] = null;
-            Flames[STAT.QUICKNESS] = null;
-            Flames[STAT.POTENCY] = null;
+            Flames[PlayerStats.Resilience] = null;
+            Flames[PlayerStats.Quickness] = null;
+            Flames[PlayerStats.Potency] = null;
             FlamesConverted = null;
-            DeerSkullEyes[STAT.RESILIENCE] = null;
-            DeerSkullEyes[STAT.QUICKNESS] = null;
-            DeerSkullEyes[STAT.POTENCY] = null;
+            DeerSkullEyes[PlayerStats.Resilience] = null;
+            DeerSkullEyes[PlayerStats.Quickness] = null;
+            DeerSkullEyes[PlayerStats.Potency] = null;
             anvil = null;
             CharacterFrame = null;
             StatusBars = null;

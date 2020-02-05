@@ -39,9 +39,9 @@ namespace kRPG.Items.Weapons
         public static StaffOrnament Demonic { get; set; }
         public float DpsModifier { get; set; }
 
-        public Dictionary<ELEMENT, float> EleDamage { get; set; } = new Dictionary<ELEMENT, float>
+        public Dictionary<Element, float> EleDamage { get; set; } = new Dictionary<Element, float>
         {
-            {ELEMENT.FIRE, 0f}, {ELEMENT.COLD, 0f}, {ELEMENT.LIGHTNING, 0f}, {ELEMENT.SHADOW, 0f}
+            {Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0f}
         };
 
         public static StaffOrnament Explosive { get; set; }
@@ -55,7 +55,7 @@ namespace kRPG.Items.Weapons
         public Action<Player, NPC, Item, int, bool> OnHit { get; set; }
 
         public static Dictionary<int, StaffOrnament> Ornament { get; set; }
-        public static Dictionary<STAFFTHEME, List<StaffOrnament>> OrnamentByTheme { get; set; }
+        public static Dictionary<StaffTheme, List<StaffOrnament>> OrnamentByTheme { get; set; }
         public int Repetitions { get; set; }
         public float SpeedModifier { get; set; }
         public string Suffix { get; set; }
@@ -105,15 +105,15 @@ namespace kRPG.Items.Weapons
                             player.whoAmI)];
                 });
 
-            OrnamentByTheme = new Dictionary<STAFFTHEME, List<StaffOrnament>>
+            OrnamentByTheme = new Dictionary<StaffTheme, List<StaffOrnament>>
             {
-                {STAFFTHEME.WOODEN, new List<StaffOrnament> {Bow, Twig, Loop}},
-                {STAFFTHEME.DUNGEON, new List<StaffOrnament> {Arcane, Cage}},
-                {STAFFTHEME.UNDERWORLD, new List<StaffOrnament> {Demonic, Explosive}}
+                {StaffTheme.Wooden, new List<StaffOrnament> {Bow, Twig, Loop}},
+                {StaffTheme.Dungeon, new List<StaffOrnament> {Arcane, Cage}},
+                {StaffTheme.Underworld, new List<StaffOrnament> {Demonic, Explosive}}
             };
         }
 
-        public static StaffOrnament RandomOrnament(STAFFTHEME theme)
+        public static StaffOrnament RandomOrnament(StaffTheme theme)
         {
             return OrnamentByTheme[theme].Random();
         }
@@ -124,7 +124,7 @@ namespace kRPG.Items.Weapons
             return this;
         }
 
-        public StaffOrnament SetEleDamage(Dictionary<ELEMENT, float> eleDamage)
+        public StaffOrnament SetEleDamage(Dictionary<Element, float> eleDamage)
         {
             EleDamage = eleDamage;
             return this;

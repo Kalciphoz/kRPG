@@ -1,11 +1,11 @@
 ﻿namespace kRPG.Enums
 {
-    public enum SWORDTHEME : byte
+    public enum SwordTheme : byte
     {
-        GENERIC,
-        MONSTROUS,
-        RUNIC,
-        HELLISH,
-        HARDMODE
+        Generic,
+        Monstrous,
+        Runic,
+        Hellish,
+        Hardmode
     }
 }

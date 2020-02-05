@@ -206,17 +206,17 @@ namespace kRPG.GUI
                 panelOrigin + new Vector2(24f, 24f) * Scale, Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Resilience:", panelOrigin + new Vector2(24f, 42f) * Scale, new Color(223, 0, 0),
                 0.8f * Scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.RESILIENCE).ToString(), panelOrigin + new Vector2(128f, 42f) * Scale,
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(PlayerStats.Resilience).ToString(), panelOrigin + new Vector2(128f, 42f) * Scale,
                 Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Quickness:", panelOrigin + new Vector2(24f, 60f) * Scale, new Color(0, 191, 31),
                 0.8f * Scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.QUICKNESS).ToString(), panelOrigin + new Vector2(128f, 60f) * Scale,
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(PlayerStats.Quickness).ToString(), panelOrigin + new Vector2(128f, 60f) * Scale,
                 Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Potency:", panelOrigin + new Vector2(24f, 78f) * Scale, new Color(27, 65, 255), 0.8f * Scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.POTENCY).ToString(), panelOrigin + new Vector2(128f, 78f) * Scale,
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(PlayerStats.Potency).ToString(), panelOrigin + new Vector2(128f, 78f) * Scale,
                 Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Wits:", panelOrigin + new Vector2(24f, 96f) * Scale, new Color(239, 223, 31), 0.8f * Scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(STAT.WITS).ToString(), panelOrigin + new Vector2(128f, 96f) * Scale,
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.TotalStats(PlayerStats.Wits).ToString(), panelOrigin + new Vector2(128f, 96f) * Scale,
                 Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Damage:", panelOrigin + new Vector2(24f, 114f) * Scale, Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, Math.Round(character.DamageMultiplierPercent * 100f) + "%",
@@ -236,19 +236,19 @@ namespace kRPG.GUI
 
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Fire resistance:", panelOrigin + new Vector2(184f, 42f) * Scale, new Color(255, 63, 0),
                 0.8f * Scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Resistance[ELEMENT.FIRE].ToString(), panelOrigin + new Vector2(288f, 42f) * Scale,
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Resistance[Element.Fire].ToString(), panelOrigin + new Vector2(288f, 42f) * Scale,
                 Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Cold resistance:", panelOrigin + new Vector2(184f, 60f) * Scale, new Color(63, 127, 255),
                 0.8f * Scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Resistance[ELEMENT.COLD].ToString(), panelOrigin + new Vector2(288f, 60f) * Scale,
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Resistance[Element.Cold].ToString(), panelOrigin + new Vector2(288f, 60f) * Scale,
                 Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Light. resist.:", panelOrigin + new Vector2(184f, 78f) * Scale, new Color(255, 239, 0),
                 0.8f * Scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Resistance[ELEMENT.LIGHTNING].ToString(),
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Resistance[Element.Lightning].ToString(),
                 panelOrigin + new Vector2(288f, 78f) * Scale, Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Shadow resist.:", panelOrigin + new Vector2(184f, 96f) * Scale, new Color(95, 0, 191),
                 0.8f * Scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Resistance[ELEMENT.SHADOW].ToString(), panelOrigin + new Vector2(288f, 96f) * Scale,
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Resistance[Element.Shadow].ToString(), panelOrigin + new Vector2(288f, 96f) * Scale,
                 Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Evasion:", panelOrigin + new Vector2(184f, 114f) * Scale, Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Evasion.ToString(), panelOrigin + new Vector2(288f, 114f) * Scale, Color.White,
@@ -258,7 +258,7 @@ namespace kRPG.GUI
                 panelOrigin + new Vector2(288f, 132f) * Scale, Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Crit avoidance:", panelOrigin + new Vector2(184f, 150f) * Scale, Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText,
-                Math.Round(90f - 90 * 38 / (38f + character.Evasion + character.TotalStats(STAT.WITS) * 2)) + "%",
+                Math.Round(90f - 90 * 38 / (38f + character.Evasion + character.TotalStats(PlayerStats.Wits) * 2)) + "%",
                 panelOrigin + new Vector2(288f, 150f) * Scale, Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Accuracy:", panelOrigin + new Vector2(184f, 168f) * Scale, Color.White, 0.8f * Scale);
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Accuracy.ToString(), panelOrigin + new Vector2(288f, 168f) * Scale, Color.White,

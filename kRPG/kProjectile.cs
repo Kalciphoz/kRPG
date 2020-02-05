@@ -13,7 +13,7 @@ namespace kRPG
 {
     public class kProjectile : GlobalProjectile
     {
-        public Dictionary<ELEMENT, int> ElementalDamage { get; set; }
+        public Dictionary<Element, int> ElementalDamage { get; set; }
 
         public override bool InstancePerEntity => true;
         private Item SelectedItem { get; set; }
@@ -22,7 +22,7 @@ namespace kRPG
         {
             if (ElementalDamage != null || Main.netMode == 1)
                 return;
-            ElementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+            ElementalDamage = new Dictionary<Element, int> {{Element.Fire, 0}, {Element.Cold, 0}, {Element.Lightning, 0}, {Element.Shadow, 0}};
 
             if (Main.npc.GetUpperBound(0) >= projectile.owner)
                 if (projectile.hostile && !projectile.friendly)
@@ -35,32 +35,32 @@ namespace kRPG
                     if (bossfight) return;
 
                     Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
-                    Dictionary<ELEMENT, bool> haselement = new Dictionary<ELEMENT, bool>
+                    Dictionary<Element, bool> haselement = new Dictionary<Element, bool>
                     {
                         {
-                            ELEMENT.FIRE,
+                            Element.Fire,
                             player.ZoneUnderworldHeight || player.ZoneTowerSolar || player.ZoneMeteor || player.ZoneDesert ||
                             Main.rand.Next(10) == 0 && Main.netMode == 0
                         },
                         {
-                            ELEMENT.COLD,
+                            Element.Cold,
                             player.ZoneSnow || player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneDungeon || player.ZoneRain ||
                             Main.rand.Next(10) == 0 && Main.netMode == 0
                         },
                         {
-                            ELEMENT.LIGHTNING,
+                            Element.Lightning,
                             player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneTowerStardust || player.ZoneMeteor || player.ZoneHoly ||
                             Main.rand.Next(10) == 0 && Main.netMode == 0
                         },
                         {
-                            ELEMENT.SHADOW,
+                            Element.Shadow,
                             player.ZoneCorrupt || player.ZoneCrimson || player.ZoneUnderworldHeight || player.ZoneTowerNebula ||
                             !Main.dayTime && Main.rand.Next(10) == 0 && Main.netMode == 0 && player.ZoneOverworldHeight
                         }
                     };
-                    int count = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => haselement[element]);
+                    int count = Enum.GetValues(typeof(Element)).Cast<Element>().Count(element => haselement[element]);
                     int portionsize = (int) Math.Round(projectile.damage * kNPC.EleDmgModifier / 3.0 / count);
-                    foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                    foreach (Element element in Enum.GetValues(typeof(Element)))
                         if (haselement[element])
                             ElementalDamage[element] = Math.Max(1, portionsize);
                     return;
@@ -76,11 +76,11 @@ namespace kRPG
                 }
                 else
                 {
-                    Cross cross = (Cross) spell.Source.Glyphs[(int) GLYPHTYPE.CROSS].modItem;
+                    Cross cross = (Cross) spell.Source.Glyphs[(int)GlyphType.Cross].modItem;
                     if (cross is Cross_Orange)
                         SelectItem(projectile, character.LastSelectedWeapon);
                     else
-                        foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                        foreach (Element element in Enum.GetValues(typeof(Element)))
                             ElementalDamage[element] = (int) Math.Round(cross.EleDmg[element] * projectile.damage);
                 }
             }
@@ -118,26 +118,26 @@ namespace kRPG
         /// <returns></returns>
         public int GetEleDamage(Projectile projectile, Player player, bool ignoreModifiers = false)
         {
-            Dictionary<ELEMENT, int> ele = GetIndividualElements(projectile, player, ignoreModifiers);
-            return ele[ELEMENT.FIRE] + ele[ELEMENT.COLD] + ele[ELEMENT.LIGHTNING] + ele[ELEMENT.SHADOW];
+            Dictionary<Element, int> ele = GetIndividualElements(projectile, player, ignoreModifiers);
+            return ele[Element.Fire] + ele[Element.Cold] + ele[Element.Lightning] + ele[Element.Shadow];
         }
 
-        public Dictionary<ELEMENT, int> GetIndividualElements(Projectile projectile, Player player, bool ignoreModifiers = false)
+        public Dictionary<Element, int> GetIndividualElements(Projectile projectile, Player player, bool ignoreModifiers = false)
         {
-            Dictionary<ELEMENT, int> dictionary = new Dictionary<ELEMENT, int>();
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+            Dictionary<Element, int> dictionary = new Dictionary<Element, int>();
+            foreach (Element element in Enum.GetValues(typeof(Element)))
                 dictionary[element] = 0;
 
             if (ElementalDamage == null)
-                ElementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+                ElementalDamage = new Dictionary<Element, int> {{Element.Fire, 0}, {Element.Cold, 0}, {Element.Lightning, 0}, {Element.Shadow, 0}};
 
-            if (player.GetModPlayer<PlayerCharacter>().Rituals[RITUAL.DEMON_PACT])
+            if (player.GetModPlayer<PlayerCharacter>().Rituals[Ritual.DemonPact])
 
-                dictionary[ELEMENT.SHADOW] = GetEleDamage(projectile, player);
+                dictionary[Element.Shadow] = GetEleDamage(projectile, player);
 
             else
 
-                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                foreach (Element element in Enum.GetValues(typeof(Element)))
 
                     dictionary[element] = (int) Math.Round(ElementalDamage[element] * (ignoreModifiers
                                                                ? 1
@@ -153,7 +153,7 @@ namespace kRPG
             SelectedItem = item;
 
             //Figure out what the element damage is for the item.
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+            foreach (Element element in Enum.GetValues(typeof(Element)))
 
                 ElementalDamage[element] = item.GetGlobalItem<kItem>().ElementalDamage[element];
         }
@@ -164,7 +164,7 @@ namespace kRPG
             SelectedItem = owner.inventory[owner.selectedItem];
             projectile.minion = SelectedItem.summon || projectile.minion;
 
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+            foreach (Element element in Enum.GetValues(typeof(Element)))
                 //I normally do not like try/catches, but in this case there is no way around it.
                 //TMod throws a null reference error occasionally when you try to get globalitem.
                 try

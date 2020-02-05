@@ -26,7 +26,7 @@ namespace kRPG
 
         public PlayerCharacter()
         {
-            foreach (STAT stat in Enum.GetValues(typeof(STAT)))
+            foreach (PlayerStats stat in Enum.GetValues(typeof(PlayerStats)))
             {
                 BaseStats[stat] = 0;
                 TempStats[stat] = 0;
@@ -68,20 +68,20 @@ namespace kRPG
         public float AccuracyCounter { get; set; } = 0.5f;
         public int ActiveInvPage { get; set; }
 
-        public Dictionary<ELEMENT, int> AilmentIntensity { get; set; } = new Dictionary<ELEMENT, int>
+        public Dictionary<Element, int> AilmentIntensity { get; set; } = new Dictionary<Element, int>
         {
-            {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
+            {Element.Fire, 0}, {Element.Cold, 0}, {Element.Lightning, 0}, {Element.Shadow, 0}
         };
 
-        public Dictionary<ELEMENT, Type> Ailments { get; set; } = new Dictionary<ELEMENT, Type>
+        public Dictionary<Element, Type> Ailments { get; set; } = new Dictionary<Element, Type>
         {
-            {ELEMENT.FIRE, typeof(Fire)}, {ELEMENT.COLD, typeof(Cold)}, {ELEMENT.LIGHTNING, typeof(Lightning)}, {ELEMENT.SHADOW, typeof(Shadow)}
+            {Element.Fire, typeof(Fire)}, {Element.Cold, typeof(Cold)}, {Element.Lightning, typeof(Lightning)}, {Element.Shadow, typeof(Shadow)}
         };
 
         public int Allres { get; set; }
         public AnvilGUI AnvilGui { get; set; }
 
-        public Dictionary<STAT, int> BaseStats { get; set; } = new Dictionary<STAT, int>();
+        public Dictionary<PlayerStats, int> BaseStats { get; set; } = new Dictionary<PlayerStats, int>();
         public int BigCritCounter { get; set; } = 50;
         public int BigHitCounter { get; set; } = 50;
 
@@ -105,21 +105,21 @@ namespace kRPG
 
         public float CritMultiplier { get; set; } = 1f;
 
-        public float DamageMultiplierPercent => 1f + TotalStats(STAT.POTENCY) * 0.05f + Math.Min(0.09f, TotalStats(STAT.POTENCY) * 0.06f);
+        public float DamageMultiplierPercent => 1f + TotalStats(PlayerStats.Potency) * 0.05f + Math.Min(0.09f, TotalStats(PlayerStats.Potency) * 0.06f);
         private float DegenTimer { get; set; }
 
-        public Dictionary<ELEMENT, int> Eleres { get; set; } = new Dictionary<ELEMENT, int>
+        public Dictionary<Element, int> Eleres { get; set; } = new Dictionary<Element, int>
         {
-            {ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}
+            {Element.Fire, 0}, {Element.Cold, 0}, {Element.Lightning, 0}, {Element.Shadow, 0}
         };
 
         public int Evasion { get; set; } = 2;
         public int EvasionCounter { get; set; } = 50;
         public int Experience { get; set; }
 
-        public Dictionary<ELEMENT, bool> HasAilment { get; set; } = new Dictionary<ELEMENT, bool>
+        public Dictionary<Element, bool> HasAilment { get; set; } = new Dictionary<Element, bool>
         {
-            {ELEMENT.FIRE, false}, {ELEMENT.COLD, false}, {ELEMENT.LIGHTNING, false}, {ELEMENT.SHADOW, false}
+            {Element.Fire, false}, {Element.Cold, false}, {Element.Lightning, false}, {Element.Shadow, false}
         };
 
         public float HitChance
@@ -158,29 +158,29 @@ namespace kRPG
 
         public int PointsAllocated
         {
-            get { return Enum.GetValues(typeof(STAT)).Cast<STAT>().Sum(stat => BaseStats[stat]); }
+            get { return Enum.GetValues(typeof(PlayerStats)).Cast<PlayerStats>().Sum(stat => BaseStats[stat]); }
         }
 
         private float RegenTimer { get; set; }
 
-        public Dictionary<ELEMENT, int> Resistance
+        public Dictionary<Element, int> Resistance
         {
             get
             {
-                Dictionary<ELEMENT, int> dict = new Dictionary<ELEMENT, int>();
-                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                Dictionary<Element, int> dict = new Dictionary<Element, int>();
+                foreach (Element element in Enum.GetValues(typeof(Element)))
                     dict[element] = Eleres[element] + Allres;
                 return dict;
             }
         }
 
-        public Dictionary<RITUAL, bool> Rituals { get; set; } = new Dictionary<RITUAL, bool>();
+        public Dictionary<Ritual, bool> Rituals { get; set; } = new Dictionary<Ritual, bool>();
         public ProceduralSpell SelectedAbility { get; set; } = null;
         public SpellcraftingGUI SpellCraftingGui { get; set; }
         public List<SpellEffect> SpellEffects { get; set; } = new List<SpellEffect>();
         public bool StatPage { get; set; } = true;
         public StatusBar StatusBar { get; set; }
-        public Dictionary<STAT, int> TempStats { get; set; } = new Dictionary<STAT, int>();
+        public Dictionary<PlayerStats, int> TempStats { get; set; } = new Dictionary<PlayerStats, int>();
         public List<Trail> Trails { get; set; } = new List<Trail>();
         public int Transcendence { get; set; }
 
@@ -201,7 +201,7 @@ namespace kRPG
             CombatText.NewText(player.getRect(), new Color(127, 159, 255), xp + " XP");
         }
 
-        public float DamageMultiplier(ELEMENT? element, bool melee, bool ranged = false, bool magic = false, bool thrown = false, bool minion = false)
+        public float DamageMultiplier(Element? element, bool melee, bool ranged = false, bool magic = false, bool thrown = false, bool minion = false)
         {
             float dmgModifier = 1f;
             if (melee) dmgModifier *= player.meleeDamage;
@@ -216,7 +216,7 @@ namespace kRPG
         {
             if (Main.netMode == 2 || Main.myPlayer != player.whoAmI) return;
             if (player.statLife < 1) return;
-            if (HasAilment[ELEMENT.FIRE])
+            if (HasAilment[Element.Fire])
             {
                 if (Main.rand.Next(2) == 0)
                 {
@@ -231,7 +231,7 @@ namespace kRPG
                 fullBright = true;
             }
 
-            if (HasAilment[ELEMENT.COLD])
+            if (HasAilment[Element.Cold])
             {
                 if (Main.rand.Next(2) == 0)
                 {
@@ -243,7 +243,7 @@ namespace kRPG
                 Lighting.AddLight(player.position, 0f, 0.4f, 1f);
             }
 
-            if (HasAilment[ELEMENT.LIGHTNING])
+            if (HasAilment[Element.Lightning])
             {
                 if (Main.rand.Next(2) == 0)
                 {
@@ -256,7 +256,7 @@ namespace kRPG
                 fullBright = true;
             }
 
-            if (HasAilment[ELEMENT.SHADOW])
+            if (HasAilment[Element.Shadow])
                 if (Main.rand.Next(3) < 2)
                 {
                     int dust = Dust.NewDust(player.position - new Vector2(2f, 2f), player.width + 4, player.height + 4, DustID.Shadowflame, player.velocity.X,
@@ -348,15 +348,15 @@ namespace kRPG
 
         private void ModifyDamage(ref int damage, ref bool crit, NPC target, Item item = null, Projectile proj = null)
         {
-            if (Rituals[RITUAL.WARRIOR_OATH])
+            if (Rituals[Ritual.WarriorOath])
             {
                 crit = false;
-                float damageBoost = 1f + TotalStats(STAT.RESILIENCE) * 0.04f;
-                damageBoost += Math.Min(0.1f, TotalStats(STAT.RESILIENCE) * 0.02f);
+                float damageBoost = 1f + TotalStats(PlayerStats.Resilience) * 0.04f;
+                damageBoost += Math.Min(0.1f, TotalStats(PlayerStats.Resilience) * 0.02f);
                 damage = (int) (damage * damageBoost);
             }
 
-            Dictionary<ELEMENT, int> eleDmg = new Dictionary<ELEMENT, int>();
+            Dictionary<Element, int> eleDmg = new Dictionary<Element, int>();
 
             if (item != null)
             {
@@ -371,19 +371,19 @@ namespace kRPG
                 eleDmg = kp.GetIndividualElements(proj, player);
             }
 
-            if (HasAilment[ELEMENT.SHADOW])
-                damage = Math.Min(damage * 2 / 5, damage - AilmentIntensity[ELEMENT.SHADOW]);
+            if (HasAilment[Element.Shadow])
+                damage = Math.Min(damage * 2 / 5, damage - AilmentIntensity[Element.Shadow]);
             //    damage = damage * (20 + 9360 / (130 + ailmentIntensity[ELEMENT.SHADOW])) / 100;
 
             kNPC victim = target.GetGlobalNPC<kNPC>();
 
             if (!crit && Main.netMode == 0)
-                crit = Main.rand.Next(500) < 50 + victim.AilmentIntensity[ELEMENT.COLD];
+                crit = Main.rand.Next(500) < 50 + victim.AilmentIntensity[Element.Cold];
 
             if (crit)
             {
                 damage = (int) (damage / DamageMultiplierPercent * (DamageMultiplierPercent + CritMultiplier));
-                if (Rituals[RITUAL.ELDRITCH_FURY])
+                if (Rituals[Ritual.EldritchFury])
                 {
                     int i = damage;
                     int c = target.boss ? 7 : 2;
@@ -394,10 +394,10 @@ namespace kRPG
 
             if (item == null && proj == null) return;
 
-            if (victim.HasAilment[ELEMENT.LIGHTNING])
-                damage += 1 + victim.AilmentIntensity[ELEMENT.LIGHTNING];
+            if (victim.HasAilment[Element.Lightning])
+                damage += 1 + victim.AilmentIntensity[Element.Lightning];
 
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+            foreach (Element element in Enum.GetValues(typeof(Element)))
             {
                 if (Main.rand.Next(target.boss ? 500 : 200) >= 30 + eleDmg[element])
                     continue;
@@ -429,30 +429,30 @@ namespace kRPG
             }
         }
 
-        public void ModifyDamageTakenFromNPC(ref int damage, ref bool crit, Dictionary<ELEMENT, int> eleDmg)
+        public void ModifyDamageTakenFromNPC(ref int damage, ref bool crit, Dictionary<Element, int> eleDmg)
         {
             double dmg = 0.5 * Math.Pow(damage, 1.35);
-            Dictionary<ELEMENT, int> originalEle = eleDmg;
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+            Dictionary<Element, int> originalEle = eleDmg;
+            foreach (Element element in Enum.GetValues(typeof(Element)))
                 eleDmg[element] = (int) (0.5 * Math.Pow(eleDmg[element], 1.35));
             if (!Main.expertMode)
             {
                 dmg = dmg * 1.3;
-                foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+                foreach (Element element in Enum.GetValues(typeof(Element)))
                     eleDmg[element] = (int) (eleDmg[element] * 1.3);
             }
 
             damage = (int) Math.Round(Math.Min(dmg, (double) damage * 3));
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+            foreach (Element element in Enum.GetValues(typeof(Element)))
                 eleDmg[element] = Math.Min(originalEle[element] * 3, eleDmg[element]);
             bool bossfight = false;
             foreach (NPC n in Main.npc)
                 if (n.active)
                     if (n.boss)
                         bossfight = true;
-            int elecount = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => eleDmg[element] > 0);
+            int elecount = Enum.GetValues(typeof(Element)).Cast<Element>().Count(element => eleDmg[element] > 0);
             if (elecount > 0) damage = (int) Math.Round(damage * (kNPC.EleDmgModifier + 1) / 2);
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+            foreach (Element element in Enum.GetValues(typeof(Element)))
             {
                 damage -= Math.Min(Resistance[element], eleDmg[element] * 3 / 5);
                 if (Main.rand.Next(player.statLifeMax2 + Resistance[element] * 20) >= 15 + eleDmg[element] * (bossfight ? 2 : 8) || Main.netMode == 2)
@@ -477,8 +477,8 @@ namespace kRPG
 
             if (Main.rand.Next(player.statLifeMax2 + player.statDefense) < damage * 3)
                 player.AddBuff(ModContent.BuffType<Physical>(), 15 + Math.Min(30, damage * 30 / player.statLifeMax2));
-            if (HasAilment[ELEMENT.LIGHTNING])
-                damage += 1 + AilmentIntensity[ELEMENT.LIGHTNING];
+            if (HasAilment[Element.Lightning])
+                damage += 1 + AilmentIntensity[Element.Lightning];
         }
 
         public override void ModifyDrawLayers(List<PlayerLayer> layers)
@@ -518,16 +518,16 @@ namespace kRPG
 
         public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit)
         {
-            Dictionary<ELEMENT, int> dict = new Dictionary<ELEMENT, int>();
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+            Dictionary<Element, int> dict = new Dictionary<Element, int>();
+            foreach (Element element in Enum.GetValues(typeof(Element)))
                 dict[element] = npc.GetGlobalNPC<kNPC>().ElementalDamage[element];
             ModifyDamageTakenFromNPC(ref damage, ref crit, dict);
         }
 
         public override void ModifyHitByProjectile(Projectile proj, ref int damage, ref bool crit)
         {
-            Dictionary<ELEMENT, int> dict = new Dictionary<ELEMENT, int>();
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+            Dictionary<Element, int> dict = new Dictionary<Element, int>();
+            foreach (Element element in Enum.GetValues(typeof(Element)))
                 dict[element] = proj.GetGlobalProjectile<kProjectile>().GetIndividualElements(proj, player)[element];
             ModifyDamageTakenFromNPC(ref damage, ref crit, dict);
         }
@@ -695,7 +695,7 @@ namespace kRPG
             }
 
             if (LifeDegen > 0) DegenTimer += 1f;
-            if (DegenTimer >= 20f && HasAilment[ELEMENT.FIRE])
+            if (DegenTimer >= 20f && HasAilment[Element.Fire])
             {
                 int amount = (int) Math.Round(LifeDegen / 3, 1);
                 player.statLife = player.statLife - amount;
@@ -739,7 +739,7 @@ namespace kRPG
             int max = 80;
             int diff = 52;
 
-            if (TotalStats(STAT.QUICKNESS) > 0 && !Rituals[RITUAL.STONE_ASPECT])
+            if (TotalStats(PlayerStats.Quickness) > 0 && !Rituals[Ritual.StoneAspect])
             {
                 if (damage < (Level + 10) * 5)
                 {
@@ -775,7 +775,7 @@ namespace kRPG
                         BigHitCounter -= 100;
                         if (enemyCrit)
                         {
-                            BigCritCounter += 100 - max + max * diff / (diff + Evasion + TotalStats(STAT.WITS) * 5);
+                            BigCritCounter += 100 - max + max * diff / (diff + Evasion + TotalStats(PlayerStats.Wits) * 5);
                             if (BigCritCounter >= 100)
                                 BigCritCounter -= 100;
                             else
@@ -787,13 +787,13 @@ namespace kRPG
 
                     else
                     {
-                        player.NinjaDodge(40 + TotalStats(STAT.WITS) * 5);
+                        player.NinjaDodge(40 + TotalStats(PlayerStats.Wits) * 5);
                         return false;
                     }
                 }
             }
 
-            if (Rituals[RITUAL.MIND_FORTRESS])
+            if (Rituals[Ritual.MindFortress])
             {
                 int i = (int) Math.Round(damage * 0.25);
                 if (Mana > i)
@@ -866,7 +866,7 @@ namespace kRPG
 
         public override void ResetEffects()
         {
-            foreach (STAT stat in Enum.GetValues(typeof(STAT)))
+            foreach (PlayerStats stat in Enum.GetValues(typeof(PlayerStats)))
                 TempStats[stat] = 0;
             Evasion = 2;
             Accuracy = 0;
@@ -884,7 +884,7 @@ namespace kRPG
 
             if (LeechCooldown > 0) LeechCooldown--;
 
-            foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
+            foreach (Element element in Enum.GetValues(typeof(Element)))
             {
                 Eleres[element] = 0;
                 if (!HasAilment[element]) AilmentIntensity[element] = 0;
@@ -897,10 +897,10 @@ namespace kRPG
             packet.Write((byte) Message.SyncStats);
             packet.Write(player.whoAmI);
             packet.Write(Level);
-            packet.Write(BaseStats[STAT.RESILIENCE]);
-            packet.Write(BaseStats[STAT.QUICKNESS]);
-            packet.Write(BaseStats[STAT.POTENCY]);
-            packet.Write(BaseStats[STAT.WITS]);
+            packet.Write(BaseStats[PlayerStats.Resilience]);
+            packet.Write(BaseStats[PlayerStats.Quickness]);
+            packet.Write(BaseStats[PlayerStats.Potency]);
+            packet.Write(BaseStats[PlayerStats.Wits]);
             packet.Send();
         }
 
@@ -995,15 +995,15 @@ namespace kRPG
             items.Add(moon);
         }
 
-        public int TotalStats(STAT stat)
+        public int TotalStats(PlayerStats playerStats)
         {
-            if (Rituals[RITUAL.DEMON_PACT] && stat == STAT.POTENCY)
-                return BaseStats[stat] + TempStats[stat] + BaseStats[STAT.RESILIENCE];
+            if (Rituals[Ritual.DemonPact] && playerStats == PlayerStats.Potency)
+                return BaseStats[playerStats] + TempStats[playerStats] + BaseStats[PlayerStats.Resilience];
 
-            if (Rituals[RITUAL.DEMON_PACT] && stat == STAT.RESILIENCE)
-                return TempStats[stat];
+            if (Rituals[Ritual.DemonPact] && playerStats == PlayerStats.Resilience)
+                return TempStats[playerStats];
 
-            return BaseStats[stat] + TempStats[stat];
+            return BaseStats[playerStats] + TempStats[playerStats];
         }
 
         public bool UnspentPoints()
@@ -1015,21 +1015,21 @@ namespace kRPG
         {
             float lifeMultiplier = 1f + (player.statLifeMax - 100f) / 400f;
             int addedLife = player.statLifeMax2 - player.statLifeMax;
-            player.statLifeMax2 += 115 + TotalStats(STAT.RESILIENCE) * 10 + Level * 5 + BonusLife - player.statLifeMax;
+            player.statLifeMax2 += 115 + TotalStats(PlayerStats.Resilience) * 10 + Level * 5 + BonusLife - player.statLifeMax;
             player.statLifeMax2 = (int) Math.Round(player.statLifeMax2 * lifeMultiplier) + addedLife;
             float manaMultiplier = 1f + (player.statManaMax - 20f) / 200f * 1.5f;
             int addedMana = player.statManaMax2 - player.statManaMax;
-            player.statManaMax2 += 19 + Level + BonusMana + TotalStats(STAT.WITS) * 3 - player.statManaMax;
+            player.statManaMax2 += 19 + Level + BonusMana + TotalStats(PlayerStats.Wits) * 3 - player.statManaMax;
             player.statManaMax2 = (int) Math.Round(player.statManaMax2 * manaMultiplier) + addedMana;
-            player.statDefense += TotalStats(STAT.RESILIENCE);
-            Allres += TotalStats(STAT.WITS);
-            Evasion += TotalStats(STAT.QUICKNESS);
-            Accuracy += TotalStats(STAT.WITS);
-            if (Rituals[RITUAL.STONE_ASPECT]) player.statDefense += TotalStats(STAT.QUICKNESS);
-            LifeRegen += TotalStats(STAT.RESILIENCE) * 0.3f + TotalStats(STAT.WITS) * 0.2f;
-            if (HasAilment[ELEMENT.FIRE])
-                LifeDegen = AilmentIntensity[ELEMENT.FIRE] / 2;
-            ManaRegen = player.statManaMax2 * 0.06f + TotalStats(STAT.WITS) * 0.6f;
+            player.statDefense += TotalStats(PlayerStats.Resilience);
+            Allres += TotalStats(PlayerStats.Wits);
+            Evasion += TotalStats(PlayerStats.Quickness);
+            Accuracy += TotalStats(PlayerStats.Wits);
+            if (Rituals[Ritual.StoneAspect]) player.statDefense += TotalStats(PlayerStats.Quickness);
+            LifeRegen += TotalStats(PlayerStats.Resilience) * 0.3f + TotalStats(PlayerStats.Wits) * 0.2f;
+            if (HasAilment[Element.Fire])
+                LifeDegen = AilmentIntensity[Element.Fire] / 2;
+            ManaRegen = player.statManaMax2 * 0.06f + TotalStats(PlayerStats.Wits) * 0.6f;
 
             if (Main.netMode != 2 && Main.myPlayer == player.whoAmI)
             {
@@ -1037,7 +1037,7 @@ namespace kRPG
                 if (player.statMana < 0) player.statMana = 0;
                 if (player.statMana < Mana)
                     Mana = player.statMana;
-                if (Rituals[RITUAL.ELAN_VITAL] && Mana < player.statManaMax2)
+                if (Rituals[Ritual.ElanVital] && Mana < player.statManaMax2)
                 {
                     if (player.statLife > player.statLifeMax2 * 0.4 + player.statManaMax2 - Mana)
                     {
@@ -1063,9 +1063,9 @@ namespace kRPG
                 player.statMana = Mana;
             }
 
-            CritMultiplier += TotalStats(STAT.POTENCY) * 0.04f;
-            LifeLeech += TotalStats(STAT.POTENCY) * 0.002f;
-            LifeLeech += Math.Min(0.006f, TotalStats(STAT.POTENCY) * 0.002f);
+            CritMultiplier += TotalStats(PlayerStats.Potency) * 0.04f;
+            LifeLeech += TotalStats(PlayerStats.Potency) * 0.002f;
+            LifeLeech += Math.Min(0.006f, TotalStats(PlayerStats.Potency) * 0.002f);
 
             player.meleeDamage *= DamageMultiplierPercent;
             player.rangedDamage *= DamageMultiplierPercent;
@@ -1073,11 +1073,11 @@ namespace kRPG
             player.minionDamage *= DamageMultiplierPercent;
             player.thrownDamage *= DamageMultiplierPercent;
 
-            player.moveSpeed *= 1f + Math.Min(1.2f, TotalStats(STAT.QUICKNESS) * 0.02f + Math.Min(Level * 0.005f, 0.5f));
-            player.meleeSpeed *= 1f + TotalStats(STAT.QUICKNESS) * 0.01f;
-            player.jumpSpeedBoost += Math.Min(5f, TotalStats(STAT.QUICKNESS) * 0.2f + Math.Min(Level * 0.05f, 2f));
+            player.moveSpeed *= 1f + Math.Min(1.2f, TotalStats(PlayerStats.Quickness) * 0.02f + Math.Min(Level * 0.005f, 0.5f));
+            player.meleeSpeed *= 1f + TotalStats(PlayerStats.Quickness) * 0.01f;
+            player.jumpSpeedBoost += Math.Min(5f, TotalStats(PlayerStats.Quickness) * 0.2f + Math.Min(Level * 0.05f, 2f));
 
-            CritBoost += Math.Min(TotalStats(STAT.QUICKNESS), Math.Max(4, TotalStats(STAT.QUICKNESS) / 2 + 2));
+            CritBoost += Math.Min(TotalStats(PlayerStats.Quickness), Math.Max(4, TotalStats(PlayerStats.Quickness) / 2 + 2));
             player.magicCrit += CritBoost;
             player.meleeCrit += CritBoost;
             player.rangedCrit += CritBoost;
@@ -1088,8 +1088,8 @@ namespace kRPG
 
         public override void Initialize()
         {
-            BaseStats = new Dictionary<STAT, int>();
-            TempStats = new Dictionary<STAT, int>();
+            BaseStats = new Dictionary<PlayerStats, int>();
+            TempStats = new Dictionary<PlayerStats, int>();
 
             Permanence = 0;
             Transcendence = 0;
@@ -1097,7 +1097,7 @@ namespace kRPG
             Level = 1;
             Experience = 0;
 
-            foreach (STAT stat in Enum.GetValues(typeof(STAT)))
+            foreach (PlayerStats stat in Enum.GetValues(typeof(PlayerStats)))
             {
                 BaseStats[stat] = 0;
                 TempStats[stat] = 0;
@@ -1111,8 +1111,8 @@ namespace kRPG
                     Inventories[i][j] = new Item();
             }
 
-            Rituals = new Dictionary<RITUAL, bool>();
-            foreach (RITUAL rite in Enum.GetValues(typeof(RITUAL)))
+            Rituals = new Dictionary<Ritual, bool>();
+            foreach (Ritual rite in Enum.GetValues(typeof(Ritual)))
                 Rituals[rite] = false;
 
             for (int i = 0; i < Abilities.Length; i += 1)
@@ -1161,17 +1161,17 @@ namespace kRPG
             {
                 {"level", Level},
                 {"Experience", Experience},
-                {"baseRESILIENCE", BaseStats[STAT.RESILIENCE]},
-                {"baseQUICKNESS", BaseStats[STAT.QUICKNESS]},
-                {"basePOTENCY", BaseStats[STAT.POTENCY]},
-                {"baseWITS", BaseStats[STAT.WITS]},
-                {"RITUAL_DEMON_PACT", Rituals[RITUAL.DEMON_PACT]},
-                {"RITUAL_WARRIOR_OATH", Rituals[RITUAL.WARRIOR_OATH]},
-                {"RITUAL_ELAN_VITAL", Rituals[RITUAL.ELAN_VITAL]},
-                {"RITUAL_STONE_ASPECT", Rituals[RITUAL.STONE_ASPECT]},
-                {"RITUAL_ELDRITCH_FURY", Rituals[RITUAL.ELDRITCH_FURY]},
-                {"RITUAL_MIND_FORTRESS", Rituals[RITUAL.MIND_FORTRESS]},
-                {"RITUAL_BLOOD_DRINKING", Rituals[RITUAL.BLOOD_DRINKING]},
+                {"baseRESILIENCE", BaseStats[PlayerStats.Resilience]},
+                {"baseQUICKNESS", BaseStats[PlayerStats.Quickness]},
+                {"basePOTENCY", BaseStats[PlayerStats.Potency]},
+                {"baseWITS", BaseStats[PlayerStats.Wits]},
+                {"RITUAL_DEMON_PACT", Rituals[Ritual.DemonPact]},
+                {"RITUAL_WARRIOR_OATH", Rituals[Ritual.WarriorOath]},
+                {"RITUAL_ELAN_VITAL", Rituals[Ritual.ElanVital]},
+                {"RITUAL_STONE_ASPECT", Rituals[Ritual.StoneAspect]},
+                {"RITUAL_ELDRITCH_FURY", Rituals[Ritual.EldritchFury]},
+                {"RITUAL_MIND_FORTRESS", Rituals[Ritual.MindFortress]},
+                {"RITUAL_BLOOD_DRINKING", Rituals[Ritual.BloodDrinking]},
                 {"life", player.statLife},
                 {"permanence", Permanence},
                 {"transcendence", Transcendence}
@@ -1221,9 +1221,9 @@ namespace kRPG
 
             try
             {
-                foreach (STAT stat in Enum.GetValues(typeof(STAT)))
+                foreach (PlayerStats stat in Enum.GetValues(typeof(PlayerStats)))
                     BaseStats[stat] = tag.GetInt("base" + stat);
-                foreach (RITUAL rite in Enum.GetValues(typeof(RITUAL)))
+                foreach (Ritual rite in Enum.GetValues(typeof(Ritual)))
                     Rituals[rite] = tag.GetBool("RITUAL_" + rite);
             }
             catch (SystemException e)

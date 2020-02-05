@@ -77,7 +77,7 @@ namespace kRPG.Items.Glyphs
                 Vector2 velocity = unitVelocity * 5f;
                 ProceduralSpellProj spell = minion.Source.CreateProjectile(Main.player[minion.projectile.owner], velocity, 0, proj.Center, proj);
                 spell.projectile.minion = true;
-                Moon moon = (Moon) minion.Source.Glyphs[(int) GLYPHTYPE.MOON].modItem;
+                Moon moon = (Moon) minion.Source.Glyphs[(int)GlyphType.Moon].modItem;
                 spell.ai.Remove(moon.GetAiAction());
             });
             SmallProt = new GlyphModifier(1, "Orbiting fire", glyph => glyph.Minion, () => Main.rand.Next(4) == 0, 0.95f).SetMinionAi(

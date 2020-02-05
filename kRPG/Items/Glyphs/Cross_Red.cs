@@ -11,8 +11,8 @@ namespace kRPG.Items.Glyphs
 {
     public class Cross_Red : Cross
     {
-        public override Dictionary<ELEMENT, float> EleDmg { get; set; } =
-            new Dictionary<ELEMENT, float> {{ELEMENT.FIRE, 1f}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
+        public override Dictionary<Element, float> EleDmg { get; set; } =
+            new Dictionary<Element, float> {{Element.Fire, 1f}, {Element.Cold, 0}, {Element.Lightning, 0}, {Element.Shadow, 0}};
 
         public override Action<ProceduralSpellProj> GetAiAction()
         {

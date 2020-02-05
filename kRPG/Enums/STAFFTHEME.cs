@@ -1,9 +1,9 @@
 ﻿namespace kRPG.Enums
 {
-    public enum STAFFTHEME : byte
+    public enum StaffTheme : byte
     {
-        WOODEN,
-        DUNGEON,
-        UNDERWORLD
+        Wooden,
+        Dungeon,
+        Underworld
     }
 }

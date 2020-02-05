@@ -12,31 +12,31 @@ namespace kRPG.GUI
 {
     public class LevelGui : BaseGui
     {
-        public Dictionary<STAT, int> allocated = new Dictionary<STAT, int> {{STAT.RESILIENCE, 0}, {STAT.QUICKNESS, 0}, {STAT.POTENCY, 0}};
+        public Dictionary<PlayerStats, int> allocated = new Dictionary<PlayerStats, int> {{PlayerStats.Resilience, 0}, {PlayerStats.Quickness, 0}, {PlayerStats.Potency, 0}};
         private PlayerCharacter character;
 
-        private readonly Dictionary<STAT, StatFlame> statFlame;
+        private readonly Dictionary<PlayerStats, StatFlame> statFlame;
 
         public LevelGui(PlayerCharacter character, Mod mod)
         {
             this.character = character;
 
-            statFlame = new Dictionary<STAT, StatFlame>
+            statFlame = new Dictionary<PlayerStats, StatFlame>
             {
-                [STAT.RESILIENCE] = new StatFlame(mod, this, STAT.RESILIENCE, () => Position[STAT.RESILIENCE], GFX.Flames[STAT.RESILIENCE]),
-                [STAT.QUICKNESS] = new StatFlame(mod, this, STAT.QUICKNESS, () => Position[STAT.QUICKNESS], GFX.Flames[STAT.QUICKNESS]),
-                [STAT.POTENCY] = new StatFlame(mod, this, STAT.POTENCY, () => Position[STAT.POTENCY], GFX.Flames[STAT.POTENCY])
+                [PlayerStats.Resilience] = new StatFlame(mod, this, PlayerStats.Resilience, () => Position[PlayerStats.Resilience], GFX.Flames[PlayerStats.Resilience]),
+                [PlayerStats.Quickness] = new StatFlame(mod, this, PlayerStats.Quickness, () => Position[PlayerStats.Quickness], GFX.Flames[PlayerStats.Quickness]),
+                [PlayerStats.Potency] = new StatFlame(mod, this, PlayerStats.Potency, () => Position[PlayerStats.Potency], GFX.Flames[PlayerStats.Potency])
             };
         }
 
         private Vector2 GuiPosition => new Vector2(Main.screenWidth / 2f - Width, 50f * Scale + 50f);
 
-        private Dictionary<STAT, Vector2> Position =>
-            new Dictionary<STAT, Vector2>
+        private Dictionary<PlayerStats, Vector2> Position =>
+            new Dictionary<PlayerStats, Vector2>
             {
-                {STAT.RESILIENCE, new Vector2(GuiPosition.X + 52f * Scale, GuiPosition.Y - 40f * Scale)},
-                {STAT.QUICKNESS, new Vector2(GuiPosition.X + 172f * Scale, GuiPosition.Y)},
-                {STAT.POTENCY, new Vector2(GuiPosition.X + 292f * Scale, GuiPosition.Y - 40f * Scale)}
+                {PlayerStats.Resilience, new Vector2(GuiPosition.X + 52f * Scale, GuiPosition.Y - 40f * Scale)},
+                {PlayerStats.Quickness, new Vector2(GuiPosition.X + 172f * Scale, GuiPosition.Y)},
+                {PlayerStats.Potency, new Vector2(GuiPosition.X + 292f * Scale, GuiPosition.Y - 40f * Scale)}
             };
 
         private float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.5f);
@@ -71,12 +71,12 @@ namespace kRPG.GUI
                 }
             }
 
-            statFlame[STAT.RESILIENCE].Draw(spriteBatch, player, Scale);
-            statFlame[STAT.RESILIENCE].Update(spriteBatch, player);
-            statFlame[STAT.QUICKNESS].Draw(spriteBatch, player, Scale);
-            statFlame[STAT.QUICKNESS].Update(spriteBatch, player);
-            statFlame[STAT.POTENCY].Draw(spriteBatch, player, Scale);
-            statFlame[STAT.POTENCY].Update(spriteBatch, player);
+            statFlame[PlayerStats.Resilience].Draw(spriteBatch, player, Scale);
+            statFlame[PlayerStats.Resilience].Update(spriteBatch, player);
+            statFlame[PlayerStats.Quickness].Draw(spriteBatch, player, Scale);
+            statFlame[PlayerStats.Quickness].Update(spriteBatch, player);
+            statFlame[PlayerStats.Potency].Draw(spriteBatch, player, Scale);
+            statFlame[PlayerStats.Potency].Update(spriteBatch, player);
 
             buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
             spriteBatch.Draw(GFX.ButtonConfirm, buttonPosition, Color.White, Scale);
@@ -89,9 +89,9 @@ namespace kRPG.GUI
                     try
                     {
                         Main.PlaySound(SoundID.MenuTick);
-                        foreach (STAT s in allocated.Keys)
+                        foreach (PlayerStats s in allocated.Keys)
                             character.BaseStats[s] += allocated[s];
-                        foreach (STAT stat in Enum.GetValues(typeof(STAT)))
+                        foreach (PlayerStats stat in Enum.GetValues(typeof(PlayerStats)))
                             allocated[stat] = 0;
 
                         GuiActive = false;
@@ -104,8 +104,8 @@ namespace kRPG.GUI
                     }
             }
 
-            STAT? hoverStat = null;
-            foreach (STAT s in statFlame.Keys.Where(s => statFlame[s].CheckHover()))
+            PlayerStats? hoverStat = null;
+            foreach (PlayerStats s in statFlame.Keys.Where(s => statFlame[s].CheckHover()))
                 hoverStat = s;
 
             if (hoverStat != null) spriteBatch.Draw(GFX.DeerSkullEyes[hoverStat.Value], GuiPosition, Color.White, Scale);
