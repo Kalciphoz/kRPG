@@ -1,4 +1,5 @@
-﻿using Terraria.ModLoader;
+﻿using kRPG.GameObjects.Players;
+using Terraria.ModLoader;
 
 namespace kRPG.Commands
 {

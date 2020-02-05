@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using kRPG.Items;
-using kRPG.Items.Glyphs;
-using kRPG.Items.Weapons.RangedDrops;
+using kRPG.GameObjects.Items;
+using kRPG.GameObjects.Items.Glyphs;
+using kRPG.GameObjects.Items.Procedural;
+using kRPG.GameObjects.Items.Weapons.Ranged;
+using kRPG.GameObjects.NPCs;
+using kRPG.GameObjects.Players;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
