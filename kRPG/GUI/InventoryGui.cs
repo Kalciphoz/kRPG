@@ -1,8 +1,8 @@
-﻿//  Fairfield Tek L.L.C.
-//  Copyright (c) 2016, Fairfield Tek L.L.C.
+﻿// Kalciphoz's RPG Mod
+//  Copyright (c) 2016, Kalciphoz's RPG Mod
 // 
 // 
-// THIS SOFTWARE IS PROVIDED BY FairfieldTek LLC ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+// THIS SOFTWARE IS PROVIDED BY Kalciphoz's ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
 // INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 // PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL FAIRFIELDTEK LLC BE LIABLE FOR ANY DIRECT, INDIRECT,
 // INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
@@ -321,50 +321,49 @@ namespace kRPG.GUI
 
             Vanilla(!character.StatPage);
 
-            if (character.StatPage) 
+            if (character.StatPage)
                 DrawStatPage(spriteBatch, character);
 
             spriteBatch.Draw(GFX.InventoryFrame, new Vector2((int) Origin.X, (int) Origin.Y), Color.White, Scale);
-            
-            if (!character.StatPage) 
+
+            if (!character.StatPage)
                 spriteBatch.Draw(GFX.InventorySeparator, new Vector2(Origin.X + 56 * Scale, Origin.Y + 354 * Scale), Color.White, Scale);
-            
+
             DrawHotbar();
 
-
             spriteBatch.Draw(character.StatPage ? GFX.ButtonStatsPressed : GFX.ButtonStats, Origin + new Vector2(142f, 102f) * Scale, Color.White, Scale);
-            
+
             spriteBatch.Draw(character.ActiveInvPage == 0 && !character.StatPage ? GFX.ButtonPage1Pressed : GFX.ButtonPage1,
                 Origin + new Vector2(174f, 102f) * Scale, Color.White, Scale);
-            
+
             spriteBatch.Draw(character.ActiveInvPage == 1 && !character.StatPage ? GFX.ButtonPage2Pressed : GFX.ButtonPage2,
                 Origin + new Vector2(206f, 102f) * Scale, Color.White, Scale);
-            
+
             spriteBatch.Draw(character.ActiveInvPage == 2 && !character.StatPage ? GFX.ButtonPage3Pressed : GFX.ButtonPage3,
                 Origin + new Vector2(238f, 102f) * Scale, Color.White, Scale);
-            
+
             StatusBar.DrawNumerals(spriteBatch, player.GetModPlayer<PlayerCharacter>().Level, Scale);
 
             int currentLifeLength = (int) Math.Round(player.statLife / (decimal) player.statLifeMax2 * BarLength);
-            
+
             spriteBatch.Draw(GFX.InventoryLife, Origin + new Vector2(BarX, 70 * Scale), new Rectangle(0, 0, currentLifeLength, 20), Color.White, 0f,
                 Vector2.Zero, Scale, SpriteEffects.None, 0f);
-            
+
             int currentManaLength = (int) Math.Round(character.Mana / (decimal) player.statManaMax2 * BarLength);
-            
+
             spriteBatch.Draw(GFX.InventoryMana, Origin + new Vector2(BarX, 98 * Scale), new Rectangle(0, 0, currentManaLength, 16), Color.White, 0f,
                 Vector2.Zero, Scale, SpriteEffects.None, 0f);
-            
+
             int currentXpLength = (int) Math.Round(BarLength * (decimal) character.Experience / character.ExperienceToLevel());
-            
+
             spriteBatch.Draw(GFX.InventoryXp, Origin + new Vector2(BarX, 126 * Scale), new Rectangle(0, 0, currentXpLength, 8), Color.White, 0f, Vector2.Zero,
                 Scale, SpriteEffects.None, 0f);
-            
+
             spriteBatch.Draw(GFX.InventoryBarCovers, Origin + new Vector2(302, 68) * Scale, Color.White, Scale);
-            
+
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife + " / " + player.statLifeMax2,
                 Origin + new Vector2(BarX + 16f * Scale, 72f * Scale), Color.White, 0.8f * Scale);
-            
+
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Mana + " / " + player.statManaMax2,
                 Origin + new Vector2(BarX + 16f * Scale, 100f * Scale), Color.White, 0.6f * Scale);
 
@@ -373,12 +372,12 @@ namespace kRPG.GUI
 
             //Mod mod = ModLoader.GetMod("kRPG");
             spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<PermanenceCrown>()], Origin + new Vector2(600f, 68f) * Scale, Color.White, Scale);
-            
+
             spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.Permanence, Origin + new Vector2(640f, 72f) * Scale, Color.White,
                 Scale * 1.2f);
-            
+
             spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<BlacksmithCrown>()], Origin + new Vector2(600f, 108f) * Scale, Color.White, Scale);
-            
+
             spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.Transcendence, Origin + new Vector2(640f, 112f) * Scale, Color.White,
                 Scale * 1.2f);
 

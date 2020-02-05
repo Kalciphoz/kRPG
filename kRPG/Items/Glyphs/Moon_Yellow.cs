@@ -1,8 +1,8 @@
-﻿//  Fairfield Tek L.L.C.
-//  Copyright (c) 2016, Fairfield Tek L.L.C.
+﻿// Kalciphoz's RPG Mod
+//  Copyright (c) 2016, Kalciphoz's RPG Mod
 // 
 // 
-// THIS SOFTWARE IS PROVIDED BY FairfieldTek LLC ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+// THIS SOFTWARE IS PROVIDED BY Kalciphoz's ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
 // INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 // PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL FAIRFIELDTEK LLC BE LIABLE FOR ANY DIRECT, INDIRECT,
 // INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
@@ -65,7 +65,8 @@ namespace kRPG.Items.Glyphs
                 for (int i = 0; i < spell.ProjCount; i += 1)
                 {
                     float angle = i * spread * (float) API.Tau;
-                    ProceduralSpellProj proj = spell.CreateProjectile(player, Vector2.Zero, spread * i, origin + new Vector2(0f, -rotDistance).RotatedBy(angle), caster);
+                    ProceduralSpellProj proj = spell.CreateProjectile(player, Vector2.Zero, spread * i, origin + new Vector2(0f, -rotDistance).RotatedBy(angle),
+                        caster);
                     proj.BasePosition = origin;
                     Vector2 unitVelocity = target - origin;
                     unitVelocity.Normalize();

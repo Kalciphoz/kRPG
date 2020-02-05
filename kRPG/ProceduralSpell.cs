@@ -1,8 +1,8 @@
-﻿//  Fairfield Tek L.L.C.
-//  Copyright (c) 2016, Fairfield Tek L.L.C.
+﻿// Kalciphoz's RPG Mod
+//  Copyright (c) 2016, Kalciphoz's RPG Mod
 // 
 // 
-// THIS SOFTWARE IS PROVIDED BY FairfieldTek LLC ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+// THIS SOFTWARE IS PROVIDED BY Kalciphoz's ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
 // INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 // PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL FAIRFIELDTEK LLC BE LIABLE FOR ANY DIRECT, INDIRECT,
 // INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
@@ -160,7 +160,9 @@ namespace kRPG
             }*/
             ps.Source = this;
             ps.Initialize();
-            if (Main.netMode != 1) return ps;
+            if (Main.netMode != 1) 
+                return ps;
+
             ModPacket packet = Mod.GetPacket();
             packet.Write((byte) Message.CreateProjectile);
             packet.Write(player.whoAmI);
@@ -279,7 +281,7 @@ namespace kRPG
                         !Collision.SolidCollision(vector32, player.width, player.height))
                     {
                         player.Teleport(vector32, 1);
-                        NetMessage.SendData(65, -1, -1, null, 0, player.whoAmI, vector32.X, vector32.Y, 1);
+                        NetMessage.SendData((int)PacketTypes.Teleport, -1, -1, null, 0, player.whoAmI, vector32.X, vector32.Y, 1);
                         if (player.chaosState)
                         {
                             player.statLife -= player.statLifeMax2 / 7;

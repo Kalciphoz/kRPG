@@ -1,8 +1,8 @@
-﻿//  Fairfield Tek L.L.C.
-//  Copyright (c) 2016, Fairfield Tek L.L.C.
+﻿// Kalciphoz's RPG Mod
+//  Copyright (c) 2016, Kalciphoz's RPG Mod
 // 
 // 
-// THIS SOFTWARE IS PROVIDED BY FairfieldTek LLC ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+// THIS SOFTWARE IS PROVIDED BY Kalciphoz's ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
 // INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 // PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL FAIRFIELDTEK LLC BE LIABLE FOR ANY DIRECT, INDIRECT,
 // INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
@@ -51,7 +51,6 @@ namespace kRPG
 
         public PlayerCharacter()
         {
-            
             foreach (STAT stat in Enum.GetValues(typeof(STAT)))
             {
                 BaseStats[stat] = 0;
@@ -448,9 +447,9 @@ namespace kRPG
                     buff = ModContent.GetInstance<Shadow>();
 
                 target.AddBuff(buff.Type, target.boss ? 30 + Math.Min(eleDmg[element], 30) * 3 : 120 + Math.Min(eleDmg[element], 15) * 12);
-                
+
                 victim.AilmentIntensity[element] = target.boss ? eleDmg[element] / 2 : eleDmg[element];
-                
+
                 victim.HasAilment[element] = true;
             }
         }
@@ -686,13 +685,13 @@ namespace kRPG
                 case ProceduralSword s:
                 {
                     //if (Main.itemTexture[item.type] != s.texture)
-                        Main.itemTexture[item.type] = s.texture;
+                    Main.itemTexture[item.type] = s.texture;
                     break;
                 }
                 case ProceduralStaff st:
                 {
                     //if (Main.itemTexture[ModContent.ItemType<ProceduralStaff>()] != st.texture)
-                        Main.itemTexture[ModContent.ItemType<ProceduralStaff>()] = st.texture;
+                    Main.itemTexture[ModContent.ItemType<ProceduralStaff>()] = st.texture;
                     break;
                 }
             }
@@ -732,6 +731,8 @@ namespace kRPG
             }
 
             ManaRegenTimer += 1f;
+            
+            
 
             if (Main.chatRelease && !Main.drawingPlayerChat && !Main.editSign && !Main.editChest && Main.netMode != 2)
                 for (int i = 0; i < Abilities.Length; i += 1)
@@ -1164,7 +1165,6 @@ namespace kRPG
             StatusBar = new StatusBar(this, mod) {GuiActive = true};
             InventoryGui = new InventoryGui(this);
             AbilitiesGui = new AbilitiesGui {GuiActive = true};
-            
         }
 
         public void CloseGuIs()

@@ -1,8 +1,8 @@
-﻿//  Fairfield Tek L.L.C.
-//  Copyright (c) 2016, Fairfield Tek L.L.C.
+﻿// Kalciphoz's RPG Mod
+//  Copyright (c) 2016, Kalciphoz's RPG Mod
 // 
 // 
-// THIS SOFTWARE IS PROVIDED BY FairfieldTek LLC ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+// THIS SOFTWARE IS PROVIDED BY Kalciphoz's ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
 // INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 // PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL FAIRFIELDTEK LLC BE LIABLE FOR ANY DIRECT, INDIRECT,
 // INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
@@ -55,8 +55,8 @@ namespace kRPG.Items.Glyphs
                 {
                     if (timeLeft % 10 != 0)
                         return;
-                    ProceduralSpellProj proj = spell.CreateProjectile(player, new Vector2(0, -9f), Main.rand.NextFloat(-0.07f, 0.07f), caster.Center + new Vector2(0, -16f),
-                        caster);
+                    ProceduralSpellProj proj = spell.CreateProjectile(player, new Vector2(0, -9f), Main.rand.NextFloat(-0.07f, 0.07f),
+                        caster.Center + new Vector2(0, -16f), caster);
                     if (proj.Alpha < 1f) proj.Alpha = 0.5f;
                     proj.projectile.tileCollide = true;
                 });

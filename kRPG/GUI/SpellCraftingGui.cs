@@ -1,8 +1,8 @@
-﻿//  Fairfield Tek L.L.C.
-//  Copyright (c) 2016, Fairfield Tek L.L.C.
+﻿// Kalciphoz's RPG Mod
+//  Copyright (c) 2016, Kalciphoz's RPG Mod
 // 
 // 
-// THIS SOFTWARE IS PROVIDED BY FairfieldTek LLC ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+// THIS SOFTWARE IS PROVIDED BY Kalciphoz's ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
 // INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 // PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL FAIRFIELDTEK LLC BE LIABLE FOR ANY DIRECT, INDIRECT,
 // INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
@@ -55,7 +55,7 @@ namespace kRPG.GUI
             glyphs[2] = new GlyphSlot(() => guiPosition() + new Vector2(84f, 106f) * Scale, () => Scale, GLYPHTYPE.MOON);
 
             //not needed, the base class does this.
-           // GuiElements.Add(this);
+            // GuiElements.Add(this);
         }
 
         private float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
@@ -130,11 +130,10 @@ namespace kRPG.GUI
             PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
 
             if (!CanPlaceItem(Main.mouseItem))
-            {
                 return false;
-            }
 
-            foreach (ProceduralMinion minion in character.Minions.Where(minion => minion.Source == character.SelectedAbility && minion.projectile.modProjectile is ProceduralMinion))
+            foreach (ProceduralMinion minion in character.Minions.Where(minion =>
+                minion.Source == character.SelectedAbility && minion.projectile.modProjectile is ProceduralMinion))
             {
                 foreach (ProceduralSpellProj psp in minion.CirclingProtection)
                     psp.projectile.Kill();
@@ -177,13 +176,10 @@ namespace kRPG.GUI
                 Main.LocalPlayer.mouseInterface = true;
                 Main.HoverItem = Glyph.Clone();
                 if (Main.mouseLeft && Main.mouseLeftRelease)
-                {
                     AttemptPlace();
-                    
-                }
             }
 
-            if (Glyph.type == 0) 
+            if (Glyph.type == 0)
                 return;
 
             Texture2D texture = Main.itemTexture[Glyph.type];

@@ -1,8 +1,8 @@
-﻿//  Fairfield Tek L.L.C.
-//  Copyright (c) 2016, Fairfield Tek L.L.C.
+﻿// Kalciphoz's RPG Mod
+//  Copyright (c) 2016, Kalciphoz's RPG Mod
 // 
 // 
-// THIS SOFTWARE IS PROVIDED BY FairfieldTek LLC ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+// THIS SOFTWARE IS PROVIDED BY Kalciphoz's ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
 // INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 // PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL FAIRFIELDTEK LLC BE LIABLE FOR ANY DIRECT, INDIRECT,
 // INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
@@ -47,7 +47,7 @@ namespace kRPG
         {
             if (ElementalDamage != null || Main.netMode == 1)
                 return;
-            ElementalDamage = new Dictionary<ELEMENT, int> { { ELEMENT.FIRE, 0 }, { ELEMENT.COLD, 0 }, { ELEMENT.LIGHTNING, 0 }, { ELEMENT.SHADOW, 0 } };
+            ElementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
 
             if (Main.npc.GetUpperBound(0) >= projectile.owner)
                 if (projectile.hostile && !projectile.friendly)
@@ -84,7 +84,7 @@ namespace kRPG
                         }
                     };
                     int count = Enum.GetValues(typeof(ELEMENT)).Cast<ELEMENT>().Count(element => haselement[element]);
-                    int portionsize = (int)Math.Round(projectile.damage * kNPC.EleDmgModifier / 3.0 / count);
+                    int portionsize = (int) Math.Round(projectile.damage * kNPC.EleDmgModifier / 3.0 / count);
                     foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
                         if (haselement[element])
                             ElementalDamage[element] = Math.Max(1, portionsize);
@@ -94,19 +94,19 @@ namespace kRPG
             if (projectile.type == ModContent.ProjectileType<ProceduralSpellProj>())
             {
                 PlayerCharacter character = Main.player[projectile.owner].GetModPlayer<PlayerCharacter>();
-                ProceduralSpellProj spell = (ProceduralSpellProj)projectile.modProjectile;
+                ProceduralSpellProj spell = (ProceduralSpellProj) projectile.modProjectile;
                 if (spell.Source == null)
                 {
                     SelectItem(projectile);
                 }
                 else
                 {
-                    Cross cross = (Cross)spell.Source.Glyphs[(int)GLYPHTYPE.CROSS].modItem;
+                    Cross cross = (Cross) spell.Source.Glyphs[(int) GLYPHTYPE.CROSS].modItem;
                     if (cross is Cross_Orange)
                         SelectItem(projectile, character.LastSelectedWeapon);
                     else
                         foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                            ElementalDamage[element] = (int)Math.Round(cross.EleDmg[element] * projectile.damage);
+                            ElementalDamage[element] = (int) Math.Round(cross.EleDmg[element] * projectile.damage);
                 }
             }
             else if (projectile.friendly && !projectile.hostile && Main.player[projectile.owner] != null)
@@ -133,9 +133,9 @@ namespace kRPG
         }
 
         /// <summary>
-        /// Returns the total elemental damage, something doesn't seem right with the code though.
-        /// Cause this adds up all there elemental damages into one value.... kinda not sure yet what
-        /// the author was thinking, since each type of damage does different type of damage
+        ///     Returns the total elemental damage, something doesn't seem right with the code though.
+        ///     Cause this adds up all there elemental damages into one value.... kinda not sure yet what
+        ///     the author was thinking, since each type of damage does different type of damage
         /// </summary>
         /// <param name="projectile"></param>
         /// <param name="player"></param>
@@ -154,7 +154,7 @@ namespace kRPG
                 dictionary[element] = 0;
 
             if (ElementalDamage == null)
-                ElementalDamage = new Dictionary<ELEMENT, int> { { ELEMENT.FIRE, 0 }, { ELEMENT.COLD, 0 }, { ELEMENT.LIGHTNING, 0 }, { ELEMENT.SHADOW, 0 } };
+                ElementalDamage = new Dictionary<ELEMENT, int> {{ELEMENT.FIRE, 0}, {ELEMENT.COLD, 0}, {ELEMENT.LIGHTNING, 0}, {ELEMENT.SHADOW, 0}};
 
             if (player.GetModPlayer<PlayerCharacter>().Rituals[RITUAL.DEMON_PACT])
 
@@ -164,7 +164,7 @@ namespace kRPG
 
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
 
-                    dictionary[element] = (int)Math.Round(ElementalDamage[element] * (ignoreModifiers
+                    dictionary[element] = (int) Math.Round(ElementalDamage[element] * (ignoreModifiers
                                                                ? 1
                                                                : player.GetModPlayer<PlayerCharacter>().DamageMultiplier(element, projectile.melee,
                                                                    projectile.ranged, projectile.magic, projectile.thrown, projectile.minion)));
@@ -190,7 +190,6 @@ namespace kRPG
             projectile.minion = SelectedItem.summon || projectile.minion;
 
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-            {
                 //I normally do not like try/catches, but in this case there is no way around it.
                 //TMod throws a null reference error occasionally when you try to get globalitem.
                 try
@@ -207,9 +206,6 @@ namespace kRPG
                 {
                     Debug.WriteLine(e);
                 }
-
-            }
-
         }
     }
 }
