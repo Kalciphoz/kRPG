@@ -217,6 +217,7 @@ namespace kRPG.GameObjects.Spells
             {
                 ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
             }
+
         }
 
         // ReSharper disable once IdentifierTypo

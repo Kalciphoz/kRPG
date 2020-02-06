@@ -54,20 +54,20 @@ namespace kRPG.GameObjects.GUI
             bubblesOrigin = new Vector2(284, 134);
 
             AddButton(
-                () => new Rectangle((int) PointsOrigin.X, (int) PointsOrigin.Y, (int) (GFX.GFX.UnspentPoints.Width * Scale),
-                    (int) (GFX.GFX.UnspentPoints.Height * Scale)), delegate(Player player)
-                {
-                    character.CloseGuIs();
-                    Main.PlaySound(SoundID.MenuTick);
-                    character.LevelGui.GuiActive = player.GetModPlayer<PlayerCharacter>().UnspentPoints() && !Main.playerInventory;
-                }, delegate
-                {
-                    Main.LocalPlayer.mouseInterface = true;
-                    string s = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>().UnspentPoints()
-                        ? "Click here to allocate stat points"
-                        : "You have no unspent stat points";
-                    Main.instance.MouseText(s);
-                });
+                () => new Rectangle((int)PointsOrigin.X, (int)PointsOrigin.Y, (int)(GFX.GFX.UnspentPoints.Width * Scale),
+                    (int)(GFX.GFX.UnspentPoints.Height * Scale)), delegate (Player player)
+               {
+                   character.CloseGuIs();
+                   Main.PlaySound(SoundID.MenuTick);
+                   character.LevelGui.GuiActive = player.GetModPlayer<PlayerCharacter>().UnspentPoints() && !Main.playerInventory;
+               }, delegate
+               {
+                   Main.LocalPlayer.mouseInterface = true;
+                   string s = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>().UnspentPoints()
+                       ? "Click here to allocate stat points"
+                       : "You have no unspent stat points";
+                   Main.instance.MouseText(s);
+               });
         }
 
         /// <summary>
@@ -103,8 +103,8 @@ namespace kRPG.GameObjects.GUI
                         yPosition += 50; //put icon on second row.
                     }
 
-                    buffTypeId = (int) DrawBuffIcon.Invoke(null,
-                        new object[] {buffTypeId, buffSlot, buff, xPosition, yPosition}); // Main.DrawBuffIcon(num, i, b, x, num3);
+                    buffTypeId = (int)DrawBuffIcon.Invoke(null,
+                        new object[] { buffTypeId, buffSlot, buff, xPosition, yPosition }); // Main.DrawBuffIcon(num, i, b, x, num3);
                 }
                 else
                 {
@@ -123,7 +123,7 @@ namespace kRPG.GameObjects.GUI
 
             int itemRarity = 0;
 
-            switch ((VanillaBuffId) buffId)
+            switch ((VanillaBuffId)buffId)
             {
                 case VanillaBuffId.WellFed when Main.expertMode:
                     Main.buffString = Language.GetTextValue("BuffDescription.WellFed_Expert");
@@ -132,11 +132,11 @@ namespace kRPG.GameObjects.GUI
                     Main.bannerMouseOver = true;
                     break;
                 case VanillaBuffId.ManaSickness:
-                {
-                    int percent = (int) (Main.player[Main.myPlayer].manaSickReduction * 100f) + 1;
-                    Main.buffString = Main.buffString + percent + "%";
-                    break;
-                }
+                    {
+                        int percent = (int)(Main.player[Main.myPlayer].manaSickReduction * 100f) + 1;
+                        Main.buffString = Main.buffString + percent + "%";
+                        break;
+                    }
             }
 
             if (Main.meleeBuff[buffId])
@@ -182,7 +182,7 @@ namespace kRPG.GameObjects.GUI
 
                 float itemHotbarScale = Main.hotbarScale[slotIndex];
 
-                int topOffset = (int) (20f + 22f * (1f - itemHotbarScale));
+                int topOffset = (int)(20f + 22f * (1f - itemHotbarScale));
 
                 // int a = (int)(75f + 150f * itemHotbarScale);
 
@@ -222,7 +222,7 @@ namespace kRPG.GameObjects.GUI
                 Main.inventoryScale = originalInventoryScale;
 
                 //Move to the left offset for the next button.
-                leftOffset += (int) (Main.inventoryBackTexture.Width * Main.hotbarScale[slotIndex]) + 4;
+                leftOffset += (int)(Main.inventoryBackTexture.Width * Main.hotbarScale[slotIndex]) + 4;
             }
 #if NOTUSED
             int selectedItem = Main.player[Main.myPlayer].selectedItem;
@@ -313,25 +313,25 @@ namespace kRPG.GameObjects.GUI
             spriteBatch.Draw(GFX.GFX.StatusBarsBg, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
             //Calculate the current life bar length.
-            int currentLifeLength = (int) Math.Round(player.statLife / (decimal) player.statLifeMax2 * BarLifeLength);
+            int currentLifeLength = (int)Math.Round(player.statLife / (decimal)player.statLifeMax2 * BarLifeLength);
 
             spriteBatch.Draw(GFX.GFX.StatusBars, GuiPosition + barLifeOrigin * Scale, new Rectangle(
-                (int) (barLifeOrigin.X + BarLifeLength - currentLifeLength), //This how much of the bar should be blacked out.
-                (int) barLifeOrigin.Y, currentLifeLength, BarLifeThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+                (int)(barLifeOrigin.X + BarLifeLength - currentLifeLength), //This how much of the bar should be blacked out.
+                (int)barLifeOrigin.Y, currentLifeLength, BarLifeThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
             //Calculate the current length of the mana bar
-            int currentManaLength = (int) Math.Round(character.Mana / (decimal) player.statManaMax2 * BarManaLength);
+            int currentManaLength = (int)Math.Round(character.Mana / (decimal)player.statManaMax2 * BarManaLength);
 
             spriteBatch.Draw(GFX.GFX.StatusBars, GuiPosition + barManaOrigin * Scale, new Rectangle(
-                (int) (barManaOrigin.X + BarManaLength - currentManaLength), //How much of the bar should be blacked out.
-                (int) barManaOrigin.Y, currentManaLength, BarManaThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+                (int)(barManaOrigin.X + BarManaLength - currentManaLength), //How much of the bar should be blacked out.
+                (int)barManaOrigin.Y, currentManaLength, BarManaThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
             //calculate the exp bar length
-            int currentXpLength = (int) Math.Round(BarXpLength * (decimal) character.Experience / character.ExperienceToLevel());
+            int currentXpLength = (int)Math.Round(BarXpLength * (decimal)character.Experience / character.ExperienceToLevel());
 
             //Draw the exp bar
             spriteBatch.Draw(GFX.GFX.StatusBars, GuiPosition + barXpOrigin * Scale,
-                new Rectangle((int) barXpOrigin.X, (int) barXpOrigin.Y, currentXpLength, BarXpThickness), Color.White, 0f, Vector2.Zero, Scale,
+                new Rectangle((int)barXpOrigin.X, (int)barXpOrigin.Y, currentXpLength, BarXpThickness), Color.White, 0f, Vector2.Zero, Scale,
                 SpriteEffects.None, 0f);
 
             //Draw the image that is the background for the hud hp/mana/exp bar
@@ -352,32 +352,30 @@ namespace kRPG.GameObjects.GUI
             if (character.UnspentPoints())
                 spriteBatch.Draw(GFX.GFX.UnspentPoints, PointsOrigin, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
-            Main.spriteBatch.End();
+            //  Main.spriteBatch.End();
 
             if (player.lavaTime < player.lavaMax || player.breath < player.breathMax)
             {
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
-                    RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+                // Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
 
                 if (player.lavaTime < player.lavaMax)
                 {
-                    int currentBubbles = (int) Math.Round((decimal) BubblesLength * player.lavaTime / player.lavaMax);
+                    int currentBubbles = (int)Math.Round((decimal)BubblesLength * player.lavaTime / player.lavaMax);
                     spriteBatch.Draw(GFX.GFX.bubbles_lava, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White,
                         Scale);
                 }
 
                 if (player.breath < player.breathMax)
                 {
-                    int currentBubbles = (int) Math.Round((decimal) BubblesLength * player.breath / player.breathMax);
+                    int currentBubbles = (int)Math.Round((decimal)BubblesLength * player.breath / player.breathMax);
                     spriteBatch.Draw(GFX.GFX.bubbles, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White,
                         Scale);
                 }
 
-                Main.spriteBatch.End();
+                //   Main.spriteBatch.End();
             }
-
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
-                RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+            // you should only start and stop spritebatches 
+            //   Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
             Main.buffString = "";
             Main.bannerMouseOver = false;
             if (!Main.recBigList)
@@ -385,8 +383,6 @@ namespace kRPG.GameObjects.GUI
             if (!Main.ingameOptionsWindow && !Main.playerInventory && !Main.inFancyUI)
                 DrawBuffs();
 
-            //todo This was missing.  Well, apparently, they rely on the spritebatch being open to do other draws.  
-            // Main.spriteBatch.End();
         }
     }
 }
