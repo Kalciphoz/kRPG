@@ -1,6 +1,8 @@
 ﻿using System.IO;
+using kRPG.Enums;
 using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.NPCs;
+using kRPG.GameObjects.SFX;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -32,7 +34,8 @@ namespace kRPG.GameObjects.Modifiers
 
         public override void NPCLoot(NPC npc)
         {
-            Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), npc.Center);
+            SoundManager.PlaySound(Sounds.LegacySoundStyle_Item14, npc.Center, .5f);
+            //Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), npc.Center);
             Projectile proj = Main.projectile[
                 Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<NpcExplosion>(), npc.damage * 5 / 4, 0f)];
         }

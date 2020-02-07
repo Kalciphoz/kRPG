@@ -5,6 +5,7 @@ using kRPG.GameObjects.Items.Dusts;
 using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.NPCs;
 using kRPG.GameObjects.Players;
+using kRPG.GameObjects.SFX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -91,7 +92,8 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             });
             Flame = new SwordAccent("Flame", " of Ignition", 2, 2, 3, delegate(Player player, NPC npc, ProceduralSword sword, int damage, bool crit)
                 {
-                    Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
+                    //Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
+                    SoundManager.PlaySound(Sounds.LegacySoundStyle_Item14, player.Center, .5f);
                     Projectile proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(),
                             Math.Max(1, (int) Math.Round(sword.EleDamage[Element.Fire] * damage * 2)), 0f, player.whoAmI)];
@@ -106,7 +108,9 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 });
             GemGreen = new SwordAccent("GemGreen", " of Thunder", 2, 2, 2, delegate(Player player, NPC npc, ProceduralSword sword, int damage, bool crit)
                 {
-                    Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
+                    //Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
+                    SoundManager.PlaySound(Sounds.LegacySoundStyle_Item14, player.Center, .5f);
+
                     Projectile proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(),
                             Math.Max(1, damage / 6),
