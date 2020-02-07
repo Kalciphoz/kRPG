@@ -1,43 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Terraria;
+﻿using System.Collections.Generic;
+using kRPG.Enums;
+using kRPG.GameObjects.Players;
 using Terraria.ModLoader;
 
 namespace kRPG.Commands
 {
     public class RitualsCommand : ModCommand
     {
-        public override CommandType Type
-        {
-            get { return CommandType.Chat; }
-        }
+        public override string Command => "toggleritual";
 
-        public override string Command
-        {
-            get { return "toggleritual"; }
-        }
+        public override string Description => "Switches a ritual on or off";
+        public override CommandType Type => CommandType.Chat;
 
-        public override string Usage
-        {
-            get { return "/toggleritual <name>"; }
-        }
-
-        public override string Description
-        {
-	        get { return "Switches a ritual on or off"; }
-        }
+        public override string Usage => "/toggleritual <name>";
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {
             try
             {
-                RITUAL ritual = kRPG.ritualByName[args[0]];
-                PlayerCharacter character = caller.Player.GetModPlayer<PlayerCharacter>(mod);
-                character.rituals[ritual] = !character.rituals[ritual];
+                Ritual ritual = kRPG.ritualByName[args[0]];
+                PlayerCharacter character = caller.Player.GetModPlayer<PlayerCharacter>();
+                character.Rituals[ritual] = !character.Rituals[ritual];
             }
             catch (KeyNotFoundException)
             {
