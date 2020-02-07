@@ -12,6 +12,7 @@ using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.Items.Projectiles.Base;
 using kRPG.GameObjects.Items.Weapons.Melee;
 using kRPG.GameObjects.NPCs;
+using kRPG.GameObjects.SFX;
 using kRPG.GameObjects.Spells;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -492,7 +493,7 @@ namespace kRPG.GameObjects.Players
             //    return;
             for (int i = 0; i < layers.Count; i += 1)
                 if (layers[i].Name.Contains("Held"))
-                    layers.Insert(i + 2, new PlayerLayer("kRPG", "ProceduralItem", drawinfo =>
+                    layers.Insert(i + 2, new PlayerLayer(Constants.ModName, "ProceduralItem", drawinfo =>
                     {
                         if (player.itemAnimation <= 0)
                             return;
@@ -643,7 +644,7 @@ namespace kRPG.GameObjects.Players
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
             }
         }
 
@@ -1195,7 +1196,7 @@ namespace kRPG.GameObjects.Players
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Abilities :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@Abilities :: " + e);
             }
 
             try
@@ -1206,7 +1207,7 @@ namespace kRPG.GameObjects.Players
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Inventories :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@Inventories :: " + e);
             }
 
             return tagCompound;
@@ -1221,7 +1222,7 @@ namespace kRPG.GameObjects.Players
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Level&XP :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@Level&XP :: " + e);
             }
 
             try
@@ -1233,7 +1234,7 @@ namespace kRPG.GameObjects.Players
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Stats&Rituals :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@Stats&Rituals :: " + e);
             }
 
             try
@@ -1250,7 +1251,7 @@ namespace kRPG.GameObjects.Players
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Abilities :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@Abilities :: " + e);
             }
 
             try
@@ -1262,7 +1263,7 @@ namespace kRPG.GameObjects.Players
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Inventory :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@Inventory :: " + e);
             }
 
             try
@@ -1275,7 +1276,7 @@ namespace kRPG.GameObjects.Players
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Miscellaneous :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@Miscellaneous :: " + e);
             }
         }
 

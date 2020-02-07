@@ -74,7 +74,8 @@ namespace kRPG.GameObjects.Spells
 
         public void CastSpell(Terraria.Player player, Vector2 origin, Vector2 target, Entity caster)
         {
-            Main.PlaySound(SoundID.Item8, caster.position);
+            SoundManager.PlaySound(Sounds.LegacySoundStyle_Item8,caster.position);
+            //Main.PlaySound(SoundID.Item8, caster.position);
             castAction(this, player, origin, target, caster);
         }
 
@@ -174,7 +175,8 @@ namespace kRPG.GameObjects.Spells
                     Main.LocalPlayer.mouseInterface = true;
                     if (Main.mouseLeft && Main.mouseLeftRelease)
                     {
-                        Main.PlaySound(SoundID.MenuTick);
+                        //Main.PlaySound(SoundID.MenuTick);
+                        SoundManager.PlaySound(Sounds.MenuTick);
                         character.CloseGuIs();
                         character.SelectedAbility = this;
                     }
@@ -212,7 +214,7 @@ namespace kRPG.GameObjects.Spells
             }
             catch (Exception e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
             }
 
         }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using kRPG.Enums;
 using kRPG.GameObjects.Items.Glyphs;
+using kRPG.GameObjects.SFX;
 using kRPG.GameObjects.Spells;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -128,7 +129,8 @@ namespace kRPG.GameObjects.Items.Projectiles
             foreach (Action<ProceduralSpellProj> action in Kills.Where(action => action != null))
                 action(this);
             if (timeLeft > 0)
-                Main.PlaySound(SoundID.Dig, projectile.position);
+                //Main.PlaySound(SoundID.Dig, projectile.position);
+            SoundManager.PlaySound(Sounds.Dig,projectile.position);
         }
 
         // ReSharper disable once IdentifierTypo
@@ -142,7 +144,8 @@ namespace kRPG.GameObjects.Items.Projectiles
         {
             if (!Bounce)
                 return true;
-            Main.PlaySound(SoundID.Item10, projectile.position);
+            //Main.PlaySound(SoundID.Item10, projectile.position);
+            SoundManager.PlaySound(Sounds.LegacySoundStyle_Item10,projectile.position);
 
             if (Math.Abs(projectile.velocity.Y - velocity.Y) > .01)
                 projectile.velocity.Y = -velocity.Y;

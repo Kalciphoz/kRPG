@@ -14,7 +14,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         {
             Type = Hilts.Count + 1;
             if (Main.netMode != 2)
-                Texture = ModLoader.GetMod("kRPG").GetTexture("GameObjects/GFX/Items/Swordhilts/" + texture);
+                Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Swordhilts/" + texture);
             Origin = new Vector2(originX, originY);
             DpsModifier = dpsModifier;
             SpeedModifier = speedModifier;
@@ -86,7 +86,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         public SwordHilt DefineSpear(string texture, int origin_x, int origin_y)
         {
             if (Main.netMode != 2)
-                SpearTexture = ModLoader.GetMod("kRPG").GetTexture("GameObjects/GFX/Projectiles/SpearMounts/" + texture);
+                SpearTexture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Projectiles/SpearMounts/" + texture);
             SpearOrigin = new Vector2(origin_x, origin_y);
             return this;
         }

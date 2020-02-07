@@ -131,7 +131,7 @@ namespace kRPG.GameObjects.Modifiers
             catch (SystemException e)
             {
                 Main.NewText(e.ToString());
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
             }
         }
     }

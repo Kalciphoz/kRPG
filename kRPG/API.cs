@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using kRPG.GameObjects.Items;
+using kRPG.Enums;
 using kRPG.GameObjects.Items.Glyphs;
 using kRPG.GameObjects.Items.Procedural;
 using kRPG.GameObjects.Items.Weapons.Ranged;
 using kRPG.GameObjects.NPCs;
 using kRPG.GameObjects.Players;
+using kRPG.GameObjects.SFX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
@@ -30,19 +31,19 @@ namespace kRPG
 
         private const byte c = 0;
         private const byte g = 2;
+        private const byte p = 3;
+        private const byte s = 1;
+        public static double Tau => Math.PI * 2;
+
         private static readonly FieldInfo InventoryGlowHue = typeof(ItemSlot).GetField("inventoryGlowHue", BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly FieldInfo InventoryGlowTime = typeof(ItemSlot).GetField("inventoryGlowTime", BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly FieldInfo GlobalItemsProperty = typeof(Item).GetField("globalItems", BindingFlags.NonPublic | BindingFlags.Instance);
-
-        private static readonly FieldInfo InventoryGlowTimeChest =
-            typeof(ItemSlot).GetField("inventoryGlowTimeChest", BindingFlags.NonPublic | BindingFlags.Static);
-
+        private static readonly FieldInfo InventoryGlowTimeChest = typeof(ItemSlot).GetField("inventoryGlowTimeChest", BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly MethodInfo IsModItem = typeof(ItemLoader).GetMethod("IsModItem", BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly PropertyInfo ModItem = typeof(Item).GetProperty("modItem", BindingFlags.Public | BindingFlags.Instance);
-        private const byte p = 3;
-        private const byte s = 1;
 
-        public static double Tau => Math.PI * 2;
+
+
 
         public static void ApiCreate(this Recipe recipe)
         {
@@ -201,10 +202,10 @@ namespace kRPG
 
                 if ((item.mana > 0) & flag)
                 {
-                    if (player.statMana >= (int) (item.mana * player.manaCost))
+                    if (player.statMana >= (int)(item.mana * player.manaCost))
                     {
-                        player.manaRegenDelay = (int) player.maxRegenDelay;
-                        player.statMana -= (int) (item.mana * player.manaCost);
+                        player.manaRegenDelay = (int)player.maxRegenDelay;
+                        player.statMana -= (int)(item.mana * player.manaCost);
                     }
                     else
                     {
@@ -423,11 +424,12 @@ namespace kRPG
             return coins;
         }
 
-        public static bool Contains<T>(this IEnumerable<T> e, Predicate<T> match)
-        {
-            List<T> values = e.ToList();
-            return values.Contains(match);
-        }
+        //This is just bad code, it's a circular reference that will never resolve.
+        //public static bool Contains<T>(this IEnumerable<T> e, Predicate<T> match)
+        //{
+        //    List<T> values = e.ToList();
+        //    return values.Contains(match);
+        //}
 
         public static bool Contains<T>(this IEnumerable<T> e, T item)
         {
@@ -472,7 +474,8 @@ namespace kRPG
                 return;
             RecipeHooks.OnCraft(Main.mouseItem, r);
             ItemLoader.OnCraft(Main.mouseItem, r);
-            Main.PlaySound(7);
+            //Main.PlaySound(7);
+            SoundManager.PlaySound(Sounds.Grass);
         }
 
         public static void Draw(this SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Color color, float scale)
@@ -576,12 +579,15 @@ namespace kRPG
                     else
                         switch (Main.player[Main.myPlayer].chest)
                         {
+                            //Inventory Bank Main I
                             case -2:
                                 array = Main.player[Main.myPlayer].bank.item;
                                 break;
+                            //Inventory Bank Page II
                             case -3:
                                 array = Main.player[Main.myPlayer].bank2.item;
                                 break;
+                            //Inventory Bank Page III
                             case -4:
                                 array = Main.player[Main.myPlayer].bank3.item;
                                 break;
@@ -596,6 +602,7 @@ namespace kRPG
                         {
                             Dictionary<int, int> dictionary3;
                             int netId2;
+                            //todo, Ok, no idea what this code is doing, will need to figure it out
                             (dictionary3 = dictionary)[netId2 = item.netID] = dictionary3[netId2] + item.stack;
                         }
                         else
@@ -720,10 +727,8 @@ namespace kRPG
                 Item x = player.inventory[num3];
                 if (x.type <= 0 || x.stack <= 0 || x.stack >= x.maxStack || !item.IsTheSameAs(x))
                     continue;
-                if (flag)
-                    Main.PlaySound(38, (int) player.position.X, (int) player.position.Y);
-                else
-                    Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
+                SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
+
                 if (item.stack + x.stack <= x.maxStack)
                 {
                     x.stack += item.stack;
@@ -754,9 +759,17 @@ namespace kRPG
                     if (x.type <= 0 || x.stack >= x.maxStack || !item.IsTheSameAs(x))
                         continue;
                     if (flag)
-                        Main.PlaySound(38, (int) player.position.X, (int) player.position.Y);
+                    {
+                        //Main.PlaySound(38, (int)player.position.X, (int)player.position.Y);
+                        SoundManager.PlaySound(Sounds.Meowmere, player.position);
+                    }
+
                     else
-                        Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
+                    {
+                        SoundManager.PlaySound(Sounds.Grass, player.position);
+                        //Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
+                    }
+
                     if (item.stack + x.stack <= x.maxStack)
                     {
                         x.stack += item.stack;
@@ -782,7 +795,9 @@ namespace kRPG
                     player.inventory[j] = item;
                     ItemText.NewText(newItem, newItem.stack);
                     player.DoCoins(j);
-                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                    //Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                    SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
+
                     if (plr == Main.myPlayer)
                         FindRecipes();
                     AchievementsHelper.NotifyItemPickup(player, item);
@@ -798,7 +813,8 @@ namespace kRPG
                             continue;
                         player.inventory[i] = item;
                         ItemText.NewText(newItem, newItem.stack);
-                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                        //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
+                        SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
                     }
@@ -809,7 +825,8 @@ namespace kRPG
                             continue;
                         character.Inventories[2][i] = item;
                         ItemText.NewText(newItem, newItem.stack);
-                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                        //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
+                        SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
                     }
@@ -824,7 +841,8 @@ namespace kRPG
                     player.inventory[k] = item;
                     ItemText.NewText(newItem, newItem.stack);
                     player.DoCoins(k);
-                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                    //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
+                    SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                     if (plr == Main.myPlayer)
                         FindRecipes();
                     AchievementsHelper.NotifyItemPickup(player, item);
@@ -840,7 +858,8 @@ namespace kRPG
                     player.inventory[l] = item;
                     ItemText.NewText(newItem, newItem.stack);
                     player.DoCoins(l);
-                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                    //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
+                    SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                     if (plr == Main.myPlayer)
                         FindRecipes();
                     AchievementsHelper.NotifyItemPickup(player, item);
@@ -857,7 +876,8 @@ namespace kRPG
                             continue;
                         character.Inventories[i][j] = item;
                         ItemText.NewText(newItem, newItem.stack);
-                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                        //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
+                        SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
                     }
@@ -1033,17 +1053,17 @@ namespace kRPG
                         texture2D = Main.inventoryBack7Texture;
                         break;
                     case 13:
-                    {
-                        byte b = 200;
-                        if (slot == Main.player[Main.myPlayer].selectedItem)
                         {
-                            texture2D = Main.inventoryBack14Texture;
-                            b = 255;
-                        }
+                            byte b = 200;
+                            if (slot == Main.player[Main.myPlayer].selectedItem)
+                            {
+                                texture2D = Main.inventoryBack14Texture;
+                                b = 255;
+                            }
 
-                        new Color(b, b, b, b);
-                        break;
-                    }
+                            new Color(b, b, b, b);
+                            break;
+                        }
                     case 14:
                     case 21:
                         flag2 = true;
@@ -1057,25 +1077,25 @@ namespace kRPG
                 }
             }
 
-            if (context == 0 && ((int[]) InventoryGlowTime.GetValue(null))[slot] > 0 && !inv[slot].favorited)
+            if (context == 0 && ((int[])InventoryGlowTime.GetValue(null))[slot] > 0 && !inv[slot].favorited)
             {
                 float scale = Main.invAlpha / 255f;
                 Color value = new Color(63, 65, 151, 255) * scale;
-                Color value2 = Main.hslToRgb(((float[]) InventoryGlowHue.GetValue(null))[slot], 1f, 0.5f) * scale;
-                float num5 = ((int[]) InventoryGlowTime.GetValue(null))[slot] / 300f;
+                Color value2 = Main.hslToRgb(((float[])InventoryGlowHue.GetValue(null))[slot], 1f, 0.5f) * scale;
+                float num5 = ((int[])InventoryGlowTime.GetValue(null))[slot] / 300f;
                 num5 *= num5;
                 Color.Lerp(value, value2, num5 / 2f);
                 texture2D = Main.inventoryBack13Texture;
             }
 
-            if ((context == 4 || context == 3) && ((int[]) InventoryGlowTimeChest.GetValue(null))[slot] > 0 && !inv[slot].favorited)
+            if ((context == 4 || context == 3) && ((int[])InventoryGlowTimeChest.GetValue(null))[slot] > 0 && !inv[slot].favorited)
             {
                 float scale2 = Main.invAlpha / 255f;
                 Color value3 = new Color(130, 62, 102, 255) * scale2;
                 if (context == 3)
                     value3 = new Color(104, 52, 52, 255) * scale2;
-                Color value4 = Main.hslToRgb(((float[]) InventoryGlowHue.GetValue(null))[slot], 1f, 0.5f) * scale2;
-                float num6 = ((int[]) InventoryGlowTimeChest.GetValue(null))[slot] / 300f;
+                Color value4 = Main.hslToRgb(((float[])InventoryGlowHue.GetValue(null))[slot], 1f, 0.5f) * scale2;
+                float num6 = ((int[])InventoryGlowTimeChest.GetValue(null))[slot] / 300f;
                 num6 *= num6;
                 Color.Lerp(value3, value4, num6 / 2f);
                 texture2D = Main.inventoryBack13Texture;
@@ -1094,20 +1114,34 @@ namespace kRPG
             switch (context)
             {
                 case 8:
-                    if (slot == 0)
-                        num7 = 0;
-                    if (slot == 1)
-                        num7 = 6;
-                    if (slot == 2)
-                        num7 = 12;
+                    switch (slot)
+                    {
+                        case 0:
+                            num7 = 0;
+                            break;
+                        case 1:
+                            num7 = 6;
+                            break;
+                        case 2:
+                            num7 = 12;
+                            break;
+                    }
+
                     break;
                 case 9:
-                    if (slot == 10)
-                        num7 = 3;
-                    if (slot == 11)
-                        num7 = 9;
-                    if (slot == 12)
-                        num7 = 15;
+                    switch (slot)
+                    {
+                        case 10:
+                            num7 = 3;
+                            break;
+                        case 11:
+                            num7 = 9;
+                            break;
+                        case 12:
+                            num7 = 15;
+                            break;
+                    }
+
                     break;
                 case 10:
                     num7 = 11;
@@ -1148,7 +1182,7 @@ namespace kRPG
             Vector2 vector = texture2D.Size() * inventoryScale;
             if (item.type > 0 && item.stack > 0)
             {
-                Texture2D texture2D3 = item.modItem is ProceduralItem ? ((ProceduralItem) item.modItem).texture : Main.itemTexture[item.type];
+                Texture2D texture2D3 = item.modItem is ProceduralItem ? ((ProceduralItem)item.modItem).texture : Main.itemTexture[item.type];
                 Rectangle rectangle2;
                 rectangle2 = Main.itemAnimations[item.type] != null ? Main.itemAnimations[item.type].GetFrame(texture2D3) : texture2D3.Frame();
                 Color newColor = color;
@@ -1242,7 +1276,7 @@ namespace kRPG
                 if (context == 13 && item.potion)
                 {
                     Vector2 position3 = position + texture2D.Size() * inventoryScale / 2f - Main.cdTexture.Size() * inventoryScale / 2f;
-                    Color color3 = item.GetAlpha(color) * (player.potionDelay / (float) player.potionDelayTime);
+                    Color color3 = item.GetAlpha(color) * (player.potionDelay / (float)player.potionDelayTime);
                     spriteBatch.Draw(Main.cdTexture, position3, null, color3, 0f, default, num9, SpriteEffects.None, 0f);
                 }
 
@@ -1326,31 +1360,31 @@ namespace kRPG
             }
 
             int num2 = Gore.NewGore(
-                new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f), default,
+                new Vector2(player.position.X + (float)(player.width / 2.0) - 24f, player.position.Y + (float)(player.height / 2.0) - 24f), default,
                 Main.rand.Next(61, 64));
             //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
+            num2 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2.0) - 24f, player.position.Y + (float)(player.height / 2.0) - 24f),
                 default, Main.rand.Next(61, 64));
             //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
+            num2 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2.0) - 24f, player.position.Y + (float)(player.height / 2.0) - 24f),
                 default, Main.rand.Next(61, 64));
             //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
+            num2 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2.0) - 24f, player.position.Y + (float)(player.height / 2.0) - 24f),
                 default, Main.rand.Next(61, 64));
             //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
+            num2 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2.0) - 24f, player.position.Y + (float)(player.height / 2.0) - 24f),
                 default, Main.rand.Next(61, 64));
             //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
@@ -1410,7 +1444,7 @@ namespace kRPG
             Main.gore[num2].velocity *= 0.4f;
         }
 
-        public static V Random<K, V>(this Dictionary<K, V> dictionary)
+        public static TV Random<TK, TV>(this Dictionary<TK, TV> dictionary)
         {
             return dictionary.Values.ToList().Random();
         }
@@ -1423,7 +1457,7 @@ namespace kRPG
 
         public static void RemoveCoins(this Player player, int amount)
         {
-            int[] coinType = {71, 72, 73, 74};
+            int[] coinType = { 71, 72, 73, 74 };
 
             //splitting the cost into individual coin types
             int[] cost = SeparateCoinTypes(amount);
@@ -1473,7 +1507,7 @@ namespace kRPG
                 {
                     cost[i + 1] += 1;
                     cost[i] -= 100;
-                    Item.NewItem((int) player.position.X, (int) player.position.Y, 0, 0, coinType[i], -cost[i], true, 0, true);
+                    Item.NewItem((int)player.position.X, (int)player.position.Y, 0, 0, coinType[i], -cost[i], true, 0, true);
                 }
         }
 
@@ -1541,7 +1575,7 @@ namespace kRPG
                     item.SetDefaults4(item.type);
                 }
 
-                item.dye = (byte) GameShaders.Armor.GetShaderIdFromItemId(item.type);
+                item.dye = (byte)GameShaders.Armor.GetShaderIdFromItemId(item.type);
                 if (item.hairDye != 0)
                     item.hairDye = GameShaders.Hair.GetShaderIdFromItemId(item.type);
                 switch (item.type)
@@ -1659,7 +1693,7 @@ namespace kRPG
                     case 1199:
                     case 368:
                         item.autoReuse = true;
-                        item.damage = (int) (item.damage * 1.15);
+                        item.damage = (int)(item.damage * 1.15);
                         break;
                     case 2663:
                     case 1720:
@@ -1694,7 +1728,7 @@ namespace kRPG
                     item.maxStack = 999;
                 item.netID = item.type;
 
-                if ((bool) IsModItem.Invoke(null, new object[] {item.type}) && createModItem)
+                if ((bool)IsModItem.Invoke(null, new object[] { item.type }) && createModItem)
                     ModItem.SetValue(item, ItemLoader.GetItem(item.type).NewInstance(item));
 
                 item.modItem?.AutoDefaults();
@@ -1721,7 +1755,7 @@ namespace kRPG
             }
         }
 
-       
+
         public static int Wealth(this Player player)
         {
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();

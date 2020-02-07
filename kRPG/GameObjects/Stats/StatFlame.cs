@@ -3,6 +3,7 @@ using System.Linq;
 using kRPG.Enums;
 using kRPG.GameObjects.GUI;
 using kRPG.GameObjects.Players;
+using kRPG.GameObjects.SFX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -100,13 +101,15 @@ namespace kRPG.GameObjects.Stats
             int total = LevelGui.allocated.Keys.Sum(stat => LevelGui.allocated[stat]);
             if (Main.mouseLeft && Main.mouseLeftRelease && total + character.PointsAllocated < character.Level - 1)
             {
-                Main.PlaySound(SoundID.MenuTick);
+                //Main.PlaySound(SoundID.MenuTick);
+                SoundManager.PlaySound(Sounds.MenuTick);
                 Allocated += 1;
             }
 
             if (Main.mouseRight && Main.mouseRightRelease && Allocated > 0)
             {
-                Main.PlaySound(SoundID.MenuTick);
+                //Main.PlaySound(SoundID.MenuTick);
+                SoundManager.PlaySound(Sounds.MenuTick);
                 Allocated -= 1;
             }
         }

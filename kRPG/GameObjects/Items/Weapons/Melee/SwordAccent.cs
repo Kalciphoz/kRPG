@@ -23,7 +23,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             Type = Accents.Count;
             if (Main.netMode != 2)
                 if (texture != null)
-                    Texture = ModLoader.GetMod("kRPG").GetTexture("GameObjects/GFX/Items/Accents/" + texture);
+                    Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Accents/" + texture);
             Suffix = suffix;
             Origin = new Vector2(originX, originY);
             OnHit = onHit;

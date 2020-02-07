@@ -6,6 +6,7 @@ using kRPG.GameObjects.GUI.Base;
 using kRPG.GameObjects.Items.Glyphs;
 using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.Players;
+using kRPG.GameObjects.SFX;
 using kRPG.GameObjects.Spells;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -68,7 +69,8 @@ namespace kRPG.GameObjects.GUI
             if (!Main.mouseLeft || !Main.mouseLeftRelease)
                 return;
 
-            Main.PlaySound(SoundID.MenuTick);
+            //Main.PlaySound(SoundID.MenuTick);
+            SoundManager.PlaySound(Sounds.MenuTick);
 
             CloseGui();
         }
@@ -121,7 +123,9 @@ namespace kRPG.GameObjects.GUI
             Item prevItem = Glyph;
             Glyph = Main.mouseItem;
             Main.mouseItem = prevItem;
-            Main.PlaySound(SoundID.Item4, Main.screenPosition + Bounds.Center());
+            //Main.PlaySound(SoundID.Item4, Main.screenPosition + Bounds.Center());
+
+            SoundManager.PlaySound(Sounds.LegacySoundStyle_Item4, Main.screenPosition + Bounds.Center());
 
             return true;
         }

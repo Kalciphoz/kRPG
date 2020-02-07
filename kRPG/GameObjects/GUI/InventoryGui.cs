@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using kRPG.Enums;
 using kRPG.GameObjects.GUI.Base;
-using kRPG.GameObjects.Items;
 using kRPG.GameObjects.Items.Crowns;
 using kRPG.GameObjects.Items.Procedural;
 using kRPG.GameObjects.Players;
+using kRPG.GameObjects.SFX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
@@ -180,7 +179,7 @@ namespace kRPG.GameObjects.GUI
                     }
                     catch (SystemException e)
                     {
-                        ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                        ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
 
                         if (!(Main.LocalPlayer.inventory[id].modItem is ProceduralItem))
                             continue;
@@ -192,11 +191,11 @@ namespace kRPG.GameObjects.GUI
                         }
                         catch (SystemException e2)
                         {
-                            ModLoader.GetMod("kRPG").Logger.InfoFormat("Failed to initialize: " + e2);
+                            ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("Failed to initialize: " + e2);
                             spriteBatch.Draw(GFX.GFX.ItemSlotBroken, new Vector2(x2, y2), Color.White, Main.inventoryScale);
                             //Removing references to SetDefaults
                             //Main.LocalPlayer.inventory[id].SetDefaults();
-                            ModLoader.GetMod("kRPG").Logger.InfoFormat("ITEM " + id + " WAS DESTROYED.");
+                            ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("ITEM " + id + " WAS DESTROYED.");
                         }
                     }
                 }
@@ -352,7 +351,6 @@ namespace kRPG.GameObjects.GUI
             if (character.UnspentPoints())
                 spriteBatch.Draw(GFX.GFX.InventoryPoints, PointsOrigin, Color.White, Scale);
 
-            //Mod mod = ModLoader.GetMod("kRPG");
             spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<PermanenceCrown>()], Origin + new Vector2(600f, 68f) * Scale, Color.White, Scale);
 
             spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.Permanence, Origin + new Vector2(640f, 72f) * Scale, Color.White,
@@ -437,7 +435,8 @@ namespace kRPG.GameObjects.GUI
 
                         if (Main.mouseLeft && Main.mouseLeftRelease)
                         {
-                            Main.PlaySound(22);
+                            //Main.PlaySound(22);
+                            SoundManager.PlaySound(Sounds.Tink);
 
                             Main.player[Main.myPlayer].hbLocked = !Main.player[Main.myPlayer].hbLocked;
                         }
@@ -489,7 +488,8 @@ namespace kRPG.GameObjects.GUI
                                             Main.playerInventory = false;
                                             Main.player[Main.myPlayer].talkNPC = -1;
                                             Main.npcChatCornerItem = 0;
-                                            Main.PlaySound(10);
+                                            //Main.PlaySound(10);
+                                            SoundManager.PlaySound(Sounds.DoorClosed);
                                             float num16 = 2.5f;
                                             Main.mapFullscreenScale = num16;
                                             Main.mapFullscreen = true;
@@ -498,15 +498,18 @@ namespace kRPG.GameObjects.GUI
                                         }
                                     case 1:
                                         Main.mapStyle = 0;
-                                        Main.PlaySound(12);
+                                        //Main.PlaySound(12);
+                                        SoundManager.PlaySound(Sounds.MenuClose);
                                         break;
                                     case 2:
                                         Main.mapStyle = 1;
-                                        Main.PlaySound(12);
+                                        //Main.PlaySound(12);
+                                        SoundManager.PlaySound(Sounds.MenuClose);
                                         break;
                                     case 3:
                                         Main.mapStyle = 2;
-                                        Main.PlaySound(12);
+                                        //Main.PlaySound(12);
+                                        SoundManager.PlaySound(Sounds.MenuClose);
                                         break;
                                 }
                         }
@@ -626,7 +629,8 @@ namespace kRPG.GameObjects.GUI
                                     }
 
                                     Main.mouseLeftRelease = false;
-                                    Main.PlaySound(12);
+                                    //Main.PlaySound(12);
+                                    SoundManager.PlaySound(Sounds.MenuClose);
                                     if (Main.netMode == 1)
                                         NetMessage.SendData((int)PacketTypes.PlayerInfo, -1, -1, null, Main.myPlayer);
                                 }
@@ -772,7 +776,8 @@ namespace kRPG.GameObjects.GUI
                                     Main.player[Main.myPlayer].mouseInterface = true;
                                     if (Main.mouseLeftRelease && Main.mouseLeft && !PlayerInput.UsingGamepadUI && Main.mouseItem.type == 0)
                                     {
-                                        Main.PlaySound(12);
+                                        //Main.PlaySound(12);
+                                        SoundManager.PlaySound(Sounds.MenuClose);
                                         main.mouseNPC = num35;
                                         Main.mouseLeftRelease = false;
                                     }
@@ -893,7 +898,8 @@ namespace kRPG.GameObjects.GUI
                             if (Main.mouseLeft && Main.mouseLeftRelease)
                             {
                                 Main.player[Main.myPlayer].hideVisual[num46] = !Main.player[Main.myPlayer].hideVisual[num46];
-                                Main.PlaySound(12);
+                                //Main.PlaySound(12);
+                                SoundManager.PlaySound(Sounds.MenuClose);
                                 if (Main.netMode == 1)
                                     NetMessage.SendData((int)PacketTypes.PlayerInfo, -1, -1, null, Main.myPlayer);
                             }
@@ -1147,7 +1153,8 @@ namespace kRPG.GameObjects.GUI
                                 //Main.hoverItemName = Lang.inter[19].Value;
                                 Main.hoverItemName = Language.GetTextValue("LegacyInterface.19");
                                 if (!(bool)MouseReforge.GetValue(null))
-                                    Main.PlaySound(12);
+                                    //Main.PlaySound(12);
+                                    SoundManager.PlaySound(Sounds.MenuClose);
 
                                 MouseReforge.SetValue(null, true);
                                 Main.player[Main.myPlayer].mouseInterface = true;
@@ -1159,7 +1166,8 @@ namespace kRPG.GameObjects.GUI
                                     Main.reforgeItem.position.Y = Main.player[Main.myPlayer].position.Y + (float)(Main.player[Main.myPlayer].height / 2.0) -
                                                                   (float)(Main.reforgeItem.height / 2.0);
                                     ItemText.NewText(Main.reforgeItem, Main.reforgeItem.stack, true);
-                                    Main.PlaySound(SoundID.Item37);
+                                    //Main.PlaySound(SoundID.Item37);
+                                    SoundManager.PlaySound(Sounds.ForceRoar);
                                 }
                             }
                             else
@@ -1321,7 +1329,8 @@ namespace kRPG.GameObjects.GUI
                         if (Main.availableRecipeY[num80] < (num80 - Main.focusRecipe) * 65)
                         {
                             if (Math.Abs(Main.availableRecipeY[num80]) < .01 && !Main.recFastScroll)
-                                Main.PlaySound(12);
+                                //Main.PlaySound(12);
+                                SoundManager.PlaySound(Sounds.MenuClose);
 
                             Main.availableRecipeY[num80] += 6.5f;
                             if (Main.recFastScroll)
@@ -1333,7 +1342,8 @@ namespace kRPG.GameObjects.GUI
                         else if (Main.availableRecipeY[num80] > (num80 - Main.focusRecipe) * 65f)
                         {
                             if (Math.Abs(Main.availableRecipeY[num80]) < .01 && !Main.recFastScroll)
-                                Main.PlaySound(12);
+                                //Main.PlaySound(12);
+                                SoundManager.PlaySound(Sounds.MenuClose);
 
                             Main.availableRecipeY[num80] -= 6.5f;
                             if (Main.recFastScroll)
@@ -1527,16 +1537,8 @@ namespace kRPG.GameObjects.GUI
                             Main.player[Main.myPlayer].mouseInterface = true;
                             if (Main.mouseLeft && Main.mouseLeftRelease)
                             {
-                                if (!Main.recBigList)
-                                {
-                                    Main.recBigList = true;
-                                    Main.PlaySound(12);
-                                }
-                                else
-                                {
-                                    Main.recBigList = false;
-                                    Main.PlaySound(12);
-                                }
+                                SoundManager.PlaySound(Sounds.MenuClose);
+                                Main.recBigList = !Main.recBigList;
                             }
                         }
                     }
@@ -1581,7 +1583,8 @@ namespace kRPG.GameObjects.GUI
                                 if (Main.recStart < 0)
                                     Main.recStart = 0;
 
-                                Main.PlaySound(12);
+                                //Main.PlaySound(12);
+                                SoundManager.PlaySound(Sounds.MenuClose);
                                 Main.mouseLeftRelease = false;
                             }
                         }
@@ -1601,7 +1604,8 @@ namespace kRPG.GameObjects.GUI
                             if (Main.mouseLeftRelease && Main.mouseLeft)
                             {
                                 Main.recStart += num96;
-                                Main.PlaySound(12);
+                                //Main.PlaySound(12);
+                                SoundManager.PlaySound(Sounds.MenuClose);
                                 if (Main.recStart > Main.numAvailableRecipes - num96)
                                     Main.recStart = Main.numAvailableRecipes - num96;
 
@@ -1632,7 +1636,8 @@ namespace kRPG.GameObjects.GUI
                                 Main.focusRecipe = num104;
                                 Main.recFastScroll = true;
                                 Main.recBigList = false;
-                                Main.PlaySound(12);
+                                //Main.PlaySound(12);
+                                SoundManager.PlaySound(Sounds.MenuClose);
                                 Main.mouseLeftRelease = false;
                                 if (PlayerInput.UsingGamepadUI)
                                     UILinkPointNavigator.ChangePage(9);
@@ -1810,7 +1815,8 @@ namespace kRPG.GameObjects.GUI
                         num121 = 1;
                         if (!(bool)AllChestStackHover.GetValue(null))
                         {
-                            Main.PlaySound(12);
+                            //Main.PlaySound(12);
+                            SoundManager.PlaySound(Sounds.MenuClose);
                             AllChestStackHover.SetValue(null, true);
                         }
 
@@ -1825,7 +1831,8 @@ namespace kRPG.GameObjects.GUI
                     }
                     else if ((bool)AllChestStackHover.GetValue(null))
                     {
-                        Main.PlaySound(12);
+                        //Main.PlaySound(12);
+                        SoundManager.PlaySound(Sounds.MenuClose);
                         AllChestStackHover.SetValue(null, false);
                     }
 
@@ -1861,7 +1868,8 @@ namespace kRPG.GameObjects.GUI
 
                     if (flag10 != (bool)InventorySortMouseOver.GetValue(null))
                     {
-                        Main.PlaySound(12);
+                        //Main.PlaySound(12);
+                        SoundManager.PlaySound(Sounds.MenuClose);
                         InventorySortMouseOver.SetValue(null, flag10);
                     }
 

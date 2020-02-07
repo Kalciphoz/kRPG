@@ -22,7 +22,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         {
             Type = Gems.Count + 1;
             if (Main.netMode != 2)
-                Texture = ModLoader.GetMod("kRPG").GetTexture("GameObjects/GFX/Items/Gemstones/" + texture);
+                Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Gemstones/" + texture);
             Origin = new Vector2(originX, originY);
             DpsModifier = dpsModifier;
             SpeedModifier = speedModifier;

@@ -96,7 +96,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
             }
         }
 
@@ -143,8 +143,8 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("Blade|Hilt|Accent" + (Blade == null) + (Hilt == null) + (Accent == null));
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("Blade|Hilt|Accent" + (Blade == null) + (Hilt == null) + (Accent == null));
             }
         }
 
@@ -160,7 +160,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Loading :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@Loading :: " + e);
             }
 
             try
@@ -169,7 +169,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Initialize :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@Initialize :: " + e);
             }
         }
 
@@ -265,7 +265,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
             }
         }
 
@@ -284,8 +284,8 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@NewTagCompound :: " + e);
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("Blade|Hilt|Accent" + (Blade == null) + (Hilt == null) + (Accent == null));
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@NewTagCompound :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("Blade|Hilt|Accent" + (Blade == null) + (Hilt == null) + (Accent == null));
             }
 
             return new TagCompound();
@@ -370,7 +370,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
             }
 
             return false;

@@ -3,6 +3,7 @@ using System.Reflection;
 using kRPG.Enums;
 using kRPG.GameObjects.GUI.Base;
 using kRPG.GameObjects.Players;
+using kRPG.GameObjects.SFX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -58,7 +59,8 @@ namespace kRPG.GameObjects.GUI
                     (int)(GFX.GFX.UnspentPoints.Height * Scale)), delegate (Player player)
                {
                    character.CloseGuIs();
-                   Main.PlaySound(SoundID.MenuTick);
+                   //Main.PlaySound(SoundID.MenuTick);
+                   SoundManager.PlaySound(Sounds.MenuClose);
                    character.LevelGui.GuiActive = player.GetModPlayer<PlayerCharacter>().UnspentPoints() && !Main.playerInventory;
                }, delegate
                {

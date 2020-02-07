@@ -462,7 +462,7 @@ namespace kRPG
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
             layers.Find(layer => layer.Name == "Vanilla: Resource Bars").Active = false;
-            layers[layers.FindIndex(layer => layer.Name == "Vanilla: Inventory")] = new LegacyGameInterfaceLayer("kRPG", DrawInterface, InterfaceScaleType.UI);
+            layers[layers.FindIndex(layer => layer.Name == "Vanilla: Inventory")] = new LegacyGameInterfaceLayer(Constants.ModName, DrawInterface, InterfaceScaleType.UI);
             layers.Find(layer => layer.Name == "Vanilla: Hotbar").Active = false;
         }
 

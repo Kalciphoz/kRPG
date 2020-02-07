@@ -19,7 +19,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         {
             Type = Blades.Count() + 1;
             if (Main.netMode != 2)
-                Texture = ModLoader.GetMod("kRPG").GetTexture("GameObjects/GFX/Items/Blades/" + texture);
+                Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Blades/" + texture);
             Origin = new Vector2(originX, originY);
             Name = name;
             UseTime = useTime;

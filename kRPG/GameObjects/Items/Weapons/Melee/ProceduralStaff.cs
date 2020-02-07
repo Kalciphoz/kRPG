@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using kRPG.Enums;
 using kRPG.GameObjects.Items.Procedural;
+using kRPG.GameObjects.SFX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -86,7 +87,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
             }
         }
 
@@ -162,7 +163,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Loading :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@Loading :: " + e);
             }
 
             try
@@ -171,7 +172,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Initialize :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@Initialize :: " + e);
             }
         }
 
@@ -234,7 +235,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
             }
         }
 
@@ -253,7 +254,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@NewTagCompound :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@NewTagCompound :: " + e);
             }
 
             return new TagCompound();
@@ -300,7 +301,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
             }
 
             return false;

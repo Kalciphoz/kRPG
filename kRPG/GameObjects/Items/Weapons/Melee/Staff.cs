@@ -13,7 +13,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         {
             Type = Staffs.Count + 1;
             if (Main.netMode != 2)
-                Texture = ModLoader.GetMod("kRPG").GetTexture("GameObjects/GFX/Items/Staves/" + texture);
+                Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Staves/" + texture);
             Origin = new Vector2(originX, originY);
             UseTime = useTime;
             KnockBack = knockBack;

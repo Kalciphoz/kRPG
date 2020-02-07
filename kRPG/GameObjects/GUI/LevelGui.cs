@@ -4,6 +4,7 @@ using System.Linq;
 using kRPG.Enums;
 using kRPG.GameObjects.GUI.Base;
 using kRPG.GameObjects.Players;
+using kRPG.GameObjects.SFX;
 using kRPG.GameObjects.Stats;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -68,7 +69,8 @@ namespace kRPG.GameObjects.GUI
                 Main.LocalPlayer.mouseInterface = true;
                 if (Main.mouseLeft && Main.mouseLeftRelease)
                 {
-                    Main.PlaySound(SoundID.MenuTick);
+                    //Main.PlaySound(SoundID.MenuTick);
+                    SoundManager.PlaySound(Sounds.MenuTick);
                     CloseGui();
                     return;
                 }
@@ -91,7 +93,8 @@ namespace kRPG.GameObjects.GUI
                 if (Main.mouseLeft && Main.mouseLeftRelease)
                     try
                     {
-                        Main.PlaySound(SoundID.MenuTick);
+                        //Main.PlaySound(SoundID.MenuTick);
+                        SoundManager.PlaySound(Sounds.MenuTick);
                         foreach (PlayerStats s in allocated.Keys)
                             character.BaseStats[s] += allocated[s];
                         foreach (PlayerStats stat in Enum.GetValues(typeof(PlayerStats)))
