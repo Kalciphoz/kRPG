@@ -111,7 +111,8 @@ namespace kRPG.GameObjects.GUI
             foreach (PlayerStats s in statFlame.Keys.Where(s => statFlame[s].CheckHover()))
                 hoverStat = s;
 
-            if (hoverStat != null) spriteBatch.Draw(GFX.GFX.DeerSkullEyes[hoverStat.Value], GuiPosition, Color.White, Scale);
+            if (hoverStat != null) 
+                spriteBatch.Draw(GFX.GFX.DeerSkullEyes[hoverStat.Value], GuiPosition, Color.White, Scale);
         }
     }
 }

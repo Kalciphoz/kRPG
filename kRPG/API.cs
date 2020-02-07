@@ -32,6 +32,7 @@ namespace kRPG
         private const byte g = 2;
         private static readonly FieldInfo InventoryGlowHue = typeof(ItemSlot).GetField("inventoryGlowHue", BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly FieldInfo InventoryGlowTime = typeof(ItemSlot).GetField("inventoryGlowTime", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly FieldInfo GlobalItemsProperty = typeof(Item).GetField("globalItems", BindingFlags.NonPublic | BindingFlags.Instance);
 
         private static readonly FieldInfo InventoryGlowTimeChest =
             typeof(ItemSlot).GetField("inventoryGlowTimeChest", BindingFlags.NonPublic | BindingFlags.Static);
@@ -1511,7 +1512,7 @@ namespace kRPG
         {
             try
             {
-                object globalItems = typeof(Item).GetField("globalItems", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(item);
+                object globalItems = GlobalItemsProperty?.GetValue(item);
                 item.ClearNameOverride();
                 if (Main.netMode == 1 || Main.netMode == 2)
                     item.owner = 255;
@@ -1693,11 +1694,12 @@ namespace kRPG
                     item.maxStack = 999;
                 item.netID = item.type;
 
-                if ((bool) IsModItem.Invoke(null, new object[] {item.type}) & createModItem)
+                if ((bool) IsModItem.Invoke(null, new object[] {item.type}) && createModItem)
                     ModItem.SetValue(item, ItemLoader.GetItem(item.type).NewInstance(item));
 
                 item.modItem?.AutoDefaults();
-                item.modItem?.SetDefaults();
+                //Removing references to SetDefaults
+                //item.modItem?.SetDefaults();
 
                 if (!noMatCheck)
                     item.checkMat();
@@ -1709,7 +1711,9 @@ namespace kRPG
                     item.stack = 0;
                 }
 
-                typeof(Item).GetField("globalItems", BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(item, globalItems);
+
+
+                GlobalItemsProperty?.SetValue(item, globalItems);
             }
             catch (SystemException e)
             {
@@ -1717,14 +1721,7 @@ namespace kRPG
             }
         }
 
-        public static int[] SumCoins(int[] a, int[] b)
-        {
-            int[] coins = new int[4];
-            for (int i = 0; i < 4; i += 1)
-                coins[i] = a[i] + b[i];
-            return coins;
-        }
-
+       
         public static int Wealth(this Player player)
         {
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();

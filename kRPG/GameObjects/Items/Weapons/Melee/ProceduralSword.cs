@@ -76,7 +76,8 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 Vector2 position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
                 if (texture == null)
                 {
-                    item.SetDefaults();
+                    //Removing references to SetDefaults
+                    //item.SetDefaults();
                     return;
                 }
 

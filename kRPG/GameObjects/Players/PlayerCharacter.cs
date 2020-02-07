@@ -1227,9 +1227,9 @@ namespace kRPG.GameObjects.Players
             try
             {
                 foreach (PlayerStats stat in Enum.GetValues(typeof(PlayerStats)))
-                    BaseStats[stat] = tag.GetInt("base" + stat);
+                    BaseStats[stat] = tag.GetInt("base" + stat.ToString().ToUpper());
                 foreach (Ritual rite in Enum.GetValues(typeof(Ritual)))
-                    Rituals[rite] = tag.GetBool("RITUAL_" + rite);
+                    Rituals[rite] = tag.GetBool("RITUAL_" + rite.ToString().ToUpper());
             }
             catch (SystemException e)
             {
