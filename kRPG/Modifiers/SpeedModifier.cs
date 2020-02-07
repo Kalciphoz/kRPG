@@ -34,6 +34,12 @@ namespace kRPG.Modifiers
             speedModifier = reader.ReadSingle();
         }
 
+        public override void DrawEffects(NPC npc, ref Color drawColor)
+        {
+            int i = Math.Abs(((int)(Main.time * 15) % 255) - 127);
+            drawColor = new Color(127 + i, 255, 127 + i);
+        }
+
         public new static NPCModifier Random(kNPC kNPC, NPC npc)
         {
             return new SpeedModifier(kNPC, npc, 1f+ Main.rand.NextFloat(2));

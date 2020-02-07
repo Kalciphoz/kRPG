@@ -21,11 +21,13 @@ namespace kRPG
     public enum ELEMENT : byte { FIRE, COLD, LIGHTNING, SHADOW };
     public enum RITUAL : byte { DEMON_PACT, WARRIOR_OATH, ELAN_VITAL, STONE_ASPECT, ELDRITCH_FURY, MIND_FORTRESS, BLOOD_DRINKING };
 
-    public enum Message : byte { AddXP, CreateProjectile, SwordInit, StaffInit, BowInit, SyncHit, SyncCritHit, SyncLevel, InitProjEleDmg, SyncStats, SyncSpear, PrefixNPC, NPCEleDmg };
+    public enum Message : byte { AddXP, CreateProjectile, CreateMinion, SwordInit, StaffInit, BowInit, SyncHit, SyncCritHit, SyncLevel, InitProjEleDmg, SyncStats, SyncSpear, ScaleNPC, PrefixNPC, NPCEleDmg };
 
     public class DataTag
     {
         public static DataTag amount = new DataTag(reader => reader.ReadInt32());
+        public static DataTag amount2 = new DataTag(reader => reader.ReadInt32());
+        public static DataTag amount3 = new DataTag(reader => reader.ReadInt32());
         public static DataTag amount_single = new DataTag(reader => reader.ReadSingle());
         public static DataTag playerId = new DataTag(reader => reader.ReadInt32());
         public static DataTag npcId = new DataTag(reader => reader.ReadInt32());
@@ -74,6 +76,7 @@ namespace kRPG
         {
             { Message.AddXP, new List<DataTag>(){ DataTag.amount, DataTag.npcId } },
             { Message.CreateProjectile, new List<DataTag>(){ DataTag.playerId, DataTag.projId, DataTag.glyph_star, DataTag.glyph_cross, DataTag.glyph_moon, DataTag.damage, DataTag.flag, DataTag.entityId, DataTag.modifierCount } },
+            { Message.CreateMinion, new List<DataTag>(){ DataTag.playerId, DataTag.projId, DataTag.glyph_star, DataTag.glyph_cross, DataTag.glyph_moon, DataTag.modifierCount } },
             { Message.SwordInit, new List<DataTag>(){ DataTag.itemId, DataTag.partPrimary, DataTag.partSecondary, DataTag.partTertiary, DataTag.itemDps, DataTag.itemDef } },
             { Message.StaffInit, new List<DataTag>(){ DataTag.itemId, DataTag.partPrimary, DataTag.partSecondary, DataTag.partTertiary, DataTag.itemDps, DataTag.itemDef } },
             { Message.BowInit, new List<DataTag>(){ DataTag.itemId, DataTag.itemDps, DataTag.itemDef } },
@@ -83,12 +86,12 @@ namespace kRPG
             { Message.InitProjEleDmg, new List<DataTag>(){ DataTag.projId, DataTag.fire, DataTag.cold, DataTag.lightning, DataTag.shadow } },
             { Message.SyncStats, new List<DataTag>(){ DataTag.playerId, DataTag.amount, DataTag.resilience, DataTag.quickness, DataTag.potency, DataTag.wits } },
             { Message.SyncSpear, new List<DataTag>(){ DataTag.projId, DataTag.partPrimary, DataTag.partSecondary, DataTag.partTertiary, DataTag.playerId } },
-            { Message.PrefixNPC, new List<DataTag>(){ DataTag.npcId, DataTag.amount } },
+            { Message.ScaleNPC, new List<DataTag>(){ DataTag.npcId, DataTag.amount, } },
+            { Message.PrefixNPC, new List<DataTag>(){ DataTag.npcId, DataTag.amount, DataTag.amount2, DataTag.amount3 } },
             { Message.NPCEleDmg, new List<DataTag>(){ DataTag.npcId, DataTag.flag, DataTag.flag2, DataTag.flag3, DataTag.flag4 } }
         };
         public Texture2D[] invslot = new Texture2D[16];
-
-
+        
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
             Message msg = (Message)reader.ReadByte();
@@ -137,18 +140,25 @@ namespace kRPG
                         kn.dealseledmg = count > 0;
                     }
                     break;
+                case Message.ScaleNPC:
+                    if (Main.netMode == 1)
+                    {
+                        NPC npc = Main.npc[(int)tags[DataTag.npcId]];
+                        npc.lifeMax = (int)tags[DataTag.amount];
+                        npc.life = (int)tags[DataTag.amount2];
+                        npc.defense = (int)tags[DataTag.amount3];
+                        npc.lavaImmune = npc.lavaImmune || npc.defense > 60;
+                    }
+                    break;
                 case Message.PrefixNPC:
                     if (Main.netMode == 1)
                     {
                         NPC npc = Main.npc[(int)tags[DataTag.npcId]];
                         kNPC kn = npc.GetGlobalNPC<kNPC>();
-                        for (int i = 0; i < (int)tags[DataTag.amount]; i += 1)
-                        {
-                            NPCModifier modifier = kn.modifierFuncs[reader.ReadInt32()].Invoke(kn, npc);
-                            modifier.Read(reader);
-                            modifier.Apply();
-                            kn.modifiers.Add(modifier);
-                        }
+                        NPCModifier modifier = kNPC.modifierFuncs[(int)tags[DataTag.amount]].Invoke(kn, npc);
+                        modifier.Read(reader);
+                        modifier.Apply();
+                        kn.modifier = modifier;
                         kn.MakeNotable(npc);
                     }
                     break;
@@ -230,12 +240,22 @@ namespace kRPG
                         {
                             if (modifier.impact != null)
                                 ps.impact.Add(modifier.impact);
-                            if (modifier.draw != null)
-                                ps.draw.Add(modifier.draw);
                             if (modifier.init != null)
                                 ps.init.Add(modifier.init);
+                            if (Main.netMode == 1)
+                                if (modifier.draw != null)
+                                    ps.draw.Add(modifier.draw);
                         }
-                        ps.Initialize();
+                        try
+                        {
+                            Main.NewText("Attempting initialization");
+                            ps.Initialize();
+                            Main.NewText("Initialized successfully");
+                        }
+                        catch (SystemException e)
+                        {
+                            Main.NewText("INITIALIZE FAILED!!!" + e.ToString());
+                        }
 
                         if (Main.netMode == 2)
                         {
@@ -253,6 +273,64 @@ namespace kRPG
                             packet.Write(mods.Count);
                             for (int j = 0; j < mods.Count; j += 1)
                                 packet.Write(mods[j].id);
+                            packet.Send();
+                        }
+                    }
+                    catch (SystemException e)
+                    {
+                        ErrorLogger.Log("Error handling packet: " + msg.ToString() + " on " + (Main.netMode == 2 ? "serverside" : "clientside") + ", full error trace: " + e.ToString());
+                    }
+                    break;
+                case Message.CreateMinion:
+                    try
+                    {
+                        if (Main.netMode == 1)
+                            if ((int)tags[DataTag.playerId] == Main.myPlayer)
+                            {
+                                Main.NewText("breaking out of switch statement");
+                                break;
+                            }
+
+                        int modifierCount = (int)tags[DataTag.modifierCount];
+                        List<GlyphModifier> modifiers = new List<GlyphModifier>();
+                        for (int i = 0; i < modifierCount; i += 1)
+                            modifiers.Add(GlyphModifier.modifiers[reader.ReadInt32()]);
+
+                        Projectile projectile = Main.projectile[(int)tags[DataTag.projId]];
+                        if (projectile == null) break;
+                        projectile.owner = (int)tags[DataTag.playerId];
+                        if (!(projectile.modProjectile is ProceduralMinion)) break;
+                        ProceduralMinion pm = (ProceduralMinion)projectile.modProjectile;
+                        pm.source = new ProceduralSpell(mod);
+                        Main.NewText("assigned source");
+                        pm.source.glyphs = new Item[3];
+                        for (int i = 0; i < pm.source.glyphs.Length; i += 1)
+                        {
+                            pm.source.glyphs[i] = new Item();
+                            pm.source.glyphs[i].SetDefaults(0, true);
+                        }
+                        pm.source.glyphs[(byte)GLYPHTYPE.STAR].SetDefaults((int)tags[DataTag.glyph_star], true);
+                        pm.source.glyphs[(byte)GLYPHTYPE.CROSS].SetDefaults((int)tags[DataTag.glyph_cross], true);
+                        pm.source.glyphs[(byte)GLYPHTYPE.MOON].SetDefaults((int)tags[DataTag.glyph_moon], true);
+                        pm.source.modifierOverride = modifiers;
+                        foreach (GlyphModifier modifier in pm.source.modifiers)
+                            if (modifier.minionAI != null)
+                                pm.glyphModifiers.Add(modifier.minionAI);
+                        Player player = Main.player[projectile.owner];
+                        player.GetModPlayer<PlayerCharacter>().minions.Add(pm);
+
+                        if (Main.netMode == 2)
+                        {
+                            ModPacket packet = mod.GetPacket();
+                            packet.Write((byte)Message.CreateMinion);
+                            packet.Write(player.whoAmI);
+                            packet.Write(projectile.whoAmI);
+                            packet.Write(pm.source.glyphs[(byte)GLYPHTYPE.STAR].type);
+                            packet.Write(pm.source.glyphs[(byte)GLYPHTYPE.CROSS].type);
+                            packet.Write(pm.source.glyphs[(byte)GLYPHTYPE.MOON].type);
+                            packet.Write(pm.source.modifiers.Count);
+                            for (int i = 0; i < pm.source.modifiers.Count; i += 1)
+                                packet.Write(pm.source.modifiers[i].id);
                             packet.Send();
                         }
                     }
@@ -449,7 +527,7 @@ namespace kRPG
 
         public bool DrawInterface()
         {
-            if (Main.netMode == 2 || Main.gameMenu) return true;
+            if (Main.gameMenu) return true;
             try
             {
                 for (int i = 0; i < BaseGUI.gui_elements.Count; i += 1)
@@ -463,6 +541,7 @@ namespace kRPG
             }
             catch (SystemException e)
             {
+                Main.NewText(e.ToString());
                 ErrorLogger.Log(e.ToString());
             }
             return true;

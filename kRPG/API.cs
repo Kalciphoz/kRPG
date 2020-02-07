@@ -48,6 +48,24 @@ namespace kRPG
             return values.Contains(item);
         }
 
+        public static Player NearestPlayer(this Entity entity)
+        {
+            if (Main.netMode == 0)
+                return Main.LocalPlayer;
+
+            Player selection = Main.player[0];
+            foreach (Player player in Main.player)
+                if (Vector2.Distance(entity.position, player.position) < Vector2.Distance(entity.position, selection.position) && player.active)
+                    selection = player;
+
+            return selection;
+        }
+
+        public static PlayerCharacter NearestPlayerCharacter(this Entity entity)
+        {
+            return entity.NearestPlayer().GetModPlayer<PlayerCharacter>();
+        }
+
         static MethodInfo IsModItem = typeof(ItemLoader).GetMethod("IsModItem", BindingFlags.NonPublic | BindingFlags.Static);
         static PropertyInfo modItem = typeof(Item).GetProperty("modItem", BindingFlags.Public | BindingFlags.Instance);
 
@@ -353,6 +371,42 @@ namespace kRPG
             output[p] = (uint)Math.Max(0, (amount - output[c] - output[s] - output[g]) / 1000000);
 
             return output;
+        }
+
+        public static int[] CountCoins(this Player player)
+        {
+            int[] coins = { 0, 0, 0, 0 };
+
+            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+
+            foreach (Item item in player.inventory)
+                if (IsCoin(item))
+                    coins[item.type - ItemID.CopperCoin] += item.stack;
+
+            for (int i = 0; i < character.inventories.Length; i += 1)
+                if (character.activeInvPage != i)
+                    foreach (Item item in character.inventories[i])
+                        if (IsCoin(item))
+                            coins[item.type - ItemID.CopperCoin] += item.stack;
+
+            foreach (Item item in player.bank.item)
+                if (IsCoin(item))
+                    coins[item.type - ItemID.CopperCoin] += item.stack;
+
+            foreach (Item item in player.bank2.item)
+                if (IsCoin(item))
+                    coins[item.type - ItemID.CopperCoin] += item.stack;
+
+            foreach (Item item in player.bank3.item)
+                if (IsCoin(item))
+                    coins[item.type - ItemID.CopperCoin] += item.stack;
+
+            return coins;
+        }
+
+        private static bool IsCoin(Item item)
+        {
+            return item.type >= 71 && item.type <= 74;
         }
 
         public static ulong Wealth(this Player player)

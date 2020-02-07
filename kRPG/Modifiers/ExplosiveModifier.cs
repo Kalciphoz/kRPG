@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
+using System;
 
 namespace kRPG.Modifiers
 {
@@ -26,10 +27,18 @@ namespace kRPG.Modifiers
             npc.life = (int)(npc.life * lifeModifier);
         }
 
+        public override void DrawEffects(NPC npc, ref Color drawColor)
+        {
+            int i = Math.Abs(((int)(Main.time*22) % 511) - 255);
+            drawColor = new Color(255, i, i);
+        }
+
         public override void NPCLoot(NPC npc)
         {
             Main.PlaySound(new LegacySoundStyle(2, 14, Terraria.Audio.SoundType.Sound).WithVolume(0.5f), npc.Center);
-            Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, kNPC.mod.ProjectileType<NPC_Explosion>(), npc.damage * 5 / 4, 0f)];
+            Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, kNPC.mod.ProjectileType<NPC_Explosion>(), (int)Math.Min(npc.damage * 5 / 4, Math.Pow(npc.NearestPlayer().statLife * 2, 1/1.55)), 0f)];
+            proj.hostile = true;
+            proj.friendly = true;
         }
 
         public override void Write(ModPacket packet)

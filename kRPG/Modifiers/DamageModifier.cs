@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.ModLoader;
 using System.IO;
+using Microsoft.Xna.Framework;
 
 namespace kRPG.Modifiers
 {
@@ -31,6 +32,12 @@ namespace kRPG.Modifiers
         public override void Read(BinaryReader reader)
         {
             damageModifier = reader.ReadSingle();
+        }
+
+        public override void DrawEffects(NPC npc, ref Color drawColor)
+        {
+            int i = Math.Abs(((int)(Main.time * 4) % 511) - 255);
+            drawColor = new Color(255, i, i);
         }
 
         public new static NPCModifier Random(kNPC kNPC, NPC npc)

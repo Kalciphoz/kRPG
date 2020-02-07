@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework;
 using kRPG.Dusts;
 using Terraria.ID;
 using System.IO;
+using kRPG.GUI;
 
 namespace kRPG.Items.Glyphs
 {
@@ -223,6 +224,21 @@ namespace kRPG.Items.Glyphs
         {
             DisplayName.SetDefault("Generic Star Glyph; Please Ignore");
         }
+
+        public void SyncSpell(ProceduralSpell spell, Projectile projectile, Player player)
+        {
+            ModPacket packet = mod.GetPacket();
+            packet.Write((byte)Message.CreateMinion);
+            packet.Write(player.whoAmI);
+            packet.Write(projectile.whoAmI);
+            packet.Write(spell.glyphs[(byte)GLYPHTYPE.STAR].type);
+            packet.Write(spell.glyphs[(byte)GLYPHTYPE.CROSS].type);
+            packet.Write(spell.glyphs[(byte)GLYPHTYPE.MOON].type);
+            packet.Write(spell.modifiers.Count);
+            for (int i = 0; i < spell.modifiers.Count; i += 1)
+                packet.Write(spell.modifiers[i].id);
+            packet.Send();
+        }
     }
     public class Cross : Glyph
     {
@@ -321,6 +337,8 @@ namespace kRPG.Items.Glyphs
                     if (modifier.minionAI != null)
                         we.glyphModifiers.Add(modifier.minionAI);
                 character.minions.Add((WingedEyeball)eye.modProjectile);
+
+                if (Main.netMode == 1) SyncSpell(spell, eye, player);
             };
         }
 
@@ -403,6 +421,8 @@ namespace kRPG.Items.Glyphs
                 totem.position = new Vector2((int)(target.X / 16) * 16, placementHeight * 16) - new Vector2(8f, 62f);
                 ((Obelisk)totem.modProjectile).source = spell;
                 character.minions.Add((Obelisk)totem.modProjectile);
+
+                if (Main.netMode == 1) SyncSpell(spell, totem, player);
             };
         }
 
@@ -420,10 +440,13 @@ namespace kRPG.Items.Glyphs
             return delegate (ProceduralSpellProj spell)
             {
                 try
-                { 
-                    spell.texture = GFX.projectile_fireball;
-                    spell.projectile.width = spell.texture.Width;
-                    spell.projectile.height = spell.texture.Height;
+                {
+                    if (Main.netMode != 2)
+                    {
+                        spell.texture = GFX.projectile_fireball;
+                        spell.projectile.width = spell.texture.Width;
+                        spell.projectile.height = spell.texture.Height;
+                    }
                     spell.projectile.magic = true;
                     spell.draw_trail = true;
                     spell.lighted = true;
@@ -574,9 +597,12 @@ namespace kRPG.Items.Glyphs
         {
             return delegate (ProceduralSpellProj spell)
             {
-                spell.texture = GFX.projectile_boulder;
-                spell.projectile.width = spell.texture.Width;
-                spell.projectile.height = spell.texture.Height;
+                if (Main.netMode != 2)
+                {
+                    spell.texture = GFX.projectile_boulder;
+                    spell.projectile.width = spell.texture.Width;
+                    spell.projectile.height = spell.texture.Height;
+                }
                 spell.projectile.magic = true;
                 spell.alpha = 1f;
                 spell.draw_trail = true;
@@ -614,9 +640,13 @@ namespace kRPG.Items.Glyphs
         {
             return delegate (ProceduralSpellProj spell)
             {
-                spell.texture = Main.itemTexture[Terraria.ID.ItemID.WoodenArrow];
-                spell.projectile.width = spell.texture.Width;
-                spell.projectile.height = spell.texture.Height;
+
+                if (Main.netMode != 2)
+                {
+                    spell.texture = Main.itemTexture[Terraria.ID.ItemID.WoodenArrow];
+                    spell.projectile.width = spell.texture.Width;
+                    spell.projectile.height = spell.texture.Height;
+                }
                 spell.projectile.ranged = true;
                 spell.draw_trail = true;
                 spell.alpha = 1f;
@@ -664,9 +694,12 @@ namespace kRPG.Items.Glyphs
         {
             return delegate (ProceduralSpellProj spell)
             {
-                spell.texture = GFX.projectile_frostbolt;
-                spell.projectile.width = spell.texture.Width;
-                spell.projectile.height = spell.texture.Height;
+                if (Main.netMode != 2)
+                {
+                    spell.texture = GFX.projectile_frostbolt;
+                    spell.projectile.width = spell.texture.Width;
+                    spell.projectile.height = spell.texture.Height;
+                }
                 spell.projectile.magic = true;
                 spell.lighted = true;
             };
@@ -735,9 +768,13 @@ namespace kRPG.Items.Glyphs
         {
             return delegate (ProceduralSpellProj spell)
             {
-                spell.texture = GFX.projectile_shadowbolt;
-                spell.projectile.width = spell.texture.Width;
-                spell.projectile.height = spell.texture.Height;
+
+                if (Main.netMode != 2)
+                {
+                    spell.texture = GFX.projectile_shadowbolt;
+                    spell.projectile.width = spell.texture.Width;
+                    spell.projectile.height = spell.texture.Height;
+                }
                 spell.projectile.magic = true;
                 spell.draw_trail = true;
                 spell.lighted = true;
@@ -795,9 +832,12 @@ namespace kRPG.Items.Glyphs
         {
             return delegate (ProceduralSpellProj spell)
             {
-                spell.texture = GFX.projectile_thunderbolt;
-                spell.projectile.width = spell.texture.Width;
-                spell.projectile.height = spell.texture.Height;
+                if (Main.netMode != 2)
+                {
+                    spell.texture = GFX.projectile_thunderbolt;
+                    spell.projectile.width = spell.texture.Width;
+                    spell.projectile.height = spell.texture.Height;
+                }
                 spell.projectile.magic = true;
                 spell.lighted = true;
             };

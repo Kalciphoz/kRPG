@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using Terraria;
 using Terraria.ModLoader;
@@ -10,6 +12,11 @@ namespace kRPG.Modifiers
         public NPC npc;
 
         public NPCModifier(kNPC kNPC, NPC npc) { }
+
+        public int GetIdFromModifier()
+        {
+            return kNPC.modifierFuncs.FindIndex(func => New == func);
+        }
 
         public virtual void Apply() { }
         

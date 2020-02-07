@@ -1,6 +1,8 @@
 ﻿using Terraria;
 using Terraria.ModLoader;
+using System;
 using System.IO;
+using Microsoft.Xna.Framework;
 
 namespace kRPG.Modifiers
 {
@@ -23,6 +25,12 @@ namespace kRPG.Modifiers
         public override float StrikeNPC(NPC npc, double damage, int defense, float knockback, int hitDirection, bool crit)
         {
             return dodgeModifier;
+        }
+
+        public override void DrawEffects(NPC npc, ref Color drawColor)
+        {
+            int i = Math.Abs(((int)(Main.time * 2) % 255) - 127);
+            drawColor = new Color(127 + i, 255, 127 + i);
         }
 
         public override void Write(ModPacket packet)

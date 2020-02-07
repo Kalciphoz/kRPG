@@ -102,7 +102,8 @@ namespace kRPG
             get
             {
                 float diff = 7f + level / 40f;
-                return 1f - diff * (1f - 0.85f) / (accuracy + diff);
+                float baseHit = 0.9f - level * 0.00125f;
+                return 1f - diff * (1f - baseHit) / (accuracy + diff);
             }
         }
         public float critHitChance
@@ -110,7 +111,8 @@ namespace kRPG
             get
             {
                 float diff = 4f + level / 12f;
-                return 1f - diff * (1f - 0.8f) / (accuracy + diff);
+                float baseHit = 0.8f - level * 0.001f;
+                return 1f - diff * (1f - baseHit) / (accuracy + diff);
             }
         }
         public float accuracyCounter = 0.5f;
@@ -653,7 +655,7 @@ namespace kRPG
             int max = 80;
             int diff = 52;
 
-            if (TotalStats(STAT.QUICKNESS) > 0 && !rituals[RITUAL.STONE_ASPECT])
+            if (!rituals[RITUAL.STONE_ASPECT])
             {
                 if (damage < (level + 10) * 5)
                 {
@@ -776,8 +778,8 @@ namespace kRPG
             }
 
             critMultiplier += TotalStats(STAT.POTENCY) * 0.04f;
-            lifeLeech += TotalStats(STAT.POTENCY) * 0.002f;
-            lifeLeech += Math.Min(0.006f, TotalStats(STAT.POTENCY)*0.002f);
+            lifeLeech += TotalStats(STAT.POTENCY) * 0.001f;
+            lifeLeech += Math.Min(0.006f, TotalStats(STAT.POTENCY)*0.001f);
 
             player.meleeDamage *= damageMultiplier;
             player.rangedDamage *= damageMultiplier;
@@ -814,15 +816,15 @@ namespace kRPG
 
         public void ModifyDamageTakenFromNPC(ref int damage, ref bool crit, Dictionary<ELEMENT, int> eleDmg)
         {
-            double dmg = 0.5 * Math.Pow(damage, 1.35);
+            double dmg = 0.25 * Math.Pow(damage, 1.55);
             Dictionary<ELEMENT, int> originalEle = eleDmg;
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                eleDmg[element] = (int)(0.5 * Math.Pow(eleDmg[element], 1.35));
+                eleDmg[element] = (int)(0.25 * Math.Pow(eleDmg[element], 1.55));
             if (!Main.expertMode)
             {
-                dmg = dmg * 1.3;
+                dmg = dmg * 1.5;
                 foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-                    eleDmg[element] = (int)(eleDmg[element] * 1.3);
+                    eleDmg[element] = (int)(eleDmg[element] * 1.5);
             }
             damage = (int)Math.Round(Math.Min(dmg, (double)damage * 3));
             foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
@@ -982,9 +984,7 @@ namespace kRPG
 
         public int ExperienceToLevel()
         {
-            if (level < 5)
-                return 80 + level * 20;
-            else if (level < 10)
+            if (level < 10)
                 return level * 40;
             else if (level < 163)
                 return (int)(280 * Math.Pow(1.09, level - 5) + 3 * level);

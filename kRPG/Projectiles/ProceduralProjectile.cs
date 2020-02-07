@@ -211,7 +211,7 @@ namespace kRPG.Projectiles
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Procedurally Generated Spell-Projectile; Please Ignore");
+            DisplayName.SetDefault("Sagely Spell");
         }
 
         public List<Action<ProceduralSpellProj, NPC, int>> impact = new List<Action<ProceduralSpellProj, NPC, int>>();
@@ -325,6 +325,11 @@ namespace kRPG.Projectiles
         public override void AI()
         {
             if (Main.netMode == 2) return;
+            if (source == null)
+            {
+                Main.NewText("Source is null");
+                return;
+            }
             bool self = source.glyphs[(byte)GLYPHTYPE.MOON].modItem is Moon_Green;
             if ((!self || circlingProtection.Where(spell => spell.projectile.active).Count() <= source.projCount - 3) && cooldown <= 0)
             {
