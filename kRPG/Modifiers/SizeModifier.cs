@@ -14,7 +14,6 @@ namespace kRPG.Modifiers
         {
             this.npc = npc;
             this.scaleModifier = scaleModifier;
-            npc.GivenName = "Massive " + npc.FullName;
             this.lifeModifier = lifeModifier;
             Apply();
         }
@@ -24,6 +23,10 @@ namespace kRPG.Modifiers
             npc.scale *= scaleModifier;
             npc.lifeMax = (int)(npc.lifeMax * lifeModifier);
             npc.life = (int)(npc.life * lifeModifier);
+            if (scaleModifier < 1)
+                npc.GivenName = "Small " + npc.FullName;
+            else
+                npc.GivenName = "Massive " + npc.FullName;
             npc.GetGlobalNPC<kNPC>().speedModifier *= (float)Math.Pow(scaleModifier, 0.9);
         }
 

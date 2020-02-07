@@ -271,7 +271,7 @@ namespace kRPG
             float multiplier = Main.expertMode ? 1f : 0.65f;
             foreach (Item item in glyphs)
                 multiplier *= ((Glyph)item.modItem).DamageModifier();
-            return (int)Math.Round(Math.Pow(1.04, Math.Min(130, character.level)) * 12f * multiplier) + constant; 
+            return (int)Math.Round(Math.Pow(1.04, Math.Min(130, character.level)) * 9f * multiplier) + constant; 
         }
 
         public int ManaCost(PlayerCharacter character)

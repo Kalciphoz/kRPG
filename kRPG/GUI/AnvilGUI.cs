@@ -176,17 +176,14 @@ namespace kRPG.GUI
                             if (permanenceCrown)
                                 ki.Downgrade(item);
                             else
-                            {
                                 ki.Destroy(item);
-                                Reset();
-                            }
                         }
 
                         if (permanenceCrown && bonusChance + upgradeSuccess < 100)
                             character.permanence -= 1;
 
                         player.RemoveCoins(upgradeCost*modifier);
-                        if (!AttemptSelectItem(ki, item)) Main.NewText("CloseGUI();");
+                        if (!AttemptSelectItem(ki, item)) CloseGUI();
                     }
                 }
 
@@ -196,7 +193,7 @@ namespace kRPG.GUI
                 }
             }
 
-            if (position != null) if (Vector2.Distance(player.Center, position) > 128) Main.NewText("CloseGUI();");
+            if (position != null) if (Vector2.Distance(player.Center, position) > 128) CloseGUI();
         }
 
         public bool AttemptSelectItem(kItem ki, Item item)

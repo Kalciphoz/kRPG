@@ -11,19 +11,20 @@ namespace kRPG.Modifiers
     {
         public ProceduralSpellProj rotMissile = null;
         public ProceduralSpellProj rotSecondary = null;
-        private bool dark = false;
 
         private kNPC kNPC;
 
         public SageModifier(kNPC kNPC, NPC npc) : base(kNPC, npc)
         {
             this.npc = npc;
-            npc.GivenName = "Sagely " + npc.FullName;
+            if (Main.netMode == 0)
+                npc.GivenName = "Sagely " + npc.FullName;
             this.kNPC = kNPC;
         }
 
         public override void Update(NPC npc)
         {
+            if (Main.netMode != 0) return;
             try
             {
                 int rotDistance = 64;
@@ -43,7 +44,7 @@ namespace kRPG.Modifiers
                 proj1.friendly = false;
                 ProceduralSpellProj ps1 = (ProceduralSpellProj) proj1.modProjectile;
                 ps1.origin = proj1.position;
-                Cross cross1 = dark ? (Cross) new Cross_Violet() : new Cross_Red();
+                Cross cross1 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Red() : new Cross_Violet();
                 ps1.ai.Add(delegate(ProceduralSpellProj spell)
                 {
                     cross1.GetAIAction()(spell);
@@ -93,7 +94,7 @@ namespace kRPG.Modifiers
                 proj2.friendly = false;
                 ProceduralSpellProj ps2 = (ProceduralSpellProj) proj2.modProjectile;
                 ps2.origin = proj2.position;
-                Cross cross2 = dark ? (Cross) new Cross_Purple() : new Cross_Blue();
+                Cross cross2 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Blue() : new Cross_Purple();
                 ps2.ai.Add(delegate(ProceduralSpellProj spell)
                 {
                     cross2.GetAIAction()(spell);
@@ -122,7 +123,6 @@ namespace kRPG.Modifiers
                 ps2.projectile.penetrate = -1;
                 ps2.projectile.timeLeft = rotTimeLeft;
                 rotSecondary = ps2;
-                dark = !dark;
             }
             catch (SystemException e)
             {
@@ -130,13 +130,7 @@ namespace kRPG.Modifiers
                 ErrorLogger.Log(e.ToString());
             }
         }
-
-        public override void DrawEffects(NPC npc, ref Color drawColor)
-        {
-            int i = Math.Abs(((int)(Main.time * 4) % 511) - 255);
-            drawColor = new Color(i, i, 255);
-        }
-
+        
         public new static NPCModifier Random(kNPC kNPC, NPC npc)
         {
             return new SageModifier(kNPC, npc);

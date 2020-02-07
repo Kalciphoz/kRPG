@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
 using Terraria;
 
 namespace kRPG.Modifiers
@@ -24,13 +23,8 @@ namespace kRPG.Modifiers
                 regenTimer = regenTimer % (60 / amount);
             }
         }
-
-        public override void DrawEffects(NPC npc, ref Color drawColor)
-        {
-            int i = Math.Abs(((int)(Main.time * 13) % 255) - 127);
-            drawColor = new Color(127 + i, 127 + i, 127 + i);
-        }
-
+        
+        
         public new static NPCModifier Random(kNPC kNPC, NPC npc)
         {
             return new LifeRegenModifier(kNPC, npc);

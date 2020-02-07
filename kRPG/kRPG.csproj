@@ -115,7 +115,6 @@
     <Compile Include="Modifiers\ExplosiveModifier.cs" />
     <Compile Include="Modifiers\LifeRegenModifier.cs" />
     <Compile Include="Modifiers\NPCModifier.cs" />
-    <Compile Include="Modifiers\WizardModifier.cs" />
     <Compile Include="Modifiers\SageModifier.cs" />
     <Compile Include="Modifiers\SizeModifier.cs" />
     <Compile Include="Modifiers\SpeedModifier.cs" />
