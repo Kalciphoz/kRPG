@@ -32,6 +32,12 @@ If I have forgotten anybody from this list, I sincerely apologize. Please inform
 Open Source
 The mod is open source. The source code can be acquired by three means: Going to the github page here, or by using ModLoader to decompile it, or by using ILSpy. Any of my content may be used, but please give proper attribution (credits) and if using a larger part of my mod (such as a major mechanic), please refer people to the original. If you're unsure about anything, you may contact me through PM or in this thread.
 
+
+Version 2.0.2
+    -Abstracted Audio to it's own class to get rid of magic numbers in relation to audio
+    -Fixed NPC Projectile spells throwing a null error
+    -Fixed a bug that if the spellcrafting UI is left open when you disconnect and you connect to another server it would crash.
+
 Version 2.0.1
     -Renamed kRPG2 back to kRPG, the kRPG2 project is no more.
     -Fixed UI bug in the spell crafting ui, there were two instances of the GUI being loaded due to a call in the constructor.  This is fixed.
