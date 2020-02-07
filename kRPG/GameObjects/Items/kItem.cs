@@ -88,7 +88,7 @@ namespace kRPG.GameObjects.Items
             {PlayerStats.Wits, "239223031 wits"}
         };
 
-        public byte UpgradeLevel { get; set; } = 255;
+        public byte UpgradeLevel { get; set; }
 
         public kItem ApplyStats(Item item, bool clean = false)
         {
@@ -100,14 +100,14 @@ namespace kRPG.GameObjects.Items
                 {
                     switch (item.modItem)
                     {
-                        case ProceduralSword osword:
-                            osword.ResetStats();
+                        case ProceduralSword oSword:
+                            oSword.ResetStats();
                             break;
-                        case ProceduralStaff ostaff:
-                            ostaff.ResetStats();
+                        case ProceduralStaff oStaff:
+                            oStaff.ResetStats();
                             break;
-                        case RangedWeapon oweapon:
-                            oweapon.SetStats();
+                        case RangedWeapon oWeapon:
+                            oWeapon.SetStats();
                             break;
                         default:
                             item.SetItemDefaults(item.type);
@@ -142,8 +142,8 @@ namespace kRPG.GameObjects.Items
         public void ApplyUpgradeLevel(Item item)
         {
             double animationDps = 60f * item.damage / item.useAnimation;
-            double usetimeDps = 60f * item.damage / item.useTime;
-            double dpsModifier = 1.0;
+            double useTimeDps = 60f * item.damage / item.useTime;
+            double dpsModifier;
             switch (UpgradeLevel)
             {
                 default:
@@ -176,14 +176,14 @@ namespace kRPG.GameObjects.Items
             }
 
             animationDps *= dpsModifier;
-            usetimeDps *= dpsModifier;
+            useTimeDps *= dpsModifier;
 
             item.damage = (int)Math.Round(animationDps / 60 * item.useAnimation);
 
             int i = item.useTime - item.useAnimation;
 
             item.useAnimation = (int)Math.Round(60 / animationDps * item.damage);
-            item.useTime = (int)Math.Round(60 / usetimeDps * item.damage);
+            item.useTime = (int)Math.Round(60 / useTimeDps * item.damage);
 
             if (i >= 0 && item.useTime < item.useAnimation)
                 item.useTime = item.useAnimation + i;
@@ -339,9 +339,8 @@ namespace kRPG.GameObjects.Items
 
         public int GetEleDamage(Item item, Player player, bool ignoreModifiers = false)
         {
-            Dictionary<Element, int> ele = new Dictionary<Element, int>();
-            ele = GetIndividualElements(item, player, ignoreModifiers);
-            return ele[Element.Fire] + ele[Element.Cold] + ele[Element.Lightning] + ele[Element.Shadow];
+            Dictionary<Element, int> elements = GetIndividualElements(item, player, ignoreModifiers);
+            return elements[Element.Fire] + elements[Element.Cold] + elements[Element.Lightning] + elements[Element.Shadow];
         }
 
         public Dictionary<Element, int> GetIndividualElements(Item item, Player player, bool ignoreModifiers = false)
@@ -366,10 +365,10 @@ namespace kRPG.GameObjects.Items
             return dictionary;
         }
 
-        public Mod getMod()
-        {
-            return mod;
-        }
+        //public Mod getMod()
+        //{
+        //    return mod;
+        //}
 
         /*public override void PostReforge(Item item)
         {
@@ -765,6 +764,8 @@ namespace kRPG.GameObjects.Items
                 character.AnvilGui.AttemptSelectItem(this, item);
         }
 
+        
+
         public void Prefix(Item item)
         {
             foreach (Element element in Enum.GetValues(typeof(Element)))
@@ -1048,7 +1049,7 @@ namespace kRPG.GameObjects.Items
                 case 5:
                     item.SetNameOverride("Armored " + item.Name);
                     BonusDef = 4;
-                    PrefixTooltips.Add("+4 defence");
+                    PrefixTooltips.Add("+4 defense");
                     break;
                 case 6:
                     item.SetNameOverride("Elegant " + item.Name);
@@ -1118,7 +1119,7 @@ namespace kRPG.GameObjects.Items
                 case 20:
                     item.SetNameOverride("Hardened " + item.Name);
                     BonusDef = 3;
-                    PrefixTooltips.Add("+3 defence");
+                    PrefixTooltips.Add("+3 defense");
                     break;
                 case 21:
                     item.SetNameOverride("Protective " + item.Name);

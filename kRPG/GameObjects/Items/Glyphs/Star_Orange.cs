@@ -8,7 +8,6 @@ using kRPG.GameObjects.SFX;
 using kRPG.GameObjects.Spells;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Items.Glyphs

@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using kRPG.Enums;
-using kRPG.GameObjects.Items;
 using kRPG.GameObjects.Items.Crowns;
 using kRPG.GameObjects.Items.Dusts;
 using kRPG.GameObjects.Items.Glyphs;
-using kRPG.GameObjects.Items.Procedural;
 using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.Items.Weapons.Melee;
 using kRPG.GameObjects.Items.Weapons.Ranged;
@@ -55,7 +53,7 @@ namespace kRPG.GameObjects.NPCs
             LifeRegenModifier.New,
             SageModifier.New,
             SizeModifier.New,
-            global::kRPG.GameObjects.Modifiers.SpeedModifier.New
+            GameObjects.Modifiers.SpeedModifier.New
         };
 
         public List<NpcModifier> Modifiers { get; set; } = new List<NpcModifier>();
@@ -223,7 +221,7 @@ namespace kRPG.GameObjects.NPCs
         public override void NPCLoot(NPC npc)
         {
             foreach (NpcModifier t in Modifiers)
-                t.NPCLoot(npc);
+                t.NpcLoot(npc);
 
             if (npc.lifeMax < 10) return;
             if (npc.friendly) return;
@@ -338,7 +336,7 @@ namespace kRPG.GameObjects.NPCs
         public override void PostAI(NPC npc)
         {
             foreach (NpcModifier t in Modifiers)
-                t.PostAI(npc);
+                t.PostAi(npc);
 
             List<ProceduralSpell> keys = new List<ProceduralSpell>(InvincibilityTime.Keys);
             foreach (ProceduralSpell spell in keys)
@@ -456,7 +454,7 @@ namespace kRPG.GameObjects.NPCs
             float dodgeChanceModifier = 1f;
 
             foreach (NpcModifier t in Modifiers)
-                dodgeChanceModifier *= t.StrikeNPC(npc, damage, defense, knockback, hitDirection, crit);
+                dodgeChanceModifier *= t.StrikeNpc(npc, damage, defense, knockback, hitDirection, crit);
 
             if (character.AccuracyCounter < 1 * dodgeChanceModifier && !character.Rituals[Ritual.WarriorOath])
             {

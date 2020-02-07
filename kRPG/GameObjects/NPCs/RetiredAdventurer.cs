@@ -1,5 +1,4 @@
-﻿using kRPG.GameObjects.Items;
-using kRPG.GameObjects.Items.Armor;
+﻿using kRPG.GameObjects.Items.Armor;
 using kRPG.GameObjects.Items.Weapons.Melee;
 using kRPG.GameObjects.Items.Weapons.Ranged;
 using kRPG.GameObjects.Players;
@@ -8,12 +7,14 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
+// ReSharper disable StringLiteralTypo
+
 namespace kRPG.GameObjects.NPCs
 {
     [AutoloadHead]
     public class RetiredAdventurer : ModNPC
     {
-        public override bool CanTownNPCSpawn(int numTownNPCs, int money)
+        public override bool CanTownNPCSpawn(int numTownNpcs, int money)
         {
             for (int i = 0; i < 255; i += 1)
             {

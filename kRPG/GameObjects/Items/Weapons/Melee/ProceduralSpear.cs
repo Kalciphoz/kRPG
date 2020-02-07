@@ -155,16 +155,16 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         }
 
         // ReSharper disable once IdentifierTypo
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
+        public override void ModifyDamageHitbox(ref Rectangle hitBox)
         {
             Player owner = Main.player[projectile.owner];
-            hitbox = new Rectangle((int) projectile.position.X - 2, (int) projectile.position.Y - 2, (int) (projectile.Right.X - projectile.Left.X) + 2,
+            hitBox = new Rectangle((int) projectile.position.X - 2, (int) projectile.position.Y - 2, (int) (projectile.Right.X - projectile.Left.X) + 2,
                 (int) (projectile.Bottom.Y - projectile.Top.Y + 2));
-            if (owner.direction < 0) hitbox.X += hitbox.Width / 2;
-            else hitbox.X -= hitbox.Width / 2;
+            if (owner.direction < 0) hitBox.X += hitBox.Width / 2;
+            else hitBox.X -= hitBox.Width / 2;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, int damage, float knockBack, bool crit)
         {
             try
             {

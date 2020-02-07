@@ -24,10 +24,10 @@ namespace kRPG.GameObjects.Modifiers
             return new SageModifier(kNpc, npc);
         }
 
-        public new static NpcModifier Random(kNPC kNpc, NPC npc)
-        {
-            return new SageModifier(kNpc, npc);
-        }
+        //public new static NpcModifier Random(kNPC kNpc, NPC npc)
+        //{
+        //    return new SageModifier(kNpc, npc);
+        //}
 
         public override void Update(NPC kNpc)
         {
@@ -49,7 +49,7 @@ namespace kRPG.GameObjects.Modifiers
                 ProceduralSpellProj ps1 = (ProceduralSpellProj) proj1.modProjectile;
                 ps1.Origin = proj1.position;
                 Cross cross1 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Red() : new Cross_Violet();
-                ps1.ai.Add(delegate(ProceduralSpellProj spell)
+                ps1.Ai.Add(delegate(ProceduralSpellProj spell)
                 {
                     cross1.GetAiAction()(spell);
 
@@ -96,7 +96,7 @@ namespace kRPG.GameObjects.Modifiers
                 ProceduralSpellProj ps2 = (ProceduralSpellProj) proj2.modProjectile;
                 ps2.Origin = proj2.position;
                 Cross cross2 = Main.rand.Next(2) == 0 ? (Cross) new Cross_Blue() : new Cross_Purple();
-                ps2.ai.Add(delegate(ProceduralSpellProj spell)
+                ps2.Ai.Add(delegate(ProceduralSpellProj spell)
                 {
                     cross2.GetAiAction()(spell);
 

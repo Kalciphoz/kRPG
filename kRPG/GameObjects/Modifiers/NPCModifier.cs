@@ -10,7 +10,7 @@ namespace kRPG.GameObjects.Modifiers
     {
         public NPC npc;
 
-        public NpcModifier(kNPC kNpc, NPC npc)
+        protected NpcModifier(kNPC kNpc, NPC oNpc)
         {
         }
 
@@ -18,41 +18,41 @@ namespace kRPG.GameObjects.Modifiers
         {
         }
 
-        public virtual void DrawEffects(NPC npc, ref Color drawColor)
+        public virtual void DrawEffects(NPC oNpc, ref Color drawColor)
         {
         }
 
-        public virtual void ModifyHitPlayer(NPC npc, Player target, ref int damage, ref bool crit)
+        public virtual void ModifyHitPlayer(NPC oNpc, Player target, ref int damage, ref bool crit)
         {
         }
 
-        public static NpcModifier New(kNPC kNpc, NPC npc)
+        public static NpcModifier New(kNPC oNpc, NPC npc)
         {
             return null;
         }
 
-        public virtual void NPCLoot(NPC npc)
+        public virtual void NpcLoot(NPC oNpc)
         {
         }
 
-        public virtual void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
+        public virtual void OnHitByProjectile(NPC oNpc, Projectile projectile, int damage, float knockBack, bool crit)
         {
         }
 
-        public virtual void PostAI(NPC npc)
+        public virtual void PostAi(NPC oNpc)
         {
         }
 
-        public static NpcModifier Random(kNPC kNpc, NPC npc)
-        {
-            return null;
-        }
+        //public static NpcModifier Random(kNPC kNpc, NPC oNpc)
+        //{
+        //    return null;
+        //}
 
         public virtual void Read(BinaryReader reader)
         {
         }
 
-        public virtual float StrikeNPC(NPC npc, double damage, int defense, float knockback, int hitDirection, bool crit)
+        public virtual float StrikeNpc(NPC oNpc, double damage, int defense, float knockBack, int hitDirection, bool crit)
         {
             return 1f;
         }

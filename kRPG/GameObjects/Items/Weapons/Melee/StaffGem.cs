@@ -81,7 +81,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                     ProceduralSpellProj ps = (ProceduralSpellProj) projectile.modProjectile;
                     ps.Origin = projectile.position;
                     if (cross.GetAiAction() != null)
-                        ps.ai.Add(cross.GetAiAction());
+                        ps.Ai.Add(cross.GetAiAction());
                     if (cross.GetInitAction() != null)
                         ps.Inits.Add(cross.GetInitAction());
                     if (cross.GetImpactAction() != null)

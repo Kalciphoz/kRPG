@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using kRPG.Enums;
 using kRPG.GameObjects.Items.Procedural;
-using kRPG.GameObjects.SFX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -59,21 +58,24 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            if (texture == null)
+            if (LocalTexture == null)
                 item.SetDefaults(0, true);
-            spriteBatch.Draw(texture, position, null, color, rotation, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(LocalTexture, position, null, color, rotation, Vector2.Zero, scale, SpriteEffects.None, 0f);
         }
 
-        public void DrawHeld(PlayerDrawInfo drawinfo, Color color, float rotation, float scale, Vector2 playerCenter)
+        public void DrawHeld(PlayerDrawInfo drawInfo, Color color, float rotation, float scale, Vector2 playerCenter)
         {
             try
             {
                 Player player = Main.player[Main.myPlayer];
                 Vector2 position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
-                if (texture == null)
+                if (LocalTexture == null)
                     item.SetDefaults(0, true);
                 SpriteEffects effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-                DrawData draw = new DrawData(texture, position, null, color, rotation, new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height),
+                if (LocalTexture == null)
+                    return;
+
+                DrawData draw = new DrawData(LocalTexture, position, null, color, rotation, new Vector2(player.direction > 0 ? 0 : LocalTexture.Width, LocalTexture.Height),
                     scale, effects, 0);
                 for (int i = 0; i < Main.playerDrawData.Count; i += 1)
                 {
@@ -91,14 +93,14 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
         }
 
-        public static ProceduralStaff DropStaff(Mod mod, Vector2 position, Staff staffstaff, StaffGem staffgem, StaffOrnament staffornament, float dps,
+        public static ProceduralStaff DropStaff(Mod mod, Vector2 position, Staff staffStaff, StaffGem staffGem, StaffOrnament staffOrnament, float dps,
             int enemyDef)
         {
             int id = Item.NewItem(position, mod.GetItem("ProceduralStaff").item.type);
             ProceduralStaff staff = (ProceduralStaff) Main.item[id].modItem;
-            staff.Staff = staffstaff;
-            staff.Gem = staffgem;
-            staff.Ornament = staffornament;
+            staff.Staff = staffStaff;
+            staff.Gem = staffGem;
+            staff.Ornament = staffOrnament;
             staff.Dps = dps;
             staff.EnemyDef = enemyDef;
             staff.Initialize();
@@ -107,9 +109,9 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             ModPacket packet = mod.GetPacket();
             packet.Write((byte) Message.StaffInit);
             packet.Write(id);
-            packet.Write(staffstaff.Type);
-            packet.Write(staffgem.Type);
-            packet.Write(staffornament.Type);
+            packet.Write(staffStaff.Type);
+            packet.Write(staffGem.Type);
+            packet.Write(staffOrnament.Type);
             packet.Write(dps);
             packet.Write(enemyDef);
             packet.Send();
@@ -118,8 +120,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public static Item GenerateStaff(Mod mod, Vector2 position, StaffTheme theme, float dps, int enemyDef)
         {
-            ProceduralStaff staff;
-            staff = DropStaff(mod, position, Staff.RandomStaff(theme), StaffGem.RandomGem(theme),
+            ProceduralStaff staff = DropStaff(mod, position, Staff.RandomStaff(theme), StaffGem.RandomGem(theme),
                 Main.rand.Next(3) < 2 ? StaffOrnament.RandomOrnament(theme) : StaffOrnament.None, dps, enemyDef);
             return staff.item;
         }
@@ -134,7 +135,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             if (Staff.Front || Gem.Back) parts.Add(Staff);
             if (Ornament.Front) parts.Add(Ornament);
             if (Main.netMode != 2)
-                texture = GFX.GFX.CombineTextures(new List<Texture2D> {parts[0].Texture, parts[1].Texture, parts[2].Texture},
+                LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> {parts[0].Texture, parts[1].Texture, parts[2].Texture},
                     new List<Point>
                     {
                         parts[0].GetDrawOrigin(new Point(Staff.Texture.Width, Staff.Texture.Height), new Point((int) Staff.Origin.X, (int) Staff.Origin.Y),
@@ -144,8 +145,8 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                         parts[2].GetDrawOrigin(new Point(Staff.Texture.Width, Staff.Texture.Height), new Point((int) Staff.Origin.X, (int) Staff.Origin.Y),
                             CombinedTextureSize())
                     }, CombinedTextureSize());
-            if (Main.netMode != 2) item.width = texture.Width;
-            if (Main.netMode != 2) item.height = texture.Height;
+            if (Main.netMode != 2) item.width = LocalTexture.Width;
+            if (Main.netMode != 2) item.height = LocalTexture.Height;
             item.shoot = Gem.Shoot;
             item.shootSpeed = Staff.ShootSpeed;
             item.GetGlobalItem<kItem>().ApplyStats(item, true);
@@ -204,15 +205,15 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             writer.Write(EnemyDef);
         }
 
-        public Texture2D OverhaulGetTexture()
-        {
-            return texture;
-        }
+        //public Texture2D OverhaulGetTexture()
+        //{
+        //    return LocalTexture;
+        //}
 
-        public bool? OverhaulHasTag(string tag)
-        {
-            return tag == "magicWeapon" ? (bool?) true : null;
-        }
+        //public bool? OverhaulHasTag(string tag)
+        //{
+        //    return tag == "magicWeapon" ? (bool?) true : null;
+        //}
 
         public void ResetStats()
         {

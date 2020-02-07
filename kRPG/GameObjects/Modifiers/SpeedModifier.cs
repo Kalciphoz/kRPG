@@ -28,10 +28,10 @@ namespace kRPG.GameObjects.Modifiers
             return new SpeedModifier(kNpc, npc);
         }
 
-        public new static NpcModifier Random(kNPC kNpc, NPC npc)
-        {
-            return new SpeedModifier(kNpc, npc, 1f + Main.rand.NextFloat(2));
-        }
+        //public new static NpcModifier Random(kNPC kNpc, NPC npc)
+        //{
+        //    return new SpeedModifier(kNpc, npc, 1f + Main.rand.NextFloat(2));
+        //}
 
         public override void Read(BinaryReader reader)
         {

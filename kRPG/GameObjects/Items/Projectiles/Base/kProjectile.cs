@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using kRPG.Enums;
 using kRPG.GameObjects.Items.Glyphs;
@@ -27,15 +26,15 @@ namespace kRPG.GameObjects.Items.Projectiles.Base
             if (Main.npc.GetUpperBound(0) >= projectile.owner)
                 if (projectile.hostile && !projectile.friendly)
                 {
-                    bool bossfight = false;
+                    bool bossFight = false;
                     foreach (NPC n in Main.npc)
                         if (n.active)
                             if (n.boss)
-                                bossfight = true;
-                    if (bossfight) return;
+                                bossFight = true;
+                    if (bossFight) return;
 
                     Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
-                    Dictionary<Element, bool> haselement = new Dictionary<Element, bool>
+                    Dictionary<Element, bool> hasElement = new Dictionary<Element, bool>
                     {
                         {
                             Element.Fire,
@@ -58,11 +57,11 @@ namespace kRPG.GameObjects.Items.Projectiles.Base
                             !Main.dayTime && Main.rand.Next(10) == 0 && Main.netMode == 0 && player.ZoneOverworldHeight
                         }
                     };
-                    int count = Enum.GetValues(typeof(Element)).Cast<Element>().Count(element => haselement[element]);
-                    int portionsize = (int)Math.Round(projectile.damage * kNPC.EleDmgModifier / 3.0 / count);
+                    int count = Enum.GetValues(typeof(Element)).Cast<Element>().Count(element => hasElement[element]);
+                    int portionSize = (int)Math.Round(projectile.damage * kNPC.EleDmgModifier / 3.0 / count);
                     foreach (Element element in Enum.GetValues(typeof(Element)))
-                        if (haselement[element])
-                            ElementalDamage[element] = Math.Max(1, portionsize);
+                        if (hasElement[element])
+                            ElementalDamage[element] = Math.Max(1, portionSize);
                     return;
                 }
 

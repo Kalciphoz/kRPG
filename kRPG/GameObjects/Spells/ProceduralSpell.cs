@@ -10,9 +10,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Spells
@@ -26,7 +24,7 @@ namespace kRPG.GameObjects.Spells
                 Glyphs[i] = new Item();
         }
 
-        public Action<ProceduralSpell, Terraria.Player, Vector2, Vector2, Entity> castAction {
+        public Action<ProceduralSpell, Player, Vector2, Vector2, Entity> CastAction {
             get {
                 Glyph glyph = (Glyph)Glyphs[(byte)GlyphType.Moon].modItem;
                 return glyph.GetCastAction();
@@ -65,18 +63,18 @@ namespace kRPG.GameObjects.Spells
         public int ProjCountOverride { get; set; } = -1;
         public int Remaining { get; set; }
 
-        public Action<ProceduralSpell, Terraria.Player, Vector2> UseAction {
+        public Action<ProceduralSpell, Player, Vector2> UseAction {
             get {
                 Glyph glyph = (Glyph)Glyphs[(byte)GlyphType.Star].modItem;
                 return glyph.GetUseAbility();
             }
         }
 
-        public void CastSpell(Terraria.Player player, Vector2 origin, Vector2 target, Entity caster)
+        public void CastSpell(Player player, Vector2 origin, Vector2 target, Entity caster)
         {
             SoundManager.PlaySound(Sounds.LegacySoundStyle_Item8,caster.position);
             //Main.PlaySound(SoundID.Item8, caster.position);
-            castAction(this, player, origin, target, caster);
+            CastAction(this, player, origin, target, caster);
         }
 
         public bool CompleteSkill()
@@ -90,7 +88,7 @@ namespace kRPG.GameObjects.Spells
         }
 
         //angle from 0f to 1f
-        public ProceduralSpellProj CreateProjectile(Terraria.Player player, Vector2 velocity, float angle = 0f, Vector2? position = null, Entity caster = null)
+        public ProceduralSpellProj CreateProjectile(Player player, Vector2 velocity, float angle = 0f, Vector2? position = null, Entity caster = null)
         {
             if (caster == null) caster = player;
             Projectile projectile =
@@ -103,7 +101,7 @@ namespace kRPG.GameObjects.Spells
             {
                 Glyph glyph = (Glyph)item.modItem;
                 if (glyph.GetAiAction() != null)
-                    ps.ai.Add(glyph.GetAiAction());
+                    ps.Ai.Add(glyph.GetAiAction());
                 if (glyph.GetInitAction() != null)
                     ps.Inits.Add(glyph.GetInitAction());
                 if (glyph.GetImpactAction() != null)
@@ -117,7 +115,7 @@ namespace kRPG.GameObjects.Spells
                 if (modifier.Impact != null)
                     ps.Impacts.Add(modifier.Impact);
                 if (modifier.Draw != null)
-                    ps.draw.Add(modifier.Draw);
+                    ps.SpellDraw.Add(modifier.Draw);
                 if (modifier.Init != null)
                     ps.Inits.Add(modifier.Init);
             }
@@ -234,7 +232,7 @@ namespace kRPG.GameObjects.Spells
             return (int)Math.Round(Math.Pow(1.04, Math.Min(130, character.Level)) * 9f * multiplier) + constant;
         }
 
-        public void UseAbility(Terraria.Player player, Vector2 target)
+        public void UseAbility(Player player, Vector2 target)
         {
             bool vanish = Modifiers.Contains(GlyphModifier.Vanish);
             Vector2 oldCenter = player.Center;

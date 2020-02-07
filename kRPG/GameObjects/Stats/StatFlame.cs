@@ -7,7 +7,6 @@ using kRPG.GameObjects.SFX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Stats
@@ -16,9 +15,8 @@ namespace kRPG.GameObjects.Stats
     {
         private readonly int animationTime = 5;
 
-        public StatFlame(Mod mod, LevelGui levelGui, PlayerStats id, Func<Vector2> position, Texture2D texture)
+        public StatFlame(LevelGui levelGui, PlayerStats id, Func<Vector2> position, Texture2D texture)
         {
-            Mod = mod;
             LevelGui = levelGui;
             Id = id;
             Position = position;
@@ -36,7 +34,7 @@ namespace kRPG.GameObjects.Stats
         private int FrameNumber { get; set; }
         private PlayerStats Id { get; }
         private LevelGui LevelGui { get; }
-        private Mod Mod { get; }
+        
         private Func<Vector2> Position { get; }
         private Texture2D Texture { get; }
 
@@ -46,7 +44,7 @@ namespace kRPG.GameObjects.Stats
                    Main.mouseY <= Position().Y + 68;
         }
 
-        public void Draw(SpriteBatch spriteBatch, Terraria.Player player, float scale)
+        public void Draw(SpriteBatch spriteBatch, Player player, float scale)
         {
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
             if (Counter > 8 * animationTime - 1) Counter = 0;
@@ -60,7 +58,7 @@ namespace kRPG.GameObjects.Stats
             Counter++;
         }
 
-        public void Update(SpriteBatch spriteBatch, Terraria.Player player)
+        public void Update(SpriteBatch spriteBatch, Player player)
         {
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
 

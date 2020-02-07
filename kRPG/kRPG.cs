@@ -8,9 +8,7 @@ using kRPG.Classes;
 using kRPG.Enums;
 using kRPG.GameObjects.GFX;
 using kRPG.GameObjects.GUI.Base;
-using kRPG.GameObjects.Items;
 using kRPG.GameObjects.Items.Glyphs;
-using kRPG.GameObjects.Items.Procedural;
 using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.Items.Weapons.Melee;
 using kRPG.GameObjects.Items.Weapons.Ranged;
@@ -23,6 +21,7 @@ using Newtonsoft.Json;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
+// ReSharper disable StringLiteralTypo
 
 namespace kRPG
 {
@@ -185,18 +184,18 @@ namespace kRPG
                     {
                         NPC npc = Main.npc[(int) tags[DataTag.NpcId]];
                         kNPC kn = npc.GetGlobalNPC<kNPC>();
-                        Dictionary<Element, bool> haselement = new Dictionary<Element, bool>
+                        Dictionary<Element, bool> hasElement = new Dictionary<Element, bool>
                         {
                             {Element.Fire, (bool) tags[DataTag.Flag]},
                             {Element.Cold, (bool) tags[DataTag.Flag2]},
                             {Element.Lightning, (bool) tags[DataTag.Flag3]},
                             {Element.Shadow, (bool) tags[DataTag.Flag4]}
                         };
-                        int count = Enum.GetValues(typeof(Element)).Cast<Element>().Count(element => haselement[element]);
-                        int portionsize = (int) Math.Round(npc.damage * kNPC.EleDmgModifier / 2.0 / count);
+                        int count = Enum.GetValues(typeof(Element)).Cast<Element>().Count(element => hasElement[element]);
+                        int portionSize = (int) Math.Round(npc.damage * kNPC.EleDmgModifier / 2.0 / count);
                         foreach (Element element in Enum.GetValues(typeof(Element)))
-                            if (haselement[element])
-                                kn.ElementalDamage[element] = Math.Max(1, portionsize);
+                            if (hasElement[element])
+                                kn.ElementalDamage[element] = Math.Max(1, portionSize);
                         kn.DealsEleDmg = count > 0;
                     }
 
@@ -285,7 +284,7 @@ namespace kRPG
                                 continue;
                             Glyph glyph = (Glyph) item.modItem;
                             if (glyph.GetAiAction() != null)
-                                ps.ai.Add(glyph.GetAiAction());
+                                ps.Ai.Add(glyph.GetAiAction());
                             if (glyph.GetInitAction() != null)
                                 ps.Inits.Add(glyph.GetInitAction());
                             if (glyph.GetImpactAction() != null)
@@ -299,7 +298,7 @@ namespace kRPG
                             if (modifier.Impact != null)
                                 ps.Impacts.Add(modifier.Impact);
                             if (modifier.Draw != null)
-                                ps.draw.Add(modifier.Draw);
+                                ps.SpellDraw.Add(modifier.Draw);
                             if (modifier.Init != null)
                                 ps.Inits.Add(modifier.Init);
                         }
@@ -537,12 +536,14 @@ namespace kRPG
                     }
                     catch
                     {
+                        //
                     }
                 };
                 client.DownloadStringAsync(new Uri(url), url);
             }
             catch
             {
+                //
             }
 #pragma warning restore 162
         }

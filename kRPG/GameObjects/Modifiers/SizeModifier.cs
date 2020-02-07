@@ -13,22 +13,28 @@ namespace kRPG.GameObjects.Modifiers
             this.npc = npc;
             ScaleModifier = scaleModifier;
             LifeModifier = lifeModifier;
-            Apply();
+            _Apply();
         }
 
         private float LifeModifier { get; set; }
         private float ScaleModifier { get; set; }
 
-        public override void Apply()
+
+        private void _Apply()
         {
             npc.scale *= ScaleModifier;
-            npc.lifeMax = (int) (npc.lifeMax * LifeModifier);
-            npc.life = (int) (npc.life * LifeModifier);
+            npc.lifeMax = (int)(npc.lifeMax * LifeModifier);
+            npc.life = (int)(npc.life * LifeModifier);
             if (ScaleModifier < 1)
                 npc.GivenName = "Small " + npc.GivenName;
             else
                 npc.GivenName = "Massive " + npc.GivenName;
-            npc.GetGlobalNPC<kNPC>().SpeedModifier *= (float) Math.Pow(ScaleModifier, 0.9);
+            npc.GetGlobalNPC<kNPC>().SpeedModifier *= (float)Math.Pow(ScaleModifier, 0.9);
+        }
+
+        public override void Apply()
+        {
+            _Apply();
         }
 
         public new static NpcModifier New(kNPC kNpc, NPC npc)
@@ -36,10 +42,10 @@ namespace kRPG.GameObjects.Modifiers
             return new SizeModifier(kNpc, npc);
         }
 
-        public new static NpcModifier Random(kNPC kNpc, NPC npc)
-        {
-            return new SizeModifier(kNpc, npc, .5f + Main.rand.NextFloat(2), .5f + Main.rand.NextFloat(1));
-        }
+        //public new static NpcModifier Random(kNPC kNpc, NPC npc)
+        //{
+        //    return new SizeModifier(kNpc, npc, .5f + Main.rand.NextFloat(2), .5f + Main.rand.NextFloat(1));
+        //}
 
         public override void Read(BinaryReader reader)
         {

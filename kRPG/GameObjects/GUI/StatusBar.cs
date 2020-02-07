@@ -8,7 +8,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameInput;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
@@ -45,7 +44,7 @@ namespace kRPG.GameObjects.GUI
         private readonly Vector2 bubblesOrigin;
         private PlayerCharacter character;
 
-        public StatusBar(PlayerCharacter character, Mod mod)
+        public StatusBar(PlayerCharacter character)
         {
             Main.player[Main.myPlayer].hbLocked = false;
             this.character = character;
@@ -156,7 +155,7 @@ namespace kRPG.GameObjects.GUI
         {
             DrawSelectedItemName();
 
-            //Get the width of the screen, subtract 480 from it which will be the distance from the left we need to be able to draw the bar
+            //Get the width of the screen, subtract 480 from it which will be the distance from the left we need to be able to SpellDraw the bar
             int leftOffset = Main.screenWidth - 480;
 
             //For each slot
@@ -297,7 +296,7 @@ namespace kRPG.GameObjects.GUI
         }
 
         /// <summary>
-        ///     This happens after the draw event
+        ///     This happens after the SpellDraw event
         /// </summary>
         /// <param name="spriteBatch"></param>
         /// <param name="player"></param>
@@ -347,10 +346,10 @@ namespace kRPG.GameObjects.GUI
             spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Mana + " / " + player.statManaMax2,
                 GuiPosition + new Vector2(barManaOrigin.X * Scale + 24f * Scale, barManaOrigin.Y * Scale), Color.White, 0.8f * Scale);
 
-            //This should draw roman numerals for the characters level.... but doesn't seem to work.
+            //This should SpellDraw roman numerals for the characters level.... but doesn't seem to work.
             DrawNumerals(spriteBatch, character.Level, Scale);
 
-            //If they have unspent level points, draw the icon
+            //If they have unspent level points, SpellDraw the icon
             if (character.UnspentPoints())
                 spriteBatch.Draw(GFX.GFX.UnspentPoints, PointsOrigin, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 

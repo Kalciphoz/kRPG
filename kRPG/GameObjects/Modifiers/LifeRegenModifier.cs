@@ -2,6 +2,8 @@
 using kRPG.GameObjects.NPCs;
 using Terraria;
 
+// ReSharper disable IdentifierTypo
+
 namespace kRPG.GameObjects.Modifiers
 {
     public class LifeRegenModifier : NpcModifier
@@ -19,10 +21,10 @@ namespace kRPG.GameObjects.Modifiers
             return new LifeRegenModifier(kNpc, npc);
         }
 
-        public new static NpcModifier Random(kNPC kNpc, NPC npc)
-        {
-            return new LifeRegenModifier(kNpc, npc);
-        }
+        //public new static NpcModifier Random(kNPC kNpc, NPC npc)
+        //{
+        //    return new LifeRegenModifier(kNpc, npc);
+        //}
 
         public override void Update(NPC kNpc)
         {

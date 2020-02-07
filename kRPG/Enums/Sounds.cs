@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace kRPG.Enums
+﻿namespace kRPG.Enums
 {
     public enum Sounds
     {
@@ -294,7 +288,7 @@ namespace kRPG.Enums
         LegacySoundStyle_Item122 = 284,
         LegacySoundStyle_Item123 = 285,
         LegacySoundStyle_Item124 = 286,
-        LegacySoundStyle_Item125 = 287,
+        LegacySoundStyle_Item125 = 287
         //LegacySoundStyle_DD2_GoblinBomb = 288,
         //LegacySoundStyle_BlizzardInsideBuildingLoop = 289,
         //LegacySoundStyle_BlizzardStrongLoop = 290,

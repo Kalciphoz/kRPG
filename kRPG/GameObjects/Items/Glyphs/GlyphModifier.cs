@@ -8,7 +8,6 @@ using kRPG.GameObjects.SFX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -81,7 +80,7 @@ namespace kRPG.GameObjects.Items.Glyphs
                 ProceduralSpellProj spell = minion.Source.CreateProjectile(Main.player[minion.projectile.owner], velocity, 0, proj.Center, proj);
                 spell.projectile.minion = true;
                 Moon moon = (Moon)minion.Source.Glyphs[(int)GlyphType.Moon].modItem;
-                spell.ai.Remove(moon.GetAiAction());
+                spell.Ai.Remove(moon.GetAiAction());
             });
             SmallProt = new GlyphModifier(1, "Orbiting fire", glyph => glyph.Minion, () => Main.rand.Next(4) == 0, 0.95f).SetMinionAi(
                 delegate (ProceduralMinion minion)
@@ -103,7 +102,7 @@ namespace kRPG.GameObjects.Items.Glyphs
                     ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
                     ps.Origin = projectile.position;
                     Cross cross = new Cross_Red();
-                    ps.ai.Add(delegate (ProceduralSpellProj spell)
+                    ps.Ai.Add(delegate (ProceduralSpellProj spell)
                     {
                         cross.GetAiAction()(spell);
 

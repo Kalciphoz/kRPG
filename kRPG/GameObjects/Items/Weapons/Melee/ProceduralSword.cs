@@ -59,22 +59,22 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            if (texture == null)
+            if (LocalTexture == null)
             {
                 item.SetDefaults(0, true);
                 return;
             }
 
-            spriteBatch.Draw(texture, position, null, Lighted ? Color.White : color, rotation, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(LocalTexture, position, null, Lighted ? Color.White : color, rotation, Vector2.Zero, scale, SpriteEffects.None, 0f);
         }
 
-        public void DrawHeld(PlayerDrawInfo drawinfo, Color color, float rotation, float scale, Vector2 playerCenter)
+        public void DrawHeld(PlayerDrawInfo drawInfo, Color color, float rotation, float scale, Vector2 playerCenter)
         {
             try
             {
                 Player player = Main.player[Main.myPlayer];
                 Vector2 position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
-                if (texture == null)
+                if (LocalTexture == null)
                 {
                     //Removing references to SetDefaults
                     //item.SetDefaults();
@@ -82,8 +82,8 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 }
 
                 SpriteEffects effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-                DrawData draw = new DrawData(texture, position, null, Lighted ? Color.White : color, rotation,
-                    new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height), scale, effects, 0);
+                DrawData draw = new DrawData(LocalTexture, position, null, Lighted ? Color.White : color, rotation,
+                    new Vector2(player.direction > 0 ? 0 : LocalTexture.Width, LocalTexture.Height), scale, effects, 0);
                 for (int i = 0; i < Main.playerDrawData.Count; i += 1)
                 {
                     if (Main.playerDrawData[i].texture != Main.itemTexture[player.inventory[player.selectedItem].type])
@@ -102,8 +102,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public static Item GenerateSword(Mod mod, Vector2 position, SwordTheme theme, float dps, int enemyDef)
         {
-            ProceduralSword sword;
-            sword = NewSword(mod, position, SwordHilt.RandomHilt(theme), SwordBlade.RandomBlade(theme),
+            ProceduralSword sword = NewSword(mod, position, SwordHilt.RandomHilt(theme), SwordBlade.RandomBlade(theme),
                 Main.rand.Next(5) < 3 ? SwordAccent.RandomAccent() : SwordAccent.None, dps, enemyDef);
             return sword.item;
         }
@@ -114,7 +113,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             {
                 ResetStats();
                 if (Main.netMode != 2)
-                    texture = GFX.GFX.CombineTextures(new List<Texture2D> {Blade.Texture, Hilt.Texture, Accent.Texture},
+                    LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> {Blade.Texture, Hilt.Texture, Accent.Texture},
                         new List<Point>
                         {
                             new Point(CombinedTextureSize().X - Blade.Texture.Width, 0),
@@ -122,8 +121,8 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                             new Point((int) Hilt.Origin.X + Hilt.AccentOffset.X - (int) Accent.Origin.X,
                                 Hilt.AccentOffset.Y + CombinedTextureSize().Y - Hilt.Texture.Height + (int) Hilt.Origin.Y - (int) Accent.Origin.Y)
                         }, CombinedTextureSize());
-                if (Main.netMode != 2) item.width = texture.Width;
-                if (Main.netMode != 2) item.height = texture.Height;
+                if (Main.netMode != 2) item.width = LocalTexture.Width;
+                if (Main.netMode != 2) item.height = LocalTexture.Height;
                 if (Accent.Type == SwordAccent.GemPurple.Type)
                 {
                     item.melee = false;
@@ -173,11 +172,11 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
         }
 
-        public override void MeleeEffects(Player player, Rectangle hitbox)
+        public override void MeleeEffects(Player player, Rectangle hitBox)
         {
-            Blade.Effect?.Invoke(hitbox, player);
+            Blade.Effect?.Invoke(hitBox, player);
 
-            Accent.Effect?.Invoke(hitbox, player);
+            Accent.Effect?.Invoke(hitBox, player);
         }
 
         public override void NetRecieve(BinaryReader reader)
@@ -232,15 +231,15 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             Accent.OnHit?.Invoke(player, target, this, damage, crit);
         }
 
-        public Texture2D OverhaulGetTexture()
-        {
-            return texture;
-        }
+        //public Texture2D OverhaulGetTexture()
+        //{
+        //    return LocalTexture;
+        //}
 
-        public bool? OverhaulHasTag(string tag)
-        {
-            return (Spear ? tag == "spear" : tag == "broadsword") ? (bool?) true : null;
-        }
+        //public bool? OverhaulHasTag(string tag)
+        //{
+        //    return (Spear ? tag == "spear" : tag == "broadsword") ? (bool?) true : null;
+        //}
 
         public void ResetStats()
         {
@@ -376,15 +375,16 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             return false;
         }
 
-        public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)
+        // ReSharper disable once RedundantAssignment
+        public override void UseItemHitbox(Player player, ref Rectangle hitBox, ref bool noHitBox)
         {
             if (Spear /* || player.altFunctionUse == 2*/)
             {
-                noHitbox = true;
+                noHitBox = true;
                 return;
             }
 
-            noHitbox = false;
+            noHitBox = false;
         }
     }
 }

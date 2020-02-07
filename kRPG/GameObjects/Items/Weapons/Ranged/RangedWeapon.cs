@@ -82,8 +82,8 @@ namespace kRPG.GameObjects.Items.Weapons.Ranged
         public static int NewRangedWeapon(Mod mod, Vector2 position, int npcLevel, int playerLevel, float dps, int enemyDef)
         {
             int combined = npcLevel + playerLevel;
-            int ammo = 0;
-            string weapon = "";
+            int ammo ;
+            string weapon ;
             if (combined >= 35)
                 switch (Main.rand.Next(5))
                 {

@@ -9,7 +9,6 @@ using kRPG.GameObjects.SFX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -94,27 +93,21 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 {
                     //Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
                     SoundManager.PlaySound(Sounds.LegacySoundStyle_Item14, player.Center, .5f);
-                    Projectile proj = Main.projectile[
-                        Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(),
-                            Math.Max(1, (int) Math.Round(sword.EleDamage[Element.Fire] * damage * 2)), 0f, player.whoAmI)];
+                    Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(), Math.Max(1, (int) Math.Round(sword.EleDamage[Element.Fire] * damage * 2)), 0f, player.whoAmI)];
+
                 }, 1.05f).SetEleDamage(new Dictionary<Element, float> {{Element.Fire, 0.2f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0f}})
                 .SetEffect(delegate(Rectangle rect, Player player)
                 {
                     if (Main.rand.Next(2) != 0)
                         return;
-                    int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f,
-                        player.velocity.Y * 0.2f, 63, new Color(), 1.5f);
+                    int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.Fire, player.velocity.X * 0.2f + player.direction * 3f, player.velocity.Y * 0.2f, 63, new Color(), 1.5f);
                     Main.dust[dust].noGravity = true;
                 });
             GemGreen = new SwordAccent("GemGreen", " of Thunder", 2, 2, 2, delegate(Player player, NPC npc, ProceduralSword sword, int damage, bool crit)
                 {
                     //Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
                     SoundManager.PlaySound(Sounds.LegacySoundStyle_Item14, player.Center, .5f);
-
-                    Projectile proj = Main.projectile[
-                        Projectile.NewProjectile(npc.Center - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(),
-                            Math.Max(1, damage / 6),
-                            0f, player.whoAmI)];
+                    Projectile proj = Main.projectile[Projectile.NewProjectile(npc.Center - new Vector2(24, 48), Vector2.Zero, ModContent.ProjectileType<SmokePellets>(), Math.Max(1, damage / 6), 0f, player.whoAmI)];
                 }, 1.1f, 4).SetEleDamage(new Dictionary<Element, float>
                     {
                         {Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0.2f}, {Element.Shadow, 0f}
