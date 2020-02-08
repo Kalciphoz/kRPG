@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Spells
@@ -271,7 +272,7 @@ namespace kRPG.GameObjects.Spells
                             player.lifeRegenTime = 0;
                         }
 
-                        player.AddBuff(88, 360);
+                        player.AddBuff(BuffID.ChaosState, 360);
                     }
                 }
             }

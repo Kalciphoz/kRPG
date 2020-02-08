@@ -29,10 +29,11 @@ namespace kRPG
     {
         //    public const double Phi = 1.61803398874989484820458683436;
 
-        private const byte c = 0;
-        private const byte g = 2;
-        private const byte p = 3;
-        private const byte s = 1;
+        private const byte Copper = 0;
+        private const byte Silver = 1;
+        private const byte Gold = 2;
+        private const byte Platinum = 3;
+
         public static double Tau => Math.PI * 2;
 
         private static readonly FieldInfo InventoryGlowHue = typeof(ItemSlot).GetField("inventoryGlowHue", BindingFlags.NonPublic | BindingFlags.Static);
@@ -41,9 +42,6 @@ namespace kRPG
         private static readonly FieldInfo InventoryGlowTimeChest = typeof(ItemSlot).GetField("inventoryGlowTimeChest", BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly MethodInfo IsModItem = typeof(ItemLoader).GetMethod("IsModItem", BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly PropertyInfo ModItem = typeof(Item).GetProperty("modItem", BindingFlags.Public | BindingFlags.Instance);
-
-
-
 
         public static void ApiCreate(this Recipe recipe)
         {
@@ -73,62 +71,62 @@ namespace kRPG
 
                 if (requiredAmount <= 0)
                     continue;
-                {
-                    Item[] array = Main.player[Main.myPlayer].inventory;
-                    InvLogic(recipe, array, requiredItem, requiredAmount);
-                    PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
-                    for (int j = 0; j < character.Inventories.Length; j += 1)
-                        if (character.ActiveInvPage != j)
-                        {
-                            array = character.Inventories[j];
-                            InvLogic(recipe, array, requiredItem, requiredAmount);
-                        }
 
-                    if (Main.player[Main.myPlayer].chest == -1)
-                        continue;
-                    if (Main.player[Main.myPlayer].chest > -1)
-                        array = Main.chest[Main.player[Main.myPlayer].chest].item;
-                    else
-                        switch (Main.player[Main.myPlayer].chest)
-                        {
-                            case -2:
-                                array = Main.player[Main.myPlayer].bank.item;
-                                break;
-                            case -3:
-                                array = Main.player[Main.myPlayer].bank2.item;
-                                break;
-                            case -4:
-                                array = Main.player[Main.myPlayer].bank3.item;
-                                break;
-                        }
-
-                    for (int l = 0; l < 40; l++)
+                Item[] array = Main.player[Main.myPlayer].inventory;
+                InvLogic(recipe, array, requiredItem, requiredAmount);
+                PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
+                for (int j = 0; j < character.Inventories.Length; j += 1)
+                    if (character.ActiveInvPage != j)
                     {
-                        Item item3 = array[l];
-                        if (requiredAmount <= 0)
-                            break;
+                        array = character.Inventories[j];
+                        InvLogic(recipe, array, requiredItem, requiredAmount);
+                    }
 
-                        if (!item3.IsTheSameAs(requiredItem) && !recipe.useWood(item3.type, requiredItem.type) &&
-                            !recipe.useSand(item3.type, requiredItem.type) && !recipe.useIronBar(item3.type, requiredItem.type) &&
-                            !recipe.usePressurePlate(item3.type, requiredItem.type) && !recipe.useFragment(item3.type, requiredItem.type) &&
-                            !recipe.AcceptedByItemGroups(item3.type, requiredItem.type))
-                            continue;
-                        if (item3.stack > requiredAmount)
-                        {
-                            item3.stack -= requiredAmount;
-                            if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
-                                NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, l);
-                            requiredAmount = 0;
-                        }
-                        else
-                        {
-                            requiredAmount -= item3.stack;
-                            array[l] = new Item();
-                            if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
-                                NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, l);
-                        }
+                if (Main.player[Main.myPlayer].chest == -1)
+                    continue;
+                if (Main.player[Main.myPlayer].chest > -1)
+                    array = Main.chest[Main.player[Main.myPlayer].chest].item;
+                else
+                    switch (Main.player[Main.myPlayer].chest)
+                    {
+                        case -2:
+                            array = Main.player[Main.myPlayer].bank.item;
+                            break;
+                        case -3:
+                            array = Main.player[Main.myPlayer].bank2.item;
+                            break;
+                        case -4:
+                            array = Main.player[Main.myPlayer].bank3.item;
+                            break;
+                    }
+
+                for (int l = 0; l < 40; l++)
+                {
+                    Item item3 = array[l];
+                    if (requiredAmount <= 0)
+                        break;
+
+                    if (!item3.IsTheSameAs(requiredItem) && !recipe.useWood(item3.type, requiredItem.type) &&
+                        !recipe.useSand(item3.type, requiredItem.type) && !recipe.useIronBar(item3.type, requiredItem.type) &&
+                        !recipe.usePressurePlate(item3.type, requiredItem.type) && !recipe.useFragment(item3.type, requiredItem.type) &&
+                        !recipe.AcceptedByItemGroups(item3.type, requiredItem.type))
+                        continue;
+                    if (item3.stack > requiredAmount)
+                    {
+                        item3.stack -= requiredAmount;
+                        if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
+                            NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, l);
+                        requiredAmount = 0;
+                    }
+                    else
+                    {
+                        requiredAmount -= item3.stack;
+                        array[l] = new Item();
+                        if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
+                            NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, l);
                     }
                 }
+
             }
 
             AchievementsHelper.NotifyItemCraft(recipe);
@@ -265,12 +263,12 @@ namespace kRPG
                 if (item.type == 227)
                 {
                     player.potionDelay = player.restorationDelayTime;
-                    player.AddBuff(21, player.potionDelay);
+                    player.AddBuff(BuffID.PotionSickness, player.potionDelay);
                 }
                 else
                 {
                     player.potionDelay = player.potionDelayTime;
-                    player.AddBuff(21, player.potionDelay);
+                    player.AddBuff(BuffID.PotionSickness, player.potionDelay);
                 }
             }
 
@@ -370,12 +368,12 @@ namespace kRPG
                 if (item.type == 227)
                 {
                     player.potionDelay = player.restorationDelayTime;
-                    player.AddBuff(21, player.potionDelay);
+                    player.AddBuff(BuffID.PotionSickness, player.potionDelay);
                 }
                 else
                 {
                     player.potionDelay = player.potionDelayTime;
-                    player.AddBuff(21, player.potionDelay);
+                    player.AddBuff(BuffID.PotionSickness, player.potionDelay);
                 }
             }
 
@@ -390,7 +388,7 @@ namespace kRPG
                 player.HealEffect(item.healLife);
             if (item.healMana > 0)
             {
-                player.AddBuff(94, Player.manaSickTime);
+                player.AddBuff(BuffID.ManaSickness, Player.manaSickTime);
                 if (Main.myPlayer == player.whoAmI)
                     player.ManaEffect(item.healMana);
             }
@@ -424,7 +422,7 @@ namespace kRPG
             return coins;
         }
 
-        //This is just bad code, it's a circular reference that will never resolve.
+        //This is just bad code, it'Silver a circular reference that will never resolve.
         //public static bool Contains<T>(this IEnumerable<T> e, Predicate<T> match)
         //{
         //    List<T> values = e.ToList();
@@ -443,16 +441,16 @@ namespace kRPG
             switch (i.type)
             {
                 case 71:
-                    coins[c] += i.stack;
+                    coins[Copper] += i.stack;
                     break;
                 case 72:
-                    coins[s] += i.stack * 100;
+                    coins[Silver] += i.stack * 100;
                     break;
                 case 73:
-                    coins[g] += i.stack * 10000;
+                    coins[Gold] += i.stack * 10000;
                     break;
                 case 74:
-                    coins[p] += i.stack * 1000000;
+                    coins[Platinum] += i.stack * 1000000;
                     break;
             }
 
@@ -1323,14 +1321,14 @@ namespace kRPG
             string output = "";
             int[] coins = SeparateCoinTypes(amount);
 
-            if (coins[p] > 0)
-                output += coins[p] + " platinum ";
-            if (coins[g] > 0)
-                output += coins[g] + " gold ";
-            if (coins[s] > 0)
-                output += coins[s] + " silver ";
-            if (coins[c] > 0)
-                output += coins[c] + " copper ";
+            if (coins[Platinum] > 0)
+                output += coins[Platinum] + " platinum ";
+            if (coins[Gold] > 0)
+                output += coins[Gold] + " gold ";
+            if (coins[Silver] > 0)
+                output += coins[Silver] + " silver ";
+            if (coins[Copper] > 0)
+                output += coins[Copper] + " copper ";
 
             return output;
         }
@@ -1534,10 +1532,10 @@ namespace kRPG
         {
             //splitting the cost into individual coin types
             int[] output = new int[4];
-            output[c] = Math.Max(0, amount % 100);
-            output[s] = Math.Max(0, (amount % 10000 - output[c]) / 100);
-            output[g] = Math.Max(0, (amount % 1000000 - output[c] - output[s]) / 10000);
-            output[p] = Math.Max(0, (amount - output[c] - output[s] - output[g]) / 1000000);
+            output[Copper] = Math.Max(0, amount % 100);
+            output[Silver] = Math.Max(0, (amount % 10000 - output[Copper]) / 100);
+            output[Gold] = Math.Max(0, (amount % 1000000 - output[Copper] - output[Silver]) / 10000);
+            output[Platinum] = Math.Max(0, (amount - output[Copper] - output[Silver] - output[Gold]) / 1000000);
 
             return output;
         }

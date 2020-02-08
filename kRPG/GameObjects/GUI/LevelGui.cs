@@ -26,9 +26,9 @@ namespace kRPG.GameObjects.GUI
 
             statFlame = new Dictionary<PlayerStats, StatFlame>
             {
-                [PlayerStats.Resilience] = new StatFlame(mod, this, PlayerStats.Resilience, () => Position[PlayerStats.Resilience], GFX.GFX.Flames[PlayerStats.Resilience]),
-                [PlayerStats.Quickness] = new StatFlame(mod, this, PlayerStats.Quickness, () => Position[PlayerStats.Quickness], GFX.GFX.Flames[PlayerStats.Quickness]),
-                [PlayerStats.Potency] = new StatFlame(mod, this, PlayerStats.Potency, () => Position[PlayerStats.Potency], GFX.GFX.Flames[PlayerStats.Potency])
+                [PlayerStats.Resilience] = new StatFlame( this, PlayerStats.Resilience, () => Position[PlayerStats.Resilience], GFX.GFX.Flames[PlayerStats.Resilience]),
+                [PlayerStats.Quickness] = new StatFlame( this, PlayerStats.Quickness, () => Position[PlayerStats.Quickness], GFX.GFX.Flames[PlayerStats.Quickness]),
+                [PlayerStats.Potency] = new StatFlame( this, PlayerStats.Potency, () => Position[PlayerStats.Potency], GFX.GFX.Flames[PlayerStats.Potency])
             };
         }
 
