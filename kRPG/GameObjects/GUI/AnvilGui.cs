@@ -14,9 +14,9 @@ namespace kRPG.GameObjects.GUI
     /// <summary>
     ///     UI for the Anvil
     /// </summary>
-    public class AnvilGUI : BaseGui
+    public class AnvilGui : BaseGui
     {
-        public AnvilGUI(PlayerCharacter playerCharacter)
+        public AnvilGui(PlayerCharacter playerCharacter)
         {
             PlayerCharacter = playerCharacter;
 

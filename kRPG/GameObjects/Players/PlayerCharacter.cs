@@ -86,7 +86,7 @@ namespace kRPG.GameObjects.Players
         };
 
         public int Allres { get; set; }
-        public AnvilGUI AnvilGui { get; set; }
+        public AnvilGui AnvilGui { get; set; }
 
         public Dictionary<PlayerStats, int> BaseStats { get; set; } = new Dictionary<PlayerStats, int>();
         public int BigCritCounter { get; set; } = 50;
@@ -1140,7 +1140,7 @@ namespace kRPG.GameObjects.Players
             if (Main.netMode == 2) return;
             BaseGui.GuiElements.Clear();
             SpellCraftingGui = new SpellCraftingGui();
-            AnvilGui = new AnvilGUI(this);
+            AnvilGui = new AnvilGui(this);
             LevelGui = new LevelGui(this, mod);
             StatusBar = new StatusBar(this) {GuiActive = true};
             InventoryGui = new InventoryGui(this);
