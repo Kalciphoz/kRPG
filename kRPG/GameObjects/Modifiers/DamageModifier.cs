@@ -39,14 +39,18 @@ namespace kRPG.GameObjects.Modifiers
         //    return new DamageModifier(kNpc, npc, 1f + Main.rand.NextFloat(1));
         //}
 
-        public override void Read(BinaryReader reader)
+        public override int Unpack(BinaryReader reader)
         {
+           
             DmgModifier = reader.ReadSingle();
+            kRPG.LogMessage("Reading DamageModifier: " + DmgModifier.ToString("F"));
+            return 4;
         }
 
-        public override void Write(ModPacket packet)
+        public override int Pack(ModPacket packet)
         {
             packet.Write(DmgModifier);
+            return 4;
         }
     }
 }

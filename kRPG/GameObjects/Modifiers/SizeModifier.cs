@@ -47,16 +47,20 @@ namespace kRPG.GameObjects.Modifiers
         //    return new SizeModifier(kNpc, npc, .5f + Main.rand.NextFloat(2), .5f + Main.rand.NextFloat(1));
         //}
 
-        public override void Read(BinaryReader reader)
+        public override int Unpack(BinaryReader reader)
         {
             ScaleModifier = reader.ReadSingle();
             LifeModifier = reader.ReadSingle();
+            kRPG.LogMessage("Reading ScaleModifier: " + ScaleModifier.ToString("F"));
+            kRPG.LogMessage("Reading LifeModifier: " + LifeModifier.ToString("F"));
+            return 8;
         }
 
-        public override void Write(ModPacket packet)
+        public override int Pack(ModPacket packet)
         {
             packet.Write(ScaleModifier);
             packet.Write(LifeModifier);
+            return 8;
         }
     }
 }

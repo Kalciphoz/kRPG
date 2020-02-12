@@ -95,9 +95,9 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         //public override void SendExtraAI(BinaryWriter writer)
         //{
-        //    writer.Write(blade.type);
-        //    writer.Write(hilt.type);
-        //    writer.Write(accent.type);
+        //    writer.Pack(blade.type);
+        //    writer.Pack(hilt.type);
+        //    writer.Pack(accent.type);
         //}
 
         //public override void ReceiveExtraAI(BinaryReader reader)

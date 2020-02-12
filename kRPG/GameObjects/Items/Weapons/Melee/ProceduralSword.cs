@@ -4,6 +4,7 @@ using System.IO;
 using kRPG.Enums;
 using kRPG.GameObjects.Items.Procedural;
 using kRPG.GameObjects.Items.Projectiles.Base;
+using kRPG.Packets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -37,7 +38,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public override ModItem Clone(Item tItem)
         {
-            ProceduralSword copy = (ProceduralSword) base.Clone(tItem);
+            ProceduralSword copy = (ProceduralSword)base.Clone(tItem);
             copy.Hilt = Hilt;
             copy.Blade = Blade;
             copy.Accent = Accent;
@@ -53,8 +54,8 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public Point CombinedTextureSize()
         {
-            return new Point(Math.Max(Blade.Texture.Width, Blade.Texture.Width - (int) Blade.Origin.X + (int) Hilt.Origin.X),
-                Math.Max(Blade.Texture.Height, (int) Blade.Origin.Y + Hilt.Texture.Height - (int) Hilt.Origin.Y));
+            return new Point(Math.Max(Blade.Texture.Width, Blade.Texture.Width - (int)Blade.Origin.X + (int)Hilt.Origin.X),
+                Math.Max(Blade.Texture.Height, (int)Blade.Origin.Y + Hilt.Texture.Height - (int)Hilt.Origin.Y));
         }
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
@@ -113,7 +114,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             {
                 ResetStats();
                 if (Main.netMode != 2)
-                    LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> {Blade.Texture, Hilt.Texture, Accent.Texture},
+                    LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> { Blade.Texture, Hilt.Texture, Accent.Texture },
                         new List<Point>
                         {
                             new Point(CombinedTextureSize().X - Blade.Texture.Width, 0),
@@ -205,24 +206,16 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         public static ProceduralSword NewSword(Mod mod, Vector2 position, SwordHilt hilt, SwordBlade blade, SwordAccent accent, float dps, int enemyDef)
         {
             int id = Item.NewItem(position, mod.GetItem("ProceduralSword").item.type);
-            ProceduralSword sword = (ProceduralSword) Main.item[id].modItem;
+            ProceduralSword sword = (ProceduralSword)Main.item[id].modItem;
             sword.Hilt = hilt;
             sword.Blade = blade;
             sword.Accent = accent;
             sword.Dps = dps;
             sword.EnemyDef = enemyDef;
             sword.Initialize();
-            if (Main.netMode != 2)
-                return sword;
-            ModPacket packet = mod.GetPacket();
-            packet.Write((byte) Message.SwordInit);
-            packet.Write(id);
-            packet.Write(blade.Type);
-            packet.Write(hilt.Type);
-            packet.Write(accent.Type);
-            packet.Write(dps);
-            packet.Write(enemyDef);
-            packet.Send();
+
+            SwordInitPacket.Write(id, blade.Type, hilt.Type, accent.Type, dps, enemyDef);
+
             return sword;
         }
 
@@ -245,16 +238,16 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         {
             try
             {
-                item.rare = (int) Math.Min(Math.Floor(Dps / 15.0), 9);
-                item.useAnimation = (int) (Blade.UseTime / Hilt.SpeedModifier);
-                item.damage = (int) Math.Round(Dps * Hilt.DpsModifier * Accent.DpsModifier * item.useAnimation / 60f + EnemyDef);
-                item.useAnimation = (int) Math.Round((item.damage - (float) EnemyDef) * 60f / (Dps * Hilt.DpsModifier * Accent.DpsModifier));
+                item.rare = (int)Math.Min(Math.Floor(Dps / 15.0), 9);
+                item.useAnimation = (int)(Blade.UseTime / Hilt.SpeedModifier);
+                item.damage = (int)Math.Round(Dps * Hilt.DpsModifier * Accent.DpsModifier * item.useAnimation / 60f + EnemyDef);
+                item.useAnimation = (int)Math.Round((item.damage - (float)EnemyDef) * 60f / (Dps * Hilt.DpsModifier * Accent.DpsModifier));
                 item.useTime = item.useAnimation;
                 item.knockBack = Blade.KnockBack + Hilt.KnockBack;
                 item.SetNameOverride(Hilt.Prefix + Blade.Name + Accent.Suffix);
                 item.autoReuse = Hilt.AutoSwing || Blade.AutoSwing;
                 item.useTurn = item.autoReuse;
-                item.value = (int) (Dps * 315);
+                item.value = (int)(Dps * 315);
                 item.crit = Blade.CritBonus + Hilt.CritBonus + Accent.CritBonus;
                 item.scale = 1f + Blade.Scale + Hilt.Scale;
                 item.mana = Hilt.Mana + Accent.Mana;
@@ -351,19 +344,19 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                                 player.whoAmI)];
                     projectile.GetGlobalProjectile<kProjectile>().ElementalDamage = item.GetGlobalItem<kItem>().ElementalDamage;
                     projectile.scale = item.scale;
-                    ProceduralSpear ps = (ProceduralSpear) projectile.modProjectile;
+                    ProceduralSpear ps = (ProceduralSpear)projectile.modProjectile;
                     ps.Hilt = Hilt;
                     ps.Blade = Blade;
                     ps.Accent = Accent;
-                    if (Main.netMode != 2) ps.Initialize();
+
+                    if (Main.netMode != 2)
+                        ps.Initialize();
+
                     if (Main.netMode != 1)
                         return true;
-                    ModPacket packet = mod.GetPacket();
-                    packet.Write((byte) Message.SyncSpear);
-                    packet.Write(Blade.Type);
-                    packet.Write(Hilt.Type);
-                    packet.Write(Accent.Type);
-                    packet.Send();
+
+                    SyncSpearPacket.Write(Blade.Type, Hilt.Type, Accent.Type);
+
                     return true;
                 }
             }

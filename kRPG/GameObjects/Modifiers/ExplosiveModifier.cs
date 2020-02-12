@@ -45,14 +45,17 @@ namespace kRPG.GameObjects.Modifiers
         //    return new ExplosiveModifier(kNpc, npc, Main.rand.NextFloat(0.5f, 0.9f));
         //}
 
-        public override void Read(BinaryReader reader)
+        public override int Unpack(BinaryReader reader)
         {
             LifeModifier = reader.ReadSingle();
+            kRPG.LogMessage("Reading LifeModifier: " + LifeModifier.ToString("F"));
+            return 4;
         }
 
-        public override void Write(ModPacket packet)
+        public override int Pack(ModPacket packet)
         {
             packet.Write(LifeModifier);
+            return 4;
         }
     }
 }

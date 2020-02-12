@@ -6,6 +6,7 @@ using kRPG.GameObjects.Items.Glyphs;
 using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.Players;
 using kRPG.GameObjects.SFX;
+using kRPG.Packets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -131,24 +132,7 @@ namespace kRPG.GameObjects.Spells
             }*/
             ps.Source = this;
             ps.Initialize();
-            if (Main.netMode != 1)
-                return ps;
-
-            ModPacket packet = Mod.GetPacket();
-            packet.Write((byte)Message.CreateProjectile);
-            packet.Write(player.whoAmI);
-            packet.Write(ps.projectile.whoAmI);
-            packet.Write(Glyphs[(byte)GlyphType.Star].type);
-            packet.Write(Glyphs[(byte)GlyphType.Cross].type);
-            packet.Write(Glyphs[(byte)GlyphType.Moon].type);
-            packet.Write(ps.projectile.damage);
-            packet.Write(Minion);
-            packet.Write(caster.whoAmI);
-            List<GlyphModifier> mods = Modifiers;
-            packet.Write(mods.Count);
-            for (int j = 0; j < mods.Count; j += 1)
-                packet.Write(mods[j].Id);
-            packet.Send();
+            CreateProjectilePacket.Write(player.whoAmI, ps.projectile.whoAmI, Glyphs[(byte) GlyphType.Star].type, Glyphs[(byte) GlyphType.Cross].type, Glyphs[(byte) GlyphType.Moon].type, ps.projectile.damage, Minion, caster.whoAmI, Modifiers);
             return ps;
         }
 

@@ -82,12 +82,12 @@ namespace kRPG.GameObjects.GUI
 
         public static void DrawBuffs()
         {
-            int leftOffset = 320;
-            int iconWidth = 38;
-            int maxSlots = 21;
+            const int leftOffset = 320;
+            const int iconWidth = 38;
+            const int maxSlots = 21;
 
             int buffTypeId = -1;
-            int secondRowOfBuffsStartIndex = 11;
+            const int secondRowOfBuffsStartIndex = 11;
 
             for (int buffSlot = 0; buffSlot <= maxSlots; buffSlot++)
 

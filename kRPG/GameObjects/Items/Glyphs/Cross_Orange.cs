@@ -4,6 +4,7 @@ using kRPG.GameObjects.Items.Weapons.Melee;
 using kRPG.GameObjects.Players;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Items.Glyphs
 {
@@ -59,8 +60,18 @@ namespace kRPG.GameObjects.Items.Glyphs
                         spell.LocalTexture = GFX.GFX.ProjectileBoulder;
                     }
 
-                    spell.projectile.width = spell.LocalTexture.Width;
-                    spell.projectile.height = spell.LocalTexture.Height;
+                    if (spell.LocalTexture == null)
+                    {
+                        ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("GetInitAction, spell.localtexture = null.");
+                        spell.projectile.width = 48;
+                        spell.projectile.height = 48;
+                    }
+                    else
+                    {
+                        spell.projectile.width = spell.LocalTexture.Width;
+                        spell.projectile.height = spell.LocalTexture.Height;
+                    }
+
                 }
                 else
                 {

@@ -98,10 +98,10 @@ namespace kRPG.GameObjects.Items.Projectiles.Base
             //if (Main.netMode != 0)
             //{
             //    ModPacket packet = mod.GetPacket();
-            //    packet.Write((byte)Message.InitProjEleDmg);
-            //    packet.Write(projectile.whoAmI);
+            //    packet.Pack((byte)Message.InitProjEleDmg);
+            //    packet.Pack(projectile.whoAmI);
             //    foreach (ELEMENT element in Enum.GetValues(typeof(ELEMENT)))
-            //        packet.Write(elementalDamage[element]);
+            //        packet.Pack(elementalDamage[element]);
             //    packet.Send();
             //}
         }

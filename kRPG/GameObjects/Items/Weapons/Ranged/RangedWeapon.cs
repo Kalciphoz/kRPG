@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using kRPG.Enums;
+using kRPG.Packets;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -134,15 +135,7 @@ namespace kRPG.GameObjects.Items.Weapons.Ranged
             item.enemyDef = enemyDef;
             item.Initialize();
 
-            if (Main.netMode != 2)
-                return ammo;
-
-            ModPacket packet = mod.GetPacket();
-            packet.Write((byte) Message.BowInit);
-            packet.Write(item.item.whoAmI);
-            packet.Write(item.dps);
-            packet.Write(item.enemyDef);
-            packet.Send();
+            BowInitPacket.Write(item.item.whoAmI,item.dps,item.enemyDef);
 
             return ammo;
         }

@@ -536,16 +536,4 @@
     <Content Include="GameObjects\Items\Projectiles\SmokePellets.png" />
     <Content Include="GameObjects\NPCs\WingedEyeball.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="Telerik.WinControls">
-      <HintPath>..\lib\RCWF\2019.3.1022.40\Telerik.WinControls.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.WinControls.UI">
-      <HintPath>..\lib\RCWF\2019.3.1022.40\Telerik.WinControls.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="TelerikCommon">
-      <HintPath>..\lib\RCWF\2019.3.1022.40\TelerikCommon.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>

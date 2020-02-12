@@ -39,8 +39,19 @@ namespace kRPG.GameObjects.Items.Glyphs
             return delegate(ProceduralSpellProj spell)
             {
                 spell.LocalTexture = GFX.GFX.ProjectileFrostbolt;
-                spell.projectile.width = spell.LocalTexture.Width;
-                spell.projectile.height = spell.LocalTexture.Height;
+
+                if (spell.LocalTexture == null)
+                {
+                    ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("GetInitAction, spell.localtexture = null.");
+                    spell.projectile.width = 48;
+                    spell.projectile.height = 48;
+                }
+                else
+                {
+                    spell.projectile.width = spell.LocalTexture.Width;
+                    spell.projectile.height = spell.LocalTexture.Height;
+                }
+
                 spell.projectile.magic = true;
                 spell.Lighted = true;
             };

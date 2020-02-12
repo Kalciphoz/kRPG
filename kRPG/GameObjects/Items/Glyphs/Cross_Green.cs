@@ -3,6 +3,7 @@ using kRPG.GameObjects.Items.Projectiles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Items.Glyphs
 {
@@ -28,8 +29,17 @@ namespace kRPG.GameObjects.Items.Glyphs
             return delegate(ProceduralSpellProj spell)
             {
                 spell.LocalTexture = Main.itemTexture[ItemID.WoodenArrow];
-                spell.projectile.width = spell.LocalTexture.Width;
-                spell.projectile.height = spell.LocalTexture.Height;
+                if (spell.LocalTexture == null)
+                {
+                    ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("GetInitAction, spell.localtexture = null.");
+                    spell.projectile.width = 48;
+                    spell.projectile.height = 48;
+                }
+                else
+                {
+                    spell.projectile.width = spell.LocalTexture.Width;
+                    spell.projectile.height = spell.LocalTexture.Height;
+                }
                 spell.projectile.ranged = true;
                 spell.DrawTrail = true;
                 spell.Alpha = 1f;

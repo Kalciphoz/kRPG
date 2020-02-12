@@ -31,9 +31,11 @@ namespace kRPG.GameObjects.Modifiers
             return new ElusiveModifier(kNpc, npc, 1f + Main.rand.NextFloat(.3f));
         }
 
-        public override void Read(BinaryReader reader)
+        public override int Unpack(BinaryReader reader)
         {
             DodgeModifier = reader.ReadSingle();
+            kRPG.LogMessage("Reading DodgeModifier: " + DodgeModifier.ToString("F"));
+            return 4;
         }
 
         public override float StrikeNpc(NPC oNpc, double damage, int defense, float knockBack, int hitDirection, bool crit)
@@ -41,9 +43,10 @@ namespace kRPG.GameObjects.Modifiers
             return DodgeModifier;
         }
 
-        public override void Write(ModPacket packet)
+        public override int Pack(ModPacket packet)
         {
             packet.Write(DodgeModifier);
+            return 4;
         }
     }
 }

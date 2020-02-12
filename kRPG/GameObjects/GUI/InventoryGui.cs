@@ -340,7 +340,8 @@ namespace kRPG.GameObjects.GUI
 
                 ItemSlot.Draw(Main.spriteBatch, ref Main.player[Main.myPlayer].trashItem, 6, new Vector2(num, num2));
 
-                if (drawInv) DrawInventory(Main.spriteBatch);
+                if (drawInv) 
+                    DrawInventory(Main.spriteBatch);
 
                 if (!PlayerInput.UsingGamepad)
                 {
@@ -737,7 +738,7 @@ namespace kRPG.GameObjects.GUI
                                 s = 36f / num41;
 
                             Main.spriteBatch.Draw(Main.npcHeadTexture[num40], new Vector2(num38 + 26f * Main.inventoryScale, num39 + 26f * Main.inventoryScale), new Rectangle(0, 0, Main.npcHeadTexture[num40].Width, Main.npcHeadTexture[num40].Height),
-                                white, 0f, new Vector2(Main.npcHeadTexture[num40].Width / 2, Main.npcHeadTexture[num40].Height / 2), s, SpriteEffects.None, 0f);
+                                white, 0f, new Vector2(Main.npcHeadTexture[num40].Width / 2f, Main.npcHeadTexture[num40].Height / 2f), s, SpriteEffects.None, 0f);
                             num32++;
                         }
 
@@ -1350,14 +1351,10 @@ namespace kRPG.GameObjects.GUI
                             if (num89 < 0.0)
                                 num89 = 0.0;
 
-                            white3.R = (byte) num88;
-                            white3.G = (byte) num88;
-                            white3.B = (byte) num88;
-                            white3.A = (byte) num88;
-                            white4.R = (byte) num89;
-                            white4.G = (byte) num89;
-                            white4.B = (byte) num89;
-                            white4.A = (byte) num89;
+
+                            white3.R = white3.G = white3.B = white3.A = (byte) num88;
+                            white4.R = white4.G = white4.B = white4.A = (byte) num89;
+
                             Main.inventoryScale = 0.6f;
                             if (num88 == 0.0)
                                 break;

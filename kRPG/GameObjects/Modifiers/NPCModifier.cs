@@ -48,8 +48,9 @@ namespace kRPG.GameObjects.Modifiers
         //    return null;
         //}
 
-        public virtual void Read(BinaryReader reader)
+        public virtual int Unpack(BinaryReader reader)
         {
+            return 0;
         }
 
         public virtual float StrikeNpc(NPC oNpc, double damage, int defense, float knockBack, int hitDirection, bool crit)
@@ -61,8 +62,9 @@ namespace kRPG.GameObjects.Modifiers
         {
         }
 
-        public virtual void Write(ModPacket packet)
+        public virtual int Pack(ModPacket packet)
         {
+            return 0;
         }
     }
 }
