@@ -1540,218 +1540,218 @@ namespace kRPG
             return output;
         }
 
-        public static void SetItemDefaults(this Item item, int type, bool noMatCheck = false, bool createModItem = true)
-        {
-            try
-            {
-                object globalItems = GlobalItemsProperty?.GetValue(item);
-                item.ClearNameOverride();
-                if (Main.netMode == 1 || Main.netMode == 2)
-                    item.owner = 255;
-                else
-                    item.owner = Main.myPlayer;
-                item.ResetStats(type);
-                if (item.type == 0)
-                {
-                    item.netID = 0;
-                    item.stack = 0;
-                }
-                else if (item.type <= 1000)
-                {
-                    item.SetDefaults1(item.type);
-                }
-                else if (item.type <= 2001)
-                {
-                    item.SetDefaults2(item.type);
-                }
-                else if (item.type <= 3000)
-                {
-                    item.SetDefaults3(item.type);
-                }
-                else
-                {
-                    item.SetDefaults4(item.type);
-                }
+        //public static void SetItemDefaults(this Item item, int type, bool noMatCheck = false, bool createModItem = true)
+        //{
+        //    try
+        //    {
+        //        object globalItems = GlobalItemsProperty?.GetValue(item);
+        //        item.ClearNameOverride();
+        //        if (Main.netMode == 1 || Main.netMode == 2)
+        //            item.owner = 255;
+        //        else
+        //            item.owner = Main.myPlayer;
+        //        item.ResetStats(type);
+        //        if (item.type == 0)
+        //        {
+        //            item.netID = 0;
+        //            item.stack = 0;
+        //        }
+        //        else if (item.type <= 1000)
+        //        {
+        //            item.SetDefaults1(item.type);
+        //        }
+        //        else if (item.type <= 2001)
+        //        {
+        //            item.SetDefaults2(item.type);
+        //        }
+        //        else if (item.type <= 3000)
+        //        {
+        //            item.SetDefaults3(item.type);
+        //        }
+        //        else
+        //        {
+        //            item.SetDefaults4(item.type);
+        //        }
 
-                item.dye = (byte)GameShaders.Armor.GetShaderIdFromItemId(item.type);
-                if (item.hairDye != 0)
-                    item.hairDye = GameShaders.Hair.GetShaderIdFromItemId(item.type);
-                switch (item.type)
-                {
-                    case 2015:
-                        item.value = Item.sellPrice(0, 0, 5);
-                        break;
-                    case 2016:
-                    case 2017:
-                        item.value = Item.sellPrice(0, 0, 7, 50);
-                        break;
-                    case 2019:
-                    case 2018:
-                    case 3563:
-                        item.value = Item.sellPrice(0, 0, 5);
-                        break;
-                    case 261:
-                        item.value = Item.sellPrice(0, 0, 7, 50);
-                        break;
-                    case 2205:
-                        item.value = Item.sellPrice(0, 0, 12, 50);
-                        break;
-                    case 2123:
-                    case 2122:
-                        item.value = Item.sellPrice(0, 0, 7, 50);
-                        break;
-                    case 2003:
-                        item.value = Item.sellPrice(0, 0, 20);
-                        break;
-                    case 2156:
-                    case 2157:
-                    case 2121:
-                        item.value = Item.sellPrice(0, 0, 15);
-                        break;
-                    case 1992:
-                        item.value = Item.sellPrice(0, 0, 3);
-                        break;
-                    case 2004:
-                    case 2002:
-                        item.value = Item.sellPrice(0, 0, 5);
-                        break;
-                    case 2740:
-                        item.value = Item.sellPrice(0, 0, 2, 50);
-                        break;
-                    case 2006:
-                    case 3191:
-                        item.value = Item.sellPrice(0, 0, 20);
-                        break;
-                    case 3192:
-                        item.value = Item.sellPrice(0, 0, 2, 50);
-                        break;
-                    case 3193:
-                        item.value = Item.sellPrice(0, 0, 5);
-                        break;
-                    case 3194:
-                        item.value = Item.sellPrice(0, 0, 10);
-                        break;
-                    case 2007:
-                        item.value = Item.sellPrice(0, 0, 50);
-                        break;
-                    case 2673:
-                        item.value = Item.sellPrice(0, 10);
-                        break;
-                }
+        //        item.dye = (byte)GameShaders.Armor.GetShaderIdFromItemId(item.type);
+        //        if (item.hairDye != 0)
+        //            item.hairDye = GameShaders.Hair.GetShaderIdFromItemId(item.type);
+        //        switch (item.type)
+        //        {
+        //            case 2015:
+        //                item.value = Item.sellPrice(0, 0, 5);
+        //                break;
+        //            case 2016:
+        //            case 2017:
+        //                item.value = Item.sellPrice(0, 0, 7, 50);
+        //                break;
+        //            case 2019:
+        //            case 2018:
+        //            case 3563:
+        //                item.value = Item.sellPrice(0, 0, 5);
+        //                break;
+        //            case 261:
+        //                item.value = Item.sellPrice(0, 0, 7, 50);
+        //                break;
+        //            case 2205:
+        //                item.value = Item.sellPrice(0, 0, 12, 50);
+        //                break;
+        //            case 2123:
+        //            case 2122:
+        //                item.value = Item.sellPrice(0, 0, 7, 50);
+        //                break;
+        //            case 2003:
+        //                item.value = Item.sellPrice(0, 0, 20);
+        //                break;
+        //            case 2156:
+        //            case 2157:
+        //            case 2121:
+        //                item.value = Item.sellPrice(0, 0, 15);
+        //                break;
+        //            case 1992:
+        //                item.value = Item.sellPrice(0, 0, 3);
+        //                break;
+        //            case 2004:
+        //            case 2002:
+        //                item.value = Item.sellPrice(0, 0, 5);
+        //                break;
+        //            case 2740:
+        //                item.value = Item.sellPrice(0, 0, 2, 50);
+        //                break;
+        //            case 2006:
+        //            case 3191:
+        //                item.value = Item.sellPrice(0, 0, 20);
+        //                break;
+        //            case 3192:
+        //                item.value = Item.sellPrice(0, 0, 2, 50);
+        //                break;
+        //            case 3193:
+        //                item.value = Item.sellPrice(0, 0, 5);
+        //                break;
+        //            case 3194:
+        //                item.value = Item.sellPrice(0, 0, 10);
+        //                break;
+        //            case 2007:
+        //                item.value = Item.sellPrice(0, 0, 50);
+        //                break;
+        //            case 2673:
+        //                item.value = Item.sellPrice(0, 10);
+        //                break;
+        //        }
 
-                if (item.bait > 0)
-                {
-                    if (item.bait >= 50)
-                        item.rare = 3;
-                    else if (item.bait >= 30)
-                        item.rare = 2;
-                    else if (item.bait >= 15)
-                        item.rare = 1;
-                }
+        //        if (item.bait > 0)
+        //        {
+        //            if (item.bait >= 50)
+        //                item.rare = 3;
+        //            else if (item.bait >= 30)
+        //                item.rare = 2;
+        //            else if (item.bait >= 15)
+        //                item.rare = 1;
+        //        }
 
-                if (item.type >= 1994 && item.type <= 2001)
-                {
-                    int num = item.type - 1994;
-                    switch (num)
-                    {
-                        case 0:
-                            item.value = Item.sellPrice(0, 0, 5);
-                            break;
-                        case 4:
-                            item.value = Item.sellPrice(0, 0, 10);
-                            break;
-                        case 6:
-                            item.value = Item.sellPrice(0, 0, 15);
-                            break;
-                        case 3:
-                            item.value = Item.sellPrice(0, 0, 20);
-                            break;
-                        case 7:
-                            item.value = Item.sellPrice(0, 0, 30);
-                            break;
-                        case 2:
-                            item.value = Item.sellPrice(0, 0, 40);
-                            break;
-                        case 1:
-                            item.value = Item.sellPrice(0, 0, 75);
-                            break;
-                        case 5:
-                            item.value = Item.sellPrice(0, 1);
-                            break;
-                    }
-                }
+        //        if (item.type >= 1994 && item.type <= 2001)
+        //        {
+        //            int num = item.type - 1994;
+        //            switch (num)
+        //            {
+        //                case 0:
+        //                    item.value = Item.sellPrice(0, 0, 5);
+        //                    break;
+        //                case 4:
+        //                    item.value = Item.sellPrice(0, 0, 10);
+        //                    break;
+        //                case 6:
+        //                    item.value = Item.sellPrice(0, 0, 15);
+        //                    break;
+        //                case 3:
+        //                    item.value = Item.sellPrice(0, 0, 20);
+        //                    break;
+        //                case 7:
+        //                    item.value = Item.sellPrice(0, 0, 30);
+        //                    break;
+        //                case 2:
+        //                    item.value = Item.sellPrice(0, 0, 40);
+        //                    break;
+        //                case 1:
+        //                    item.value = Item.sellPrice(0, 0, 75);
+        //                    break;
+        //                case 5:
+        //                    item.value = Item.sellPrice(0, 1);
+        //                    break;
+        //            }
+        //        }
 
-                switch (item.type)
-                {
-                    case 483:
-                    case 1192:
-                    case 482:
-                    case 1185:
-                    case 484:
-                    case 1199:
-                    case 368:
-                        item.autoReuse = true;
-                        item.damage = (int)(item.damage * 1.15);
-                        break;
-                    case 2663:
-                    case 1720:
-                    case 2137:
-                    case 2155:
-                    case 2151:
-                    case 1704:
-                    case 2143:
-                    case 1710:
-                    case 2238:
-                    case 2133:
-                    case 2147:
-                    case 2405:
-                    case 1716:
-                    case 1705:
-                        item.value = Item.sellPrice(0, 2);
-                        break;
-                }
+        //        switch (item.type)
+        //        {
+        //            case 483:
+        //            case 1192:
+        //            case 482:
+        //            case 1185:
+        //            case 484:
+        //            case 1199:
+        //            case 368:
+        //                item.autoReuse = true;
+        //                item.damage = (int)(item.damage * 1.15);
+        //                break;
+        //            case 2663:
+        //            case 1720:
+        //            case 2137:
+        //            case 2155:
+        //            case 2151:
+        //            case 1704:
+        //            case 2143:
+        //            case 1710:
+        //            case 2238:
+        //            case 2133:
+        //            case 2147:
+        //            case 2405:
+        //            case 1716:
+        //            case 1705:
+        //                item.value = Item.sellPrice(0, 2);
+        //                break;
+        //        }
 
-                if (Main.projHook[item.shoot])
-                {
-                    item.useStyle = 0;
-                    item.useTime = 0;
-                    item.useAnimation = 0;
-                }
+        //        if (Main.projHook[item.shoot])
+        //        {
+        //            item.useStyle = 0;
+        //            item.useTime = 0;
+        //            item.useAnimation = 0;
+        //        }
 
-                if (item.type >= 1803 && item.type <= 1807)
-                    item.SetDefaults(1533 + item.type - 1803, true);
-                if (item.dye > 0)
-                    item.maxStack = 99;
-                if (item.createTile == 19)
-                    item.maxStack = 999;
-                item.netID = item.type;
+        //        if (item.type >= 1803 && item.type <= 1807)
+        //            item.SetDefaults(1533 + item.type - 1803, true);
+        //        if (item.dye > 0)
+        //            item.maxStack = 99;
+        //        if (item.createTile == 19)
+        //            item.maxStack = 999;
+        //        item.netID = item.type;
 
-                if ((bool)IsModItem.Invoke(null, new object[] { item.type }) && createModItem)
-                    ModItem.SetValue(item, ItemLoader.GetItem(item.type).NewInstance(item));
+        //        if ((bool)IsModItem.Invoke(null, new object[] { item.type }) && createModItem)
+        //            ModItem.SetValue(item, ItemLoader.GetItem(item.type).NewInstance(item));
 
-                item.modItem?.AutoDefaults();
-                //Removing references to SetDefaults
-                //item.modItem?.SetDefaults();
+        //        item.modItem?.AutoDefaults();
+        //        //Removing references to SetDefaults
+        //        //item.modItem?.SetDefaults();
 
-                if (!noMatCheck)
-                    item.checkMat();
-                item.RebuildTooltip();
-                if (item.type > 0 && ItemID.Sets.Deprecated[item.type])
-                {
-                    item.netID = 0;
-                    item.type = 0;
-                    item.stack = 0;
-                }
+        //        if (!noMatCheck)
+        //            item.checkMat();
+        //        item.RebuildTooltip();
+        //        if (item.type > 0 && ItemID.Sets.Deprecated[item.type])
+        //        {
+        //            item.netID = 0;
+        //            item.type = 0;
+        //            item.stack = 0;
+        //        }
 
 
 
-                GlobalItemsProperty?.SetValue(item, globalItems);
-            }
-            catch (SystemException e)
-            {
-                Main.NewText(e.ToString());
-            }
-        }
+        //        GlobalItemsProperty?.SetValue(item, globalItems);
+        //    }
+        //    catch (SystemException e)
+        //    {
+        //        Main.NewText(e.ToString());
+        //    }
+        //}
 
 
         public static int Wealth(this Player player)

@@ -110,7 +110,7 @@ namespace kRPG.GameObjects.Items
                             oWeapon.SetStats();
                             break;
                         default:
-                            item.SetItemDefaults(item.type);
+                            //item.SetItemDefaults(item.type);
                             break;
                     }
                 }
@@ -412,13 +412,12 @@ namespace kRPG.GameObjects.Items
             ApplyStats(item);
         }*/
 
-        public void Initialize(Item item, bool reset = true)
+        public void Initialize(Item item)
         {
             if (!NeedsSaving(item)) return;
-            if (reset)
-                if (item.type != ModContent.ItemType<ProceduralSword>() && item.type != ModContent.ItemType<ProceduralStaff>() &&
-                    !(item.modItem is RangedWeapon))
-                    item.SetItemDefaults(item.type);
+            //if (reset)
+            //    if (item.type != ModContent.ItemType<ProceduralSword>() && item.type != ModContent.ItemType<ProceduralStaff>() && !(item.modItem is RangedWeapon))
+            //        item.SetItemDefaults(item.type);
 
             Random rand = new Random();
 

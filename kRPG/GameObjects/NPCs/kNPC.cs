@@ -46,7 +46,7 @@ namespace kRPG.GameObjects.NPCs
         public override bool InstancePerEntity => true;
         public Dictionary<ProceduralSpell, int> InvincibilityTime { get; set; } = new Dictionary<ProceduralSpell, int>();
 
-        public List<Func<kNPC, NPC, NpcModifier>> ModifierFuncs { get; set; } = new List<Func<kNPC, NPC, NpcModifier>>
+        public static List<Func<kNPC, NPC, NpcModifier>> ModifierFuncs { get; set; } = new List<Func<kNPC, NPC, NpcModifier>>
         {
             DamageModifier.New,
             ElusiveModifier.New,
@@ -65,7 +65,7 @@ namespace kRPG.GameObjects.NPCs
 
         public List<NpcModifier> Modifiers { get; set; } = new List<NpcModifier>();
 
-     
+
 
         public float SpeedModifier { get; set; } = 1f;
 
@@ -185,7 +185,7 @@ namespace kRPG.GameObjects.NPCs
         public void InitializeModifiers(NPC npc)
         {
             npc.GivenName = npc.FullName;
-            int amount = 1;
+            int amount = new Random().Next(0, 3);
             for (int i = 0; i < amount; i++)
             {
                 int random = Main.rand.Next(ModifierFuncs.Count);
@@ -348,7 +348,7 @@ namespace kRPG.GameObjects.NPCs
 
             if (npc.damage > 0 && !npc.boss && Main.rand.Next(3) != 0 || Main.netMode != 0)
             {
-                Dictionary<Element, bool> haselement = new Dictionary<Element, bool>
+                Dictionary<Element, bool> hasElement = new Dictionary<Element, bool>
                 {
                     {
                         Element.Fire,
@@ -371,16 +371,20 @@ namespace kRPG.GameObjects.NPCs
                         !Main.dayTime && Main.rand.Next(10) == 0 && Main.netMode == 0 && player.ZoneOverworldHeight
                     }
                 };
-                int count = Enum.GetValues(typeof(Element)).Cast<Element>().Count(element => haselement[element]);
+                int count = Enum.GetValues(typeof(Element)).Cast<Element>().Count(element => hasElement[element]);
                 int portionSize = (int)Math.Round(npc.damage * EleDmgModifier / 2.0 / count);
                 foreach (Element element in Enum.GetValues(typeof(Element)))
-                    if (haselement[element])
+                    if (hasElement[element])
                         ElementalDamage[element] = Math.Max(1, portionSize);
                 DealsEleDmg = count > 0;
             }
 
-            if (Main.rand.Next(8) < 3 && !npc.boss && !npc.townNPC && !npc.friendly && Main.netMode != 1)
+            //if (Main.rand.Next(8) < 3 && !npc.boss && !npc.townNPC && !npc.friendly && Main.netMode != 1)
+            if (!npc.boss && !npc.townNPC && !npc.friendly && Main.netMode != 1)
+            {
+                //So we are randomly adding modifiers...
                 InitializeModifiers(npc);
+            }
 
             if (!Main.expertMode)
             {

@@ -15,39 +15,73 @@ namespace kRPG.Packets
     {
         public static void Read(BinaryReader reader)
         {
-            if (Main.netMode == 1)
+            try
             {
-                int npcIndex = reader.ReadInt32();
-                int amount = reader.ReadInt32();//4
-                if (Main.npc.GetUpperBound(0) >= npcIndex)
+                if (Main.netMode == 1)
                 {
-                    NPC npc = Main.npc[npcIndex];
-                    kNPC kNpc = npc.GetGlobalNPC<kNPC>();
-                    for (int i = 0; i < amount; i++)
-                    {
-                        int modIndex = reader.ReadInt32(); //4
-                        NpcModifier modifier = kNpc.ModifierFuncs[modIndex].Invoke(kNpc, npc);
-                        modifier.Apply();
-                        kNpc.Modifiers.Add(modifier);
-                    }
+                    int refNum = reader.ReadInt32();
+                    int npcIndex = reader.ReadInt32();
+                    int amount = reader.ReadInt32();
 
-                    kNpc.MakeNotable(npc);
-                }
-                else
-                {
-                    kRPG.LogMessage("NPC index does not exist!");
+                    // kRPG.LogMessage($"Ref Num: {refNum} WhoAmI: {npcIndex} Amount: {amount}");
+
+                    if (Main.npc[npcIndex].netID == 0)
+                    {
+                        //So we have a problem...
+                        //The mob is on the server but not on the client.
+                        //We need to clear out the buffer to prevent an error...
+                        //The thing that bothers me is that in practice this shouldn't happen.
+                       
+                        kRPG.LogMessage("WARNING: NPC does not exist.");
+                    }
+                    else
+                    {
+                        NPC npc = Main.npc[npcIndex];
+                        kNPC kNpc = npc.GetGlobalNPC<kNPC>();
+                        for (int i = 0; i < amount; i++)
+                        {
+                            int modIndex = reader.ReadInt32();
+                            // kRPG.LogMessage($"Mod Index: {modIndex}");
+                            NpcModifier modifier = kNPC.ModifierFuncs[modIndex].Invoke(kNpc, npc);
+                            modifier.Unpack(reader);
+                            modifier.Apply();
+                            kNpc.Modifiers.Add(modifier);
+                        }
+
+                        kNpc.MakeNotable(npc);
+                    }
+                    
                 }
             }
+            catch (Exception err)
+            {
+                kRPG.LogMessage("Error: " + err);
+            }
         }
-   
+
         public static void Write(NPC npc, int amount, List<NpcModifier> modifiers)
         {
             if (Main.netMode == 2)
             {
+                int bytes = 0;
                 ModPacket packet = kRPG.Mod.GetPacket();
                 packet.Write((byte)Message.PrefixNpc);//1
-                packet.Write(npc.whoAmI);//4
-                packet.Write(amount);//4
+                bytes += 1;
+
+
+
+                int refNum = new Random().Next(0, int.MaxValue);
+                packet.Write(refNum);
+                bytes += 4;
+
+                packet.Write(npc.whoAmI);
+                bytes += 4;
+
+                packet.Write(amount);
+                bytes += 4;
+
+                string ModIds = "";
+
                 if (amount > 0)
                 {
                     for (int i = 0; i < amount; i++)
@@ -57,14 +91,18 @@ namespace kRPG.Packets
                         {
                             if (kNPC.ModifierDictionary[ii] != modifiers[i].GetType().AssemblyQualifiedName)
                                 continue;
+
+                            ModIds += " " + ii;
+
                             modIndex = ii;
                             break;
                         }
-                        packet.Write(modIndex); //4
-                        modifiers[i].Pack(packet);//?
+                        packet.Write(modIndex);
+                        bytes += 4;
+                        bytes += modifiers[i].Pack(packet);
                     }
                 }
-
+                //kRPG.LogMessage($"RefId: {refNum} WhoAmI: {npc.whoAmI} Amount: {amount} Packet Size: {bytes} Mods: {ModIds}");
                 packet.Send();
             }
         }

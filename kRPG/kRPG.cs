@@ -165,7 +165,7 @@ namespace kRPG
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
             Message msg = (Message)reader.ReadByte();
-            //LogMessage($"Handling {msg}");
+            LogMessage($"Handling {msg}");
             //Dictionary<DataTag, object> tags = new Dictionary<DataTag, object>();
 
             //foreach (DataTag tag in dataTags[msg])

@@ -220,24 +220,15 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                     item.SetNameOverride(Staff.Prefix + Gem.Name + Ornament.Suffix);
                     item.crit = Staff.CritBonus + Gem.CritBonus + Ornament.CritBonus;
                     item.mana = (int)Math.Round(item.damage * Ornament.Mana * Staff.Mana * Gem.Mana / 5);
-
+                    item.useAnimation = item.useTime * 1 * (1 + Ornament.Repetitions) - 2;
+                    item.crit = (int)Math.Round(Dps * Gem.DpsModifier * Ornament.DpsModifier * item.useTime / 60f + EnemyDef);
+                    item.damage = (int)Math.Round(Dps * Gem.DpsModifier * Ornament.DpsModifier * item.useTime / 60f + EnemyDef);
+                    item.useTime = (int)Math.Round((item.damage - (float)EnemyDef) * 60f / (Dps * Gem.DpsModifier * Ornament.DpsModifier));
+                    item.autoReuse = true;
+                    item.value = (int)(Dps * 315);
                     foreach (Element element in Enum.GetValues(typeof(Element)))
                         EleDamage[element] = Staff.EleDamage[element] + Gem.eleDamage[element] + Ornament.EleDamage[element];
                 }
-                else
-                {
-                    //Temporary fix till I figure out what is happening.
-                    item.useTime = 0;
-                    item.useAnimation = item.useTime * 1 * (1 + Ornament.Repetitions) - 2;
-                    item.knockBack = 1;
-                    item.crit = (int)Math.Round(Dps * Gem.DpsModifier * Ornament.DpsModifier * item.useTime / 60f + EnemyDef);
-                    item.mana = 1;
-                }
-                item.damage = (int)Math.Round(Dps * Gem.DpsModifier * Ornament.DpsModifier * item.useTime / 60f + EnemyDef);
-                item.useTime = (int)Math.Round((item.damage - (float)EnemyDef) * 60f / (Dps * Gem.DpsModifier * Ornament.DpsModifier));
-                item.autoReuse = true;
-                item.value = (int)(Dps * 315);
-
             }
             catch (SystemException e)
             {
