@@ -33,11 +33,27 @@ namespace kRPG.Packets
                         //The thing that bothers me is that in practice this shouldn't happen.
                        
                         kRPG.LogMessage("WARNING: NPC does not exist.");
+                        
+                        string mods = "";
+                        //Well... this should clear out the network stack.
+                        for (int i = 0; i < amount; i++)
+                        {
+                            int modIndex = reader.ReadInt32();
+                            mods += " " + modIndex;
+                            Type t = Type.GetType(kNPC.modifierDictionary[modIndex]);
+                            NpcModifier modifier =(NpcModifier) Activator.CreateInstance(t);
+                            modifier.Unpack(reader);
+                        }
+                        kRPG.LogMessage($"RefNum: {refNum} NpcIndex: {npcIndex} Amount: {amount} Mods: {mods}");
+
+
                     }
                     else
                     {
                         NPC npc = Main.npc[npcIndex];
+                        
                         kNPC kNpc = npc.GetGlobalNPC<kNPC>();
+
                         for (int i = 0; i < amount; i++)
                         {
                             int modIndex = reader.ReadInt32();
@@ -87,9 +103,9 @@ namespace kRPG.Packets
                     for (int i = 0; i < amount; i++)
                     {
                         int modIndex = 0;
-                        for (int ii = 0; ii < kNPC.ModifierDictionary.Length; ii++)
+                        for (int ii = 0; ii < kNPC.modifierDictionary.Length; ii++)
                         {
-                            if (kNPC.ModifierDictionary[ii] != modifiers[i].GetType().AssemblyQualifiedName)
+                            if (kNPC.modifierDictionary[ii] != modifiers[i].GetType().AssemblyQualifiedName)
                                 continue;
 
                             ModIds += " " + ii;

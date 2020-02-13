@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using kRPG.Enums;
+using kRPG.GameObjects.Items.Procedural;
 using kRPG.Packets;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,7 +12,7 @@ using Terraria.ModLoader.IO;
 
 namespace kRPG.GameObjects.Items.Weapons.Ranged
 {
-    public class RangedWeapon : ModItem
+    public class RangedWeapon : ModItem, IProcedural
     {
         public float dps;
         public int enemyDef;
@@ -40,7 +41,7 @@ namespace kRPG.GameObjects.Items.Weapons.Ranged
         public void Initialize()
         {
             name = RandomName();
-            SetStats();
+            ResetStats();
         }
 
         public virtual int Iterations()
@@ -53,7 +54,7 @@ namespace kRPG.GameObjects.Items.Weapons.Ranged
             dps = tag.GetFloat("dps");
             enemyDef = tag.GetInt("enemyDef");
             name = tag.GetString("name");
-            SetStats();
+            ResetStats();
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -67,7 +68,7 @@ namespace kRPG.GameObjects.Items.Weapons.Ranged
             dps = reader.ReadSingle();
             enemyDef = reader.ReadInt32();
             name = reader.ReadString();
-            SetStats();
+            ResetStats();
         }
 
         public override void NetSend(BinaryWriter writer)
@@ -169,7 +170,9 @@ namespace kRPG.GameObjects.Items.Weapons.Ranged
             DisplayName.SetDefault("Generic Ranged Weapon; Please Ignore");
         }
 
-        public virtual void SetStats()
+        
+
+        public virtual void ResetStats()
         {
             item.SetNameOverride(name);
             item.rare = (int) Math.Min(Math.Floor(dps / 15.0), 9);

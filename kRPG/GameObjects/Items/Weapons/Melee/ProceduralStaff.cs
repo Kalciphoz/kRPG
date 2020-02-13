@@ -14,7 +14,7 @@ using Terraria.ModLoader.IO;
 
 namespace kRPG.GameObjects.Items.Weapons.Melee
 {
-    public class ProceduralStaff : ProceduralItem
+    public class ProceduralStaff : ProceduralItem, IProcedural
     {
         /*public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -206,7 +206,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         //    return tag == "magicWeapon" ? (bool?) true : null;
         //}
 
-        public void ResetStats()
+        public override void ResetStats()
         {
             try
             {

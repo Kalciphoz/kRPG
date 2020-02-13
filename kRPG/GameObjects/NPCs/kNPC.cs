@@ -57,7 +57,7 @@ namespace kRPG.GameObjects.NPCs
             GameObjects.Modifiers.SpeedModifier.New
         };
 
-        public static string[] ModifierDictionary =
+        public static string[] modifierDictionary =
         {
             typeof(DamageModifier).AssemblyQualifiedName, typeof(ElusiveModifier).AssemblyQualifiedName, typeof(ExplosiveModifier).AssemblyQualifiedName, typeof(LifeRegenModifier).AssemblyQualifiedName, typeof(SageModifier).AssemblyQualifiedName,
             typeof(SizeModifier).AssemblyQualifiedName, typeof(SpeedModifier).AssemblyQualifiedName
@@ -71,7 +71,9 @@ namespace kRPG.GameObjects.NPCs
 
         public override bool? CanBeHitByItem(NPC npc, Player player, Item item)
         {
-            if (ImmuneTime > 0) return false;
+            if (ImmuneTime > 0) 
+                return false;
+
             return null;
         }
 

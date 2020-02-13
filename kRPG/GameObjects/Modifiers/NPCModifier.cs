@@ -10,6 +10,8 @@ namespace kRPG.GameObjects.Modifiers
     {
         public NPC npc;
 
+        protected NpcModifier() { }
+
         protected NpcModifier(kNPC kNpc, NPC oNpc)
         {
         }

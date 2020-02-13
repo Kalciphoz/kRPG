@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Items.Procedural
 {
-    public class ProceduralItem : ModItem
+    public class ProceduralItem : ModItem, IProcedural
     {
         public float Dps { get; set; }
         public int EnemyDef { get; set; }
@@ -15,7 +15,8 @@ namespace kRPG.GameObjects.Items.Procedural
 
         public override bool CanPickup(Player player)
         {
-            if (Main.netMode == 0) return true;
+            if (Main.netMode == 0)
+                return true;
             return item.value > 100;
         }
 
@@ -28,6 +29,11 @@ namespace kRPG.GameObjects.Items.Procedural
 
         public virtual void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
+        }
+
+        public virtual void ResetStats()
+        {
+
         }
 
         public virtual void Initialize()
@@ -71,5 +77,6 @@ namespace kRPG.GameObjects.Items.Procedural
         {
             DisplayName.SetDefault("Procedurally Generated Item; Please Ignore");
         }
+        
     }
 }

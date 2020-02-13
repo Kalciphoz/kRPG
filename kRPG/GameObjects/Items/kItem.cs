@@ -98,21 +98,8 @@ namespace kRPG.GameObjects.Items
             if (!clean)
                 try
                 {
-                    switch (item.modItem)
-                    {
-                        case ProceduralSword oSword:
-                            oSword.ResetStats();
-                            break;
-                        case ProceduralStaff oStaff:
-                            oStaff.ResetStats();
-                            break;
-                        case RangedWeapon oWeapon:
-                            oWeapon.SetStats();
-                            break;
-                        default:
-                            //item.SetItemDefaults(item.type);
-                            break;
-                    }
+                    IProcedural proceduralItem = item.modItem as IProcedural;
+                    proceduralItem?.ResetStats();
                 }
                 catch (SystemException e)
                 {
@@ -399,7 +386,7 @@ namespace kRPG.GameObjects.Items
                 weapon.dps = reforgedps;
                 weapon.enemyDef = reforgedef;
                 weapon.name = reforgename;
-                weapon.SetStats();
+                weapon.ResetStats();
             }
 
             if (item.accessory)
@@ -622,7 +609,7 @@ namespace kRPG.GameObjects.Items
             //else if (item.type == mod.ItemType<ProceduralStaff>())
             //    ((ProceduralStaff)item.modItem).Initialize();
             //else if (item.modItem is RangedWeapon)
-            //    ((RangedWeapon)item.modItem).SetStats();
+            //    ((RangedWeapon)item.modItem).ResetStats();
             //else
             //    item.SetItemDefaults(item.type);
 

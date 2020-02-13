@@ -14,7 +14,8 @@ namespace kRPG.Packets
         {
             if (Main.netMode == 1)
             {
-                RangedWeapon bow = (RangedWeapon) Main.item[reader.ReadInt32()].modItem;
+                int itemId = reader.ReadInt32();
+                RangedWeapon bow = (RangedWeapon) Main.item[itemId].modItem;
                 bow.dps = reader.ReadSingle();
                 bow.enemyDef = reader.ReadInt32();
                 bow.Initialize();

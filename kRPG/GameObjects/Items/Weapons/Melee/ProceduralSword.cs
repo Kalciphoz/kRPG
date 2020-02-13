@@ -16,7 +16,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace kRPG.GameObjects.Items.Weapons.Melee
 {
-    public class ProceduralSword : ProceduralItem
+    public class ProceduralSword : ProceduralItem, IProcedural
     {
         public SwordAccent Accent { get; set; }
         public SwordBlade Blade { get; set; }
@@ -103,8 +103,12 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public static Item GenerateSword(Mod mod, Vector2 position, SwordTheme theme, float dps, int enemyDef)
         {
-            ProceduralSword sword = NewSword(mod, position, SwordHilt.RandomHilt(theme), SwordBlade.RandomBlade(theme),
-                Main.rand.Next(5) < 3 ? SwordAccent.RandomAccent() : SwordAccent.None, dps, enemyDef);
+            ProceduralSword sword = NewSword(mod, position,
+                SwordHilt.RandomHilt(theme), 
+                SwordBlade.RandomBlade(theme), 
+                Main.rand.Next(5) < 3 ? SwordAccent.RandomAccent() : SwordAccent.None,
+                dps,
+                enemyDef);
             return sword.item;
         }
 
@@ -234,10 +238,12 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         //    return (Spear ? tag == "spear" : tag == "broadsword") ? (bool?) true : null;
         //}
 
-        public void ResetStats()
+        public override void ResetStats()
         {
             try
             {
+                //blade and hilt are null!.
+
                 item.rare = (int)Math.Min(Math.Floor(Dps / 15.0), 9);
                 item.useAnimation = (int)(Blade.UseTime / Hilt.SpeedModifier);
                 item.damage = (int)Math.Round(Dps * Hilt.DpsModifier * Accent.DpsModifier * item.useAnimation / 60f + EnemyDef);
