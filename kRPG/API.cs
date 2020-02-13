@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using kRPG.GameObjects.Items;
+using kRPG.Enums;
 using kRPG.GameObjects.Items.Glyphs;
 using kRPG.GameObjects.Items.Procedural;
 using kRPG.GameObjects.Items.Weapons.Ranged;
 using kRPG.GameObjects.NPCs;
 using kRPG.GameObjects.Players;
+using kRPG.GameObjects.SFX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
@@ -28,20 +29,19 @@ namespace kRPG
     {
         //    public const double Phi = 1.61803398874989484820458683436;
 
-        private const byte c = 0;
-        private const byte g = 2;
-        private static readonly FieldInfo InventoryGlowHue = typeof(ItemSlot).GetField("inventoryGlowHue", BindingFlags.NonPublic | BindingFlags.Static);
-        private static readonly FieldInfo InventoryGlowTime = typeof(ItemSlot).GetField("inventoryGlowTime", BindingFlags.NonPublic | BindingFlags.Static);
-
-        private static readonly FieldInfo InventoryGlowTimeChest =
-            typeof(ItemSlot).GetField("inventoryGlowTimeChest", BindingFlags.NonPublic | BindingFlags.Static);
-
-        private static readonly MethodInfo IsModItem = typeof(ItemLoader).GetMethod("IsModItem", BindingFlags.NonPublic | BindingFlags.Static);
-        private static readonly PropertyInfo ModItem = typeof(Item).GetProperty("modItem", BindingFlags.Public | BindingFlags.Instance);
-        private const byte p = 3;
-        private const byte s = 1;
+        private const byte Copper = 0;
+        private const byte Silver = 1;
+        private const byte Gold = 2;
+        private const byte Platinum = 3;
 
         public static double Tau => Math.PI * 2;
+
+        private static readonly FieldInfo InventoryGlowHue = typeof(ItemSlot).GetField("inventoryGlowHue", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly FieldInfo InventoryGlowTime = typeof(ItemSlot).GetField("inventoryGlowTime", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly FieldInfo GlobalItemsProperty = typeof(Item).GetField("globalItems", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly FieldInfo InventoryGlowTimeChest = typeof(ItemSlot).GetField("inventoryGlowTimeChest", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo IsModItem = typeof(ItemLoader).GetMethod("IsModItem", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly PropertyInfo ModItem = typeof(Item).GetProperty("modItem", BindingFlags.Public | BindingFlags.Instance);
 
         public static void ApiCreate(this Recipe recipe)
         {
@@ -71,62 +71,62 @@ namespace kRPG
 
                 if (requiredAmount <= 0)
                     continue;
-                {
-                    Item[] array = Main.player[Main.myPlayer].inventory;
-                    InvLogic(recipe, array, requiredItem, requiredAmount);
-                    PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
-                    for (int j = 0; j < character.Inventories.Length; j += 1)
-                        if (character.ActiveInvPage != j)
-                        {
-                            array = character.Inventories[j];
-                            InvLogic(recipe, array, requiredItem, requiredAmount);
-                        }
 
-                    if (Main.player[Main.myPlayer].chest == -1)
-                        continue;
-                    if (Main.player[Main.myPlayer].chest > -1)
-                        array = Main.chest[Main.player[Main.myPlayer].chest].item;
-                    else
-                        switch (Main.player[Main.myPlayer].chest)
-                        {
-                            case -2:
-                                array = Main.player[Main.myPlayer].bank.item;
-                                break;
-                            case -3:
-                                array = Main.player[Main.myPlayer].bank2.item;
-                                break;
-                            case -4:
-                                array = Main.player[Main.myPlayer].bank3.item;
-                                break;
-                        }
-
-                    for (int l = 0; l < 40; l++)
+                Item[] array = Main.player[Main.myPlayer].inventory;
+                InvLogic(recipe, array, requiredItem, requiredAmount);
+                PlayerCharacter character = Main.LocalPlayer.GetModPlayer<PlayerCharacter>();
+                for (int j = 0; j < character.Inventories.Length; j += 1)
+                    if (character.ActiveInvPage != j)
                     {
-                        Item item3 = array[l];
-                        if (requiredAmount <= 0)
-                            break;
+                        array = character.Inventories[j];
+                        InvLogic(recipe, array, requiredItem, requiredAmount);
+                    }
 
-                        if (!item3.IsTheSameAs(requiredItem) && !recipe.useWood(item3.type, requiredItem.type) &&
-                            !recipe.useSand(item3.type, requiredItem.type) && !recipe.useIronBar(item3.type, requiredItem.type) &&
-                            !recipe.usePressurePlate(item3.type, requiredItem.type) && !recipe.useFragment(item3.type, requiredItem.type) &&
-                            !recipe.AcceptedByItemGroups(item3.type, requiredItem.type))
-                            continue;
-                        if (item3.stack > requiredAmount)
-                        {
-                            item3.stack -= requiredAmount;
-                            if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
-                                NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, l);
-                            requiredAmount = 0;
-                        }
-                        else
-                        {
-                            requiredAmount -= item3.stack;
-                            array[l] = new Item();
-                            if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
-                                NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, l);
-                        }
+                if (Main.player[Main.myPlayer].chest == -1)
+                    continue;
+                if (Main.player[Main.myPlayer].chest > -1)
+                    array = Main.chest[Main.player[Main.myPlayer].chest].item;
+                else
+                    switch (Main.player[Main.myPlayer].chest)
+                    {
+                        case -2:
+                            array = Main.player[Main.myPlayer].bank.item;
+                            break;
+                        case -3:
+                            array = Main.player[Main.myPlayer].bank2.item;
+                            break;
+                        case -4:
+                            array = Main.player[Main.myPlayer].bank3.item;
+                            break;
+                    }
+
+                for (int l = 0; l < 40; l++)
+                {
+                    Item item3 = array[l];
+                    if (requiredAmount <= 0)
+                        break;
+
+                    if (!item3.IsTheSameAs(requiredItem) && !recipe.useWood(item3.type, requiredItem.type) &&
+                        !recipe.useSand(item3.type, requiredItem.type) && !recipe.useIronBar(item3.type, requiredItem.type) &&
+                        !recipe.usePressurePlate(item3.type, requiredItem.type) && !recipe.useFragment(item3.type, requiredItem.type) &&
+                        !recipe.AcceptedByItemGroups(item3.type, requiredItem.type))
+                        continue;
+                    if (item3.stack > requiredAmount)
+                    {
+                        item3.stack -= requiredAmount;
+                        if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
+                            NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, l);
+                        requiredAmount = 0;
+                    }
+                    else
+                    {
+                        requiredAmount -= item3.stack;
+                        array[l] = new Item();
+                        if (Main.netMode == 1 && Main.player[Main.myPlayer].chest >= 0)
+                            NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, l);
                     }
                 }
+
             }
 
             AchievementsHelper.NotifyItemCraft(recipe);
@@ -200,10 +200,10 @@ namespace kRPG
 
                 if ((item.mana > 0) & flag)
                 {
-                    if (player.statMana >= (int) (item.mana * player.manaCost))
+                    if (player.statMana >= (int)(item.mana * player.manaCost))
                     {
-                        player.manaRegenDelay = (int) player.maxRegenDelay;
-                        player.statMana -= (int) (item.mana * player.manaCost);
+                        player.manaRegenDelay = (int)player.maxRegenDelay;
+                        player.statMana -= (int)(item.mana * player.manaCost);
                     }
                     else
                     {
@@ -263,12 +263,12 @@ namespace kRPG
                 if (item.type == 227)
                 {
                     player.potionDelay = player.restorationDelayTime;
-                    player.AddBuff(21, player.potionDelay);
+                    player.AddBuff(BuffID.PotionSickness, player.potionDelay);
                 }
                 else
                 {
                     player.potionDelay = player.potionDelayTime;
-                    player.AddBuff(21, player.potionDelay);
+                    player.AddBuff(BuffID.PotionSickness, player.potionDelay);
                 }
             }
 
@@ -368,12 +368,12 @@ namespace kRPG
                 if (item.type == 227)
                 {
                     player.potionDelay = player.restorationDelayTime;
-                    player.AddBuff(21, player.potionDelay);
+                    player.AddBuff(BuffID.PotionSickness, player.potionDelay);
                 }
                 else
                 {
                     player.potionDelay = player.potionDelayTime;
-                    player.AddBuff(21, player.potionDelay);
+                    player.AddBuff(BuffID.PotionSickness, player.potionDelay);
                 }
             }
 
@@ -388,7 +388,7 @@ namespace kRPG
                 player.HealEffect(item.healLife);
             if (item.healMana > 0)
             {
-                player.AddBuff(94, Player.manaSickTime);
+                player.AddBuff(BuffID.ManaSickness, Player.manaSickTime);
                 if (Main.myPlayer == player.whoAmI)
                     player.ManaEffect(item.healMana);
             }
@@ -422,11 +422,12 @@ namespace kRPG
             return coins;
         }
 
-        public static bool Contains<T>(this IEnumerable<T> e, Predicate<T> match)
-        {
-            List<T> values = e.ToList();
-            return values.Contains(match);
-        }
+        //This is just bad code, it'Silver a circular reference that will never resolve.
+        //public static bool Contains<T>(this IEnumerable<T> e, Predicate<T> match)
+        //{
+        //    List<T> values = e.ToList();
+        //    return values.Contains(match);
+        //}
 
         public static bool Contains<T>(this IEnumerable<T> e, T item)
         {
@@ -440,16 +441,16 @@ namespace kRPG
             switch (i.type)
             {
                 case 71:
-                    coins[c] += i.stack;
+                    coins[Copper] += i.stack;
                     break;
                 case 72:
-                    coins[s] += i.stack * 100;
+                    coins[Silver] += i.stack * 100;
                     break;
                 case 73:
-                    coins[g] += i.stack * 10000;
+                    coins[Gold] += i.stack * 10000;
                     break;
                 case 74:
-                    coins[p] += i.stack * 1000000;
+                    coins[Platinum] += i.stack * 1000000;
                     break;
             }
 
@@ -471,7 +472,8 @@ namespace kRPG
                 return;
             RecipeHooks.OnCraft(Main.mouseItem, r);
             ItemLoader.OnCraft(Main.mouseItem, r);
-            Main.PlaySound(7);
+            //Main.PlaySound(7);
+            SoundManager.PlaySound(Sounds.Grass);
         }
 
         public static void Draw(this SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Color color, float scale)
@@ -575,12 +577,15 @@ namespace kRPG
                     else
                         switch (Main.player[Main.myPlayer].chest)
                         {
+                            //Inventory Bank Main I
                             case -2:
                                 array = Main.player[Main.myPlayer].bank.item;
                                 break;
+                            //Inventory Bank Page II
                             case -3:
                                 array = Main.player[Main.myPlayer].bank2.item;
                                 break;
+                            //Inventory Bank Page III
                             case -4:
                                 array = Main.player[Main.myPlayer].bank3.item;
                                 break;
@@ -595,6 +600,7 @@ namespace kRPG
                         {
                             Dictionary<int, int> dictionary3;
                             int netId2;
+                            //todo, Ok, no idea what this code is doing, will need to figure it out
                             (dictionary3 = dictionary)[netId2 = item.netID] = dictionary3[netId2] + item.stack;
                         }
                         else
@@ -719,10 +725,8 @@ namespace kRPG
                 Item x = player.inventory[num3];
                 if (x.type <= 0 || x.stack <= 0 || x.stack >= x.maxStack || !item.IsTheSameAs(x))
                     continue;
-                if (flag)
-                    Main.PlaySound(38, (int) player.position.X, (int) player.position.Y);
-                else
-                    Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
+                SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
+
                 if (item.stack + x.stack <= x.maxStack)
                 {
                     x.stack += item.stack;
@@ -753,9 +757,17 @@ namespace kRPG
                     if (x.type <= 0 || x.stack >= x.maxStack || !item.IsTheSameAs(x))
                         continue;
                     if (flag)
-                        Main.PlaySound(38, (int) player.position.X, (int) player.position.Y);
+                    {
+                        //Main.PlaySound(38, (int)player.position.X, (int)player.position.Y);
+                        SoundManager.PlaySound(Sounds.Meowmere, player.position);
+                    }
+
                     else
-                        Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
+                    {
+                        SoundManager.PlaySound(Sounds.Grass, player.position);
+                        //Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
+                    }
+
                     if (item.stack + x.stack <= x.maxStack)
                     {
                         x.stack += item.stack;
@@ -781,7 +793,9 @@ namespace kRPG
                     player.inventory[j] = item;
                     ItemText.NewText(newItem, newItem.stack);
                     player.DoCoins(j);
-                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                    //Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                    SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
+
                     if (plr == Main.myPlayer)
                         FindRecipes();
                     AchievementsHelper.NotifyItemPickup(player, item);
@@ -797,7 +811,8 @@ namespace kRPG
                             continue;
                         player.inventory[i] = item;
                         ItemText.NewText(newItem, newItem.stack);
-                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                        //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
+                        SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
                     }
@@ -808,7 +823,8 @@ namespace kRPG
                             continue;
                         character.Inventories[2][i] = item;
                         ItemText.NewText(newItem, newItem.stack);
-                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                        //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
+                        SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
                     }
@@ -823,7 +839,8 @@ namespace kRPG
                     player.inventory[k] = item;
                     ItemText.NewText(newItem, newItem.stack);
                     player.DoCoins(k);
-                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                    //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
+                    SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                     if (plr == Main.myPlayer)
                         FindRecipes();
                     AchievementsHelper.NotifyItemPickup(player, item);
@@ -839,7 +856,8 @@ namespace kRPG
                     player.inventory[l] = item;
                     ItemText.NewText(newItem, newItem.stack);
                     player.DoCoins(l);
-                    Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                    //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
+                    SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                     if (plr == Main.myPlayer)
                         FindRecipes();
                     AchievementsHelper.NotifyItemPickup(player, item);
@@ -856,7 +874,8 @@ namespace kRPG
                             continue;
                         character.Inventories[i][j] = item;
                         ItemText.NewText(newItem, newItem.stack);
-                        Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
+                        //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
+                        SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
                     }
@@ -1032,17 +1051,17 @@ namespace kRPG
                         texture2D = Main.inventoryBack7Texture;
                         break;
                     case 13:
-                    {
-                        byte b = 200;
-                        if (slot == Main.player[Main.myPlayer].selectedItem)
                         {
-                            texture2D = Main.inventoryBack14Texture;
-                            b = 255;
-                        }
+                            byte b = 200;
+                            if (slot == Main.player[Main.myPlayer].selectedItem)
+                            {
+                                texture2D = Main.inventoryBack14Texture;
+                                b = 255;
+                            }
 
-                        new Color(b, b, b, b);
-                        break;
-                    }
+                            new Color(b, b, b, b);
+                            break;
+                        }
                     case 14:
                     case 21:
                         flag2 = true;
@@ -1056,25 +1075,25 @@ namespace kRPG
                 }
             }
 
-            if (context == 0 && ((int[]) InventoryGlowTime.GetValue(null))[slot] > 0 && !inv[slot].favorited)
+            if (context == 0 && ((int[])InventoryGlowTime.GetValue(null))[slot] > 0 && !inv[slot].favorited)
             {
                 float scale = Main.invAlpha / 255f;
                 Color value = new Color(63, 65, 151, 255) * scale;
-                Color value2 = Main.hslToRgb(((float[]) InventoryGlowHue.GetValue(null))[slot], 1f, 0.5f) * scale;
-                float num5 = ((int[]) InventoryGlowTime.GetValue(null))[slot] / 300f;
+                Color value2 = Main.hslToRgb(((float[])InventoryGlowHue.GetValue(null))[slot], 1f, 0.5f) * scale;
+                float num5 = ((int[])InventoryGlowTime.GetValue(null))[slot] / 300f;
                 num5 *= num5;
                 Color.Lerp(value, value2, num5 / 2f);
                 texture2D = Main.inventoryBack13Texture;
             }
 
-            if ((context == 4 || context == 3) && ((int[]) InventoryGlowTimeChest.GetValue(null))[slot] > 0 && !inv[slot].favorited)
+            if ((context == 4 || context == 3) && ((int[])InventoryGlowTimeChest.GetValue(null))[slot] > 0 && !inv[slot].favorited)
             {
                 float scale2 = Main.invAlpha / 255f;
                 Color value3 = new Color(130, 62, 102, 255) * scale2;
                 if (context == 3)
                     value3 = new Color(104, 52, 52, 255) * scale2;
-                Color value4 = Main.hslToRgb(((float[]) InventoryGlowHue.GetValue(null))[slot], 1f, 0.5f) * scale2;
-                float num6 = ((int[]) InventoryGlowTimeChest.GetValue(null))[slot] / 300f;
+                Color value4 = Main.hslToRgb(((float[])InventoryGlowHue.GetValue(null))[slot], 1f, 0.5f) * scale2;
+                float num6 = ((int[])InventoryGlowTimeChest.GetValue(null))[slot] / 300f;
                 num6 *= num6;
                 Color.Lerp(value3, value4, num6 / 2f);
                 texture2D = Main.inventoryBack13Texture;
@@ -1093,20 +1112,34 @@ namespace kRPG
             switch (context)
             {
                 case 8:
-                    if (slot == 0)
-                        num7 = 0;
-                    if (slot == 1)
-                        num7 = 6;
-                    if (slot == 2)
-                        num7 = 12;
+                    switch (slot)
+                    {
+                        case 0:
+                            num7 = 0;
+                            break;
+                        case 1:
+                            num7 = 6;
+                            break;
+                        case 2:
+                            num7 = 12;
+                            break;
+                    }
+
                     break;
                 case 9:
-                    if (slot == 10)
-                        num7 = 3;
-                    if (slot == 11)
-                        num7 = 9;
-                    if (slot == 12)
-                        num7 = 15;
+                    switch (slot)
+                    {
+                        case 10:
+                            num7 = 3;
+                            break;
+                        case 11:
+                            num7 = 9;
+                            break;
+                        case 12:
+                            num7 = 15;
+                            break;
+                    }
+
                     break;
                 case 10:
                     num7 = 11;
@@ -1147,7 +1180,7 @@ namespace kRPG
             Vector2 vector = texture2D.Size() * inventoryScale;
             if (item.type > 0 && item.stack > 0)
             {
-                Texture2D texture2D3 = item.modItem is ProceduralItem ? ((ProceduralItem) item.modItem).texture : Main.itemTexture[item.type];
+                Texture2D texture2D3 = item.modItem is ProceduralItem ? ((ProceduralItem)item.modItem).LocalTexture : Main.itemTexture[item.type];
                 Rectangle rectangle2;
                 rectangle2 = Main.itemAnimations[item.type] != null ? Main.itemAnimations[item.type].GetFrame(texture2D3) : texture2D3.Frame();
                 Color newColor = color;
@@ -1241,7 +1274,7 @@ namespace kRPG
                 if (context == 13 && item.potion)
                 {
                     Vector2 position3 = position + texture2D.Size() * inventoryScale / 2f - Main.cdTexture.Size() * inventoryScale / 2f;
-                    Color color3 = item.GetAlpha(color) * (player.potionDelay / (float) player.potionDelayTime);
+                    Color color3 = item.GetAlpha(color) * (player.potionDelay / (float)player.potionDelayTime);
                     spriteBatch.Draw(Main.cdTexture, position3, null, color3, 0f, default, num9, SpriteEffects.None, 0f);
                 }
 
@@ -1288,14 +1321,14 @@ namespace kRPG
             string output = "";
             int[] coins = SeparateCoinTypes(amount);
 
-            if (coins[p] > 0)
-                output += coins[p] + " platinum ";
-            if (coins[g] > 0)
-                output += coins[g] + " gold ";
-            if (coins[s] > 0)
-                output += coins[s] + " silver ";
-            if (coins[c] > 0)
-                output += coins[c] + " copper ";
+            if (coins[Platinum] > 0)
+                output += coins[Platinum] + " platinum ";
+            if (coins[Gold] > 0)
+                output += coins[Gold] + " gold ";
+            if (coins[Silver] > 0)
+                output += coins[Silver] + " silver ";
+            if (coins[Copper] > 0)
+                output += coins[Copper] + " copper ";
 
             return output;
         }
@@ -1325,31 +1358,31 @@ namespace kRPG
             }
 
             int num2 = Gore.NewGore(
-                new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f), default,
+                new Vector2(player.position.X + (float)(player.width / 2.0) - 24f, player.position.Y + (float)(player.height / 2.0) - 24f), default,
                 Main.rand.Next(61, 64));
             //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
+            num2 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2.0) - 24f, player.position.Y + (float)(player.height / 2.0) - 24f),
                 default, Main.rand.Next(61, 64));
             //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
+            num2 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2.0) - 24f, player.position.Y + (float)(player.height / 2.0) - 24f),
                 default, Main.rand.Next(61, 64));
             //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
+            num2 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2.0) - 24f, player.position.Y + (float)(player.height / 2.0) - 24f),
                 default, Main.rand.Next(61, 64));
             //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(player.position.X + (float) (player.width / 2.0) - 24f, player.position.Y + (float) (player.height / 2.0) - 24f),
+            num2 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2.0) - 24f, player.position.Y + (float)(player.height / 2.0) - 24f),
                 default, Main.rand.Next(61, 64));
             //Main.gore[num2].scale = 1.5f;
             Main.gore[num2].velocity.X = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
@@ -1409,7 +1442,7 @@ namespace kRPG
             Main.gore[num2].velocity *= 0.4f;
         }
 
-        public static V Random<K, V>(this Dictionary<K, V> dictionary)
+        public static TV Random<TK, TV>(this Dictionary<TK, TV> dictionary)
         {
             return dictionary.Values.ToList().Random();
         }
@@ -1422,7 +1455,7 @@ namespace kRPG
 
         public static void RemoveCoins(this Player player, int amount)
         {
-            int[] coinType = {71, 72, 73, 74};
+            int[] coinType = { 71, 72, 73, 74 };
 
             //splitting the cost into individual coin types
             int[] cost = SeparateCoinTypes(amount);
@@ -1472,7 +1505,7 @@ namespace kRPG
                 {
                     cost[i + 1] += 1;
                     cost[i] -= 100;
-                    Item.NewItem((int) player.position.X, (int) player.position.Y, 0, 0, coinType[i], -cost[i], true, 0, true);
+                    Item.NewItem((int)player.position.X, (int)player.position.Y, 0, 0, coinType[i], -cost[i], true, 0, true);
                 }
         }
 
@@ -1499,231 +1532,227 @@ namespace kRPG
         {
             //splitting the cost into individual coin types
             int[] output = new int[4];
-            output[c] = Math.Max(0, amount % 100);
-            output[s] = Math.Max(0, (amount % 10000 - output[c]) / 100);
-            output[g] = Math.Max(0, (amount % 1000000 - output[c] - output[s]) / 10000);
-            output[p] = Math.Max(0, (amount - output[c] - output[s] - output[g]) / 1000000);
+            output[Copper] = Math.Max(0, amount % 100);
+            output[Silver] = Math.Max(0, (amount % 10000 - output[Copper]) / 100);
+            output[Gold] = Math.Max(0, (amount % 1000000 - output[Copper] - output[Silver]) / 10000);
+            output[Platinum] = Math.Max(0, (amount - output[Copper] - output[Silver] - output[Gold]) / 1000000);
 
             return output;
         }
 
-        public static void SetItemDefaults(this Item item, int type, bool noMatCheck = false, bool createModItem = true)
-        {
-            try
-            {
-                object globalItems = typeof(Item).GetField("globalItems", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(item);
-                item.ClearNameOverride();
-                if (Main.netMode == 1 || Main.netMode == 2)
-                    item.owner = 255;
-                else
-                    item.owner = Main.myPlayer;
-                item.ResetStats(type);
-                if (item.type == 0)
-                {
-                    item.netID = 0;
-                    item.stack = 0;
-                }
-                else if (item.type <= 1000)
-                {
-                    item.SetDefaults1(item.type);
-                }
-                else if (item.type <= 2001)
-                {
-                    item.SetDefaults2(item.type);
-                }
-                else if (item.type <= 3000)
-                {
-                    item.SetDefaults3(item.type);
-                }
-                else
-                {
-                    item.SetDefaults4(item.type);
-                }
+        //public static void SetItemDefaults(this Item item, int type, bool noMatCheck = false, bool createModItem = true)
+        //{
+        //    try
+        //    {
+        //        object globalItems = GlobalItemsProperty?.GetValue(item);
+        //        item.ClearNameOverride();
+        //        if (Main.netMode == 1 || Main.netMode == 2)
+        //            item.owner = 255;
+        //        else
+        //            item.owner = Main.myPlayer;
+        //        item.ResetStats(type);
+        //        if (item.type == 0)
+        //        {
+        //            item.netID = 0;
+        //            item.stack = 0;
+        //        }
+        //        else if (item.type <= 1000)
+        //        {
+        //            item.SetDefaults1(item.type);
+        //        }
+        //        else if (item.type <= 2001)
+        //        {
+        //            item.SetDefaults2(item.type);
+        //        }
+        //        else if (item.type <= 3000)
+        //        {
+        //            item.SetDefaults3(item.type);
+        //        }
+        //        else
+        //        {
+        //            item.SetDefaults4(item.type);
+        //        }
 
-                item.dye = (byte) GameShaders.Armor.GetShaderIdFromItemId(item.type);
-                if (item.hairDye != 0)
-                    item.hairDye = GameShaders.Hair.GetShaderIdFromItemId(item.type);
-                switch (item.type)
-                {
-                    case 2015:
-                        item.value = Item.sellPrice(0, 0, 5);
-                        break;
-                    case 2016:
-                    case 2017:
-                        item.value = Item.sellPrice(0, 0, 7, 50);
-                        break;
-                    case 2019:
-                    case 2018:
-                    case 3563:
-                        item.value = Item.sellPrice(0, 0, 5);
-                        break;
-                    case 261:
-                        item.value = Item.sellPrice(0, 0, 7, 50);
-                        break;
-                    case 2205:
-                        item.value = Item.sellPrice(0, 0, 12, 50);
-                        break;
-                    case 2123:
-                    case 2122:
-                        item.value = Item.sellPrice(0, 0, 7, 50);
-                        break;
-                    case 2003:
-                        item.value = Item.sellPrice(0, 0, 20);
-                        break;
-                    case 2156:
-                    case 2157:
-                    case 2121:
-                        item.value = Item.sellPrice(0, 0, 15);
-                        break;
-                    case 1992:
-                        item.value = Item.sellPrice(0, 0, 3);
-                        break;
-                    case 2004:
-                    case 2002:
-                        item.value = Item.sellPrice(0, 0, 5);
-                        break;
-                    case 2740:
-                        item.value = Item.sellPrice(0, 0, 2, 50);
-                        break;
-                    case 2006:
-                    case 3191:
-                        item.value = Item.sellPrice(0, 0, 20);
-                        break;
-                    case 3192:
-                        item.value = Item.sellPrice(0, 0, 2, 50);
-                        break;
-                    case 3193:
-                        item.value = Item.sellPrice(0, 0, 5);
-                        break;
-                    case 3194:
-                        item.value = Item.sellPrice(0, 0, 10);
-                        break;
-                    case 2007:
-                        item.value = Item.sellPrice(0, 0, 50);
-                        break;
-                    case 2673:
-                        item.value = Item.sellPrice(0, 10);
-                        break;
-                }
+        //        item.dye = (byte)GameShaders.Armor.GetShaderIdFromItemId(item.type);
+        //        if (item.hairDye != 0)
+        //            item.hairDye = GameShaders.Hair.GetShaderIdFromItemId(item.type);
+        //        switch (item.type)
+        //        {
+        //            case 2015:
+        //                item.value = Item.sellPrice(0, 0, 5);
+        //                break;
+        //            case 2016:
+        //            case 2017:
+        //                item.value = Item.sellPrice(0, 0, 7, 50);
+        //                break;
+        //            case 2019:
+        //            case 2018:
+        //            case 3563:
+        //                item.value = Item.sellPrice(0, 0, 5);
+        //                break;
+        //            case 261:
+        //                item.value = Item.sellPrice(0, 0, 7, 50);
+        //                break;
+        //            case 2205:
+        //                item.value = Item.sellPrice(0, 0, 12, 50);
+        //                break;
+        //            case 2123:
+        //            case 2122:
+        //                item.value = Item.sellPrice(0, 0, 7, 50);
+        //                break;
+        //            case 2003:
+        //                item.value = Item.sellPrice(0, 0, 20);
+        //                break;
+        //            case 2156:
+        //            case 2157:
+        //            case 2121:
+        //                item.value = Item.sellPrice(0, 0, 15);
+        //                break;
+        //            case 1992:
+        //                item.value = Item.sellPrice(0, 0, 3);
+        //                break;
+        //            case 2004:
+        //            case 2002:
+        //                item.value = Item.sellPrice(0, 0, 5);
+        //                break;
+        //            case 2740:
+        //                item.value = Item.sellPrice(0, 0, 2, 50);
+        //                break;
+        //            case 2006:
+        //            case 3191:
+        //                item.value = Item.sellPrice(0, 0, 20);
+        //                break;
+        //            case 3192:
+        //                item.value = Item.sellPrice(0, 0, 2, 50);
+        //                break;
+        //            case 3193:
+        //                item.value = Item.sellPrice(0, 0, 5);
+        //                break;
+        //            case 3194:
+        //                item.value = Item.sellPrice(0, 0, 10);
+        //                break;
+        //            case 2007:
+        //                item.value = Item.sellPrice(0, 0, 50);
+        //                break;
+        //            case 2673:
+        //                item.value = Item.sellPrice(0, 10);
+        //                break;
+        //        }
 
-                if (item.bait > 0)
-                {
-                    if (item.bait >= 50)
-                        item.rare = 3;
-                    else if (item.bait >= 30)
-                        item.rare = 2;
-                    else if (item.bait >= 15)
-                        item.rare = 1;
-                }
+        //        if (item.bait > 0)
+        //        {
+        //            if (item.bait >= 50)
+        //                item.rare = 3;
+        //            else if (item.bait >= 30)
+        //                item.rare = 2;
+        //            else if (item.bait >= 15)
+        //                item.rare = 1;
+        //        }
 
-                if (item.type >= 1994 && item.type <= 2001)
-                {
-                    int num = item.type - 1994;
-                    switch (num)
-                    {
-                        case 0:
-                            item.value = Item.sellPrice(0, 0, 5);
-                            break;
-                        case 4:
-                            item.value = Item.sellPrice(0, 0, 10);
-                            break;
-                        case 6:
-                            item.value = Item.sellPrice(0, 0, 15);
-                            break;
-                        case 3:
-                            item.value = Item.sellPrice(0, 0, 20);
-                            break;
-                        case 7:
-                            item.value = Item.sellPrice(0, 0, 30);
-                            break;
-                        case 2:
-                            item.value = Item.sellPrice(0, 0, 40);
-                            break;
-                        case 1:
-                            item.value = Item.sellPrice(0, 0, 75);
-                            break;
-                        case 5:
-                            item.value = Item.sellPrice(0, 1);
-                            break;
-                    }
-                }
+        //        if (item.type >= 1994 && item.type <= 2001)
+        //        {
+        //            int num = item.type - 1994;
+        //            switch (num)
+        //            {
+        //                case 0:
+        //                    item.value = Item.sellPrice(0, 0, 5);
+        //                    break;
+        //                case 4:
+        //                    item.value = Item.sellPrice(0, 0, 10);
+        //                    break;
+        //                case 6:
+        //                    item.value = Item.sellPrice(0, 0, 15);
+        //                    break;
+        //                case 3:
+        //                    item.value = Item.sellPrice(0, 0, 20);
+        //                    break;
+        //                case 7:
+        //                    item.value = Item.sellPrice(0, 0, 30);
+        //                    break;
+        //                case 2:
+        //                    item.value = Item.sellPrice(0, 0, 40);
+        //                    break;
+        //                case 1:
+        //                    item.value = Item.sellPrice(0, 0, 75);
+        //                    break;
+        //                case 5:
+        //                    item.value = Item.sellPrice(0, 1);
+        //                    break;
+        //            }
+        //        }
 
-                switch (item.type)
-                {
-                    case 483:
-                    case 1192:
-                    case 482:
-                    case 1185:
-                    case 484:
-                    case 1199:
-                    case 368:
-                        item.autoReuse = true;
-                        item.damage = (int) (item.damage * 1.15);
-                        break;
-                    case 2663:
-                    case 1720:
-                    case 2137:
-                    case 2155:
-                    case 2151:
-                    case 1704:
-                    case 2143:
-                    case 1710:
-                    case 2238:
-                    case 2133:
-                    case 2147:
-                    case 2405:
-                    case 1716:
-                    case 1705:
-                        item.value = Item.sellPrice(0, 2);
-                        break;
-                }
+        //        switch (item.type)
+        //        {
+        //            case 483:
+        //            case 1192:
+        //            case 482:
+        //            case 1185:
+        //            case 484:
+        //            case 1199:
+        //            case 368:
+        //                item.autoReuse = true;
+        //                item.damage = (int)(item.damage * 1.15);
+        //                break;
+        //            case 2663:
+        //            case 1720:
+        //            case 2137:
+        //            case 2155:
+        //            case 2151:
+        //            case 1704:
+        //            case 2143:
+        //            case 1710:
+        //            case 2238:
+        //            case 2133:
+        //            case 2147:
+        //            case 2405:
+        //            case 1716:
+        //            case 1705:
+        //                item.value = Item.sellPrice(0, 2);
+        //                break;
+        //        }
 
-                if (Main.projHook[item.shoot])
-                {
-                    item.useStyle = 0;
-                    item.useTime = 0;
-                    item.useAnimation = 0;
-                }
+        //        if (Main.projHook[item.shoot])
+        //        {
+        //            item.useStyle = 0;
+        //            item.useTime = 0;
+        //            item.useAnimation = 0;
+        //        }
 
-                if (item.type >= 1803 && item.type <= 1807)
-                    item.SetDefaults(1533 + item.type - 1803, true);
-                if (item.dye > 0)
-                    item.maxStack = 99;
-                if (item.createTile == 19)
-                    item.maxStack = 999;
-                item.netID = item.type;
+        //        if (item.type >= 1803 && item.type <= 1807)
+        //            item.SetDefaults(1533 + item.type - 1803, true);
+        //        if (item.dye > 0)
+        //            item.maxStack = 99;
+        //        if (item.createTile == 19)
+        //            item.maxStack = 999;
+        //        item.netID = item.type;
 
-                if ((bool) IsModItem.Invoke(null, new object[] {item.type}) & createModItem)
-                    ModItem.SetValue(item, ItemLoader.GetItem(item.type).NewInstance(item));
+        //        if ((bool)IsModItem.Invoke(null, new object[] { item.type }) && createModItem)
+        //            ModItem.SetValue(item, ItemLoader.GetItem(item.type).NewInstance(item));
 
-                item.modItem?.AutoDefaults();
-                item.modItem?.SetDefaults();
+        //        item.modItem?.AutoDefaults();
+        //        //Removing references to SetDefaults
+        //        //item.modItem?.SetDefaults();
 
-                if (!noMatCheck)
-                    item.checkMat();
-                item.RebuildTooltip();
-                if (item.type > 0 && ItemID.Sets.Deprecated[item.type])
-                {
-                    item.netID = 0;
-                    item.type = 0;
-                    item.stack = 0;
-                }
+        //        if (!noMatCheck)
+        //            item.checkMat();
+        //        item.RebuildTooltip();
+        //        if (item.type > 0 && ItemID.Sets.Deprecated[item.type])
+        //        {
+        //            item.netID = 0;
+        //            item.type = 0;
+        //            item.stack = 0;
+        //        }
 
-                typeof(Item).GetField("globalItems", BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(item, globalItems);
-            }
-            catch (SystemException e)
-            {
-                Main.NewText(e.ToString());
-            }
-        }
 
-        public static int[] SumCoins(int[] a, int[] b)
-        {
-            int[] coins = new int[4];
-            for (int i = 0; i < 4; i += 1)
-                coins[i] = a[i] + b[i];
-            return coins;
-        }
+
+        //        GlobalItemsProperty?.SetValue(item, globalItems);
+        //    }
+        //    catch (SystemException e)
+        //    {
+        //        Main.NewText(e.ToString());
+        //    }
+        //}
+
 
         public static int Wealth(this Player player)
         {

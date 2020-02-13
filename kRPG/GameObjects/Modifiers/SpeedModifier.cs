@@ -28,19 +28,22 @@ namespace kRPG.GameObjects.Modifiers
             return new SpeedModifier(kNpc, npc);
         }
 
-        public new static NpcModifier Random(kNPC kNpc, NPC npc)
-        {
-            return new SpeedModifier(kNpc, npc, 1f + Main.rand.NextFloat(2));
-        }
+        //public new static NpcModifier Random(kNPC kNpc, NPC npc)
+        //{
+        //    return new SpeedModifier(kNpc, npc, 1f + Main.rand.NextFloat(2));
+        //}
 
-        public override void Read(BinaryReader reader)
+        public override int Unpack(BinaryReader reader)
         {
             SpeedModifierAdj = reader.ReadSingle();
+            kRPG.LogMessage("Reading SpeedModifierAdj: " + SpeedModifierAdj.ToString("F"));
+            return 4;
         }
 
-        public override void Write(ModPacket packet)
+        public override int Pack(ModPacket packet)
         {
             packet.Write(SpeedModifierAdj);
+            return 4;
         }
     }
 }

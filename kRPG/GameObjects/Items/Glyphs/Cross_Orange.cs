@@ -1,10 +1,10 @@
 ﻿using System;
-using kRPG.GameObjects.Items.Procedural;
 using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.Items.Weapons.Melee;
 using kRPG.GameObjects.Players;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Items.Glyphs
 {
@@ -52,7 +52,7 @@ namespace kRPG.GameObjects.Items.Glyphs
                         PlayerCharacter character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
 
                         spell.LocalTexture = character.LastSelectedWeapon.modItem is ProceduralSword
-                            ? ((ProceduralSword) character.LastSelectedWeapon.modItem).texture
+                            ? ((ProceduralSword) character.LastSelectedWeapon.modItem).LocalTexture
                             : Main.itemTexture[character.LastSelectedWeapon.type];
                     }
                     else
@@ -60,8 +60,18 @@ namespace kRPG.GameObjects.Items.Glyphs
                         spell.LocalTexture = GFX.GFX.ProjectileBoulder;
                     }
 
-                    spell.projectile.width = spell.LocalTexture.Width;
-                    spell.projectile.height = spell.LocalTexture.Height;
+                    if (spell.LocalTexture == null)
+                    {
+                        ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("GetInitAction, spell.localtexture = null.");
+                        spell.projectile.width = 48;
+                        spell.projectile.height = 48;
+                    }
+                    else
+                    {
+                        spell.projectile.width = spell.LocalTexture.Width;
+                        spell.projectile.height = spell.LocalTexture.Height;
+                    }
+
                 }
                 else
                 {

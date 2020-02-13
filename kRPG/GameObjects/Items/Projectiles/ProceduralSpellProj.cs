@@ -4,31 +4,31 @@ using System.IO;
 using System.Linq;
 using kRPG.Enums;
 using kRPG.GameObjects.Items.Glyphs;
+using kRPG.GameObjects.SFX;
 using kRPG.GameObjects.Spells;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Items.Projectiles
 {
     public class ProceduralSpellProj : ProceduralProjectile
     {
-        public static Action<ProceduralSpellProj> aiRotateToVelocity = delegate(ProceduralSpellProj spell)
+        public static Action<ProceduralSpellProj> aiRotateToVelocity = delegate (ProceduralSpellProj spell)
         {
-            spell.projectile.rotation = (float) Math.Atan2(spell.projectile.velocity.Y, spell.projectile.velocity.X) + (float) API.Tau / 8f;
+            spell.projectile.rotation = (float)Math.Atan2(spell.projectile.velocity.Y, spell.projectile.velocity.X) + (float)API.Tau / 8f;
         };
 
-        public static Action<ProceduralSpellProj> aiWhirlcast = delegate(ProceduralSpellProj spell)
-        {
-            Player owner = Main.player[spell.projectile.owner];
-        };
+        //public static Action<ProceduralSpellProj> aiWhirlcast = delegate (ProceduralSpellProj spell)
+        //{
+        //    Player owner = Main.player[spell.projectile.owner];
+        //};
 
         private readonly Queue<Vector2> oldPositions = new Queue<Vector2>();
         private readonly Queue<float> oldRotations = new Queue<float>();
 
-        public List<Action<ProceduralSpellProj>> ai { get; set; } = new List<Action<ProceduralSpellProj>>(); // <=== Look here:
+        public List<Action<ProceduralSpellProj>> Ai { get; set; } = new List<Action<ProceduralSpellProj>>(); // <=== Look here:
         public float Alpha { get; set; }
         public Vector2 BasePosition { get; set; } = Vector2.Zero;
         public Vector2 BaseVelocity { get; set; } = Vector2.Zero;
@@ -38,7 +38,7 @@ namespace kRPG.GameObjects.Items.Projectiles
         public float DisplacementAngle { get; set; } = 0f;
         public Vector2 DisplacementVelocity { get; set; } = Vector2.Zero;
 
-        public List<Action<ProceduralSpellProj, SpriteBatch, Color>> draw { get; set; } = new List<Action<ProceduralSpellProj, SpriteBatch, Color>>();
+        public List<Action<ProceduralSpellProj, SpriteBatch, Color>> SpellDraw { get; set; } = new List<Action<ProceduralSpellProj, SpriteBatch, Color>>();
         public bool DrawTrail { get; set; } = false;
         public bool Homing { get; set; } = false;
 
@@ -59,7 +59,7 @@ namespace kRPG.GameObjects.Items.Projectiles
             if (Alpha < 1f) Alpha += 0.02f;
             if (Caster == null) projectile.Kill();
             else if (!Caster.active) projectile.Kill();
-            foreach (Action<ProceduralSpellProj> action in ai.Where(action => action != null))
+            foreach (Action<ProceduralSpellProj> action in Ai.Where(action => action != null))
                 action(this);
         }
 
@@ -70,9 +70,9 @@ namespace kRPG.GameObjects.Items.Projectiles
 
         public override ModProjectile Clone()
         {
-            ProceduralSpellProj copy = (ProceduralSpellProj) MemberwiseClone();
-            copy.ai = new List<Action<ProceduralSpellProj>>();
-            foreach (Action<ProceduralSpellProj> action in ai) copy.ai.Add(action);
+            ProceduralSpellProj copy = (ProceduralSpellProj)MemberwiseClone();
+            copy.Ai = new List<Action<ProceduralSpellProj>>();
+            foreach (Action<ProceduralSpellProj> action in Ai) copy.Ai.Add(action);
             copy.Impacts = new List<Action<ProceduralSpellProj, NPC, int>>();
             foreach (Action<ProceduralSpellProj, NPC, int> action in Impacts) copy.Impacts.Add(action);
             copy.Inits = new List<Action<ProceduralSpellProj>>();
@@ -84,7 +84,7 @@ namespace kRPG.GameObjects.Items.Projectiles
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            foreach (Action<ProceduralSpellProj, SpriteBatch, Color> action in draw.Where(action => action != null))
+            foreach (Action<ProceduralSpellProj, SpriteBatch, Color> action in SpellDraw.Where(action => action != null))
                 action(this, spriteBatch, color);
             if (LocalTexture == null)
             {
@@ -128,7 +128,8 @@ namespace kRPG.GameObjects.Items.Projectiles
             foreach (Action<ProceduralSpellProj> action in Kills.Where(action => action != null))
                 action(this);
             if (timeLeft > 0)
-                Main.PlaySound(SoundID.Dig, projectile.position);
+                //Main.PlaySound(SoundID.Dig, projectile.position);
+                SoundManager.PlaySound(Sounds.Dig, projectile.position);
         }
 
         // ReSharper disable once IdentifierTypo
@@ -142,7 +143,8 @@ namespace kRPG.GameObjects.Items.Projectiles
         {
             if (!Bounce)
                 return true;
-            Main.PlaySound(SoundID.Item10, projectile.position);
+            //Main.PlaySound(SoundID.Item10, projectile.position);
+            SoundManager.PlaySound(Sounds.LegacySoundStyle_Item10, projectile.position);
 
             if (Math.Abs(projectile.velocity.Y - velocity.Y) > .01)
                 projectile.velocity.Y = -velocity.Y;
@@ -161,7 +163,7 @@ namespace kRPG.GameObjects.Items.Projectiles
             int moonType = reader.ReadInt32();
             projectile.damage = reader.ReadInt32();
             bool minionCaster = reader.ReadBoolean();
-            Caster = minionCaster ? Main.projectile[reader.ReadInt32()] : (Entity) Main.player[reader.ReadInt32()];
+            Caster = minionCaster ? Main.projectile[reader.ReadInt32()] : (Entity)Main.player[reader.ReadInt32()];
             List<GlyphModifier> modifiers = new List<GlyphModifier>();
             int count = reader.ReadInt32();
             for (int i = 0; i < count; i += 1)
@@ -177,9 +179,9 @@ namespace kRPG.GameObjects.Items.Projectiles
 
             foreach (Item item in Source.Glyphs)
             {
-                Glyph glyph = (Glyph) item.modItem;
+                Glyph glyph = (Glyph)item.modItem;
                 if (glyph.GetAiAction() != null)
-                    ai.Add(glyph.GetAiAction());
+                    Ai.Add(glyph.GetAiAction());
                 if (glyph.GetInitAction() != null)
                     Inits.Add(glyph.GetInitAction());
                 if (glyph.GetImpactAction() != null)
@@ -193,7 +195,7 @@ namespace kRPG.GameObjects.Items.Projectiles
                 if (modifier.Impact != null)
                     Impacts.Add(modifier.Impact);
                 if (modifier.Draw != null)
-                    draw.Add(modifier.Draw);
+                    SpellDraw.Add(modifier.Draw);
                 if (modifier.Init != null)
                     Inits.Add(modifier.Init);
             }

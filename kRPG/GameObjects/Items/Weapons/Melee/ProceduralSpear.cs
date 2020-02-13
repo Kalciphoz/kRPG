@@ -95,9 +95,9 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         //public override void SendExtraAI(BinaryWriter writer)
         //{
-        //    writer.Write(blade.type);
-        //    writer.Write(hilt.type);
-        //    writer.Write(accent.type);
+        //    writer.Pack(blade.type);
+        //    writer.Pack(hilt.type);
+        //    writer.Pack(accent.type);
         //}
 
         //public override void ReceiveExtraAI(BinaryReader reader)
@@ -155,16 +155,16 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         }
 
         // ReSharper disable once IdentifierTypo
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
+        public override void ModifyDamageHitbox(ref Rectangle hitBox)
         {
             Player owner = Main.player[projectile.owner];
-            hitbox = new Rectangle((int) projectile.position.X - 2, (int) projectile.position.Y - 2, (int) (projectile.Right.X - projectile.Left.X) + 2,
+            hitBox = new Rectangle((int) projectile.position.X - 2, (int) projectile.position.Y - 2, (int) (projectile.Right.X - projectile.Left.X) + 2,
                 (int) (projectile.Bottom.Y - projectile.Top.Y + 2));
-            if (owner.direction < 0) hitbox.X += hitbox.Width / 2;
-            else hitbox.X -= hitbox.Width / 2;
+            if (owner.direction < 0) hitBox.X += hitBox.Width / 2;
+            else hitBox.X -= hitBox.Width / 2;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, int damage, float knockBack, bool crit)
         {
             try
             {
@@ -174,7 +174,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             catch (SystemException e)
             {
                 Main.NewText(e.ToString());
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
             }
         }
 
@@ -195,7 +195,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             catch (SystemException e)
             {
                 Main.NewText(e.ToString());
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
             }
         }
 

@@ -33,10 +33,17 @@ namespace kRPG.GameObjects.Items.Projectiles
                 {
                     GetTarget();
                     if (Distance <= 480f && Attack)
-                        if (this is ProceduralMinion)
+                    {
+                        if (GetType() == typeof(ProceduralMinion))
+                        {
                             Source.CastSpell(Main.player[projectile.owner], projectile.Center, Target.Center, projectile);
+                        }
+                        //if (this is ProceduralMinion)
+                        //Source.CastSpell(Main.player[projectile.owner], projectile.Center, Target.Center, projectile);
+                    }
+
                 }
-                else if (this is ProceduralMinion)
+                else if (GetType() == typeof(ProceduralMinion))
                 {
                     Source.CastSpell(Main.player[projectile.owner], projectile.Center, projectile.Center, projectile);
                 }

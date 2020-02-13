@@ -1,28 +1,26 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using kRPG.Enums;
 using kRPG.GameObjects.GUI.Base;
 using kRPG.GameObjects.Items.Glyphs;
 using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.Players;
+using kRPG.GameObjects.SFX;
 using kRPG.GameObjects.Spells;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Star = kRPG.GameObjects.Items.Glyphs.Star;
 
 namespace kRPG.GameObjects.GUI
 {
-    public class SpellcraftingGUI : BaseGui
+    public class SpellCraftingGui : BaseGui
     {
         public GlyphSlot[] glyphs = new GlyphSlot[3];
 
         private readonly Func<Vector2> guiPosition;
 
-        public SpellcraftingGUI(Mod mod)
+        public SpellCraftingGui()
         {
             guiPosition = () => new Vector2(Main.screenWidth / 2f - 100f * Scale, 192f * Scale);
 
@@ -36,7 +34,7 @@ namespace kRPG.GameObjects.GUI
             // GuiElements.Add(this);
         }
 
-        private float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
+        private static float Scale => Math.Min(1f, Main.screenWidth / Constants.MaxScreenWidth + 0.4f);
 
         public override void OnClose()
         {
@@ -50,16 +48,13 @@ namespace kRPG.GameObjects.GUI
             foreach (GlyphSlot slot in glyphs)
                 slot.Draw(spriteBatch);
 
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Place glyphs in all three slots to create a spell",
-                new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 200f * Scale), Color.White, Scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Press a key while holding shift to bind it as a hotkey",
-                new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 224f * Scale), Color.White, Scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Place glyphs in all three slots to create a spell", new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 200f * Scale), Color.White, Scale);
+            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Press a key while holding shift to bind it as a hotkey", new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 224f * Scale), Color.White, Scale);
 
             Vector2 buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
             spriteBatch.Draw(GFX.GFX.ButtonClose, buttonPosition, Color.White, Scale);
 
-            if (!(Main.mouseX >= buttonPosition.X) || !(Main.mouseY >= buttonPosition.Y) ||
-                !(Main.mouseX <= buttonPosition.X + (int) (GFX.GFX.ButtonConfirm.Width * Scale)) ||
+            if (!(Main.mouseX >= buttonPosition.X) || !(Main.mouseY >= buttonPosition.Y) || !(Main.mouseX <= buttonPosition.X + (int) (GFX.GFX.ButtonConfirm.Width * Scale)) ||
                 !(Main.mouseY <= buttonPosition.Y + (int) (GFX.GFX.ButtonConfirm.Height * Scale)))
                 return;
 
@@ -68,7 +63,8 @@ namespace kRPG.GameObjects.GUI
             if (!Main.mouseLeft || !Main.mouseLeftRelease)
                 return;
 
-            Main.PlaySound(SoundID.MenuTick);
+            //Main.PlaySound(SoundID.MenuTick);
+            SoundManager.PlaySound(Sounds.MenuTick);
 
             CloseGui();
         }
@@ -108,8 +104,7 @@ namespace kRPG.GameObjects.GUI
             if (!CanPlaceItem(Main.mouseItem))
                 return false;
 
-            foreach (ProceduralMinion minion in character.Minions.Where(minion =>
-                minion.Source == character.SelectedAbility && minion.projectile.modProjectile is ProceduralMinion))
+            foreach (ProceduralMinion minion in character.Minions.Where(minion => minion.Source == character.SelectedAbility && minion.projectile.modProjectile is ProceduralMinion))
             {
                 foreach (ProceduralSpellProj psp in minion.CirclingProtection)
                     psp.projectile.Kill();
@@ -121,7 +116,9 @@ namespace kRPG.GameObjects.GUI
             Item prevItem = Glyph;
             Glyph = Main.mouseItem;
             Main.mouseItem = prevItem;
-            Main.PlaySound(SoundID.Item4, Main.screenPosition + Bounds.Center());
+            //Main.PlaySound(SoundID.Item4, Main.screenPosition + Bounds.Center());
+
+            SoundManager.PlaySound(Sounds.LegacySoundStyle_Item4, Main.screenPosition + Bounds.Center());
 
             return true;
         }

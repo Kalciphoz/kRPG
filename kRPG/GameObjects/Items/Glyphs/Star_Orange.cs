@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
+using kRPG.Enums;
 using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.NPCs;
 using kRPG.GameObjects.Players;
+using kRPG.GameObjects.SFX;
 using kRPG.GameObjects.Spells;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Items.Glyphs
@@ -27,7 +28,10 @@ namespace kRPG.GameObjects.Items.Glyphs
         {
             return delegate(ProceduralSpell spell, Player player, Vector2 target)
             {
-                Main.PlaySound(SoundID.Item6, player.position);
+                //Main.PlaySound(SoundID.Item6, player.position);
+                SoundManager.PlaySound(Sounds.LegacySoundStyle_Item6,player.position);
+
+                SoundManager.PlaySound(Sounds.MenuClose);
                 spell.Remaining = spell.Cooldown;
                 PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
                 if (character.Minions.Exists(minion => minion is WingedEyeball))

@@ -12,14 +12,14 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 {
     public class SwordBlade
     {
-        private static Dictionary<SwordTheme, List<SwordBlade>> bladeByTheme;
+        private static Dictionary<SwordTheme, List<SwordBlade>> BladeByTheme { get; set; }
 
         public SwordBlade(string texture, int originX, int originY, string name, int useTime, float knockBack, float dpsModifier = 1f, int critBonus = 0,
             bool autoSwing = false, float scale = 0f, bool spearable = true, bool lighted = false, Action<Rectangle, Player> effect = null)
         {
             Type = Blades.Count() + 1;
             if (Main.netMode != 2)
-                Texture = ModLoader.GetMod("kRPG").GetTexture("GameObjects/GFX/Items/Blades/" + texture);
+                Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Blades/" + texture);
             Origin = new Vector2(originX, originY);
             Name = name;
             UseTime = useTime;
@@ -75,13 +75,13 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         public Vector2 Origin { get; set; }
         public static SwordBlade PhaseSword { get; set; }
         public static SwordBlade RunicDaiKatana { get; set; }
-        public static SwordBlade RunicswordViolet { get; set; }
+        public static SwordBlade RunicSwordViolet { get; set; }
         public float Scale { get; set; }
         public static SwordBlade Scimitar { get; set; }
         public static SwordBlade SlimeBlue { get; set; }
         public static SwordBlade SlimeGreen { get; set; }
         public static SwordBlade SlumTwirl { get; set; }
-        public bool Spearable { get; set; } = true;
+        public bool Spearable { get; set; }
         public static SwordBlade StoneSword { get; set; }
         public static SwordBlade Terra { get; set; }
         public Texture2D Texture { get; set; }
@@ -93,7 +93,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         public static void Initialize()
         {
             Blades = new Dictionary<int, SwordBlade>();
-            bladeByTheme = new Dictionary<SwordTheme, List<SwordBlade>>();
+            BladeByTheme = new Dictionary<SwordTheme, List<SwordBlade>>();
 
             SlimeBlue = new SwordBlade("BlueSlimeBlade", 1, 10, "Slime Sword", 28, 7f, 1.05f, -3, false, 0.05f, false);
             SlimeGreen = new SwordBlade("GreenSlimeBlade", 1, 10, "Slime Sword", 30, 7f, 1.03f, -3, false, 0f, false);
@@ -123,7 +123,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 {Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0.2f}
             });
             WizardSword = new SwordBlade("WizardSword", 2, 18, "Wizard Sword", 19, 1f, 1.15f, 0, true, 0f, true, true);
-            RunicswordViolet = new SwordBlade("VioletRunicSword", 2, 13, "Sword", 28, 5f, 1f, 0, false, 0.1f, true, true);
+            RunicSwordViolet = new SwordBlade("VioletRunicSword", 2, 13, "Sword", 28, 5f, 1f, 0, false, 0.1f, true, true);
             RunicDaiKatana = new SwordBlade("RunicDaiKatana", 2, 17, "Dai-Katana", 33, 4f, 0.95f, 5, true, 0f, true, true);
             BlazeSword = new SwordBlade("BlazeSword", 4, 14, "Lantern", 26, 3f, 1.05f, 0, false, 0f, true, true, delegate(Rectangle rect, Player player)
             {
@@ -168,7 +168,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 new Dictionary<Element, float> {{Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0.4f}, {Element.Shadow, 0f}});
             Terra = new SwordBlade("ElementalNeedle", 2, 21, "Elemental Needle", 15, 5f, 1.1f);
 
-            bladeByTheme = new Dictionary<SwordTheme, List<SwordBlade>>
+            BladeByTheme = new Dictionary<SwordTheme, List<SwordBlade>>
             {
                 {
                     SwordTheme.Generic, new List<SwordBlade>
@@ -199,7 +199,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                     SwordTheme.Runic, new List<SwordBlade>
                     {
                         WizardSword,
-                        RunicswordViolet,
+                        RunicSwordViolet,
                         RunicDaiKatana,
                         FieldGlaive,
                         BlazeSword
@@ -233,7 +233,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public static SwordBlade RandomBlade(SwordTheme theme)
         {
-            return bladeByTheme[theme].Random();
+            return BladeByTheme[theme].Random();
         }
 
         public SwordBlade SetEleDamage(Dictionary<Element, float> eleDamage)

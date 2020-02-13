@@ -7,27 +7,33 @@ using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Items.Procedural
 {
-    public class ProceduralItem : ModItem
+    public class ProceduralItem : ModItem, IProcedural
     {
         public float Dps { get; set; }
         public int EnemyDef { get; set; }
-        public Texture2D texture { get; set; }
+        public Texture2D LocalTexture { get; set; }
 
         public override bool CanPickup(Player player)
         {
-            if (Main.netMode == 0) return true;
+            if (Main.netMode == 0)
+                return true;
             return item.value > 100;
         }
 
         public override ModItem Clone(Item tItem)
         {
             ProceduralItem copy = (ProceduralItem) base.Clone(tItem);
-            copy.texture = texture;
+            copy.LocalTexture = LocalTexture;
             return copy;
         }
 
         public virtual void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
+        }
+
+        public virtual void ResetStats()
+        {
+
         }
 
         public virtual void Initialize()
@@ -42,16 +48,19 @@ namespace kRPG.GameObjects.Items.Procedural
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin,
             float scale)
         {
-            if (Main.netMode == 2 || texture == null) return false;
-            if (Main.itemTexture[item.type] == null) Main.itemTexture[item.type] = texture;
-            float s = scale * Main.itemTexture[item.type].Height / texture.Height;
+            if (Main.netMode == 2 || LocalTexture == null) 
+                return false;
+            if (Main.itemTexture[item.type] == null) 
+                Main.itemTexture[item.type] = LocalTexture;
+            float s = scale * Main.itemTexture[item.type].Height / LocalTexture.Height;
             Draw(spriteBatch, position, drawColor, 0f, s);
             return false;
         }
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            if (Main.netMode == 2 || texture == null) return false;
+            if (Main.netMode == 2 || LocalTexture == null) 
+                return false;
             Draw(spriteBatch, item.position - Main.screenPosition, lightColor, rotation, scale);
             return false;
         }
@@ -68,5 +77,6 @@ namespace kRPG.GameObjects.Items.Procedural
         {
             DisplayName.SetDefault("Procedurally Generated Item; Please Ignore");
         }
+        
     }
 }

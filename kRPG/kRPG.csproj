@@ -8,7 +8,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <LangVersion>latest</LangVersion>
     <Platforms>AnyCPU;x64;x86</Platforms>
-    <Version>2.0.1</Version>
+    <Version>2.0.4</Version>
   </PropertyGroup>
   <Target Name="BuildMod" AfterTargets="Build">
     <Exec Command="&quot;$(tMLBuildServerPath)&quot; -build $(ProjectDir) -eac $(TargetPath) -define $(DefineConstants) -unsafe $(AllowUnsafeBlocks)" />
@@ -535,17 +535,5 @@
     <Content Include="GameObjects\Items\Weapons\Melee\ProceduralSwordThrow.png" />
     <Content Include="GameObjects\Items\Projectiles\SmokePellets.png" />
     <Content Include="GameObjects\NPCs\WingedEyeball.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="Telerik.WinControls">
-      <HintPath>..\lib\RCWF\2019.3.1022.40\Telerik.WinControls.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.WinControls.UI">
-      <HintPath>..\lib\RCWF\2019.3.1022.40\Telerik.WinControls.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="TelerikCommon">
-      <HintPath>..\lib\RCWF\2019.3.1022.40\TelerikCommon.dll</HintPath>
-    </Reference>
   </ItemGroup>
 </Project>

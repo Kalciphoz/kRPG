@@ -29,7 +29,7 @@ namespace kRPG.GameObjects.Items.Glyphs
                 }
                 catch (SystemException e)
                 {
-                    ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                    ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
                 }
             };
         }
@@ -41,8 +41,17 @@ namespace kRPG.GameObjects.Items.Glyphs
                 try
                 {
                     spell.LocalTexture = GFX.GFX.ProjectileFireball;
-                    spell.projectile.width = spell.LocalTexture.Width;
-                    spell.projectile.height = spell.LocalTexture.Height;
+                    if (spell.LocalTexture == null)
+                    {
+                        ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("GetInitAction, spell.localtexture = null.");
+                        spell.projectile.width = 48;
+                        spell.projectile.height = 48;
+                    }
+                    else
+                    {
+                        spell.projectile.width = spell.LocalTexture.Width;
+                        spell.projectile.height = spell.LocalTexture.Height;
+                    }
                     spell.projectile.magic = true;
                     spell.DrawTrail = true;
                     spell.Lighted = true;
@@ -50,7 +59,7 @@ namespace kRPG.GameObjects.Items.Glyphs
                 }
                 catch (SystemException e)
                 {
-                    ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                    ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
                 }
             };
         }
@@ -67,7 +76,7 @@ namespace kRPG.GameObjects.Items.Glyphs
                 }
                 catch (SystemException e)
                 {
-                    ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                    ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
                 }
             };
         }

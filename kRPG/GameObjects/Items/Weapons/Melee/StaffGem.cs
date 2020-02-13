@@ -22,7 +22,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         {
             Type = Gems.Count + 1;
             if (Main.netMode != 2)
-                Texture = ModLoader.GetMod("kRPG").GetTexture("GameObjects/GFX/Items/Gemstones/" + texture);
+                Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Gemstones/" + texture);
             Origin = new Vector2(originX, originY);
             DpsModifier = dpsModifier;
             SpeedModifier = speedModifier;
@@ -81,7 +81,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                     ProceduralSpellProj ps = (ProceduralSpellProj) projectile.modProjectile;
                     ps.Origin = projectile.position;
                     if (cross.GetAiAction() != null)
-                        ps.ai.Add(cross.GetAiAction());
+                        ps.Ai.Add(cross.GetAiAction());
                     if (cross.GetInitAction() != null)
                         ps.Inits.Add(cross.GetInitAction());
                     if (cross.GetImpactAction() != null)

@@ -52,8 +52,8 @@ namespace kRPG.GameObjects.Buffs
         public override void Update(Player player, ref int buffIndex)
         {
             player.GetModPlayer<PlayerCharacter>().HasAilment[Element.Cold] = true;
-            if (player.velocity.X > player.maxRunSpeed * 6 / 10)
-                player.velocity.X = player.maxRunSpeed * 6 / 10;
+            if (player.velocity.X > player.maxRunSpeed * .6)
+                player.velocity.X = player.maxRunSpeed * .6f;
         }
     }
 }

@@ -4,11 +4,11 @@ using System.Linq;
 using kRPG.Enums;
 using kRPG.GameObjects.GUI.Base;
 using kRPG.GameObjects.Players;
+using kRPG.GameObjects.SFX;
 using kRPG.GameObjects.Stats;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.GUI
@@ -26,9 +26,9 @@ namespace kRPG.GameObjects.GUI
 
             statFlame = new Dictionary<PlayerStats, StatFlame>
             {
-                [PlayerStats.Resilience] = new StatFlame(mod, this, PlayerStats.Resilience, () => Position[PlayerStats.Resilience], GFX.GFX.Flames[PlayerStats.Resilience]),
-                [PlayerStats.Quickness] = new StatFlame(mod, this, PlayerStats.Quickness, () => Position[PlayerStats.Quickness], GFX.GFX.Flames[PlayerStats.Quickness]),
-                [PlayerStats.Potency] = new StatFlame(mod, this, PlayerStats.Potency, () => Position[PlayerStats.Potency], GFX.GFX.Flames[PlayerStats.Potency])
+                [PlayerStats.Resilience] = new StatFlame( this, PlayerStats.Resilience, () => Position[PlayerStats.Resilience], GFX.GFX.Flames[PlayerStats.Resilience]),
+                [PlayerStats.Quickness] = new StatFlame( this, PlayerStats.Quickness, () => Position[PlayerStats.Quickness], GFX.GFX.Flames[PlayerStats.Quickness]),
+                [PlayerStats.Potency] = new StatFlame( this, PlayerStats.Potency, () => Position[PlayerStats.Potency], GFX.GFX.Flames[PlayerStats.Potency])
             };
         }
 
@@ -68,7 +68,8 @@ namespace kRPG.GameObjects.GUI
                 Main.LocalPlayer.mouseInterface = true;
                 if (Main.mouseLeft && Main.mouseLeftRelease)
                 {
-                    Main.PlaySound(SoundID.MenuTick);
+                    //Main.PlaySound(SoundID.MenuTick);
+                    SoundManager.PlaySound(Sounds.MenuTick);
                     CloseGui();
                     return;
                 }
@@ -91,7 +92,8 @@ namespace kRPG.GameObjects.GUI
                 if (Main.mouseLeft && Main.mouseLeftRelease)
                     try
                     {
-                        Main.PlaySound(SoundID.MenuTick);
+                        //Main.PlaySound(SoundID.MenuTick);
+                        SoundManager.PlaySound(Sounds.MenuTick);
                         foreach (PlayerStats s in allocated.Keys)
                             character.BaseStats[s] += allocated[s];
                         foreach (PlayerStats stat in Enum.GetValues(typeof(PlayerStats)))
@@ -111,7 +113,8 @@ namespace kRPG.GameObjects.GUI
             foreach (PlayerStats s in statFlame.Keys.Where(s => statFlame[s].CheckHover()))
                 hoverStat = s;
 
-            if (hoverStat != null) spriteBatch.Draw(GFX.GFX.DeerSkullEyes[hoverStat.Value], GuiPosition, Color.White, Scale);
+            if (hoverStat != null) 
+                spriteBatch.Draw(GFX.GFX.DeerSkullEyes[hoverStat.Value], GuiPosition, Color.White, Scale);
         }
     }
 }

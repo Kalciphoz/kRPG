@@ -4,10 +4,10 @@ using kRPG.Enums;
 using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.NPCs;
 using kRPG.GameObjects.Players;
+using kRPG.GameObjects.SFX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Items.Weapons.Melee
@@ -20,7 +20,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             Type = Ornament.Count;
             if (Main.netMode != 2)
                 if (texture != null)
-                    Texture = ModLoader.GetMod("kRPG").GetTexture("GameObjects/GFX/Items/Ornaments/" + texture);
+                    Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Ornaments/" + texture);
             Origin = new Vector2(originX, originY);
             DpsModifier = dpsModifier;
             SpeedModifier = speedModifier;
@@ -101,7 +101,8 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             Explosive = new StaffOrnament("Explosive", 6, 4, " of Blasting", false, 1.2f, 0.9f, 0.9f).SetEffect(
                 delegate(Player player, NPC npc, Item item, int damage, bool crit)
                 {
-                    Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
+                    SoundManager.PlaySound(Sounds.LegacySoundStyle_Item14, player.Center, .5f);
+                    //Main.PlaySound(new LegacySoundStyle(2, 14).WithVolume(0.5f), player.Center);
                     Projectile proj = Main.projectile[
                         Projectile.NewProjectile(npc.Center - new Vector2(16, 32), Vector2.Zero, ModContent.ProjectileType<Explosion>(), damage / 2, 0f,
                             player.whoAmI)];

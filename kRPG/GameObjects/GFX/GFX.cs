@@ -154,7 +154,7 @@ namespace kRPG.GameObjects.GFX
 
         public static void LoadGfx()
         {
-            Mod loader = ModLoader.GetMod("kRPG");
+            Mod loader = ModLoader.GetMod(Constants.ModName);
 
             ButtonConfirm = loader.GetTexture(BUTTON_CONFIRM);
             ButtonUpgrade = loader.GetTexture(BUTTON_UPGRADE);

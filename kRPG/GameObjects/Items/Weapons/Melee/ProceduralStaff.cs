@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using kRPG.Enums;
 using kRPG.GameObjects.Items.Procedural;
+using kRPG.Packets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -13,7 +14,7 @@ using Terraria.ModLoader.IO;
 
 namespace kRPG.GameObjects.Items.Weapons.Melee
 {
-    public class ProceduralStaff : ProceduralItem
+    public class ProceduralStaff : ProceduralItem, IProcedural
     {
         /*public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -32,7 +33,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public override ModItem Clone(Item tItem)
         {
-            ProceduralStaff copy = (ProceduralStaff) base.Clone(tItem);
+            ProceduralStaff copy = (ProceduralStaff)base.Clone(tItem);
             copy.Staff = Staff;
             copy.Gem = Gem;
             copy.Ornament = Ornament;
@@ -48,31 +49,34 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         public Point CombinedTextureSize()
         {
             if (Ornament.Type == 0)
-                return new Point(Gem.Texture.Width - (int) Gem.Origin.X + (int) Staff.Origin.X,
-                    (int) Gem.Origin.Y + Staff.Texture.Height - (int) Staff.Origin.Y);
+                return new Point(Gem.Texture.Width - (int)Gem.Origin.X + (int)Staff.Origin.X,
+                    (int)Gem.Origin.Y + Staff.Texture.Height - (int)Staff.Origin.Y);
             return Ornament.Origin.Y > Gem.Origin.Y
-                ? new Point(Ornament.Texture.Width - (int) Ornament.Origin.X + (int) Staff.Origin.X,
-                    (int) Ornament.Origin.Y + Staff.Texture.Height - (int) Staff.Origin.Y)
-                : new Point(Gem.Texture.Width - (int) Gem.Origin.X + (int) Staff.Origin.X, (int) Gem.Origin.Y + Staff.Texture.Height - (int) Staff.Origin.Y);
+                ? new Point(Ornament.Texture.Width - (int)Ornament.Origin.X + (int)Staff.Origin.X,
+                    (int)Ornament.Origin.Y + Staff.Texture.Height - (int)Staff.Origin.Y)
+                : new Point(Gem.Texture.Width - (int)Gem.Origin.X + (int)Staff.Origin.X, (int)Gem.Origin.Y + Staff.Texture.Height - (int)Staff.Origin.Y);
         }
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            if (texture == null)
+            if (LocalTexture == null)
                 item.SetDefaults(0, true);
-            spriteBatch.Draw(texture, position, null, color, rotation, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(LocalTexture, position, null, color, rotation, Vector2.Zero, scale, SpriteEffects.None, 0f);
         }
 
-        public void DrawHeld(PlayerDrawInfo drawinfo, Color color, float rotation, float scale, Vector2 playerCenter)
+        public void DrawHeld(PlayerDrawInfo drawInfo, Color color, float rotation, float scale, Vector2 playerCenter)
         {
             try
             {
                 Player player = Main.player[Main.myPlayer];
                 Vector2 position = new Vector2(4f * player.direction, -4f).RotatedBy(rotation) + playerCenter;
-                if (texture == null)
+                if (LocalTexture == null)
                     item.SetDefaults(0, true);
                 SpriteEffects effects = player.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-                DrawData draw = new DrawData(texture, position, null, color, rotation, new Vector2(player.direction > 0 ? 0 : texture.Width, texture.Height),
+                if (LocalTexture == null)
+                    return;
+
+                DrawData draw = new DrawData(LocalTexture, position, null, color, rotation, new Vector2(player.direction > 0 ? 0 : LocalTexture.Width, LocalTexture.Height),
                     scale, effects, 0);
                 for (int i = 0; i < Main.playerDrawData.Count; i += 1)
                 {
@@ -86,39 +90,28 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
             }
         }
 
-        public static ProceduralStaff DropStaff(Mod mod, Vector2 position, Staff staffstaff, StaffGem staffgem, StaffOrnament staffornament, float dps,
+        public static ProceduralStaff DropStaff(Mod mod, Vector2 position, Staff staffStaff, StaffGem staffGem, StaffOrnament staffOrnament, float dps,
             int enemyDef)
         {
             int id = Item.NewItem(position, mod.GetItem("ProceduralStaff").item.type);
-            ProceduralStaff staff = (ProceduralStaff) Main.item[id].modItem;
-            staff.Staff = staffstaff;
-            staff.Gem = staffgem;
-            staff.Ornament = staffornament;
+            ProceduralStaff staff = (ProceduralStaff)Main.item[id].modItem;
+            staff.Staff = staffStaff;
+            staff.Gem = staffGem;
+            staff.Ornament = staffOrnament;
             staff.Dps = dps;
             staff.EnemyDef = enemyDef;
             staff.Initialize();
-            if (Main.netMode != 2)
-                return staff;
-            ModPacket packet = mod.GetPacket();
-            packet.Write((byte) Message.StaffInit);
-            packet.Write(id);
-            packet.Write(staffstaff.Type);
-            packet.Write(staffgem.Type);
-            packet.Write(staffornament.Type);
-            packet.Write(dps);
-            packet.Write(enemyDef);
-            packet.Send();
+            StaffInitPacket.Write(id, staffStaff.Type, staffGem.Type, staffOrnament.Type, dps, enemyDef);
             return staff;
         }
 
         public static Item GenerateStaff(Mod mod, Vector2 position, StaffTheme theme, float dps, int enemyDef)
         {
-            ProceduralStaff staff;
-            staff = DropStaff(mod, position, Staff.RandomStaff(theme), StaffGem.RandomGem(theme),
+            ProceduralStaff staff = DropStaff(mod, position, Staff.RandomStaff(theme), StaffGem.RandomGem(theme),
                 Main.rand.Next(3) < 2 ? StaffOrnament.RandomOrnament(theme) : StaffOrnament.None, dps, enemyDef);
             return staff.item;
         }
@@ -133,7 +126,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             if (Staff.Front || Gem.Back) parts.Add(Staff);
             if (Ornament.Front) parts.Add(Ornament);
             if (Main.netMode != 2)
-                texture = GFX.GFX.CombineTextures(new List<Texture2D> {parts[0].Texture, parts[1].Texture, parts[2].Texture},
+                LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> { parts[0].Texture, parts[1].Texture, parts[2].Texture },
                     new List<Point>
                     {
                         parts[0].GetDrawOrigin(new Point(Staff.Texture.Width, Staff.Texture.Height), new Point((int) Staff.Origin.X, (int) Staff.Origin.Y),
@@ -143,8 +136,8 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                         parts[2].GetDrawOrigin(new Point(Staff.Texture.Width, Staff.Texture.Height), new Point((int) Staff.Origin.X, (int) Staff.Origin.Y),
                             CombinedTextureSize())
                     }, CombinedTextureSize());
-            if (Main.netMode != 2) item.width = texture.Width;
-            if (Main.netMode != 2) item.height = texture.Height;
+            if (Main.netMode != 2) item.width = LocalTexture.Width;
+            if (Main.netMode != 2) item.height = LocalTexture.Height;
             item.shoot = Gem.Shoot;
             item.shootSpeed = Staff.ShootSpeed;
             item.GetGlobalItem<kItem>().ApplyStats(item, true);
@@ -162,7 +155,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Loading :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@Loading :: " + e);
             }
 
             try
@@ -171,13 +164,13 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@Initialize :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@Initialize :: " + e);
             }
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int) Math.Round(Dps / 2.4f)));
+            tooltips.Insert(1, new TooltipLine(mod, "power", "Power level: " + (int)Math.Round(Dps / 2.4f)));
         }
 
         public override void NetRecieve(BinaryReader reader)
@@ -203,38 +196,43 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             writer.Write(EnemyDef);
         }
 
-        public Texture2D OverhaulGetTexture()
-        {
-            return texture;
-        }
+        //public Texture2D OverhaulGetTexture()
+        //{
+        //    return LocalTexture;
+        //}
 
-        public bool? OverhaulHasTag(string tag)
-        {
-            return tag == "magicWeapon" ? (bool?) true : null;
-        }
+        //public bool? OverhaulHasTag(string tag)
+        //{
+        //    return tag == "magicWeapon" ? (bool?) true : null;
+        //}
 
-        public void ResetStats()
+        public override void ResetStats()
         {
             try
             {
-                item.rare = (int) Math.Min(Math.Floor(Dps / 18.0), 9);
-                item.useTime = (int) (Staff.UseTime / Gem.SpeedModifier / Ornament.SpeedModifier);
-                item.damage = (int) Math.Round(Dps * Gem.DpsModifier * Ornament.DpsModifier * item.useTime / 60f + EnemyDef);
-                item.useTime = (int) Math.Round((item.damage - (float) EnemyDef) * 60f / (Dps * Gem.DpsModifier * Ornament.DpsModifier));
-                item.useAnimation = item.useTime * Staff.Iterations * (1 + Ornament.Repetitions) - 2;
-                item.knockBack = Staff.KnockBack + Gem.KnockBack + Ornament.KnockBack;
-                item.SetNameOverride(Staff.Prefix + Gem.Name + Ornament.Suffix);
-                item.autoReuse = true;
-                item.value = (int) (Dps * 315);
-                item.crit = Staff.CritBonus + Gem.CritBonus + Ornament.CritBonus;
-                item.mana = (int) Math.Round(item.damage * Ornament.Mana * Staff.Mana * Gem.Mana / 5);
                 EleDamage = new Dictionary<Element, float>();
-                foreach (Element element in Enum.GetValues(typeof(Element)))
-                    EleDamage[element] = Staff.EleDamage[element] + Gem.eleDamage[element] + Ornament.EleDamage[element];
+                item.rare = (int)Math.Min(Math.Floor(Dps / 18.0), 9);
+                if (Staff != null)
+                {
+                    item.useTime = (int)(Staff.UseTime / Gem.SpeedModifier / Ornament.SpeedModifier);
+                    item.useAnimation = item.useTime * Staff.Iterations * (1 + Ornament.Repetitions) - 2;
+                    item.knockBack = Staff.KnockBack + Gem.KnockBack + Ornament.KnockBack;
+                    item.SetNameOverride(Staff.Prefix + Gem.Name + Ornament.Suffix);
+                    item.crit = Staff.CritBonus + Gem.CritBonus + Ornament.CritBonus;
+                    item.mana = (int)Math.Round(item.damage * Ornament.Mana * Staff.Mana * Gem.Mana / 5);
+                    item.useAnimation = item.useTime * 1 * (1 + Ornament.Repetitions) - 2;
+                    item.crit = (int)Math.Round(Dps * Gem.DpsModifier * Ornament.DpsModifier * item.useTime / 60f + EnemyDef);
+                    item.damage = (int)Math.Round(Dps * Gem.DpsModifier * Ornament.DpsModifier * item.useTime / 60f + EnemyDef);
+                    item.useTime = (int)Math.Round((item.damage - (float)EnemyDef) * 60f / (Dps * Gem.DpsModifier * Ornament.DpsModifier));
+                    item.autoReuse = true;
+                    item.value = (int)(Dps * 315);
+                    foreach (Element element in Enum.GetValues(typeof(Element)))
+                        EleDamage[element] = Staff.EleDamage[element] + Gem.eleDamage[element] + Ornament.EleDamage[element];
+                }
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                kRPG.LogMessage("Error Reseting Stats. " + e.ToString());
             }
         }
 
@@ -253,7 +251,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat("@NewTagCompound :: " + e);
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat("@NewTagCompound :: " + e);
             }
 
             return new TagCompound();
@@ -300,7 +298,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             }
             catch (SystemException e)
             {
-                ModLoader.GetMod("kRPG").Logger.InfoFormat(e.ToString());
+                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
             }
 
             return false;
