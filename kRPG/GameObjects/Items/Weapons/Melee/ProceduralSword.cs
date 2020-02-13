@@ -7,6 +7,7 @@ using kRPG.GameObjects.Items.Projectiles.Base;
 using kRPG.Packets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Steamworks;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -104,8 +105,8 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         public static Item GenerateSword(Mod mod, Vector2 position, SwordTheme theme, float dps, int enemyDef)
         {
             ProceduralSword sword = NewSword(mod, position,
-                SwordHilt.RandomHilt(theme), 
-                SwordBlade.RandomBlade(theme), 
+                SwordHilt.RandomHilt(theme),
+                SwordBlade.RandomBlade(theme),
                 Main.rand.Next(5) < 3 ? SwordAccent.RandomAccent() : SwordAccent.None,
                 dps,
                 enemyDef);
@@ -126,8 +127,10 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                             new Point((int) Hilt.Origin.X + Hilt.AccentOffset.X - (int) Accent.Origin.X,
                                 Hilt.AccentOffset.Y + CombinedTextureSize().Y - Hilt.Texture.Height + (int) Hilt.Origin.Y - (int) Accent.Origin.Y)
                         }, CombinedTextureSize());
-                if (Main.netMode != 2) item.width = LocalTexture.Width;
-                if (Main.netMode != 2) item.height = LocalTexture.Height;
+                if (Main.netMode != 2)
+                    item.width = LocalTexture.Width;
+                if (Main.netMode != 2)
+                    item.height = LocalTexture.Height;
                 if (Accent.Type == SwordAccent.GemPurple.Type)
                 {
                     item.melee = false;
@@ -186,20 +189,35 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public override void NetRecieve(BinaryReader reader)
         {
-            if (!reader.ReadBoolean()) return;
-            Blade = SwordBlade.Blades[reader.ReadInt32()];
-            Hilt = SwordHilt.Hilts[reader.ReadInt32()];
-            Accent = SwordAccent.Accents[reader.ReadInt32()];
-            Dps = reader.ReadSingle();
-            EnemyDef = reader.ReadInt32();
+            bool proceed = reader.ReadBoolean();
+
+            if (!proceed)
+                return;
+
+            int blade = reader.ReadInt32();
+            int hilt = reader.ReadInt32();
+            int accent = reader.ReadInt32();
+            float dps = reader.ReadSingle();
+            int enemyDef = reader.ReadInt32();
+
+            Blade = SwordBlade.Blades[blade];
+            Hilt = SwordHilt.Hilts[hilt];
+            Accent = SwordAccent.Accents[accent];
+            Dps = dps;
+            EnemyDef = enemyDef;
             Initialize();
         }
 
         public override void NetSend(BinaryWriter writer)
         {
-            bool proceed = Blade != null;
+
+            bool proceed = ((Blade != null) && (Hilt != null));
+
             writer.Write(proceed);
-            if (!proceed) return;
+
+            if (!proceed)
+                return;
+
             writer.Write(Blade.Type);
             writer.Write(Hilt.Type);
             writer.Write(Accent.Type);
@@ -209,6 +227,15 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public static ProceduralSword NewSword(Mod mod, Vector2 position, SwordHilt hilt, SwordBlade blade, SwordAccent accent, float dps, int enemyDef)
         {
+            if (hilt == null)
+            {
+                kRPG.LogMessage("Ummm....  Why is the hilt null?");
+            }
+            if (blade==null)
+            {
+                kRPG.LogMessage("Ummm....  Why is the blade null?");
+            }
+
             int id = Item.NewItem(position, mod.GetItem("ProceduralSword").item.type);
             ProceduralSword sword = (ProceduralSword)Main.item[id].modItem;
             sword.Hilt = hilt;
@@ -246,20 +273,22 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
                 item.rare = (int)Math.Min(Math.Floor(Dps / 15.0), 9);
                 item.useAnimation = (int)(Blade.UseTime / Hilt.SpeedModifier);
-                item.damage = (int)Math.Round(Dps * Hilt.DpsModifier * Accent.DpsModifier * item.useAnimation / 60f + EnemyDef);
-                item.useAnimation = (int)Math.Round((item.damage - (float)EnemyDef) * 60f / (Dps * Hilt.DpsModifier * Accent.DpsModifier));
+                item.damage = (int)Math.Round(Dps * Hilt.DpsModifier * (Accent?.DpsModifier ?? 1) * item.useAnimation / 60f + EnemyDef);
+                item.useAnimation = (int)Math.Round((item.damage - (float)EnemyDef) * 60f / (Dps * Hilt.DpsModifier * (Accent?.DpsModifier ?? 1)));
                 item.useTime = item.useAnimation;
                 item.knockBack = Blade.KnockBack + Hilt.KnockBack;
-                item.SetNameOverride(Hilt.Prefix + Blade.Name + Accent.Suffix);
+                item.SetNameOverride(Hilt.Prefix + Blade.Name + (Accent?.Suffix ?? ""));
                 item.autoReuse = Hilt.AutoSwing || Blade.AutoSwing;
                 item.useTurn = item.autoReuse;
                 item.value = (int)(Dps * 315);
-                item.crit = Blade.CritBonus + Hilt.CritBonus + Accent.CritBonus;
+                item.crit = Blade.CritBonus + Hilt.CritBonus + (Accent?.CritBonus ?? 0);
                 item.scale = 1f + Blade.Scale + Hilt.Scale;
-                item.mana = Hilt.Mana + Accent.Mana;
+                item.mana = Hilt.Mana + (Accent?.Mana ?? 0);
                 EleDamage = new Dictionary<Element, float>();
                 foreach (Element element in Enum.GetValues(typeof(Element)))
-                    EleDamage[element] = Blade.EleDamage[element] + Accent.EleDamage[element];
+                {
+                    EleDamage[element] = Blade.EleDamage[element] + (Accent?.EleDamage[element] ?? 0);
+                }
             }
             catch (SystemException e)
             {
