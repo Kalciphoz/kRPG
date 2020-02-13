@@ -91,8 +91,8 @@ namespace kRPG.GameObjects.NPCs
 
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
-            foreach (NpcModifier t in Modifiers)
-                t.DrawEffects(npc, ref drawColor);
+            foreach (NpcModifier modifier in Modifiers)
+                modifier.DrawEffects(npc, ref drawColor);
 
             if (HasAilment[Element.Fire])
             {
@@ -217,8 +217,8 @@ namespace kRPG.GameObjects.NPCs
 
         public override void NPCLoot(NPC npc)
         {
-            foreach (NpcModifier t in Modifiers)
-                t.NpcLoot(npc);
+            foreach (NpcModifier npcModifier in Modifiers)
+                npcModifier.NpcLoot(npc);
 
             if (npc.lifeMax < 10) return;
             if (npc.friendly) return;
@@ -310,8 +310,8 @@ namespace kRPG.GameObjects.NPCs
 
         public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
         {
-            foreach (NpcModifier t in Modifiers)
-                t.OnHitByProjectile(npc, projectile, damage, knockback, crit);
+            foreach (NpcModifier npcModifier in Modifiers)
+                npcModifier.OnHitByProjectile(npc, projectile, damage, knockback, crit);
 
             if (!(projectile.modProjectile is ProceduralSpellProj))
                 return;
@@ -324,8 +324,8 @@ namespace kRPG.GameObjects.NPCs
 
         public override void PostAI(NPC npc)
         {
-            foreach (NpcModifier t in Modifiers)
-                t.PostAi(npc);
+            foreach (NpcModifier npcModifier in Modifiers)
+                npcModifier.PostAi(npc);
 
             List<ProceduralSpell> keys = new List<ProceduralSpell>(InvincibilityTime.Keys);
             foreach (ProceduralSpell spell in keys)
@@ -338,7 +338,8 @@ namespace kRPG.GameObjects.NPCs
                 return;
             }
 
-            if (npc.lifeMax < 10) return;
+            if (npc.lifeMax < 10)
+                return;
 
             InvincibilityTime = new Dictionary<ProceduralSpell, int>();
             Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
@@ -406,25 +407,25 @@ namespace kRPG.GameObjects.NPCs
             }
         }
 
-        public void RollDrops(NPC npc, int[] odds, int[][] droptables)
+        public void RollDrops(NPC npc, int[] odds, int[][] dropTables)
         {
             int sum = 0;
             for (int i = 0; i < odds.Length; i += 1)
             {
                 if (Main.rand.Next(1000 - sum) < odds[i])
-                    Item.NewItem(npc.position, droptables[i].Random());
+                    Item.NewItem(npc.position, dropTables[i].Random());
 
                 sum += odds[i];
             }
         }
 
-        public void RollDrops(NPC npc, int[] odds, int[][] droptables, int[] odds2, Action<NPC>[] drops2)
+        public void RollDrops(NPC npc, int[] odds, int[][] dropTables, int[] odds2, Action<NPC>[] drops2)
         {
             int sum = 0;
             for (int i = 0; i < odds.Length; i += 1)
             {
                 if (Main.rand.Next(1000 - sum) < odds[i])
-                    Item.NewItem(npc.position, droptables[i].Random());
+                    Item.NewItem(npc.position, dropTables[i].Random());
 
                 sum += odds[i];
             }
@@ -446,8 +447,8 @@ namespace kRPG.GameObjects.NPCs
 
             float dodgeChanceModifier = 1f;
 
-            foreach (NpcModifier t in Modifiers)
-                dodgeChanceModifier *= t.StrikeNpc(npc, damage, defense, knockback, hitDirection, crit);
+            foreach (NpcModifier npcModifier in Modifiers)
+                dodgeChanceModifier *= npcModifier.StrikeNpc(npc, damage, defense, knockback, hitDirection, crit);
 
             if (character.AccuracyCounter < 1 * dodgeChanceModifier && !character.Rituals[Ritual.WarriorOath])
             {

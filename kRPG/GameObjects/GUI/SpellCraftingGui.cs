@@ -9,7 +9,9 @@ using kRPG.GameObjects.SFX;
 using kRPG.GameObjects.Spells;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using On.Terraria.ID;
 using Terraria;
+using Terraria.ID;
 using Star = kRPG.GameObjects.Items.Glyphs.Star;
 
 namespace kRPG.GameObjects.GUI
@@ -43,30 +45,37 @@ namespace kRPG.GameObjects.GUI
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
-            spriteBatch.Draw(GFX.GFX.SpellGui, guiPosition(), null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+            try
+            {
+                spriteBatch.Draw(GFX.GFX.SpellGui, guiPosition(), null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
-            foreach (GlyphSlot slot in glyphs)
-                slot.Draw(spriteBatch);
+                foreach (GlyphSlot slot in glyphs)
+                    slot.Draw(spriteBatch);
 
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Place glyphs in all three slots to create a spell", new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 200f * Scale), Color.White, Scale);
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Press a key while holding shift to bind it as a hotkey", new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 224f * Scale), Color.White, Scale);
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Place glyphs in all three slots to create a spell", new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 200f * Scale), Color.White, Scale);
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Press a key while holding shift to bind it as a hotkey", new Vector2(Main.screenWidth / 2f - 176f * Scale, Main.screenHeight / 2f + 224f * Scale), Color.White, Scale);
 
-            Vector2 buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
-            spriteBatch.Draw(GFX.GFX.ButtonClose, buttonPosition, Color.White, Scale);
+                Vector2 buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
+                spriteBatch.Draw(GFX.GFX.ButtonClose, buttonPosition, Color.White, Scale);
 
-            if (!(Main.mouseX >= buttonPosition.X) || !(Main.mouseY >= buttonPosition.Y) || !(Main.mouseX <= buttonPosition.X + (int) (GFX.GFX.ButtonConfirm.Width * Scale)) ||
-                !(Main.mouseY <= buttonPosition.Y + (int) (GFX.GFX.ButtonConfirm.Height * Scale)))
-                return;
+                if (!(Main.mouseX >= buttonPosition.X) || !(Main.mouseY >= buttonPosition.Y) || !(Main.mouseX <= buttonPosition.X + (int) (GFX.GFX.ButtonConfirm.Width * Scale)) ||
+                    !(Main.mouseY <= buttonPosition.Y + (int) (GFX.GFX.ButtonConfirm.Height * Scale)))
+                    return;
 
-            Main.LocalPlayer.mouseInterface = true;
+                Main.LocalPlayer.mouseInterface = true;
 
-            if (!Main.mouseLeft || !Main.mouseLeftRelease)
-                return;
+                if (!Main.mouseLeft || !Main.mouseLeftRelease)
+                    return;
 
-            //Main.PlaySound(SoundID.MenuTick);
-            SoundManager.PlaySound(Sounds.MenuTick);
+                //Main.PlaySound(SoundID.MenuTick);
+                SoundManager.PlaySound(Sounds.MenuTick);
 
-            CloseGui();
+                CloseGui();
+            }
+            catch (Exception e)
+            {
+                kRPG.LogMessage("Spellcraftinggui PostDraw Error: " + e);
+            }
         }
 
         public override bool PreDraw()
@@ -139,7 +148,7 @@ namespace kRPG.GameObjects.GUI
                     break;
             }
 
-            return check || item.type == 0;
+            return check || item.type ==Terraria.ID.ItemID.None;
         }
 
         public void Draw(SpriteBatch spriteBatch)

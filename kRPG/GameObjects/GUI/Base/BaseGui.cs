@@ -55,6 +55,7 @@ namespace kRPG.GameObjects.GUI.Base
 
         public virtual void PostDraw(SpriteBatch spriteBatch, Player player)
         {
+
         }
 
         public virtual bool PreDraw()

@@ -23,6 +23,7 @@ using Terraria.UI;
 using Terraria.UI.Chat;
 using Terraria.UI.Gamepad;
 
+
 namespace kRPG
 {
     public static class API
@@ -33,6 +34,11 @@ namespace kRPG
         private const byte Silver = 1;
         private const byte Gold = 2;
         private const byte Platinum = 3;
+
+
+
+        
+
 
         public static double Tau => Math.PI * 2;
 
@@ -45,10 +51,10 @@ namespace kRPG
 
         public static void ApiCreate(this Recipe recipe)
         {
-            for (int i = 0; i < Recipe.maxRequirements; i++)
+            for (int requirementIndex = 0; requirementIndex < Recipe.maxRequirements; requirementIndex++)
             {
-                Item requiredItem = recipe.requiredItem[i];
-                if (requiredItem.type == 0)
+                Item requiredItem = recipe.requiredItem[requirementIndex];
+                if (requiredItem.type == ItemID.None)
                     break;
                 int requiredAmount = requiredItem.stack;
                 if (recipe is ModRecipe modRecipe)
@@ -165,7 +171,7 @@ namespace kRPG
         {
             LegacySoundStyle legacySoundStyle = null;
 
-            if (item.stack > 0 && item.type > 0 && item.buffType > 0 && !item.summon && item.buffType != 90)
+            if (item.stack > 0 && item.type > ItemID.None && item.buffType > 0 && !item.summon && item.buffType != 90)
             {
                 int num = item.buffType;
                 bool flag = ItemLoader.CanUseItem(item, player);
@@ -211,8 +217,9 @@ namespace kRPG
                     }
                 }
 
-                if (player.whoAmI == Main.myPlayer && item.type == 603 && !Main.cEd)
+                if (player.whoAmI == Main.myPlayer && item.type == ItemID.Carrot && !Main.cEd)
                     flag = false;
+
                 if (num == 27)
                 {
                     num = Main.rand.Next(3);
@@ -260,7 +267,7 @@ namespace kRPG
             Main.PlaySound(item.UseSound, player.position);
             if (item.potion)
             {
-                if (item.type == 227)
+                if (item.type == ItemID.RestorationPotion)
                 {
                     player.potionDelay = player.restorationDelayTime;
                     player.AddBuff(BuffID.PotionSickness, player.potionDelay);
@@ -299,7 +306,7 @@ namespace kRPG
             for (int i = 0; i < 58; i++)
             {
                 Item item = player.inventory[i];
-                if (item.stack <= 0 || item.type <= 0 || !item.potion || item.healLife <= 0 || !ItemLoader.CanUseItem(item, player))
+                if (item.stack <= 0 || item.type <= ItemID.None || !item.potion || item.healLife <= 0 || !ItemLoader.CanUseItem(item, player))
                     continue;
                 int num3 = item.healLife - num;
                 if (num2 < 0)
@@ -322,7 +329,7 @@ namespace kRPG
                     for (int j = 0; j < character.Inventories[i].Length; j += 1)
                     {
                         Item item = character.Inventories[i][j];
-                        if (item.stack <= 0 || item.type <= 0 || !item.potion || item.healLife <= 0 || !ItemLoader.CanUseItem(item, player))
+                        if (item.stack <= 0 || item.type <= ItemID.None || !item.potion || item.healLife <= 0 || !ItemLoader.CanUseItem(item, player))
                             continue;
                         int num3 = item.healLife - num;
                         if (num2 < 0)
@@ -360,12 +367,12 @@ namespace kRPG
 
         private static void APIQuickMana_TryItem(Player player, Item item)
         {
-            if (item.stack <= 0 || item.type <= 0 || item.healMana <= 0 || player.potionDelay != 0 && item.potion || !ItemLoader.CanUseItem(item, player))
+            if (item.stack <= 0 || item.type <= ItemID.None || item.healMana <= 0 || player.potionDelay != 0 && item.potion || !ItemLoader.CanUseItem(item, player))
                 return;
             Main.PlaySound(item.UseSound, player.position);
             if (item.potion)
             {
-                if (item.type == 227)
+                if (item.type == ItemID.RestorationPotion)
                 {
                     player.potionDelay = player.restorationDelayTime;
                     player.AddBuff(BuffID.PotionSickness, player.potionDelay);
@@ -440,16 +447,16 @@ namespace kRPG
             int[] coins = new int[4];
             switch (i.type)
             {
-                case 71:
+                case ItemID.CopperCoin:
                     coins[Copper] += i.stack;
                     break;
-                case 72:
+                case ItemID.SilverCoin:
                     coins[Silver] += i.stack * 100;
                     break;
-                case 73:
+                case ItemID.GoldCoin:
                     coins[Gold] += i.stack * 10000;
                     break;
-                case 74:
+                case ItemID.PlatinumCoin:
                     coins[Platinum] += i.stack * 1000000;
                     break;
             }
@@ -468,7 +475,7 @@ namespace kRPG
             Main.mouseItem.position.Y = Main.player[Main.myPlayer].position.Y + Main.player[Main.myPlayer].height / 2f - Main.mouseItem.height / 2f;
             ItemText.NewText(Main.mouseItem, r.createItem.stack);
             r.ApiCreate();
-            if (Main.mouseItem.type <= 0 && r.createItem.type <= 0)
+            if (Main.mouseItem.type <= ItemID.None && r.createItem.type <= 0)
                 return;
             RecipeHooks.OnCraft(Main.mouseItem, r);
             ItemLoader.OnCraft(Main.mouseItem, r);
@@ -507,7 +514,7 @@ namespace kRPG
             {
                 for (int j = 0; j < Recipe.maxRecipes; j++)
                 {
-                    if (Main.recipe[j].createItem.type == 0)
+                    if (Main.recipe[j].createItem.type == ItemID.None)
                         break;
                     int num3 = 0;
                     while (num3 < Recipe.maxRequirements && Main.recipe[j].requiredItem[num3].type != 0)
@@ -554,18 +561,18 @@ namespace kRPG
                 if (Main.player[Main.myPlayer].active)
                 {
                     PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
-                    for (int j = 0; j < character.Inventories.Length; j += 1)
-                        if (j != character.ActiveInvPage)
-                            foreach (Item i in character.Inventories[j])
-                                if (dictionary.ContainsKey(i.netID))
+                    for (int inventoryPage = 0; inventoryPage < character.Inventories.Length; inventoryPage += 1)
+                        if (inventoryPage != character.ActiveInvPage)
+                            foreach (Item inventorySlot in character.Inventories[inventoryPage])
+                                if (dictionary.ContainsKey(inventorySlot.netID))
                                 {
                                     Dictionary<int, int> dictionary2;
                                     int netId;
-                                    (dictionary2 = dictionary)[netId = i.netID] = dictionary2[netId] + i.stack;
+                                    (dictionary2 = dictionary)[netId = inventorySlot.netID] = dictionary2[netId] + inventorySlot.stack;
                                 }
                                 else
                                 {
-                                    dictionary[i.netID] = i.stack;
+                                    dictionary[inventorySlot.netID] = inventorySlot.stack;
                                 }
                 }
 
@@ -591,9 +598,9 @@ namespace kRPG
                                 break;
                         }
 
-                    for (int l = 0; l < 40; l++)
+                    for (int inventorySlot = 0; inventorySlot < 40; inventorySlot++)
                     {
-                        item = array[l];
+                        item = array[inventorySlot];
                         if (item.stack <= 0)
                             continue;
                         if (dictionary.ContainsKey(item.netID))
@@ -611,7 +618,7 @@ namespace kRPG
                 }
 
                 int num4 = 0;
-                while (num4 < Recipe.maxRecipes && Main.recipe[num4].createItem.type != 0)
+                while (num4 < Recipe.maxRecipes && Main.recipe[num4].createItem.type != ItemID.None)
                 {
                     bool flag2 = true;
                     if (flag2)
@@ -633,7 +640,7 @@ namespace kRPG
                         for (int m = 0; m < Recipe.maxRequirements; m++)
                         {
                             item = Main.recipe[num4].requiredItem[m];
-                            if (item.type == 0)
+                            if (item.type == ItemID.None)
                                 break;
                             int num6 = item.stack;
                             bool flag3 = false;
@@ -695,25 +702,33 @@ namespace kRPG
         public static Item GetItem(this Player player, Item newItem)
         {
             int plr = player.whoAmI;
+
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
-            bool flag = newItem.type >= 71 && newItem.type <= 74;
+
+            bool flag = newItem.type >= ItemID.CopperCoin && newItem.type <= ItemID.PlatinumCoin;
+
             Item item = newItem;
+
             int num = 50;
+
             if (newItem.noGrabDelay > 0)
                 return item;
+
             int num2 = 0;
+            
             if (newItem.uniqueStack && player.HasItem(newItem.type))
                 return item;
-            if (newItem.type == 71 || newItem.type == 72 || newItem.type == 73 || newItem.type == 74)
+
+            if (newItem.type == ItemID.CopperCoin || newItem.type == ItemID.GoldCoin || newItem.type == ItemID.PlatinumCoin || newItem.type == ItemID.SilverCoin)
             {
                 num2 = -4;
                 num = 54;
             }
 
-            if ((item.ammo > 0 || item.bait > 0) && !item.notAmmo || item.type == 530)
+            if ((item.ammo > 0 || item.bait > 0) && !item.notAmmo || item.type == ItemID.Wire)
             {
                 item = player.FillAmmo(plr, item);
-                if (item.type == 0 || item.stack == 0)
+                if (item.type == ItemID.None || item.stack == 0)
                     return new Item();
             }
 
@@ -747,29 +762,28 @@ namespace kRPG
                     FindRecipes();
             }
 
-            for (int i = 0; i < character.Inventories.Length; i += 1)
-            {
-                if (character.ActiveInvPage == i)
-                    continue;
-                for (int j = 0; j < character.Inventories[i].Length; j += 1)
-                {
-                    Item x = character.Inventories[i][j];
-                    if (x.type <= 0 || x.stack >= x.maxStack || !item.IsTheSameAs(x))
-                        continue;
-                    if (flag)
-                    {
-                        //Main.PlaySound(38, (int)player.position.X, (int)player.position.Y);
-                        SoundManager.PlaySound(Sounds.Meowmere, player.position);
-                    }
 
-                    else
-                    {
-                        SoundManager.PlaySound(Sounds.Grass, player.position);
-                        //Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
-                    }
+            for (int inventoryPageId = 0; inventoryPageId < character.Inventories.Length; inventoryPageId += 1)
+            {
+
+                if (character.ActiveInvPage == inventoryPageId)
+                {
+
+                    continue;
+                }
+
+                for (int inventorySlotId = 0; inventorySlotId < character.Inventories[inventoryPageId].Length; inventorySlotId += 1)
+                {
+                    Item x = character.Inventories[inventoryPageId][inventorySlotId];
+                    
+                    if (x.type <= ItemID.None || x.stack >= x.maxStack || !item.IsTheSameAs(x))
+                        continue;
+
+                    SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
 
                     if (item.stack + x.stack <= x.maxStack)
                     {
+                        kRPG.LogMessage("Stack size small than max");
                         x.stack += item.stack;
                         ItemText.NewText(newItem, item.stack);
                         AchievementsHelper.NotifyItemPickup(player, item);
@@ -785,7 +799,7 @@ namespace kRPG
                 }
             }
 
-            if (newItem.type != 71 && newItem.type != 72 && newItem.type != 73 && newItem.type != 74 && newItem.useStyle > 0)
+            if (newItem.type != ItemID.CopperCoin && newItem.type != ItemID.SilverCoin && newItem.type != ItemID.GoldCoin && newItem.type != ItemID.PlatinumCoin && newItem.useStyle > 0)
                 for (int j = 0; j < 10; j++)
                 {
                     if (player.inventory[j].type != 0)
@@ -793,7 +807,6 @@ namespace kRPG
                     player.inventory[j] = item;
                     ItemText.NewText(newItem, newItem.stack);
                     player.DoCoins(j);
-                    //Main.PlaySound(flag ? 38 : 7, (int) player.position.X, (int) player.position.Y);
                     SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
 
                     if (plr == Main.myPlayer)
@@ -805,25 +818,23 @@ namespace kRPG
             if ((newItem.modItem is Glyph || newItem.modItem is ProceduralItem || newItem.modItem is RangedWeapon) && kConfig.ClientSide.SmartInventory)
             {
                 if (character.ActiveInvPage == 2)
-                    for (int i = 10; i < 50; i += 1)
+                    for (int inventorySlotId = 10; inventorySlotId < 50; inventorySlotId += 1)
                     {
-                        if (player.inventory[i].type != 0)
+                        if (player.inventory[inventorySlotId].type != 0)
                             continue;
-                        player.inventory[i] = item;
+                        player.inventory[inventorySlotId] = item;
                         ItemText.NewText(newItem, newItem.stack);
-                        //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
                         SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
                     }
                 else
-                    for (int i = 0; i < character.Inventories[2].Length; i += 1)
+                    for (int inventorySlotId = 0; inventorySlotId < character.Inventories[2].Length; inventorySlotId += 1)
                     {
-                        if (character.Inventories[2][i].type != 0)
+                        if (character.Inventories[2][inventorySlotId].type != 0)
                             continue;
-                        character.Inventories[2][i] = item;
+                        character.Inventories[2][inventorySlotId] = item;
                         ItemText.NewText(newItem, newItem.stack);
-                        //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
                         SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
@@ -839,7 +850,6 @@ namespace kRPG
                     player.inventory[k] = item;
                     ItemText.NewText(newItem, newItem.stack);
                     player.DoCoins(k);
-                    //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
                     SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                     if (plr == Main.myPlayer)
                         FindRecipes();
@@ -849,14 +859,13 @@ namespace kRPG
             }
             else
             {
-                for (int l = num - 1; l >= 0; l--)
+                for (int inventorySlotId = num - 1; inventorySlotId >= 0; inventorySlotId--)
                 {
-                    if (player.inventory[l].type != 0 || kConfig.ClientSide.ManualInventory && character.ActiveInvPage != 0 && !flag)
+                    if (player.inventory[inventorySlotId].type != 0 || kConfig.ClientSide.ManualInventory && character.ActiveInvPage != 0 && !flag)
                         continue;
-                    player.inventory[l] = item;
+                    player.inventory[inventorySlotId] = item;
                     ItemText.NewText(newItem, newItem.stack);
-                    player.DoCoins(l);
-                    //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
+                    player.DoCoins(inventorySlotId);
                     SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                     if (plr == Main.myPlayer)
                         FindRecipes();
@@ -864,17 +873,17 @@ namespace kRPG
                     return new Item();
                 }
 
-                for (int i = 0; i < character.Inventories.Length; i += 1)
+                for (int inventoryPageId = 0; inventoryPageId < character.Inventories.Length; inventoryPageId += 1)
                 {
-                    if (character.ActiveInvPage == i)
+                    if (character.ActiveInvPage == inventoryPageId)
                         continue;
-                    for (int j = 0; j < character.Inventories[i].Length; j += 1)
+
+                    for (int inventorySlotId = 0; inventorySlotId < character.Inventories[inventoryPageId].Length; inventorySlotId += 1)
                     {
-                        if (character.Inventories[i][j].type != 0)
+                        if (character.Inventories[inventoryPageId][inventorySlotId].type != 0)
                             continue;
-                        character.Inventories[i][j] = item;
+                        character.Inventories[inventoryPageId][inventorySlotId] = item;
                         ItemText.NewText(newItem, newItem.stack);
-                        //Main.PlaySound(flag ? 38 : 7, (int)player.position.X, (int)player.position.Y);
                         SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
@@ -995,11 +1004,11 @@ namespace kRPG
             Texture2D texture2D = Main.inventoryBackTexture;
             Color color2 = Main.inventoryBack;
             bool flag2 = false;
-            if (item.type > 0 && item.stack > 0 && item.favorited && context != 13 && context != 21 && context != 22 && context != 14)
+            if (item.type > ItemID.None && item.stack > 0 && item.favorited && context != 13 && context != 21 && context != 22 && context != 14)
             {
                 texture2D = Main.inventoryBack10Texture;
             }
-            else if (item.type > 0 && item.stack > 0 && ItemSlot.Options.HighlightNewItems && item.newAndShiny && context != 13 && context != 21 &&
+            else if (item.type > ItemID.None && item.stack > 0 && ItemSlot.Options.HighlightNewItems && item.newAndShiny && context != 13 && context != 21 &&
                      context != 14 && context != 22)
             {
                 texture2D = Main.inventoryBack15Texture;
@@ -1007,7 +1016,7 @@ namespace kRPG
                 num3 = num3 * 0.2f + 0.8f;
                 color2.MultiplyRGBA(new Color(num3, num3, num3));
             }
-            else if (PlayerInput.UsingGamepadUI && item.type > 0 && item.stack > 0 && num2 != 0 && context != 13 && context != 21 && context != 22)
+            else if (PlayerInput.UsingGamepadUI && item.type > ItemID.None && item.stack > 0 && num2 != 0 && context != 13 && context != 21 && context != 22)
             {
                 texture2D = Main.inventoryBack15Texture;
                 float num4 = Main.mouseTextColor / 255f;
@@ -1167,7 +1176,7 @@ namespace kRPG
                     break;
             }
 
-            if ((item.type <= 0 || item.stack <= 0) && num7 != -1)
+            if ((item.type <= ItemID.None || item.stack <= 0) && num7 != -1)
             {
                 Texture2D texture2D2 = Main.extraTexture[54];
                 Rectangle rectangle = texture2D2.Frame(3, 6, num7 % 3, num7 / 3);
@@ -1178,7 +1187,7 @@ namespace kRPG
             }
 
             Vector2 vector = texture2D.Size() * inventoryScale;
-            if (item.type > 0 && item.stack > 0)
+            if (item.type > ItemID.None && item.stack > 0)
             {
                 Texture2D texture2D3 = item.modItem is ProceduralItem ? ((ProceduralItem)item.modItem).LocalTexture : Main.itemTexture[item.type];
                 Rectangle rectangle2;
@@ -1250,11 +1259,11 @@ namespace kRPG
                                 num10 += inv[l].stack;
                     }
 
-                    if (item.type == 509 || item.type == 851 || item.type == 850 || item.type == 3612 || item.type == 3625 || item.type == 3611)
+                    if (item.type == ItemID.Wrench || item.type == ItemID.GreenWrench || item.type == ItemID.BlueWrench || item.type == ItemID.YellowWrench || item.type == ItemID.MulticolorWrench || item.type == ItemID.WireKite)
                     {
                         num10 = 0;
                         for (int m = 0; m < 58; m++)
-                            if (inv[m].type == 530)
+                            if (inv[m].type == ItemID.Wire)
                                 num10 += inv[m].stack;
                     }
                 }

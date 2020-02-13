@@ -20,9 +20,20 @@ namespace kRPG.GameObjects.GUI
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
-            PlayerCharacter modPlayer = player.GetModPlayer<PlayerCharacter>();
-            for (int i = 0; i < modPlayer.Abilities.Length; i += 1)
-                modPlayer.Abilities[i].Draw(spriteBatch, GuiPosition + new Vector2(i * (GFX.GFX.SkillSlot.Width + 8f) * Scale, 0), Scale);
+            try
+            {
+
+                PlayerCharacter modPlayer = player.GetModPlayer<PlayerCharacter>();
+                for (int i = 0; i < modPlayer.Abilities.Length; i += 1)
+                    modPlayer.Abilities[i].Draw(spriteBatch, GuiPosition + new Vector2(i * (GFX.GFX.SkillSlot.Width + 8f) * Scale, 0), Scale);
+            }
+            catch (Exception e)
+            {
+                kRPG.LogMessage("AbilitiesGui PostDraw Error: " + e);
+            }
+            
+
+
         }
     }
 }

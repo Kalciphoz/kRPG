@@ -58,13 +58,13 @@ namespace kRPG.GameObjects.Players
             Abilities[3].Key = Keys.V;
 
             Inventories = new Item[3][];
-            for (int i = 0; i < Inventories.Length; i += 1)
+            for (int inventoryPage = 0; inventoryPage < Inventories.Length; inventoryPage += 1)
             {
-                Inventories[i] = new Item[40];
-                for (int j = 0; j < Inventories[i].Length; j += 1)
+                Inventories[inventoryPage] = new Item[40];
+                for (int inventorySlot = 0; inventorySlot < Inventories[inventoryPage].Length; inventorySlot += 1)
                 {
-                    Inventories[i][j] = new Item();
-                    Inventories[i][j].SetDefaults(0, true);
+                    Inventories[inventoryPage][inventorySlot] = new Item();
+                    Inventories[inventoryPage][inventorySlot].SetDefaults(0, true);
                 }
             }
         }
@@ -86,7 +86,7 @@ namespace kRPG.GameObjects.Players
             {Element.Fire, typeof(Fire)}, {Element.Cold, typeof(Cold)}, {Element.Lightning, typeof(Lightning)}, {Element.Shadow, typeof(Shadow)}
         };
 
-        public int Allres { get; set; }
+        public int AllResists { get; set; }
         public AnvilGui AnvilGui { get; set; }
 
         public Dictionary<PlayerStats, int> BaseStats { get; set; } = new Dictionary<PlayerStats, int>();
@@ -114,7 +114,7 @@ namespace kRPG.GameObjects.Players
         public float DamageMultiplierPercent => 1f + TotalStats(PlayerStats.Potency) * 0.05f + Math.Min(0.09f, TotalStats(PlayerStats.Potency) * 0.06f);
         private float DegenTimer { get; set; }
 
-        public Dictionary<Element, int> Eleres { get; set; } = new Dictionary<Element, int>
+        public Dictionary<Element, int> ElementalResists { get; set; } = new Dictionary<Element, int>
         {
             {Element.Fire, 0}, {Element.Cold, 0}, {Element.Lightning, 0}, {Element.Shadow, 0}
         };
@@ -137,7 +137,7 @@ namespace kRPG.GameObjects.Players
 
         private bool Initialized { get; set; }
 
-        public Item[][] Inventories { get; set; } //= new Item[3][] {new Item[40], new Item[40], new Item[40]};
+        public Item[][] Inventories { get; set; } 
         public InventoryGui InventoryGui { get; set; }
 
         public double ItemRotation { get; set; }
@@ -170,7 +170,7 @@ namespace kRPG.GameObjects.Players
             get {
                 Dictionary<Element, int> dict = new Dictionary<Element, int>();
                 foreach (Element element in Enum.GetValues(typeof(Element)))
-                    dict[element] = Eleres[element] + Allres;
+                    dict[element] = ElementalResists[element] + AllResists;
                 return dict;
             }
         }
@@ -187,8 +187,10 @@ namespace kRPG.GameObjects.Players
 
         public void AddXp(int xp)
         {
-            if (Main.gameMenu) return;
-            if (xp == 0) return;
+            if (Main.gameMenu)
+                return;
+            if (xp == 0) 
+                return;
             Experience += xp;
 
         Check:
@@ -479,9 +481,9 @@ namespace kRPG.GameObjects.Players
         {
             //if (kRPG2.Overhaul != null)
             //    return;
-            for (int i = 0; i < layers.Count; i += 1)
-                if (layers[i].Name.Contains("Held"))
-                    layers.Insert(i + 2, new PlayerLayer(Constants.ModName, "ProceduralItem", drawInfo =>
+            for (int layerId = 0; layerId < layers.Count; layerId += 1)
+                if (layers[layerId].Name.Contains("Held"))
+                    layers.Insert(layerId + 2, new PlayerLayer(Constants.ModName, "ProceduralItem", drawInfo =>
                     {
                         if (player.itemAnimation <= 0)
                             return;
@@ -568,13 +570,18 @@ namespace kRPG.GameObjects.Players
 
         public void OpenInventoryPage(int page)
         {
-            for (int i = 0; i < 40; i += 1)
-                player.inventory[i + 10] = Inventories[page][i];
+            for (int inventorySlot = 0; inventorySlot < 40; inventorySlot += 1)
+                player.inventory[inventorySlot + 10] = Inventories[page][inventorySlot];
+
             ActiveInvPage = page;
+
             StatPage = false;
+
             API.FindRecipes();
+
             for (int i = 0; i < 50; i += 1)
-                if (player.inventory[i].type == 71 || player.inventory[i].type == 72 || player.inventory[i].type == 73 || player.inventory[i].type == 74)
+
+                if (player.inventory[i].type == ItemID.SilverCoin || player.inventory[i].type == ItemID.CopperCoin || player.inventory[i].type == ItemID.GoldCoin || player.inventory[i].type == ItemID.PlatinumCoin)
                     player.DoCoins(i);
         }
 
@@ -698,26 +705,26 @@ namespace kRPG.GameObjects.Players
             ManaRegenTimer += 1f;
 
             if (Main.chatRelease && !Main.drawingPlayerChat && !Main.editSign && !Main.editChest && Main.netMode != 2)
-                for (int i = 0; i < Abilities.Length; i += 1)
-                    if (Abilities[i].CompleteSkill())
+                for (int abilityIndex = 0; abilityIndex < Abilities.Length; abilityIndex += 1)
+                    if (Abilities[abilityIndex].CompleteSkill())
                     {
                         bool useable = true;
-                        foreach (Item item in Abilities[i].Glyphs)
+                        foreach (Item item in Abilities[abilityIndex].Glyphs)
                         {
                             Glyph glyph = (Glyph)item.modItem;
                             if (!glyph.CanUse()) useable = false;
                         }
 
-                        if (!Main.keyState.IsKeyDown(Abilities[i].Key) || !Main.keyState.IsKeyUp(Keys.LeftShift) || Abilities[i].Remaining != 0 || !useable ||
-                            player.statMana < Abilities[i].ManaCost(this))
+                        if (!Main.keyState.IsKeyDown(Abilities[abilityIndex].Key) || !Main.keyState.IsKeyUp(Keys.LeftShift) || Abilities[abilityIndex].Remaining != 0 || !useable ||
+                            player.statMana < Abilities[abilityIndex].ManaCost(this))
                             continue;
                         if (Main.netMode != 2)
-                            Abilities[i].UseAbility(player, Main.MouseWorld);
-                        player.statMana -= Abilities[i].ManaCost(this);
+                            Abilities[abilityIndex].UseAbility(player, Main.MouseWorld);
+                        player.statMana -= Abilities[abilityIndex].ManaCost(this);
                     }
 
-            for (int i = 0; i < SpellEffects.Count; i += 1)
-                SpellEffects[i].Update(this);
+            for (int spellEffectIndex = 0; spellEffectIndex < SpellEffects.Count; spellEffectIndex += 1)
+                SpellEffects[spellEffectIndex].Update(this);
 
             if (Main.mapStyle == 0 && kConfig.ConfigLocal.ClientSide.ArpgMiniMap) Main.mapStyle += 1;
         }
@@ -870,13 +877,13 @@ namespace kRPG.GameObjects.Players
             CritBoost = 0;
             CritMultiplier = 0f;
             LifeLeech = 0f;
-            Allres = 0;
+            AllResists = 0;
 
             if (LeechCooldown > 0) LeechCooldown--;
 
             foreach (Element element in Enum.GetValues(typeof(Element)))
             {
-                Eleres[element] = 0;
+                ElementalResists[element] = 0;
                 if (!HasAilment[element]) AilmentIntensity[element] = 0;
                 HasAilment[element] = false;
             }
@@ -1004,7 +1011,7 @@ namespace kRPG.GameObjects.Players
             player.statManaMax2 += 19 + Level + BonusMana + TotalStats(PlayerStats.Wits) * 3 - player.statManaMax;
             player.statManaMax2 = (int)Math.Round(player.statManaMax2 * manaMultiplier) + addedMana;
             player.statDefense += TotalStats(PlayerStats.Resilience);
-            Allres += TotalStats(PlayerStats.Wits);
+            AllResists += TotalStats(PlayerStats.Wits);
             Evasion += TotalStats(PlayerStats.Quickness);
             Accuracy += TotalStats(PlayerStats.Wits);
             if (Rituals[Ritual.StoneAspect]) player.statDefense += TotalStats(PlayerStats.Quickness);
@@ -1086,22 +1093,22 @@ namespace kRPG.GameObjects.Players
             }
 
             Inventories = new Item[3][];
-            for (int i = 0; i < Inventories.Length; i += 1)
+            for (int inventoryPageId = 0; inventoryPageId < Inventories.Length; inventoryPageId += 1)
             {
-                Inventories[i] = new Item[40];
-                for (int j = 0; j < Inventories[i].Length; j += 1)
-                    Inventories[i][j] = new Item();
+                Inventories[inventoryPageId] = new Item[40];
+                for (int inventorySlotId = 0; inventorySlotId < Inventories[inventoryPageId].Length; inventorySlotId += 1)
+                    Inventories[inventoryPageId][inventorySlotId] = new Item();
             }
 
             Rituals = new Dictionary<Ritual, bool>();
             foreach (Ritual rite in Enum.GetValues(typeof(Ritual)))
                 Rituals[rite] = false;
 
-            for (int i = 0; i < Abilities.Length; i += 1)
+            for (int abilityIndexId = 0; abilityIndexId < Abilities.Length; abilityIndexId += 1)
             {
-                Abilities[i] = new ProceduralSpell(mod);
-                for (int j = 0; j < Abilities[i].Glyphs.Length; j += 1)
-                    Abilities[i].Glyphs[j] = new Item();
+                Abilities[abilityIndexId] = new ProceduralSpell(mod);
+                for (int j = 0; j < Abilities[abilityIndexId].Glyphs.Length; j += 1)
+                    Abilities[abilityIndexId].Glyphs[j] = new Item();
             }
 
             Abilities[0].Key = Keys.Z;
@@ -1131,6 +1138,7 @@ namespace kRPG.GameObjects.Players
 
         public override void OnEnterWorld(Player playerObj)
         {
+            kRPG.PlayerEnteredWorld = true;
             InitializeGui();
 
             if (playerObj.whoAmI == Main.myPlayer)
@@ -1161,13 +1169,17 @@ namespace kRPG.GameObjects.Players
 
             try
             {
-                for (int i = 0; i < Abilities.Length; i += 1)
+                for (int abilityIndexId = 0; abilityIndexId < Abilities.Length; abilityIndexId += 1)
                 {
-                    if (Abilities[i] == null) return tagCompound;
-                    tagCompound.Add("abilities" + i + "_key", Abilities[i].Key.ToString());
-                    for (int j = 0; j < Abilities[i].Glyphs.Length; j += 1)
-                        if (Abilities[i].Glyphs[j] != null)
-                            tagCompound.Add("ability" + i + j, ItemIO.Save(Abilities[i].Glyphs[j]));
+                    if (Abilities[abilityIndexId] == null) 
+                        return tagCompound;
+
+                    tagCompound.Add("abilities" + abilityIndexId + "_key", Abilities[abilityIndexId].Key.ToString());
+
+                    for (int abilityGlyphIndexId = 0; abilityGlyphIndexId < Abilities[abilityIndexId].Glyphs.Length; abilityGlyphIndexId += 1)
+
+                        if (Abilities[abilityIndexId].Glyphs[abilityGlyphIndexId] != null)
+                            tagCompound.Add("ability" + abilityIndexId + abilityGlyphIndexId, ItemIO.Save(Abilities[abilityIndexId].Glyphs[abilityGlyphIndexId]));
                 }
             }
             catch (SystemException e)
@@ -1177,9 +1189,9 @@ namespace kRPG.GameObjects.Players
 
             try
             {
-                for (int i = 0; i < Inventories.Length; i += 1)
-                    for (int j = 0; j < Inventories[i].Length; j += 1)
-                        tagCompound.Add("item" + i + j, ItemIO.Save(Inventories[i][j]));
+                for (int inventoryPageId = 0; inventoryPageId < Inventories.Length; inventoryPageId += 1)
+                    for (int inventorySlotId = 0; inventorySlotId < Inventories[inventoryPageId].Length; inventorySlotId += 1)
+                        tagCompound.Add("item" + inventoryPageId + inventorySlotId, ItemIO.Save(Inventories[inventoryPageId][inventorySlotId]));
             }
             catch (SystemException e)
             {
@@ -1216,15 +1228,15 @@ namespace kRPG.GameObjects.Players
             try
             {
                 Abilities = new ProceduralSpell[4];
-                for (int i = 0; i < Abilities.Length; i += 1)
+                for (int abilityIndexId = 0; abilityIndexId < Abilities.Length; abilityIndexId += 1)
                 {
-                    Abilities[i] = new ProceduralSpell(mod)
+                    Abilities[abilityIndexId] = new ProceduralSpell(mod)
                     {
-                        Key = (Keys)Enum.Parse(typeof(Keys), tag.GetString("abilities" + i + "_key"))
+                        Key = (Keys)Enum.Parse(typeof(Keys), tag.GetString("abilities" + abilityIndexId + "_key"))
                     };
-                    for (int j = 0; j < Abilities[i].Glyphs.Length; j += 1)
-                        if (tag.ContainsKey("ability" + i + j))
-                            Abilities[i].Glyphs[j] = ItemIO.Load(tag.GetCompound("ability" + i + j));
+                    for (int abilityGlyphIndexId = 0; abilityGlyphIndexId < Abilities[abilityIndexId].Glyphs.Length; abilityGlyphIndexId += 1)
+                        if (tag.ContainsKey("ability" + abilityIndexId + abilityGlyphIndexId))
+                            Abilities[abilityIndexId].Glyphs[abilityGlyphIndexId] = ItemIO.Load(tag.GetCompound("ability" + abilityIndexId + abilityGlyphIndexId));
                 }
             }
             catch (SystemException e)
@@ -1234,9 +1246,9 @@ namespace kRPG.GameObjects.Players
 
             try
             {
-                for (int i = 0; i < Inventories.Length; i += 1)
-                    for (int j = 0; j < Inventories[i].Length; j += 1)
-                        Inventories[i][j] = ItemIO.Load(tag.GetCompound("item" + i + j));
+                for (int inventoryPageId = 0; inventoryPageId < Inventories.Length; inventoryPageId += 1)
+                    for (int inventorySlotId = 0; inventorySlotId < Inventories[inventoryPageId].Length; inventorySlotId += 1)
+                        Inventories[inventoryPageId][inventorySlotId] = ItemIO.Load(tag.GetCompound("item" + inventoryPageId + inventorySlotId));
                 OpenInventoryPage(0);
             }
             catch (SystemException e)
