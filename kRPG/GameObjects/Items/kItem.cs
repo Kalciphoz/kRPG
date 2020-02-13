@@ -29,16 +29,16 @@ namespace kRPG.GameObjects.Items
         }
 
         public int BonusAccuracy { get; set; }
-        public int BonusAllres { get; set; }
-        public int BonusCrit { get; set; }
+        public int BonusAllResists { get; set; }
+        public int BonusCritical { get; set; }
 
-        public int BonusDef { get; set; }
-        public int BonusEva { get; set; }
+        public int BonusDefense { get; set; }
+        public int BonusEvasion { get; set; }
         public float BonusLeech { get; set; }
         public int BonusLife { get; set; }
         public int BonusMana { get; set; }
         public float BonusMult { get; set; }
-        public float BonusRegen { get; set; }
+        public float BonusRegeneration { get; set; }
 
         public Dictionary<Element, int> ElementalDamage { get; set; } = new Dictionary<Element, int>
         {
@@ -202,23 +202,24 @@ namespace kRPG.GameObjects.Items
             ElementalDamage = new Dictionary<Element, int> { { Element.Fire, 0 }, { Element.Cold, 0 }, { Element.Lightning, 0 }, { Element.Shadow, 0 } };
             StatBonus = new Dictionary<PlayerStats, int> { { PlayerStats.Resilience, 0 }, { PlayerStats.Quickness, 0 }, { PlayerStats.Potency, 0 }, { PlayerStats.Wits, 0 } };
             ResBonus = new Dictionary<Element, int> { { Element.Fire, 0 }, { Element.Cold, 0 }, { Element.Lightning, 0 }, { Element.Shadow, 0 } };
-            BonusEva = 0;
-            BonusDef = 0;
+            BonusEvasion = 0;
+            BonusDefense = 0;
             BonusLife = 0;
             BonusMana = 0;
             BonusAccuracy = 0;
             BonusLeech = 0f;
-            BonusCrit = 0;
+            BonusCritical = 0;
             BonusMult = 0f;
-            BonusRegen = 0f;
-            BonusAllres = 0;
+            BonusRegeneration = 0f;
+            BonusAllResists = 0;
             PrefixTooltips = new List<string>();
         }
 
         public override GlobalItem Clone(Item item, Item itemClone)
         {
             kItem copy = (kItem)base.Clone(item, itemClone);
-            if (itemClone.type == 0) return copy;
+            if (itemClone.type == 0)
+                return copy;
             copy.ElementalDamage = new Dictionary<Element, int>
             {
                 {Element.Fire, ElementalDamage[Element.Fire]},
@@ -246,16 +247,16 @@ namespace kRPG.GameObjects.Items
             item.SetNameOverride(itemClone.Name);
             copy.UpgradeLevel = UpgradeLevel;
             copy.KPrefix = KPrefix;
-            copy.BonusDef = BonusDef;
-            copy.BonusEva = BonusEva;
+            copy.BonusDefense = BonusDefense;
+            copy.BonusEvasion = BonusEvasion;
             copy.BonusLife = BonusLife;
             copy.BonusMana = BonusMana;
             copy.BonusAccuracy = BonusAccuracy;
             copy.BonusLeech = BonusLeech;
-            copy.BonusCrit = BonusCrit;
+            copy.BonusCritical = BonusCritical;
             copy.BonusMult = BonusMult;
-            copy.BonusRegen = BonusRegen;
-            copy.BonusAllres = BonusAllres;
+            copy.BonusRegeneration = BonusRegeneration;
+            copy.BonusAllResists = BonusAllResists;
             return copy;
         }
 
@@ -437,23 +438,25 @@ namespace kRPG.GameObjects.Items
                     newItem.type == ItemID.CandyCane || newItem.type == ItemID.Star || newItem.type == ItemID.SoulCake || newItem.type == ItemID.SugarPlum ||
                     newItem.type == ModContent.ItemType<PermanenceCrown>() || newItem.type == ModContent.ItemType<BlacksmithCrown>())
                     return true;
+
                 int num = 50;
-                if (newItem.type == 71 || newItem.type == 72 || newItem.type == 73 || newItem.type == 74)
+
+                if (newItem.type == ItemID.CopperCoin || newItem.type == ItemID.SilverCoin || newItem.type == ItemID.GoldCoin || newItem.type == ItemID.PlatinumCoin)
                     num = 54;
+
                 for (int i = 0; i < num; i++)
                 {
                     Item item = player.inventory[i];
-                    if ((item.type == 0 || item.stack == 0) && (!kConfig.ConfigLocal.ClientSide.ManualInventory || num > 50 || character.ActiveInvPage == 0) ||
-                        item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
+                    if ((item.type == ItemID.None || item.stack == 0) && (!kConfig.ConfigLocal.ClientSide.ManualInventory || num > 50 || character.ActiveInvPage == 0) || item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
                         return true;
                 }
 
-                for (int i = 0; i < character.Inventories.Length; i++)
-                    for (int j = 0; j < character.Inventories[i].Length; j += 1)
+                for (int inventoryPage = 0; inventoryPage < character.Inventories.Length; inventoryPage++)
+                    for (int inventorySlot = 0; inventorySlot < character.Inventories[inventoryPage].Length; inventorySlot += 1)
                     {
-                        Item item = character.Inventories[i][j];
-                        if ((item.type == 0 || item.stack == 0) && (!kConfig.ConfigLocal.ClientSide.ManualInventory || i == 0) ||
-                            item.type > 0 && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
+                        Item item = character.Inventories[inventoryPage][inventorySlot];
+                        if ((item.type == ItemID.None || item.stack == 0) && (!kConfig.ConfigLocal.ClientSide.ManualInventory || inventoryPage == 0) ||
+                            item.type > ItemID.None && item.stack > 0 && item.stack < item.maxStack && newItem.IsTheSameAs(item))
                             //Main.NewText((!kConfig.configLocal.clientSide.manualInventory) + "||" + (i == 0));
                             return true;
                     }
@@ -507,9 +510,9 @@ namespace kRPG.GameObjects.Items
                         tooltips.Insert(1, line);
                     }
 
-                if (BonusEva > 0)
+                if (BonusEvasion > 0)
                 {
-                    TooltipLine line = new TooltipLine(mod, "Evasion", BonusEva + " evasion rating") { overrideColor = new Color(159, 159, 159) };
+                    TooltipLine line = new TooltipLine(mod, "Evasion", BonusEvasion + " evasion rating") { overrideColor = new Color(159, 159, 159) };
                     tooltips.Insert(1, line);
                 }
 
@@ -525,9 +528,9 @@ namespace kRPG.GameObjects.Items
                     tooltips.Insert(1, line);
                 }
 
-                for (int i = 0; i < PrefixTooltips.Count; i += 1)
+                for (int prefixToolTipId = 0; prefixToolTipId < PrefixTooltips.Count; prefixToolTipId += 1)
                 {
-                    TooltipLine line = new TooltipLine(mod, "prefixline" + i, PrefixTooltips[i]) { overrideColor = new Color(127, 191, 127) };
+                    TooltipLine line = new TooltipLine(mod, "prefixline" + prefixToolTipId, PrefixTooltips[prefixToolTipId]) { overrideColor = new Color(127, 191, 127) };
                     tooltips.Add(line);
                 }
             }
@@ -549,9 +552,9 @@ namespace kRPG.GameObjects.Items
                     }
                 }
 
-                for (int i = 0; i < PrefixTooltips.Count; i += 1)
+                for (int prefixToolTipId = 0; prefixToolTipId < PrefixTooltips.Count; prefixToolTipId += 1)
                 {
-                    TooltipLine line = new TooltipLine(mod, "prefixline" + i, PrefixTooltips[i]) { overrideColor = new Color(127, 191, 127) };
+                    TooltipLine line = new TooltipLine(mod, "prefixline" + prefixToolTipId, PrefixTooltips[prefixToolTipId]) { overrideColor = new Color(127, 191, 127) };
                     tooltips.Add(line);
                 }
             }
@@ -734,6 +737,12 @@ namespace kRPG.GameObjects.Items
         public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor,
             Vector2 origin, float scale)
         {
+            if (!kRPG.PlayerEnteredWorld)
+                return;
+
+            if (Main.LocalPlayer == null)
+                return;
+
             Player player = Main.LocalPlayer;
             bool flag = false;
             if (player.chest >= 0)
@@ -1034,12 +1043,12 @@ namespace kRPG.GameObjects.Items
                     break;
                 case 5:
                     item.SetNameOverride("Armored " + item.Name);
-                    BonusDef = 4;
+                    BonusDefense = 4;
                     PrefixTooltips.Add("+4 defense");
                     break;
                 case 6:
                     item.SetNameOverride("Elegant " + item.Name);
-                    BonusEva = 5;
+                    BonusEvasion = 5;
                     break;
                 case 7:
                     item.SetNameOverride("Vampiric " + item.Name);
@@ -1064,7 +1073,7 @@ namespace kRPG.GameObjects.Items
                     break;
                 case 11:
                     item.SetNameOverride("Organic " + item.Name);
-                    BonusRegen = 1.4f;
+                    BonusRegeneration = 1.4f;
                     PrefixTooltips.Add("+1.4 life regen");
                     break;
                 case 12:
@@ -1073,7 +1082,7 @@ namespace kRPG.GameObjects.Items
                     break;
                 case 13:
                     item.SetNameOverride("Frenetic " + item.Name);
-                    BonusCrit = 4;
+                    BonusCritical = 4;
                     PrefixTooltips.Add("+4 crit chance");
                     break;
                 case 14:
@@ -1083,7 +1092,7 @@ namespace kRPG.GameObjects.Items
                     break;
                 case 15:
                     item.SetNameOverride("Warding " + item.Name);
-                    BonusAllres = 3;
+                    BonusAllResists = 3;
                     PrefixTooltips.Add("+4 to all resistances");
                     break;
                 case 16:
@@ -1104,12 +1113,12 @@ namespace kRPG.GameObjects.Items
                     break;
                 case 20:
                     item.SetNameOverride("Hardened " + item.Name);
-                    BonusDef = 3;
+                    BonusDefense = 3;
                     PrefixTooltips.Add("+3 defense");
                     break;
                 case 21:
                     item.SetNameOverride("Protective " + item.Name);
-                    BonusAllres = 2;
+                    BonusAllResists = 2;
                     PrefixTooltips.Add("+3 to all resistances");
                     break;
                 case 22:
@@ -1134,7 +1143,7 @@ namespace kRPG.GameObjects.Items
                     break;
                 case 26:
                     item.SetNameOverride("Enchanted " + item.Name);
-                    BonusAllres = 4;
+                    BonusAllResists = 4;
                     PrefixTooltips.Add("+5 to all resistances");
                     item.rare += 1;
                     break;
@@ -1165,13 +1174,13 @@ namespace kRPG.GameObjects.Items
                     break;
                 case 4:
                     item.SetNameOverride("Glaucous " + item.Name);
-                    BonusDef = 2 + item.rare;
-                    PrefixTooltips.Add("+" + BonusDef + " defence");
+                    BonusDefense = 2 + item.rare;
+                    PrefixTooltips.Add("+" + BonusDefense + " defence");
                     break;
                 case 5:
                     item.SetNameOverride("Cinereous " + item.Name);
-                    BonusDef = 1 + item.rare / 2;
-                    PrefixTooltips.Add("+" + BonusDef + " defence");
+                    BonusDefense = 1 + item.rare / 2;
+                    PrefixTooltips.Add("+" + BonusDefense + " defence");
                     BonusLife = 10 + item.rare * 5;
                     break;
                 case 6:
@@ -1204,18 +1213,18 @@ namespace kRPG.GameObjects.Items
                     break;
                 case 12:
                     item.SetNameOverride("Silver " + item.Name);
-                    BonusEva = 2 + item.rare;
+                    BonusEvasion = 2 + item.rare;
                     break;
                 case 13:
                     item.SetNameOverride("Ebony " + item.Name);
-                    BonusEva = 1 + item.rare / 2;
+                    BonusEvasion = 1 + item.rare / 2;
                     BonusLife = 9 + item.rare * 5;
                     break;
                 case 14:
                     item.SetNameOverride("Onyx " + item.Name);
-                    BonusEva = 1 + item.rare / 2;
-                    BonusDef = 1 + item.rare / 2;
-                    PrefixTooltips.Add("+" + BonusDef + " defence");
+                    BonusEvasion = 1 + item.rare / 2;
+                    BonusDefense = 1 + item.rare / 2;
+                    PrefixTooltips.Add("+" + BonusDefense + " defence");
                     break;
                 case 15:
                     item.SetNameOverride("Scarlet " + item.Name);
@@ -1231,8 +1240,8 @@ namespace kRPG.GameObjects.Items
                     break;
                 case 18:
                     item.SetNameOverride("Prismatic " + item.Name);
-                    BonusAllres = 3 + item.rare / 2;
-                    PrefixTooltips.Add("+" + BonusAllres + " to all resistances");
+                    BonusAllResists = 3 + item.rare / 2;
+                    PrefixTooltips.Add("+" + BonusAllResists + " to all resistances");
                     break;
             }
         }
@@ -1274,8 +1283,8 @@ namespace kRPG.GameObjects.Items
             PlayerCharacter modPlayer = player.GetModPlayer<PlayerCharacter>();
 
             if (!Enhanced) return;
-            if (BonusDef > 0)
-                player.statDefense += BonusDef;
+            if (BonusDefense > 0)
+                player.statDefense += BonusDefense;
             if (BonusLife > 0)
                 modPlayer.BonusLife += BonusLife;
             if (BonusMana > 0)
@@ -1284,20 +1293,20 @@ namespace kRPG.GameObjects.Items
                 modPlayer.Accuracy += BonusAccuracy;
             if (BonusLeech > 0f)
                 modPlayer.LifeLeech += BonusLeech;
-            if (BonusCrit > 0)
-                modPlayer.CritBoost += BonusCrit;
+            if (BonusCritical > 0)
+                modPlayer.CritBoost += BonusCritical;
             if (BonusMult > 0f)
                 modPlayer.CritMultiplier += BonusMult;
-            if (BonusRegen > 0f)
-                modPlayer.LifeRegen += BonusRegen;
+            if (BonusRegeneration > 0f)
+                modPlayer.LifeRegen += BonusRegeneration;
             foreach (PlayerStats stat in Enum.GetValues(typeof(PlayerStats)))
                 if (StatBonus[stat] > 0)
                     modPlayer.TempStats[stat] += StatBonus[stat];
             foreach (Element element in Enum.GetValues(typeof(Element)))
-                modPlayer.Eleres[element] += ResBonus[element];
-            modPlayer.Allres += BonusAllres;
-            if (BonusEva > 0)
-                modPlayer.Evasion += BonusEva;
+                modPlayer.ElementalResists[element] += ResBonus[element];
+            modPlayer.AllResists += BonusAllResists;
+            if (BonusEvasion > 0)
+                modPlayer.Evasion += BonusEvasion;
         }
 
         public void Upgrade(Item item)

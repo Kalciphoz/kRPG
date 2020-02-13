@@ -48,73 +48,81 @@ namespace kRPG.GameObjects.GUI
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
-            character = player.GetModPlayer<PlayerCharacter>();
-
-            spriteBatch.Draw(GFX.GFX.DeerSkull, GuiPosition, Color.White, Scale);
-
-            int remaining = character.Level - character.PointsAllocated - 1;
-            remaining = allocated.Keys.Aggregate(remaining, (current, stat) => current - allocated[stat]);
-            string text = "You have " + (remaining == 0 ? "no" : remaining.ToString()) + (remaining == 1 ? " point " : " points ") + "remaining";
-            float width = Main.fontMouseText.MeasureString(text).X * Scale;
-
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, text, GuiPosition - new Vector2(width / 2f - 200f, 38f * Scale + 38f), Color.White, Scale);
-
-            Vector2 buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 320f * Scale);
-            spriteBatch.Draw(GFX.GFX.ButtonCancel, buttonPosition, Color.White, Scale);
-
-            if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.GFX.ButtonConfirm.Width * Scale &&
-                Main.mouseY <= buttonPosition.Y + GFX.GFX.ButtonConfirm.Height * Scale)
+            try
             {
-                Main.LocalPlayer.mouseInterface = true;
-                if (Main.mouseLeft && Main.mouseLeftRelease)
+                character = player.GetModPlayer<PlayerCharacter>();
+
+                spriteBatch.Draw(GFX.GFX.DeerSkull, GuiPosition, Color.White, Scale);
+
+                int remaining = character.Level - character.PointsAllocated - 1;
+                remaining = allocated.Keys.Aggregate(remaining, (current, stat) => current - allocated[stat]);
+                string text = "You have " + (remaining == 0 ? "no" : remaining.ToString()) + (remaining == 1 ? " point " : " points ") + "remaining";
+                float width = Main.fontMouseText.MeasureString(text).X * Scale;
+
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, text, GuiPosition - new Vector2(width / 2f - 200f, 38f * Scale + 38f), Color.White, Scale);
+
+                Vector2 buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 320f * Scale);
+                spriteBatch.Draw(GFX.GFX.ButtonCancel, buttonPosition, Color.White, Scale);
+
+                if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.GFX.ButtonConfirm.Width * Scale && Main.mouseY <= buttonPosition.Y + GFX.GFX.ButtonConfirm.Height * Scale)
                 {
-                    //Main.PlaySound(SoundID.MenuTick);
-                    SoundManager.PlaySound(Sounds.MenuTick);
-                    CloseGui();
-                    return;
-                }
-            }
-
-            statFlame[PlayerStats.Resilience].Draw(spriteBatch, player, Scale);
-            statFlame[PlayerStats.Resilience].Update(spriteBatch, player);
-            statFlame[PlayerStats.Quickness].Draw(spriteBatch, player, Scale);
-            statFlame[PlayerStats.Quickness].Update(spriteBatch, player);
-            statFlame[PlayerStats.Potency].Draw(spriteBatch, player, Scale);
-            statFlame[PlayerStats.Potency].Update(spriteBatch, player);
-
-            buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
-            spriteBatch.Draw(GFX.GFX.ButtonConfirm, buttonPosition, Color.White, Scale);
-
-            if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.GFX.ButtonConfirm.Width &&
-                Main.mouseY <= buttonPosition.Y + GFX.GFX.ButtonConfirm.Height)
-            {
-                Main.LocalPlayer.mouseInterface = true;
-                if (Main.mouseLeft && Main.mouseLeftRelease)
-                    try
+                    Main.LocalPlayer.mouseInterface = true;
+                    if (Main.mouseLeft && Main.mouseLeftRelease)
                     {
                         //Main.PlaySound(SoundID.MenuTick);
                         SoundManager.PlaySound(Sounds.MenuTick);
-                        foreach (PlayerStats s in allocated.Keys)
-                            character.BaseStats[s] += allocated[s];
-                        foreach (PlayerStats stat in Enum.GetValues(typeof(PlayerStats)))
-                            allocated[stat] = 0;
-
-                        GuiActive = false;
-                        GFX.GFX.SfxLevelUp.Play(0.2f * Main.soundVolume, -0.6f, -0.2f);
+                        CloseGui();
                         return;
                     }
-                    catch (SystemException e)
-                    {
-                        Main.NewText(e.ToString());
-                    }
+                }
+
+                statFlame[PlayerStats.Resilience].Draw(spriteBatch, player, Scale);
+                statFlame[PlayerStats.Resilience].Update(spriteBatch, player);
+                statFlame[PlayerStats.Quickness].Draw(spriteBatch, player, Scale);
+                statFlame[PlayerStats.Quickness].Update(spriteBatch, player);
+                statFlame[PlayerStats.Potency].Draw(spriteBatch, player, Scale);
+                statFlame[PlayerStats.Potency].Update(spriteBatch, player);
+
+                buttonPosition = new Vector2(Main.screenWidth / 2f - 92f * Scale, Main.screenHeight / 2f + 256f * Scale);
+                spriteBatch.Draw(GFX.GFX.ButtonConfirm, buttonPosition, Color.White, Scale);
+
+                if (Main.mouseX >= buttonPosition.X && Main.mouseY >= buttonPosition.Y && Main.mouseX <= buttonPosition.X + GFX.GFX.ButtonConfirm.Width && Main.mouseY <= buttonPosition.Y + GFX.GFX.ButtonConfirm.Height)
+                {
+                    Main.LocalPlayer.mouseInterface = true;
+                    if (Main.mouseLeft && Main.mouseLeftRelease)
+                        try
+                        {
+                            //Main.PlaySound(SoundID.MenuTick);
+                            SoundManager.PlaySound(Sounds.MenuTick);
+                            foreach (PlayerStats s in allocated.Keys)
+                                character.BaseStats[s] += allocated[s];
+                            foreach (PlayerStats stat in Enum.GetValues(typeof(PlayerStats)))
+                                allocated[stat] = 0;
+
+                            GuiActive = false;
+                            GFX.GFX.SfxLevelUp.Play(0.2f * Main.soundVolume, -0.6f, -0.2f);
+                            return;
+                        }
+                        catch (SystemException e)
+                        {
+                            Main.NewText(e.ToString());
+                        }
+                }
+
+                PlayerStats? hoverStat = null;
+                foreach (PlayerStats s in statFlame.Keys.Where(s => statFlame[s].CheckHover()))
+                    hoverStat = s;
+
+                if (hoverStat != null)
+                    spriteBatch.Draw(GFX.GFX.DeerSkullEyes[hoverStat.Value], GuiPosition, Color.White, Scale);
             }
+            catch (Exception e)
+            {
+                kRPG.LogMessage("LevelGui PostDraw Error: " + e);
 
-            PlayerStats? hoverStat = null;
-            foreach (PlayerStats s in statFlame.Keys.Where(s => statFlame[s].CheckHover()))
-                hoverStat = s;
-
-            if (hoverStat != null) 
-                spriteBatch.Draw(GFX.GFX.DeerSkullEyes[hoverStat.Value], GuiPosition, Color.White, Scale);
+            }
+            
+            
         }
     }
 }

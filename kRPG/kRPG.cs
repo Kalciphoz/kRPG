@@ -19,95 +19,19 @@ using kRPG.GameObjects.Spells;
 using kRPG.Packets;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
+using On.Terraria.ID;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
+using Terraria.ID;
+using ItemID = Terraria.ID.ItemID;
+
 // ReSharper disable StringLiteralTypo
 
 namespace kRPG
 {
     public class kRPG : Mod
     {
-
-
-        //public static Dictionary<Message, List<DataTag>> dataTags = new Dictionary<Message, List<DataTag>>
-        //{
-        //    {Message.AddXp, new List<DataTag> {DataTag.Amount, DataTag.NpcId}},
-        //    {
-        //        Message.CreateProjectile, new List<DataTag>
-        //        {
-        //            DataTag.PlayerId,
-        //            DataTag.ProjId,
-        //            DataTag.GlyphStar,
-        //            DataTag.GlyphCross,
-        //            DataTag.GlyphMoon,
-        //            DataTag.Damage,
-        //            DataTag.Flag,
-        //            DataTag.EntityId,
-        //            DataTag.ModifierCount
-        //        }
-        //    },
-        //    {
-        //        Message.SwordInit, new List<DataTag>
-        //        {
-        //            DataTag.ItemId,
-        //            DataTag.PartPrimary,
-        //            DataTag.PartSecondary,
-        //            DataTag.PartTertiary,
-        //            DataTag.ItemDps,
-        //            DataTag.ItemDef
-        //        }
-        //    },
-        //    {
-        //        Message.StaffInit, new List<DataTag>
-        //        {
-        //            DataTag.ItemId,
-        //            DataTag.PartPrimary,
-        //            DataTag.PartSecondary,
-        //            DataTag.PartTertiary,
-        //            DataTag.ItemDps,
-        //            DataTag.ItemDef
-        //        }
-        //    },
-        //    {Message.BowInit, new List<DataTag> {DataTag.ItemId, DataTag.ItemDps, DataTag.ItemDef}},
-        //    {Message.SyncHit, new List<DataTag> {DataTag.PlayerId, DataTag.AmountSingle}},
-        //    {Message.SyncCritHit, new List<DataTag> {DataTag.PlayerId, DataTag.AmountSingle}},
-        //    {Message.SyncLevel, new List<DataTag> {DataTag.PlayerId, DataTag.Amount}},
-        //    {
-        //        Message.InitProjEleDmg, new List<DataTag>
-        //        {
-        //            DataTag.ProjId,
-        //            DataTag.Fire,
-        //            DataTag.Cold,
-        //            DataTag.Lightning,
-        //            DataTag.Shadow
-        //        }
-        //    },
-        //    {
-        //        Message.SyncStats, new List<DataTag>
-        //        {
-        //            DataTag.PlayerId,
-        //            DataTag.Amount,
-        //            DataTag.Resilience,
-        //            DataTag.Quickness,
-        //            DataTag.Potency,
-        //            DataTag.Wits
-        //        }
-        //    },
-        //    {Message.SyncSpear, new List<DataTag> {DataTag.ProjId, DataTag.PartPrimary, DataTag.PartSecondary, DataTag.PartTertiary}},
-        //    {Message.PrefixNpc, new List<DataTag> {DataTag.NpcId, DataTag.Amount}},
-        //    {
-        //        Message.NpcEleDmg, new List<DataTag>
-        //        {
-        //            DataTag.NpcId,
-        //            DataTag.Flag,
-        //            DataTag.Flag2,
-        //            DataTag.Flag3,
-        //            DataTag.Flag4
-        //        }
-        //    }
-        //};
-
         public static Dictionary<string, Ritual> ritualByName = new Dictionary<string, Ritual>
         {
             {"demon_pact", Ritual.DemonPact},
@@ -123,12 +47,6 @@ namespace kRPG
         {
             Properties = new ModProperties { Autoload = true, AutoloadGores = true, AutoloadSounds = true };
             Mod = this;
-
-            //for (int i = 0; i < Lang.inter.Length;i++)
-            //{
-            //    var t = Lang.inter[i];
-            //    Debug.WriteLine($"{i} -- {t.Key} -- {t.Value}");
-            //}
         }
         public static void LogMessage(string msg)
         {
@@ -139,10 +57,17 @@ namespace kRPG
 
         public static kRPG Mod { get; set; }
 
+        public static bool PlayerEnteredWorld { get; set; } = false;
+
         //  public static Mod Overhaul { get; set; }
+
+        
 
         public bool DrawInterface()
         {
+            
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
             if (Main.netMode == 2 || Main.gameMenu) return true;
             try
             {
@@ -158,7 +83,8 @@ namespace kRPG
                 LogMessage(e.ToString());
 
             }
-
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
             return true;
         }
 
@@ -166,11 +92,6 @@ namespace kRPG
         {
             Message msg = (Message)reader.ReadByte();
             LogMessage($"Handling {msg}");
-            //Dictionary<DataTag, object> tags = new Dictionary<DataTag, object>();
-
-            //foreach (DataTag tag in dataTags[msg])
-            //    tags.Add(tag, tag.Read(reader));
-
             switch (msg)
             {
                 //case Message.InitProjEleDmg:
@@ -207,12 +128,12 @@ namespace kRPG
                 case Message.CreateProjectile:
                     try
                     {
-                        int playerWhoAmI=reader.ReadInt32();
-                        int projectileWhoAmI=reader.ReadInt32();
-                        int starType =reader.ReadInt32();
-                        int crossType=reader.ReadInt32();
-                        int moonType=reader.ReadInt32();
-                        float damage=reader.ReadSingle();
+                        int playerWhoAmI = reader.ReadInt32();
+                        int projectileWhoAmI = reader.ReadInt32();
+                        int starType = reader.ReadInt32();
+                        int crossType = reader.ReadInt32();
+                        int moonType = reader.ReadInt32();
+                        float damage = reader.ReadSingle();
                         bool minion = reader.ReadBoolean();
                         int casterWhoAmI = reader.ReadInt32();
                         int modCount = reader.ReadInt32();
@@ -251,7 +172,7 @@ namespace kRPG
                         ps.Source.Glyphs[(byte)GlyphType.Cross].SetDefaults(crossType, true);
                         ps.Source.Glyphs[(byte)GlyphType.Moon].SetDefaults(moonType, true);
 
-                        projectile.damage =(int) damage;
+                        projectile.damage = (int)damage;
                         projectile.minion = minion;
                         try
                         {

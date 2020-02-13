@@ -1,3 +1,3 @@
 displayName = kRPG - Kalciphoz RPG Mod Updated
 author = Vincent Gee
-version = 2.0.5
+version = 2.0.6

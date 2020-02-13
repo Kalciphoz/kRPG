@@ -306,83 +306,84 @@ namespace kRPG.GameObjects.GUI
             if (Main.playerInventory || Main.player[Main.myPlayer].ghost)
                 return;
 
-            character = player.GetModPlayer<PlayerCharacter>();
-
-            DrawHotbar();
-
-            //Draw the health, mana and exp bar background.  If you change the color it will only effect the exp bar.
-            spriteBatch.Draw(GFX.GFX.StatusBarsBg, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-
-            //Calculate the current life bar length.
-            int currentLifeLength = (int)Math.Round(player.statLife / (decimal)player.statLifeMax2 * BarLifeLength);
-
-            spriteBatch.Draw(GFX.GFX.StatusBars, GuiPosition + barLifeOrigin * Scale, new Rectangle(
-                (int)(barLifeOrigin.X + BarLifeLength - currentLifeLength), //This how much of the bar should be blacked out.
-                (int)barLifeOrigin.Y, currentLifeLength, BarLifeThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-
-            //Calculate the current length of the mana bar
-            int currentManaLength = (int)Math.Round(character.Mana / (decimal)player.statManaMax2 * BarManaLength);
-
-            spriteBatch.Draw(GFX.GFX.StatusBars, GuiPosition + barManaOrigin * Scale, new Rectangle(
-                (int)(barManaOrigin.X + BarManaLength - currentManaLength), //How much of the bar should be blacked out.
-                (int)barManaOrigin.Y, currentManaLength, BarManaThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-
-            //calculate the exp bar length
-            int currentXpLength = (int)Math.Round(BarXpLength * (decimal)character.Experience / character.ExperienceToLevel());
-
-            //Draw the exp bar
-            spriteBatch.Draw(GFX.GFX.StatusBars, GuiPosition + barXpOrigin * Scale,
-                new Rectangle((int)barXpOrigin.X, (int)barXpOrigin.Y, currentXpLength, BarXpThickness), Color.White, 0f, Vector2.Zero, Scale,
-                SpriteEffects.None, 0f);
-
-            //Draw the image that is the background for the hud hp/mana/exp bar
-            spriteBatch.Draw(GFX.GFX.CharacterFrame, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-
-            //Draw text showing there health
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife + " / " + player.statLifeMax2,
-                GuiPosition + new Vector2(barLifeOrigin.X * Scale + 24f * Scale, (barLifeOrigin.Y + 4f) * Scale), Color.White, Scale);
-
-            //Draw text showing there manag
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Mana + " / " + player.statManaMax2,
-                GuiPosition + new Vector2(barManaOrigin.X * Scale + 24f * Scale, barManaOrigin.Y * Scale), Color.White, 0.8f * Scale);
-
-            //This should SpellDraw roman numerals for the characters level.... but doesn't seem to work.
-            DrawNumerals(spriteBatch, character.Level, Scale);
-
-            //If they have unspent level points, SpellDraw the icon
-            if (character.UnspentPoints())
-                spriteBatch.Draw(GFX.GFX.UnspentPoints, PointsOrigin, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
-
-            //  Main.spriteBatch.End();
-
-            if (player.lavaTime < player.lavaMax || player.breath < player.breathMax)
+            try
             {
-                // Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+                character = player.GetModPlayer<PlayerCharacter>();
 
-                if (player.lavaTime < player.lavaMax)
+                DrawHotbar();
+
+                //Draw the health, mana and exp bar background.  If you change the color it will only effect the exp bar.
+                spriteBatch.Draw(GFX.GFX.StatusBarsBg, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+
+                //Calculate the current life bar length.
+                int currentLifeLength = (int) Math.Round(player.statLife / (decimal) player.statLifeMax2 * BarLifeLength);
+
+                spriteBatch.Draw(GFX.GFX.StatusBars, GuiPosition + barLifeOrigin * Scale, new Rectangle((int) (barLifeOrigin.X + BarLifeLength - currentLifeLength), //This how much of the bar should be blacked out.
+                    (int) barLifeOrigin.Y, currentLifeLength, BarLifeThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+
+                //Calculate the current length of the mana bar
+                int currentManaLength = (int) Math.Round(character.Mana / (decimal) player.statManaMax2 * BarManaLength);
+
+                spriteBatch.Draw(GFX.GFX.StatusBars, GuiPosition + barManaOrigin * Scale, new Rectangle((int) (barManaOrigin.X + BarManaLength - currentManaLength), //How much of the bar should be blacked out.
+                    (int) barManaOrigin.Y, currentManaLength, BarManaThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+
+                //calculate the exp bar length
+                int currentXpLength = (int) Math.Round(BarXpLength * (decimal) character.Experience / character.ExperienceToLevel());
+
+                //Draw the exp bar
+                spriteBatch.Draw(GFX.GFX.StatusBars, GuiPosition + barXpOrigin * Scale, new Rectangle((int) barXpOrigin.X, (int) barXpOrigin.Y, currentXpLength, BarXpThickness), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+
+                //Draw the image that is the background for the hud hp/mana/exp bar
+                spriteBatch.Draw(GFX.GFX.CharacterFrame, GuiPosition, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+
+                //Draw text showing there health
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife + " / " + player.statLifeMax2, GuiPosition + new Vector2(barLifeOrigin.X * Scale + 24f * Scale, (barLifeOrigin.Y + 4f) * Scale), Color.White, Scale);
+
+                //Draw text showing there manag
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Mana + " / " + player.statManaMax2, GuiPosition + new Vector2(barManaOrigin.X * Scale + 24f * Scale, barManaOrigin.Y * Scale), Color.White, 0.8f * Scale);
+
+                //This should SpellDraw roman numerals for the characters level.... but doesn't seem to work.
+                DrawNumerals(spriteBatch, character.Level, Scale);
+
+                //If they have unspent level points, SpellDraw the icon
+                if (character.UnspentPoints())
+                    spriteBatch.Draw(GFX.GFX.UnspentPoints, PointsOrigin, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+
+                //  Main.spriteBatch.End();
+
+                if (player.lavaTime < player.lavaMax || player.breath < player.breathMax)
                 {
-                    int currentBubbles = (int)Math.Round((decimal)BubblesLength * player.lavaTime / player.lavaMax);
-                    spriteBatch.Draw(GFX.GFX.bubbles_lava, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White,
-                        Scale);
+                    // Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+
+                    if (player.lavaTime < player.lavaMax)
+                    {
+                        int currentBubbles = (int) Math.Round((decimal) BubblesLength * player.lavaTime / player.lavaMax);
+                        spriteBatch.Draw(GFX.GFX.bubbles_lava, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White, Scale);
+                    }
+
+                    if (player.breath < player.breathMax)
+                    {
+                        int currentBubbles = (int) Math.Round((decimal) BubblesLength * player.breath / player.breathMax);
+                        spriteBatch.Draw(GFX.GFX.bubbles, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White, Scale);
+                    }
+
+                    //   Main.spriteBatch.End();
                 }
 
-                if (player.breath < player.breathMax)
-                {
-                    int currentBubbles = (int)Math.Round((decimal)BubblesLength * player.breath / player.breathMax);
-                    spriteBatch.Draw(GFX.GFX.bubbles, GuiPosition + bubblesOrigin * Scale, new Rectangle(0, 0, currentBubbles, BubblesThickness), Color.White,
-                        Scale);
-                }
-
-                //   Main.spriteBatch.End();
+                // you should only start and stop spritebatches 
+                //   Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+                Main.buffString = "";
+                Main.bannerMouseOver = false;
+                if (!Main.recBigList)
+                    Main.recStart = 0;
+                if (!Main.ingameOptionsWindow && !Main.playerInventory && !Main.inFancyUI)
+                    DrawBuffs();
             }
-            // you should only start and stop spritebatches 
-            //   Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
-            Main.buffString = "";
-            Main.bannerMouseOver = false;
-            if (!Main.recBigList)
-                Main.recStart = 0;
-            if (!Main.ingameOptionsWindow && !Main.playerInventory && !Main.inFancyUI)
-                DrawBuffs();
+            catch (Exception e)
+            {
+                kRPG.LogMessage("StatusBar PostDraw Error: " + e);
+            }
+
 
         }
     }

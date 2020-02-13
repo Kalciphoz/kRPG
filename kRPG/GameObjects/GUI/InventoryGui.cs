@@ -245,66 +245,75 @@ namespace kRPG.GameObjects.GUI
 
         public override void PostDraw(SpriteBatch spriteBatch, Player player)
         {
-            PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
+            try
+            {
 
-            for (int i = 0; i < 40; i += 1)
-                character.Inventories[character.ActiveInvPage][i] = player.inventory[i + 10];
+                PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
 
-            if ((int) Main.time % 30 < 1)
-                API.FindRecipes();
+                for (int i = 0; i < 40; i += 1)
+                    character.Inventories[character.ActiveInvPage][i] = player.inventory[i + 10];
 
-            Vanilla(!character.StatPage);
+                if ((int) Main.time % 30 < 1)
+                    API.FindRecipes();
 
-            if (character.StatPage)
-                DrawStatPage(spriteBatch, character);
+                Vanilla(!character.StatPage);
 
-            spriteBatch.Draw(GFX.GFX.InventoryFrame, new Vector2((int) Origin.X, (int) Origin.Y), Color.White, Scale);
+                if (character.StatPage)
+                    DrawStatPage(spriteBatch, character);
 
-            if (!character.StatPage)
-                spriteBatch.Draw(GFX.GFX.InventorySeparator, new Vector2(Origin.X + 56 * Scale, Origin.Y + 354 * Scale), Color.White, Scale);
+                spriteBatch.Draw(GFX.GFX.InventoryFrame, new Vector2((int) Origin.X, (int) Origin.Y), Color.White, Scale);
 
-            DrawHotbar();
+                if (!character.StatPage)
+                    spriteBatch.Draw(GFX.GFX.InventorySeparator, new Vector2(Origin.X + 56 * Scale, Origin.Y + 354 * Scale), Color.White, Scale);
 
-            spriteBatch.Draw(character.StatPage ? GFX.GFX.ButtonStatsPressed : GFX.GFX.ButtonStats, Origin + new Vector2(142f, 102f) * Scale, Color.White, Scale);
+                DrawHotbar();
 
-            spriteBatch.Draw(character.ActiveInvPage == 0 && !character.StatPage ? GFX.GFX.ButtonPage1Pressed : GFX.GFX.ButtonPage1, Origin + new Vector2(174f, 102f) * Scale, Color.White, Scale);
+                spriteBatch.Draw(character.StatPage ? GFX.GFX.ButtonStatsPressed : GFX.GFX.ButtonStats, Origin + new Vector2(142f, 102f) * Scale, Color.White, Scale);
 
-            spriteBatch.Draw(character.ActiveInvPage == 1 && !character.StatPage ? GFX.GFX.ButtonPage2Pressed : GFX.GFX.ButtonPage2, Origin + new Vector2(206f, 102f) * Scale, Color.White, Scale);
+                spriteBatch.Draw(character.ActiveInvPage == 0 && !character.StatPage ? GFX.GFX.ButtonPage1Pressed : GFX.GFX.ButtonPage1, Origin + new Vector2(174f, 102f) * Scale, Color.White, Scale);
 
-            spriteBatch.Draw(character.ActiveInvPage == 2 && !character.StatPage ? GFX.GFX.ButtonPage3Pressed : GFX.GFX.ButtonPage3, Origin + new Vector2(238f, 102f) * Scale, Color.White, Scale);
+                spriteBatch.Draw(character.ActiveInvPage == 1 && !character.StatPage ? GFX.GFX.ButtonPage2Pressed : GFX.GFX.ButtonPage2, Origin + new Vector2(206f, 102f) * Scale, Color.White, Scale);
 
-            StatusBar.DrawNumerals(spriteBatch, player.GetModPlayer<PlayerCharacter>().Level, Scale);
+                spriteBatch.Draw(character.ActiveInvPage == 2 && !character.StatPage ? GFX.GFX.ButtonPage3Pressed : GFX.GFX.ButtonPage3, Origin + new Vector2(238f, 102f) * Scale, Color.White, Scale);
 
-            int currentLifeLength = (int) Math.Round(player.statLife / (decimal) player.statLifeMax2 * BarLength);
+                StatusBar.DrawNumerals(spriteBatch, player.GetModPlayer<PlayerCharacter>().Level, Scale);
 
-            spriteBatch.Draw(GFX.GFX.InventoryLife, Origin + new Vector2(BarX, 70 * Scale), new Rectangle(0, 0, currentLifeLength, 20), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+                int currentLifeLength = (int) Math.Round(player.statLife / (decimal) player.statLifeMax2 * BarLength);
 
-            int currentManaLength = (int) Math.Round(character.Mana / (decimal) player.statManaMax2 * BarLength);
+                spriteBatch.Draw(GFX.GFX.InventoryLife, Origin + new Vector2(BarX, 70 * Scale), new Rectangle(0, 0, currentLifeLength, 20), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
-            spriteBatch.Draw(GFX.GFX.InventoryMana, Origin + new Vector2(BarX, 98 * Scale), new Rectangle(0, 0, currentManaLength, 16), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+                int currentManaLength = (int) Math.Round(character.Mana / (decimal) player.statManaMax2 * BarLength);
 
-            int currentXpLength = (int) Math.Round(BarLength * (decimal) character.Experience / character.ExperienceToLevel());
+                spriteBatch.Draw(GFX.GFX.InventoryMana, Origin + new Vector2(BarX, 98 * Scale), new Rectangle(0, 0, currentManaLength, 16), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
-            spriteBatch.Draw(GFX.GFX.InventoryXp, Origin + new Vector2(BarX, 126 * Scale), new Rectangle(0, 0, currentXpLength, 8), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+                int currentXpLength = (int) Math.Round(BarLength * (decimal) character.Experience / character.ExperienceToLevel());
 
-            spriteBatch.Draw(GFX.GFX.InventoryBarCovers, Origin + new Vector2(302, 68) * Scale, Color.White, Scale);
+                spriteBatch.Draw(GFX.GFX.InventoryXp, Origin + new Vector2(BarX, 126 * Scale), new Rectangle(0, 0, currentXpLength, 8), Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
 
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife + " / " + player.statLifeMax2, Origin + new Vector2(BarX + 16f * Scale, 72f * Scale), Color.White, 0.8f * Scale);
+                spriteBatch.Draw(GFX.GFX.InventoryBarCovers, Origin + new Vector2(302, 68) * Scale, Color.White, Scale);
 
-            spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Mana + " / " + player.statManaMax2, Origin + new Vector2(BarX + 16f * Scale, 100f * Scale), Color.White, 0.6f * Scale);
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, player.statLife + " / " + player.statLifeMax2, Origin + new Vector2(BarX + 16f * Scale, 72f * Scale), Color.White, 0.8f * Scale);
 
-            if (character.UnspentPoints())
-                spriteBatch.Draw(GFX.GFX.InventoryPoints, PointsOrigin, Color.White, Scale);
+                spriteBatch.DrawStringWithShadow(Main.fontMouseText, character.Mana + " / " + player.statManaMax2, Origin + new Vector2(BarX + 16f * Scale, 100f * Scale), Color.White, 0.6f * Scale);
 
-            spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<PermanenceCrown>()], Origin + new Vector2(600f, 68f) * Scale, Color.White, Scale);
+                if (character.UnspentPoints())
+                    spriteBatch.Draw(GFX.GFX.InventoryPoints, PointsOrigin, Color.White, Scale);
 
-            spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.Permanence, Origin + new Vector2(640f, 72f) * Scale, Color.White, Scale * 1.2f);
+                spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<PermanenceCrown>()], Origin + new Vector2(600f, 68f) * Scale, Color.White, Scale);
 
-            spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<BlacksmithCrown>()], Origin + new Vector2(600f, 108f) * Scale, Color.White, Scale);
+                spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.Permanence, Origin + new Vector2(640f, 72f) * Scale, Color.White, Scale * 1.2f);
 
-            spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.Transcendence, Origin + new Vector2(640f, 112f) * Scale, Color.White, Scale * 1.2f);
+                spriteBatch.Draw(Main.itemTexture[ModContent.ItemType<BlacksmithCrown>()], Origin + new Vector2(600f, 108f) * Scale, Color.White, Scale);
 
-            StatusBar.DrawBuffs();
+                spriteBatch.DrawStringWithShadow(Main.fontItemStack, "x" + character.Transcendence, Origin + new Vector2(640f, 112f) * Scale, Color.White, Scale * 1.2f);
+
+                StatusBar.DrawBuffs();
+            }
+            catch (Exception e)
+            {
+                kRPG.LogMessage("InventoryGui PostDraw Error: " + e);
+            }
+            
         }
 
         public override bool PreDraw()
@@ -705,7 +714,7 @@ namespace kRPG.GameObjects.GUI
                                 if (!PlayerInput.IgnoreMouseInterface)
                                 {
                                     Main.player[Main.myPlayer].mouseInterface = true;
-                                    if (Main.mouseLeftRelease && Main.mouseLeft && !PlayerInput.UsingGamepadUI && Main.mouseItem.type == 0)
+                                    if (Main.mouseLeftRelease && Main.mouseLeft && !PlayerInput.UsingGamepadUI && Main.mouseItem.type == ItemID.None)
                                     {
                                         //Main.PlaySound(12);
                                         SoundManager.PlaySound(Sounds.MenuClose);
@@ -745,7 +754,7 @@ namespace kRPG.GameObjects.GUI
                         UILinkPointNavigator.Shortcuts.NPCS_IconsTotal = num32;
                     }
 
-                    if (text != "" && Main.mouseItem.type == 0)
+                    if (text != "" && Main.mouseItem.type == ItemID.None)
                         main.MouseText(text);
                 }
                 else
@@ -773,7 +782,7 @@ namespace kRPG.GameObjects.GUI
                     Color color2 = new Color(80, 80, 80, 80);
                     for (int num46 = 0; num46 < num44; num46++)
                     {
-                        bool flag5 = flag4 && num46 == num44 - 1 && Main.mouseItem.type > 0;
+                        bool flag5 = flag4 && num46 == num44 - 1 && Main.mouseItem.type > ItemID.None;
                         int num47 = Main.screenWidth - 64 - 28;
                         int num48 = (int) (174 + (int) Mh.GetValue(null) + num46 * 56 * Main.inventoryScale);
                         new Color(100, 100, 100, 100);
@@ -864,7 +873,7 @@ namespace kRPG.GameObjects.GUI
 
                     for (int num52 = 10; num52 < 10 + num44; num52++)
                     {
-                        bool flag6 = false || flag4 && num52 == 10 + num44 - 1 && Main.mouseItem.type > 0;
+                        bool flag6 = false || flag4 && num52 == 10 + num44 - 1 && Main.mouseItem.type > ItemID.None;
                         int num53 = Main.screenWidth - 64 - 28 - 47;
                         int num54 = (int) (174 + (int) Mh.GetValue(null) + (num52 - 10) * 56 * Main.inventoryScale);
                         new Color(100, 100, 100, 100);
@@ -905,7 +914,7 @@ namespace kRPG.GameObjects.GUI
 
                     for (int num55 = 0; num55 < num44; num55++)
                     {
-                        bool flag7 = flag4 && num55 == num44 - 1 && Main.mouseItem.type > 0;
+                        bool flag7 = flag4 && num55 == num44 - 1 && Main.mouseItem.type > ItemID.None;
                         int num56 = Main.screenWidth - 64 - 28 - 47 - 47;
                         int num57 = (int) (174 + (int) Mh.GetValue(null) + num55 * 56 * Main.inventoryScale);
                         new Color(100, 100, 100, 100);
@@ -990,7 +999,7 @@ namespace kRPG.GameObjects.GUI
                         int num61 = 448;
                         //string text2 = Lang.inter[46].Value + ": ";
                         string text2 = Language.GetTextValue("LegacyInterface.46") + ": ";
-                        if (Main.reforgeItem.type > 0)
+                        if (Main.reforgeItem.type > ItemID.None)
                         {
                             int num62 = Main.reforgeItem.value;
                             if (Main.player[Main.myPlayer].discount)
@@ -1130,7 +1139,7 @@ namespace kRPG.GameObjects.GUI
                         int num71 = 331;
                         num71 += num58;
                         string text4;
-                        if (Main.guideItem.type > 0)
+                        if (Main.guideItem.type > ItemID.None)
                         {
                             //text4 = Lang.inter[21].Value + " " + Main.guideItem.Name;
                             text4 = Language.GetTextValue("LegacyInterface.21") + " " + Main.guideItem.Name;
@@ -1277,16 +1286,16 @@ namespace kRPG.GameObjects.GUI
                                 !PlayerInput.IgnoreMouseInterface)
                             {
                                 Main.player[Main.myPlayer].mouseInterface = true;
-                                if (Main.focusRecipe == num80 && Main.guideItem.type == 0 && Main.LocalPlayer.itemTime == 0 && Main.LocalPlayer.itemAnimation == 0)
+                                if (Main.focusRecipe == num80 && Main.guideItem.type == ItemID.None && Main.LocalPlayer.itemTime == 0 && Main.LocalPlayer.itemAnimation == 0)
                                 {
-                                    if ((Main.mouseItem.type == 0 || Main.mouseItem.IsTheSameAs(Main.recipe[Main.availableRecipe[num80]].createItem) &&
+                                    if ((Main.mouseItem.type == ItemID.None || Main.mouseItem.IsTheSameAs(Main.recipe[Main.availableRecipe[num80]].createItem) &&
                                          Main.mouseItem.stack + Main.recipe[Main.availableRecipe[num80]].createItem.stack <= Main.mouseItem.maxStack) && !Main.player[Main.myPlayer].IsStackingItems())
                                     {
                                         if (Main.mouseLeftRelease && Main.mouseLeft)
                                         {
                                             API.CraftItem(Main.recipe[Main.availableRecipe[num80]]);
                                         }
-                                        else if (Main.stackSplit <= 1 && Main.mouseRight && (Main.mouseItem.stack < Main.mouseItem.maxStack || Main.mouseItem.type == 0))
+                                        else if (Main.stackSplit <= 1 && Main.mouseRight && (Main.mouseItem.stack < Main.mouseItem.maxStack || Main.mouseItem.type == ItemID.None))
                                         {
                                             Main.stackSplit = Main.stackSplit == 0 ? 15 : Main.stackDelay;
                                             API.CraftItem(Main.recipe[Main.availableRecipe[num80]]);
