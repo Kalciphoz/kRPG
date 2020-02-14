@@ -82,7 +82,9 @@ namespace kRPG
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
             Message msg = (Message)reader.ReadByte();
+#if DEBUG
             LogMessage($"Handling {msg}");
+#endif
             switch (msg)
             {
                 //case Message.InitProjEleDmg:

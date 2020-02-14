@@ -75,9 +75,9 @@ namespace kRPG.Packets
             }
         }
 
-        public static void Write(NPC npc, int amount, List<NpcModifier> modifiers)
+        public static void Write(NPC npc,List<NpcModifier> modifiers)
         {
-            if (Main.netMode == Constants.NetModes.Server)
+            if (Main.netMode != Constants.NetModes.Client)
             {
                 int bytes = 0;
                 ModPacket packet = kRPG.Mod.GetPacket();
@@ -93,14 +93,14 @@ namespace kRPG.Packets
                 packet.Write(npc.whoAmI);
                 bytes += 4;
 
-                packet.Write(amount);
+                packet.Write(modifiers.Count);
                 bytes += 4;
 
                 string ModIds = "";
 
-                if (amount > 0)
+                if (modifiers.Count > 0)
                 {
-                    for (int i = 0; i < amount; i++)
+                    for (int i = 0; i < modifiers.Count; i++)
                     {
                         int modIndex = 0;
                         for (int ii = 0; ii < kNPC.modifierDictionary.Length; ii++)
@@ -118,7 +118,9 @@ namespace kRPG.Packets
                         bytes += modifiers[i].Pack(packet);
                     }
                 }
-                //kRPG.LogMessage($"RefId: {refNum} WhoAmI: {npc.whoAmI} Amount: {amount} Packet Size: {bytes} Mods: {ModIds}");
+#if DEBUG
+                kRPG.LogMessage($"RefId: {refNum} WhoAmI: {npc.whoAmI}  Packet Size: {bytes} Mods: {ModIds}");
+#endif
                 packet.Send();
             }
         }

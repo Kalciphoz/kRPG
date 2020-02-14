@@ -35,7 +35,9 @@ namespace kRPG.GameObjects.Modifiers
         public override int Unpack(BinaryReader reader)
         {
             DodgeModifier = reader.ReadSingle();
+#if DEBUG
             kRPG.LogMessage("Reading DodgeModifier: " + DodgeModifier.ToString("F"));
+#endif
             return 4;
         }
 

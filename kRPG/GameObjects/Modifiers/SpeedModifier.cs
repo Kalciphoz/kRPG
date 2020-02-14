@@ -37,7 +37,9 @@ namespace kRPG.GameObjects.Modifiers
         public override int Unpack(BinaryReader reader)
         {
             SpeedModifierAdj = reader.ReadSingle();
+#if DEBUG
             kRPG.LogMessage("Reading SpeedModifierAdj: " + SpeedModifierAdj.ToString("F"));
+#endif
             return 4;
         }
 

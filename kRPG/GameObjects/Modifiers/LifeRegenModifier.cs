@@ -42,7 +42,9 @@ namespace kRPG.GameObjects.Modifiers
         public override int Unpack(BinaryReader reader)
         {
             RegenTimer = reader.ReadSingle();
+#if DEBUG
             kRPG.LogMessage("Reading RegenTimer: " + RegenTimer.ToString("F"));
+#endif
             return 4;
         }
 
