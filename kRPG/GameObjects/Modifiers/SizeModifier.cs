@@ -52,8 +52,10 @@ namespace kRPG.GameObjects.Modifiers
         {
             ScaleModifier = reader.ReadSingle();
             LifeModifier = reader.ReadSingle();
+#if DEBUG
             kRPG.LogMessage("Reading ScaleModifier: " + ScaleModifier.ToString("F"));
             kRPG.LogMessage("Reading LifeModifier: " + LifeModifier.ToString("F"));
+#endif
             return 8;
         }
 

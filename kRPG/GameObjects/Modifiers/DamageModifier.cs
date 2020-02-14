@@ -44,7 +44,9 @@ namespace kRPG.GameObjects.Modifiers
         {
            
             DmgModifier = reader.ReadSingle();
+#if DEBUG
             kRPG.LogMessage("Reading DamageModifier: " + DmgModifier.ToString("F"));
+#endif
             return 4;
         }
 

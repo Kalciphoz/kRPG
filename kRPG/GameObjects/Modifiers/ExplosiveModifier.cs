@@ -49,7 +49,9 @@ namespace kRPG.GameObjects.Modifiers
         public override int Unpack(BinaryReader reader)
         {
             LifeModifier = reader.ReadSingle();
+#if DEBUG
             kRPG.LogMessage("Reading LifeModifier: " + LifeModifier.ToString("F"));
+#endif
             return 4;
         }
 

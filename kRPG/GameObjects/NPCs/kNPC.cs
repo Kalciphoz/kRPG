@@ -72,7 +72,7 @@ namespace kRPG.GameObjects.NPCs
 
         public override bool? CanBeHitByItem(NPC npc, Player player, Item item)
         {
-            if (ImmuneTime > 0) 
+            if (ImmuneTime > 0)
                 return false;
 
             return null;
@@ -196,7 +196,7 @@ namespace kRPG.GameObjects.NPCs
                 Modifiers.Add(modifier);
             }
 
-            PrefixNPCPacket.Write(npc, amount, Modifiers);
+            PrefixNPCPacket.Write(npc,  Modifiers);
             MakeNotable(npc);
         }
 
@@ -332,10 +332,14 @@ namespace kRPG.GameObjects.NPCs
             foreach (ProceduralSpell spell in keys)
                 if (InvincibilityTime[spell] > 0) InvincibilityTime[spell] -= 1;
                 else InvincibilityTime.Remove(spell);
-            if (ImmuneTime > 0) ImmuneTime -= 1;
+
+            if (ImmuneTime > 0)
+                ImmuneTime -= 1;
+
             if (Initialized)
             {
                 Update(npc);
+                
                 return;
             }
 
@@ -389,6 +393,9 @@ namespace kRPG.GameObjects.NPCs
                 //So we are randomly adding modifiers...
                 InitializeModifiers(npc);
             }
+            else
+            PrefixNPCPacket.Write(npc, Modifiers);
+
 
             if (!Main.expertMode)
             {
