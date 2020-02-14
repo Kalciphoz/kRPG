@@ -265,7 +265,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             item.height = 34;
             item.useTime = 1;
             item.useAnimation = 1;
-            item.useStyle = 5;
+            item.useStyle = (int)UseStyles.HoldingOut;
             item.knockBack = 5f;
             item.UseSound = SoundID.Item43;
             item.scale = 1f;
@@ -303,5 +303,6 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
             return false;
         }
+       
     }
 }

@@ -1,4 +1,5 @@
-﻿using Terraria.ID;
+﻿using kRPG.Enums;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Items.Weapons.Melee
@@ -13,7 +14,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             item.height = 30;
             item.useTime = 27;
             item.useAnimation = 27;
-            item.useStyle = 1;
+            item.useStyle = (int)UseStyles.GeneralSwingingThrowing;
             item.knockBack = 4f;
             item.value = 8000;
             item.UseSound = SoundID.Item1;

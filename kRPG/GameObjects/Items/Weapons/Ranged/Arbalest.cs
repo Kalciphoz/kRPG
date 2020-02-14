@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using kRPG.Enums;
+using Microsoft.Xna.Framework;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -20,7 +21,7 @@ namespace kRPG.GameObjects.Items.Weapons.Ranged
             item.height = 22;
             item.useTime = 44;
             item.useAnimation = 44;
-            item.useStyle = 5;
+            item.useStyle = (int)UseStyles.HoldingOut;
             item.shootSpeed = 11f;
             item.knockBack = 5.5f;
             item.shoot = 1;

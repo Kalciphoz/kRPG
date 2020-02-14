@@ -8,6 +8,7 @@ namespace kRPG.GameObjects.Modifiers
 {
     public class SizeModifier : NpcModifier
     {
+        public SizeModifier() { }
         public SizeModifier(kNPC kNpc, NPC npc, float scaleModifier = 1.1f, float lifeModifier = 1.4f) : base(kNpc, npc)
         {
             this.npc = npc;

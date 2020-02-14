@@ -22,7 +22,7 @@ namespace kRPG.GameObjects.Items.Armor
             item.value = 100000;
             item.rare = 10;
             item.consumable = true;
-            item.useStyle = 2;
+            item.useStyle =(int) UseStyles.EatingUsing;
             item.useTime = 17;
             item.useAnimation = 17;
             item.useTurn = true;

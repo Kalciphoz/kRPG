@@ -29,25 +29,27 @@ namespace kRPG.GameObjects.Items
         public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor,
             Vector2 origin, float scale)
         {
-            if (Main.LocalPlayer == null)
-                return;
             try
             {
-                if (!Main.gameMenu && !WorldGen.gen)
+                if (Main.gameMenu || WorldGen.gen)
                 {
-                    Player player = Main.LocalPlayer;
-                    bool flag = false;
-                    if (player.chest >= 0)
-                        if (Main.chest[player.chest].item.Contains(item))
-                            flag = true;
-                    if (NeedsSaving(item) && !Enhanced && !WorldGen.gen && !Main.gameMenu && (player.inventory.Contains(item) || flag || player.bank.item.Contains(item) || player.bank2.item.Contains(item) || player.bank3.item.Contains(item)))
-                        Initialize(item);
-
-                    PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
-
-                    if (Upgradeable(item) && Main.mouseRight && Main.mouseRightRelease && new Rectangle((int)position.X, (int)position.Y, 38, 38).Contains(Main.mouseX, Main.mouseY))
-                        character.AnvilGui.AttemptSelectItem(this, item);
+                    return;
                 }
+
+                Player player = Main.LocalPlayer;
+                bool flag = false;
+                if (player.chest >= 0)
+                    if (Main.chest[player.chest].item.Contains(item))
+                        flag = true;
+
+                if (NeedsSaving(item) && !Enhanced && (player.inventory.Contains(item) || flag || player.bank.item.Contains(item) || player.bank2.item.Contains(item) || player.bank3.item.Contains(item)))
+                    Initialize(item);
+
+                PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
+
+                if (Upgradeable(item) && Main.mouseRight && Main.mouseRightRelease && new Rectangle((int)position.X, (int)position.Y, 38, 38).Contains(Main.mouseX, Main.mouseY))
+                    character.AnvilGui.AttemptSelectItem(this, item);
+
             }
             catch (Exception e)
             {
@@ -55,17 +57,21 @@ namespace kRPG.GameObjects.Items
             }
 
         }
+
         public int BonusAccuracy { get; set; }
         public int BonusAllResists { get; set; }
         public int BonusCritical { get; set; }
 
-        public int BonusDefense { get; set; } = 0;
-        public int BonusEvasion { get; set; } = 0;
+        public int BonusDefense { get; set; }
+        public int BonusEvasion { get; set; }
         public float BonusLeech { get; set; }
         public int BonusLife { get; set; }
         public int BonusMana { get; set; }
         public float BonusMult { get; set; }
         public float BonusRegeneration { get; set; }
+        public bool Enhanced => KPrefix != 0;
+        public override bool InstancePerEntity => true;
+        public byte KPrefix { get; set; } = 0;
 
         public Dictionary<Element, int> ElementalDamage { get; set; } = new Dictionary<Element, int>
         {
@@ -79,13 +85,7 @@ namespace kRPG.GameObjects.Items
             {Element.Lightning, "255239000 lightning "},
             {Element.Shadow, "095000191 shadow "}
         };
-
-        public bool Enhanced => KPrefix != 0;
-
-        public override bool InstancePerEntity => true;
-
-        public byte KPrefix { get; set; } = 0;
-
+        
         private List<string> PrefixTooltips { get; set; } = new List<string>();
 
         public Dictionary<Element, int> ResBonus { get; set; } = new Dictionary<Element, int>

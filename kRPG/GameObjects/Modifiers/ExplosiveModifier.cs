@@ -11,6 +11,7 @@ namespace kRPG.GameObjects.Modifiers
 {
     public class ExplosiveModifier : NpcModifier
     {
+        public ExplosiveModifier() { }
         public ExplosiveModifier(kNPC kNpc, NPC npc, float lifeModifier = 0.5f) : base(kNpc, npc)
         {
             this.npc = npc;

@@ -8,6 +8,7 @@ namespace kRPG.GameObjects.Modifiers
 {
     public class DamageModifier : NpcModifier
     {
+        public DamageModifier() { }
         public DamageModifier(kNPC kNpc, NPC npc, float dmgModifier = 1.2f) : base(kNpc, npc)
         {
             this.npc = npc;

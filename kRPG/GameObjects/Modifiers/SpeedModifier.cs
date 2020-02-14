@@ -7,6 +7,7 @@ namespace kRPG.GameObjects.Modifiers
 {
     public class SpeedModifier : NpcModifier
     {
+        public SpeedModifier() { }
         public SpeedModifier(kNPC kNpc, NPC npc, float speedModifierAdj = 1.8f) : base(kNpc, npc)
         {
             this.npc = npc;
