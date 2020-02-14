@@ -179,7 +179,7 @@ namespace kRPG.GameObjects.Players
                 }
             }
 
-            if (newItem.type != ItemID.CopperCoin && newItem.type != ItemID.SilverCoin && newItem.type != ItemID.GoldCoin && newItem.type != ItemID.PlatinumCoin && newItem.useStyle > 0)
+            if (newItem.type != ItemID.CopperCoin && newItem.type != ItemID.SilverCoin && newItem.type != ItemID.GoldCoin && newItem.type != ItemID.PlatinumCoin && newItem.useStyle > (int)UseStyles.None)
                 for (int j = 0; j < 10; j++)
                 {
                     if (player.inventory[j].type != 0)

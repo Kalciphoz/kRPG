@@ -10,6 +10,7 @@ namespace kRPG.GameObjects.Modifiers
 {
     public class LifeRegenModifier : NpcModifier
     {
+        public LifeRegenModifier() { }
         public LifeRegenModifier(kNPC kNpc, NPC npc) : base(kNpc, npc)
         {
             this.npc = npc;

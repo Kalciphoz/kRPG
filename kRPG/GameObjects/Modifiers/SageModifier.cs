@@ -11,6 +11,7 @@ namespace kRPG.GameObjects.Modifiers
 {
     public class SageModifier : NpcModifier
     {
+        public SageModifier() { }
         public SageModifier(kNPC kNpc, NPC npc) : base(kNpc, npc)
         {
             this.npc = npc;

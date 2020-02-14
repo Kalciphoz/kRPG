@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using kRPG.GameObjects.Items.Projectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -66,12 +67,12 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                     projectile.Kill();
                 // Apply proper rotation, with an offset of 135 degrees due to the sprite's rotation, notice the usage of MathHelper, use this class!
                 // MathHelper.ToRadians(xx degrees here)
-                projectile.rotation = (float) Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.ToRadians(45f);
+                projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.ToRadians(45f);
                 // Offset by 90 degrees here
                 if (projectile.spriteDirection == -1)
                     projectile.rotation += MathHelper.ToRadians(90f);
 
-                Rectangle rect = new Rectangle((int) projectile.position.X, (int) projectile.position.Y, LocalTexture.Width, LocalTexture.Height);
+                Rectangle rect = new Rectangle((int)projectile.position.X, (int)projectile.position.Y, LocalTexture.Width, LocalTexture.Height);
                 Blade.Effect?.Invoke(rect, projOwner);
                 Accent.Effect?.Invoke(rect, projOwner);
             }
@@ -89,24 +90,25 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public Point CombinedTextureSize()
         {
-            return new Point(Blade.Texture.Width - (int) Blade.Origin.X + (int) Hilt.SpearOrigin.X,
-                (int) Blade.Origin.Y + Hilt.SpearTexture.Height - (int) Hilt.SpearOrigin.Y);
+            return new Point(Blade.Texture.Width - (int)Blade.Origin.X + (int)Hilt.SpearOrigin.X,
+                (int)Blade.Origin.Y + Hilt.SpearTexture.Height - (int)Hilt.SpearOrigin.Y);
         }
 
-        //public override void SendExtraAI(BinaryWriter writer)
-        //{
-        //    writer.Pack(blade.type);
-        //    writer.Pack(hilt.type);
-        //    writer.Pack(accent.type);
-        //}
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(Blade.Type);
+            writer.Write(Hilt.Type);
+            writer.Write(Accent.Type);
+        }
 
-        //public override void ReceiveExtraAI(BinaryReader reader)
-        //{
-        //    blade = SwordBlade.blades[reader.ReadInt32()];
-        //    hilt = SwordHilt.hilts[reader.ReadInt32()];
-        //    accent = SwordAccent.accents[reader.ReadInt32()];
-        //    if (Main.netMode == 1) Initialize();
-        //}
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            Blade = SwordBlade.Blades[reader.ReadInt32()];
+            Hilt = SwordHilt.Hilts[reader.ReadInt32()];
+            Accent = SwordAccent.Accents[reader.ReadInt32()];
+            if (Main.netMode == Constants.NetModes.Client) 
+                Initialize();
+        }
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
@@ -130,19 +132,26 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                         projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
                     break;
                 case 1:
-                {
-                    Texture2D t2d = Main.projectileTexture[projectile.type];
-                    spriteBatch.Draw(t2d, position + t2d.Size() / 2f, null, color, rotation,
-                        projectile.spriteDirection > 0 ? t2d.Bounds.TopRight() : Vector2.Zero, scale,
-                        projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
-                    break;
-                }
+                    {
+                        Texture2D t2d = Main.projectileTexture[projectile.type];
+                        spriteBatch.Draw(t2d, position + t2d.Size() / 2f, null, color, rotation,
+                            projectile.spriteDirection > 0 ? t2d.Bounds.TopRight() : Vector2.Zero, scale,
+                            projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+                        break;
+                    }
             }
         }
 
         public override void Initialize()
         {
-            LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> {Blade.Texture, Hilt.SpearTexture, Accent.Texture},
+            if (Blade == null || Hilt == null || Accent == null)
+            {
+                kRPG.LogMessage("Um, hilt, accent or Blade is null.");
+                return;
+
+            }
+
+            LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> { Blade.Texture, Hilt.SpearTexture, Accent.Texture },
                 new List<Point>
                 {
                     new Point(CombinedTextureSize().X - Blade.Texture.Width, 0),
@@ -158,8 +167,8 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         public override void ModifyDamageHitbox(ref Rectangle hitBox)
         {
             Player owner = Main.player[projectile.owner];
-            hitBox = new Rectangle((int) projectile.position.X - 2, (int) projectile.position.Y - 2, (int) (projectile.Right.X - projectile.Left.X) + 2,
-                (int) (projectile.Bottom.Y - projectile.Top.Y + 2));
+            hitBox = new Rectangle((int)projectile.position.X - 2, (int)projectile.position.Y - 2, (int)(projectile.Right.X - projectile.Left.X) + 2,
+                (int)(projectile.Bottom.Y - projectile.Top.Y + 2));
             if (owner.direction < 0) hitBox.X += hitBox.Width / 2;
             else hitBox.X -= hitBox.Width / 2;
         }
@@ -169,7 +178,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             try
             {
                 Player owner = Main.player[projectile.owner];
-                Accent.OnHit?.Invoke(owner, target, (ProceduralSword) owner.inventory[owner.selectedItem].modItem, damage, crit);
+                Accent.OnHit?.Invoke(owner, target, (ProceduralSword)owner.inventory[owner.selectedItem].modItem, damage, crit);
             }
             catch (SystemException e)
             {

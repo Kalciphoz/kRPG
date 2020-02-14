@@ -156,7 +156,7 @@ namespace kRPG.GameObjects.Items.Weapons.Ranged
             item.ranged = true;
             item.width = 48;
             item.height = 48;
-            item.useStyle = 5;
+            item.useStyle = (int)UseStyles.HoldingOut;
             item.knockBack = 1f;
             item.scale = 1f;
             item.noMelee = true;

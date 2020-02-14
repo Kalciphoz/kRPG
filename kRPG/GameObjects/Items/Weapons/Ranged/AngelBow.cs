@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using kRPG.Enums;
+using Terraria;
 using Terraria.ID;
 
 namespace kRPG.GameObjects.Items.Weapons.Ranged
@@ -29,7 +30,7 @@ namespace kRPG.GameObjects.Items.Weapons.Ranged
             item.ranged = true;
             item.width = 84;
             item.height = 20;
-            item.useStyle = 5;
+            item.useStyle = (int)UseStyles.HoldingOut;
             item.knockBack = 2f;
             item.scale = 1f;
             item.noMelee = true;
