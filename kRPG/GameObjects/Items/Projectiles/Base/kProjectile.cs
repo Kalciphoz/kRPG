@@ -19,7 +19,7 @@ namespace kRPG.GameObjects.Items.Projectiles.Base
 
         public override void AI(Projectile projectile)
         {
-            if (ElementalDamage != null || Main.netMode == 1)
+            if (ElementalDamage != null || Main.netMode == Constants.NetModes.Client)
                 return;
             ElementalDamage = new Dictionary<Element, int> { { Element.Fire, 0 }, { Element.Cold, 0 }, { Element.Lightning, 0 }, { Element.Shadow, 0 } };
 
@@ -33,28 +33,28 @@ namespace kRPG.GameObjects.Items.Projectiles.Base
                                 bossFight = true;
                     if (bossFight) return;
 
-                    Player player = Main.netMode == 2 ? Main.player[0] : Main.player[Main.myPlayer];
+                    Player player = Main.netMode == Constants.NetModes.Server ? Main.player[0] : Main.player[Main.myPlayer];
                     Dictionary<Element, bool> hasElement = new Dictionary<Element, bool>
                     {
                         {
                             Element.Fire,
                             player.ZoneUnderworldHeight || player.ZoneTowerSolar || player.ZoneMeteor || player.ZoneDesert ||
-                            Main.rand.Next(10) == 0 && Main.netMode == 0
+                            Main.rand.Next(10) == 0 && Main.netMode == Constants.NetModes.Client
                         },
                         {
                             Element.Cold,
                             player.ZoneSnow || player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneDungeon || player.ZoneRain ||
-                            Main.rand.Next(10) == 0 && Main.netMode == 0
+                            Main.rand.Next(10) == 0 && Main.netMode == Constants.NetModes.Client
                         },
                         {
                             Element.Lightning,
                             player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneTowerStardust || player.ZoneMeteor || player.ZoneHoly ||
-                            Main.rand.Next(10) == 0 && Main.netMode == 0
+                            Main.rand.Next(10) == 0 && Main.netMode ==Constants.NetModes.Client
                         },
                         {
                             Element.Shadow,
                             player.ZoneCorrupt || player.ZoneCrimson || player.ZoneUnderworldHeight || player.ZoneTowerNebula ||
-                            !Main.dayTime && Main.rand.Next(10) == 0 && Main.netMode == 0 && player.ZoneOverworldHeight
+                            !Main.dayTime && Main.rand.Next(10) == 0 && Main.netMode ==Constants.NetModes.Client && player.ZoneOverworldHeight
                         }
                     };
                     int count = Enum.GetValues(typeof(Element)).Cast<Element>().Count(element => hasElement[element]);

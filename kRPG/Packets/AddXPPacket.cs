@@ -12,7 +12,7 @@ namespace kRPG.Packets
     {
         public static void Read(BinaryReader reader)
         {
-            if (Main.netMode == 1)
+            if (Main.netMode == Constants.NetModes.Client)
             {
                 //Player player = Main.player[Main.myPlayer];
                 //if (Vector2.Distance(player.Center, Main.npc[(int)tags[DataTag.npcId]].Center) > 1024)
@@ -25,7 +25,7 @@ namespace kRPG.Packets
 
         public static bool Write(int scaled, int target)
         {
-            if (Main.netMode == 2)
+            if (Main.netMode == Constants.NetModes.Server)
             {
                 ModPacket packet = kRPG.Mod.GetPacket();
                 packet.Write((byte)Message.AddXp);

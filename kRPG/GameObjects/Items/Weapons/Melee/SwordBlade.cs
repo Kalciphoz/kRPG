@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kRPG.Enums;
+using kRPG.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -18,7 +19,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             bool autoSwing = false, float scale = 0f, bool spearable = true, bool lighted = false, Action<Rectangle, Player> effect = null)
         {
             Type = Blades.Count() + 1;
-            if (Main.netMode != 2)
+            if (Main.netMode != Constants.NetModes.Server)
                 Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Blades/" + texture);
             Origin = new Vector2(originX, originY);
             Name = name;

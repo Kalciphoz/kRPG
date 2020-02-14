@@ -15,25 +15,52 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-
+using kRPG.Util;
+using System.Diagnostics;
 namespace kRPG.GameObjects.Items
 {
     public class kItem : GlobalItem
     {
         public kItem()
         {
-            UpgradeLevel = 255;
-            KPrefix = 0;
-
-            ClearPrefixes();
+           //Debug.WriteLine("Ctor!");
         }
 
+        public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor,
+            Vector2 origin, float scale)
+        {
+            if (Main.LocalPlayer == null)
+                return;
+            try
+            {
+                if (!Main.gameMenu && !WorldGen.gen)
+                {
+                    Player player = Main.LocalPlayer;
+                    bool flag = false;
+                    if (player.chest >= 0)
+                        if (Main.chest[player.chest].item.Contains(item))
+                            flag = true;
+                    if (NeedsSaving(item) && !Enhanced && !WorldGen.gen && !Main.gameMenu && (player.inventory.Contains(item) || flag || player.bank.item.Contains(item) || player.bank2.item.Contains(item) || player.bank3.item.Contains(item)))
+                        Initialize(item);
+
+                    PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
+
+                    if (Upgradeable(item) && Main.mouseRight && Main.mouseRightRelease && new Rectangle((int)position.X, (int)position.Y, 38, 38).Contains(Main.mouseX, Main.mouseY))
+                        character.AnvilGui.AttemptSelectItem(this, item);
+                }
+            }
+            catch (Exception e)
+            {
+                kRPG.LogMessage(e.ToString());
+            }
+
+        }
         public int BonusAccuracy { get; set; }
         public int BonusAllResists { get; set; }
         public int BonusCritical { get; set; }
 
-        public int BonusDefense { get; set; }
-        public int BonusEvasion { get; set; }
+        public int BonusDefense { get; set; } = 0;
+        public int BonusEvasion { get; set; } = 0;
         public float BonusLeech { get; set; }
         public int BonusLife { get; set; }
         public int BonusMana { get; set; }
@@ -57,7 +84,7 @@ namespace kRPG.GameObjects.Items
 
         public override bool InstancePerEntity => true;
 
-        public byte KPrefix { get; set; }
+        public byte KPrefix { get; set; } = 0;
 
         private List<string> PrefixTooltips { get; set; } = new List<string>();
 
@@ -88,7 +115,7 @@ namespace kRPG.GameObjects.Items
             {PlayerStats.Wits, "239223031 wits"}
         };
 
-        public byte UpgradeLevel { get; set; }
+        public byte UpgradeLevel { get; set; } = 255;
 
         public kItem ApplyStats(Item item, bool clean = false)
         {
@@ -482,7 +509,8 @@ namespace kRPG.GameObjects.Items
         //Seems to work fine now
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-            if (Main.netMode == 2) return;
+            if (Main.netMode == Constants.NetModes.Server) 
+                return;
             if (item.defense > 0 || item.accessory)
             {
                 foreach (Element element in Enum.GetValues(typeof(Element)))
@@ -646,7 +674,7 @@ namespace kRPG.GameObjects.Items
                         SoundManager.PlaySound(Sounds.Grass, player.position);
                         //Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
                         item = new Item();
-                        if (Main.netMode == 1)
+                        if (Main.netMode == Constants.NetModes.Client)
                         {
                             NetMessage.SendData((int)PacketTypes.NebulaLevelUp, -1, -1, null, player.whoAmI, item.buffType, player.Center.X, player.Center.Y);
                             NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, item.whoAmI);
@@ -672,7 +700,7 @@ namespace kRPG.GameObjects.Items
                                 if (player.statLife > player.statLifeMax2)
                                     player.statLife = player.statLifeMax2;
                                 item = new Item();
-                                if (Main.netMode == 1)
+                                if (Main.netMode == Constants.NetModes.Client)
                                     NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, item.whoAmI);
 
                                 break;
@@ -689,7 +717,7 @@ namespace kRPG.GameObjects.Items
                                 if (Main.myPlayer == player.whoAmI)
                                     player.ManaEffect(healAmount);
                                 item = new Item();
-                                if (Main.netMode == 1)
+                                if (Main.netMode == Constants.NetModes.Client)
                                     NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, item.whoAmI);
 
                                 break;
@@ -715,7 +743,7 @@ namespace kRPG.GameObjects.Items
                                 }
 
                                 item = player.GetItem(item);
-                                if (Main.netMode == 1)
+                                if (Main.netMode == Constants.NetModes.Client)
                                     NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, item.whoAmI);
 
                                 break;
@@ -733,33 +761,6 @@ namespace kRPG.GameObjects.Items
 
             return false;
         }
-
-        public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor,
-            Vector2 origin, float scale)
-        {
-            if (!kRPG.PlayerEnteredWorld)
-                return;
-
-            if (Main.LocalPlayer == null)
-                return;
-
-            Player player = Main.LocalPlayer;
-            bool flag = false;
-            if (player.chest >= 0)
-                if (Main.chest[player.chest].item.Contains(item))
-                    flag = true;
-            if (NeedsSaving(item) && !Enhanced && !WorldGen.gen && !Main.gameMenu &&
-                (player.inventory.Contains(item) || flag || player.bank.item.Contains(item) || player.bank2.item.Contains(item) ||
-                 player.bank3.item.Contains(item)))
-                Initialize(item);
-            PlayerCharacter character = Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>();
-
-            if (Upgradeable(item) && Main.mouseRight && Main.mouseRightRelease &&
-                new Rectangle((int)position.X, (int)position.Y, 38, 38).Contains(Main.mouseX, Main.mouseY))
-                character.AnvilGui.AttemptSelectItem(this, item);
-        }
-
-        
 
         public void Prefix(Item item)
         {

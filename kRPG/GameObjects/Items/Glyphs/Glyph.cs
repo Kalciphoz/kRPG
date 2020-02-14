@@ -212,7 +212,7 @@ namespace kRPG.GameObjects.Items.Glyphs
 
         public override void UpdateInventory(Player player)
         {
-            if (Main.netMode == 0) return;
+            if (Main.netMode == Constants.NetModes.SinglePlayer) return;
             if (!Initialized) Randomize();
         }
     }

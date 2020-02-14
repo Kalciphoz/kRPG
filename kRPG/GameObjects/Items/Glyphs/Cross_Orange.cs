@@ -5,6 +5,7 @@ using kRPG.GameObjects.Players;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
+using kRPG.Util;
 
 namespace kRPG.GameObjects.Items.Glyphs
 {
@@ -35,9 +36,9 @@ namespace kRPG.GameObjects.Items.Glyphs
                 if (spell.projectile.velocity.X < 0 && spell.BasePosition == Vector2.Zero) spell.projectile.spriteDirection = -1;
                 Vector2 v = spell.BasePosition != Vector2.Zero ? spell.BasePosition : spell.Origin;
                 if (spell.projectile.spriteDirection == -1)
-                    spell.projectile.rotation = (spell.projectile.Center - v).ToRotation() - (float) API.Tau * 5f / 8f;
+                    spell.projectile.rotation = (spell.projectile.Center - v).ToRotation() - (float) Constants.Tau * 5f / 8f;
                 else
-                    spell.projectile.rotation = (spell.projectile.Center - v).ToRotation() + (float) API.Tau / 8f;
+                    spell.projectile.rotation = (spell.projectile.Center - v).ToRotation() + (float) Constants.Tau / 8f;
             };
         }
 
@@ -45,9 +46,9 @@ namespace kRPG.GameObjects.Items.Glyphs
         {
             return delegate(ProceduralSpellProj spell)
             {
-                if (Main.netMode != 2)
+                if (Main.netMode != Constants.NetModes.Server)
                 {
-                    if (Main.netMode == 0 || spell.projectile.owner == Main.myPlayer)
+                    if (Main.netMode == Constants.NetModes.SinglePlayer || spell.projectile.owner == Main.myPlayer)
                     {
                         PlayerCharacter character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
 

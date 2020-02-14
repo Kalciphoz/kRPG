@@ -10,7 +10,7 @@ namespace kRPG.Packets
     {
         public static void Write(int playerWhoAmI, int projectileWhoAmI, int starType, int crossType, int moonType, float damage, bool minion, int casterWhoAmI, List<GlyphModifier> modifiers)
         {
-            if (Main.netMode == 1)
+            if (Main.netMode == Constants.NetModes.Client)
             {
                 ModPacket packet = kRPG.Mod.GetPacket();
                 packet.Write((byte) Message.CreateProjectile);

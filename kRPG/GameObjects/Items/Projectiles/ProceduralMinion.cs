@@ -25,7 +25,7 @@ namespace kRPG.GameObjects.Items.Projectiles
 
         public override void AI()
         {
-            if (Main.netMode == 2) return;
+            if (Main.netMode == Constants.NetModes.Server) return;
             bool self = Source.Glyphs[(byte)GlyphType.Moon].modItem is Moon_Green;
             if ((!self || CirclingProtection.Count(spell => spell.projectile.active) <= Source.ProjCount - 3) && Cooldown <= 0)
             {

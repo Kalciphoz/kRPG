@@ -125,7 +125,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             parts.Add(Gem);
             if (Staff.Front || Gem.Back) parts.Add(Staff);
             if (Ornament.Front) parts.Add(Ornament);
-            if (Main.netMode != 2)
+            if (Main.netMode != Constants.NetModes.Server)
                 LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> { parts[0].Texture, parts[1].Texture, parts[2].Texture },
                     new List<Point>
                     {
@@ -136,8 +136,8 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                         parts[2].GetDrawOrigin(new Point(Staff.Texture.Width, Staff.Texture.Height), new Point((int) Staff.Origin.X, (int) Staff.Origin.Y),
                             CombinedTextureSize())
                     }, CombinedTextureSize());
-            if (Main.netMode != 2) item.width = LocalTexture.Width;
-            if (Main.netMode != 2) item.height = LocalTexture.Height;
+            if (Main.netMode != Constants.NetModes.Server) item.width = LocalTexture.Width;
+            if (Main.netMode != Constants.NetModes.Server) item.height = LocalTexture.Height;
             item.shoot = Gem.Shoot;
             item.shootSpeed = Staff.ShootSpeed;
             item.GetGlobalItem<kItem>().ApplyStats(item, true);

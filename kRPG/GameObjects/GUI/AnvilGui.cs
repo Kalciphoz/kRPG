@@ -1,4 +1,6 @@
 ﻿using System;
+using kRPG.GameObjects.Currency;
+using kRPG.GameObjects.GFX;
 using kRPG.GameObjects.GUI.Base;
 using kRPG.GameObjects.Items;
 using kRPG.GameObjects.Items.Crowns;
@@ -172,7 +174,7 @@ namespace kRPG.GameObjects.GUI
                     {
                         int bonusChance = GuardianCrown ? 10 : 0;
 
-                        spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Upgrade Cost: " + API.MoneyToString(UpgradeCost * modifier), new Vector2(GuiPosition.X - 192f * Scale, GuiPosition.Y + 152f * Scale), Color.White, Scale);
+                        spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Upgrade Cost: " + Coins.MoneyToString(UpgradeCost * modifier), new Vector2(GuiPosition.X - 192f * Scale, GuiPosition.Y + 152f * Scale), Color.White, Scale);
                         spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Chance to succeed: " + (UpgradeSuccess + bonusChance) + "%", new Vector2(GuiPosition.X - 192f * Scale, GuiPosition.Y + 176f * Scale),
                             bonusChance > 0 ? Color.Lime : Color.White, Scale);
                         spriteBatch.Draw(GFX.GFX.ButtonUpgrade, BtnUpgradePos, Color.White, Scale);
@@ -206,7 +208,7 @@ namespace kRPG.GameObjects.GUI
 
                     else
                     {
-                        spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Upgrade Cost: " + API.MoneyToString(UpgradeCost * modifier), new Vector2(GuiPosition.X - 192f * Scale, GuiPosition.Y + 152f * Scale), Color.Red, Scale);
+                        spriteBatch.DrawStringWithShadow(Main.fontMouseText, "Upgrade Cost: " + Coins.MoneyToString(UpgradeCost * modifier), new Vector2(GuiPosition.X - 192f * Scale, GuiPosition.Y + 152f * Scale), Color.Red, Scale);
                     }
                 }
 

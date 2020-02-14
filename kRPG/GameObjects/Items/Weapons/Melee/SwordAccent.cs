@@ -6,6 +6,7 @@ using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.NPCs;
 using kRPG.GameObjects.Players;
 using kRPG.GameObjects.SFX;
+using kRPG.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -20,7 +21,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             float dpsModifier = 1f, int critBonus = 0, Action<Rectangle, Player> effect = null)
         {
             Type = Accents.Count;
-            if (Main.netMode != 2)
+            if (Main.netMode != Constants.NetModes.Server)
                 if (texture != null)
                     Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Accents/" + texture);
             Suffix = suffix;

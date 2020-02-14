@@ -2,10 +2,12 @@
 using System.Globalization;
 using System.Reflection;
 using kRPG.Enums;
+using kRPG.GameObjects.GFX;
 using kRPG.GameObjects.GUI.Base;
 using kRPG.GameObjects.Items.Crowns;
 using kRPG.GameObjects.Items.Procedural;
 using kRPG.GameObjects.Players;
+using kRPG.GameObjects.Recipes;
 using kRPG.GameObjects.SFX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -106,7 +108,7 @@ namespace kRPG.GameObjects.GUI
                         if (Main.mouseLeftRelease && Main.mouseLeft)
                         {
                             ItemSlot.LeftClick(Main.player[Main.myPlayer].inventory, 0, i);
-                            API.FindRecipes();
+                            Recipe.FindRecipes();
                         }
                         else
                         {
@@ -117,7 +119,7 @@ namespace kRPG.GameObjects.GUI
                     ItemSlot.MouseHover(Main.player[Main.myPlayer].inventory, 0, i);
                 }
 
-                API.ItemSlotDrawExtension(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 0, i, new Vector2(x2, y2), Color.White, Color.White);
+                Main.spriteBatch.ItemSlotDrawExtension(Main.player[Main.myPlayer].inventory, 0, i, new Vector2(x2, y2), Color.White, Color.White);
             }
 
             Main.inventoryScale = oldInvScale;
@@ -146,7 +148,7 @@ namespace kRPG.GameObjects.GUI
                         if (Main.mouseLeftRelease && Main.mouseLeft)
                         {
                             ItemSlot.LeftClick(Main.player[Main.myPlayer].inventory, 0, id);
-                            API.FindRecipes();
+                            Recipe.FindRecipes();
                         }
                         else
                         {
@@ -159,7 +161,7 @@ namespace kRPG.GameObjects.GUI
 
                 try
                 {
-                    API.ItemSlotDrawExtension(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 0, id, new Vector2(x2, y2), Color.White, Color.White);
+                    SpriteBatchHelper.ItemSlotDrawExtension(Main.spriteBatch, Main.player[Main.myPlayer].inventory, 0, id, new Vector2(x2, y2), Color.White, Color.White);
                 }
                 catch (SystemException e)
                 {
@@ -254,7 +256,7 @@ namespace kRPG.GameObjects.GUI
                     character.Inventories[character.ActiveInvPage][i] = player.inventory[i + 10];
 
                 if ((int) Main.time % 30 < 1)
-                    API.FindRecipes();
+                    Recipe.FindRecipes();
 
                 Vanilla(!character.StatPage);
 
@@ -341,7 +343,7 @@ namespace kRPG.GameObjects.GUI
                     if (Main.mouseLeftRelease && Main.mouseLeft)
                     {
                         ItemSlot.LeftClick(ref Main.player[Main.myPlayer].trashItem, 6);
-                        API.FindRecipes();
+                        Recipe.FindRecipes();
                     }
 
                     ItemSlot.MouseHover(ref Main.player[Main.myPlayer].trashItem, 6);
@@ -573,7 +575,7 @@ namespace kRPG.GameObjects.GUI
                                     Main.mouseLeftRelease = false;
                                     //Main.PlaySound(12);
                                     SoundManager.PlaySound(Sounds.MenuClose);
-                                    if (Main.netMode == 1)
+                                    if (Main.netMode == Constants.NetModes.Client)
                                         NetMessage.SendData((int) PacketTypes.PlayerInfo, -1, -1, null, Main.myPlayer);
                                 }
 
@@ -833,7 +835,7 @@ namespace kRPG.GameObjects.GUI
                                 Main.player[Main.myPlayer].hideVisual[num46] = !Main.player[Main.myPlayer].hideVisual[num46];
                                 //Main.PlaySound(12);
                                 SoundManager.PlaySound(Sounds.MenuClose);
-                                if (Main.netMode == 1)
+                                if (Main.netMode == Constants.NetModes.Client)
                                     NetMessage.SendData((int) PacketTypes.PlayerInfo, -1, -1, null, Main.myPlayer);
                             }
 
@@ -991,7 +993,7 @@ namespace kRPG.GameObjects.GUI
                     {
                         Main.InReforgeMenu = false;
                         Main.player[Main.myPlayer].dropItemCheck();
-                        API.FindRecipes();
+                        Recipe.FindRecipes();
                     }
                     else
                     {
@@ -1112,7 +1114,7 @@ namespace kRPG.GameObjects.GUI
                             if (Main.mouseLeftRelease && Main.mouseLeft)
                             {
                                 ItemSlot.LeftClick(ref Main.reforgeItem, 5);
-                                API.FindRecipes();
+                                Recipe.FindRecipes();
                             }
                             else
                             {
@@ -1131,7 +1133,7 @@ namespace kRPG.GameObjects.GUI
                     {
                         Main.InGuideCraftMenu = false;
                         Main.player[Main.myPlayer].dropItemCheck();
-                        API.FindRecipes();
+                        Recipe.FindRecipes();
                     }
                     else
                     {
@@ -1207,7 +1209,7 @@ namespace kRPG.GameObjects.GUI
                             if (Main.mouseLeftRelease && Main.mouseLeft)
                             {
                                 ItemSlot.LeftClick(ref Main.guideItem, 7);
-                                API.FindRecipes();
+                                Recipe.FindRecipes();
                             }
                             else
                             {
@@ -1293,12 +1295,12 @@ namespace kRPG.GameObjects.GUI
                                     {
                                         if (Main.mouseLeftRelease && Main.mouseLeft)
                                         {
-                                            API.CraftItem(Main.recipe[Main.availableRecipe[num80]]);
+                                            RecipeHelper.CraftItem(Main.recipe[Main.availableRecipe[num80]]);
                                         }
                                         else if (Main.stackSplit <= 1 && Main.mouseRight && (Main.mouseItem.stack < Main.mouseItem.maxStack || Main.mouseItem.type == ItemID.None))
                                         {
                                             Main.stackSplit = Main.stackSplit == 0 ? 15 : Main.stackDelay;
-                                            API.CraftItem(Main.recipe[Main.availableRecipe[num80]]);
+                                            RecipeHelper.CraftItem(Main.recipe[Main.availableRecipe[num80]]);
                                         }
                                     }
                                 }
@@ -1589,7 +1591,7 @@ namespace kRPG.GameObjects.GUI
                         if (Main.mouseLeftRelease && Main.mouseLeft)
                         {
                             ItemSlot.LeftClick(Main.player[Main.myPlayer].inventory, 1, slot);
-                            API.FindRecipes();
+                            Recipe.FindRecipes();
                         }
                         else
                         {
@@ -1622,7 +1624,7 @@ namespace kRPG.GameObjects.GUI
                         if (Main.mouseLeftRelease && Main.mouseLeft)
                         {
                             ItemSlot.LeftClick(Main.player[Main.myPlayer].inventory, 2, slot2);
-                            API.FindRecipes();
+                            Recipe.FindRecipes();
                         }
                         else
                         {
@@ -1672,7 +1674,7 @@ namespace kRPG.GameObjects.GUI
                 if (Main.player[Main.myPlayer].chest > -1 && !Main.tileContainer[Main.tile[Main.player[Main.myPlayer].chestX, Main.player[Main.myPlayer].chestY].type])
                 {
                     Main.player[Main.myPlayer].chest = -1;
-                    API.FindRecipes();
+                    Recipe.FindRecipes();
                 }
 
                 int offsetDown = 0;
@@ -1703,7 +1705,7 @@ namespace kRPG.GameObjects.GUI
                         {
                             Main.mouseLeftRelease = false;
                             Main.player[Main.myPlayer].QuickStackAllChests();
-                            API.FindRecipes();
+                            Recipe.FindRecipes();
                         }
 
                         Main.player[Main.myPlayer].mouseInterface = true;
@@ -1739,7 +1741,7 @@ namespace kRPG.GameObjects.GUI
                         {
                             Main.mouseLeftRelease = false;
                             ItemSorting.SortInventory();
-                            API.FindRecipes();
+                            Recipe.FindRecipes();
                         }
                     }
 

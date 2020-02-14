@@ -118,7 +118,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             try
             {
                 ResetStats();
-                if (Main.netMode != 2)
+                if (Main.netMode != Constants.NetModes.Server)
                     LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> { Blade.Texture, Hilt.Texture, Accent.Texture },
                         new List<Point>
                         {
@@ -127,9 +127,9 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                             new Point((int) Hilt.Origin.X + Hilt.AccentOffset.X - (int) Accent.Origin.X,
                                 Hilt.AccentOffset.Y + CombinedTextureSize().Y - Hilt.Texture.Height + (int) Hilt.Origin.Y - (int) Accent.Origin.Y)
                         }, CombinedTextureSize());
-                if (Main.netMode != 2)
+                if (Main.netMode != Constants.NetModes.Server)
                     item.width = LocalTexture.Width;
-                if (Main.netMode != 2)
+                if (Main.netMode != Constants.NetModes.Server)
                     item.height = LocalTexture.Height;
                 if (Accent.Type == SwordAccent.GemPurple.Type)
                 {
@@ -384,10 +384,10 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                     ps.Blade = Blade;
                     ps.Accent = Accent;
 
-                    if (Main.netMode != 2)
+                    if (Main.netMode != Constants.NetModes.Server)
                         ps.Initialize();
 
-                    if (Main.netMode != 1)
+                    if (Main.netMode != Constants.NetModes.Client)
                         return true;
 
                     SyncSpearPacket.Write(Blade.Type, Hilt.Type, Accent.Type);
