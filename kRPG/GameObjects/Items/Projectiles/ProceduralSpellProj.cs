@@ -17,7 +17,7 @@ namespace kRPG.GameObjects.Items.Projectiles
     {
         public static Action<ProceduralSpellProj> aiRotateToVelocity = delegate (ProceduralSpellProj spell)
         {
-            spell.projectile.rotation = (float)Math.Atan2(spell.projectile.velocity.Y, spell.projectile.velocity.X) + (float)API.Tau / 8f;
+            spell.projectile.rotation = (float)Math.Atan2(spell.projectile.velocity.Y, spell.projectile.velocity.X) + (float)Constants.Tau / 8f;
         };
 
         //public static Action<ProceduralSpellProj> aiWhirlcast = delegate (ProceduralSpellProj spell)

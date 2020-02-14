@@ -12,6 +12,7 @@ using kRPG.GameObjects.Modifiers;
 using kRPG.GameObjects.Players;
 using kRPG.GameObjects.Spells;
 using kRPG.Packets;
+using kRPG.Util;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

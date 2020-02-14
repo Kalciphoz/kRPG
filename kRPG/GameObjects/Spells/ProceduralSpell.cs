@@ -14,6 +14,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using kRPG.GameObjects.GFX;
 
 namespace kRPG.GameObjects.Spells
 {
@@ -95,7 +96,7 @@ namespace kRPG.GameObjects.Spells
             if (caster == null) caster = player;
             Projectile projectile =
                 Main.projectile[
-                    Projectile.NewProjectile(position ?? caster.Center, velocity.RotatedBy(API.Tau * angle), ModContent.ProjectileType<ProceduralSpellProj>(),
+                    Projectile.NewProjectile(position ?? caster.Center, velocity.RotatedBy(Constants.Tau * angle), ModContent.ProjectileType<ProceduralSpellProj>(),
                         ProjectileDamage(player.GetModPlayer<PlayerCharacter>()), 3f, player.whoAmI)];
             ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
             ps.Origin = projectile.position;

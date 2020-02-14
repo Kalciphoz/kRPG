@@ -108,14 +108,14 @@ namespace kRPG.GameObjects.Items.Glyphs
 
                         int rotDistance = 40;
                         int rotTimeLeft = 3600;
-                        float displacementAngle = (float)API.Tau / 4f;
+                        float displacementAngle = (float)Constants.Tau / 4f;
                         Vector2 displacementVelocity = Vector2.Zero;
                         if (rotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
                         {
                             Vector2 unitRelativePos = spell.RelativePos(spell.Caster.Center);
                             unitRelativePos.Normalize();
                             spell.projectile.Center = spell.Caster.Center + unitRelativePos * rotDistance;
-                            displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.Caster.Center).ToRotation() + (float)API.Tau / 4f);
+                            displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.Caster.Center).ToRotation() + (float)Constants.Tau / 4f);
 
                             float angle = displacementAngle - 0.06f * (rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
                             spell.projectile.Center = spell.Caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
@@ -277,7 +277,7 @@ namespace kRPG.GameObjects.Items.Glyphs
                                 }
 
                         spriteBatch.Draw(GFX.GFX.ThornChain, chainpos - Main.screenPosition, null, spell.Lighted ? Color.White : color,
-                            relativePos.ToRotation() - (float)API.Tau / 4f, new Vector2(10f, 16f), 1f, SpriteEffects.None, 0.1f);
+                            relativePos.ToRotation() - (float)Constants.Tau / 4f, new Vector2(10f, 16f), 1f, SpriteEffects.None, 0.1f);
                     }
                 });
             Pierce = new GlyphModifier(10, "Pierces two additional enemies", glyph => glyph is Moon, () => Main.rand.Next(3) == 0, 0.8f, 1.1f).SetInit(

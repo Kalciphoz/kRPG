@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kRPG.Enums;
+using kRPG.GameObjects.GFX;
 using kRPG.GameObjects.GUI.Base;
 using kRPG.GameObjects.Players;
 using kRPG.GameObjects.SFX;

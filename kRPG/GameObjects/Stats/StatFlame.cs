@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using kRPG.Enums;
+using kRPG.GameObjects.GFX;
 using kRPG.GameObjects.GUI;
 using kRPG.GameObjects.Players;
 using kRPG.GameObjects.SFX;

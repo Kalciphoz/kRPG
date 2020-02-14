@@ -13,6 +13,7 @@ using On.Terraria.ID;
 using Terraria;
 using Terraria.ID;
 using Star = kRPG.GameObjects.Items.Glyphs.Star;
+using kRPG.GameObjects.GFX;
 
 namespace kRPG.GameObjects.GUI
 {

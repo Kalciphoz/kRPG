@@ -54,14 +54,14 @@ namespace kRPG.GameObjects.Modifiers
                 {
                     cross1.GetAiAction()(spell);
 
-                    float displacementAngle = (float)API.Tau / 4f;
+                    float displacementAngle = (float)Constants.Tau / 4f;
                     Vector2 displacementVelocity = Vector2.Zero;
                     if (rotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
                     {
                         Vector2 unitRelativePos = spell.RelativePos(spell.Caster.Center);
                         unitRelativePos.Normalize();
                         spell.projectile.Center = spell.Caster.Center + unitRelativePos * rotDistance;
-                        displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.Caster.Center).ToRotation() + (float)API.Tau / 4f);
+                        displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.Caster.Center).ToRotation() + (float)Constants.Tau / 4f);
 
                         float angle = displacementAngle - 0.06f * (rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
                         spell.projectile.Center = spell.Caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
@@ -105,14 +105,14 @@ namespace kRPG.GameObjects.Modifiers
                 {
                     cross2.GetAiAction()(spell);
 
-                    float displacementAngle = (float)API.Tau / 4f + (float)Math.PI;
+                    float displacementAngle = (float)Constants.Tau / 4f + (float)Math.PI;
                     Vector2 displacementVelocity = Vector2.Zero;
                     if (rotTimeLeft - spell.projectile.timeLeft >= rotDistance * 2 / 3)
                     {
                         Vector2 unitRelativePos = spell.RelativePos(spell.Caster.Center);
                         unitRelativePos.Normalize();
                         spell.projectile.Center = spell.Caster.Center + unitRelativePos * rotDistance;
-                        displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.Caster.Center).ToRotation() + (float)API.Tau / 4f);
+                        displacementVelocity = new Vector2(-2f, 0f).RotatedBy(spell.RelativePos(spell.Caster.Center).ToRotation() + (float)Constants.Tau / 4f);
 
                         float angle = displacementAngle - 0.06f * (rotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
                         spell.projectile.Center = spell.Caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);

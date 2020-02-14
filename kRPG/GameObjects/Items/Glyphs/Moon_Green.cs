@@ -31,7 +31,7 @@ namespace kRPG.GameObjects.Items.Glyphs
                         unitRelativePos.Normalize();
                         spell.projectile.Center = spell.Caster.Center + unitRelativePos * rotDistance;
                         spell.DisplacementVelocity =
-                            new Vector2(1.5f, 0f).RotatedBy(spell.RelativePos(spell.Caster.Center).ToRotation() + (float) API.Tau / 4f);
+                            new Vector2(1.5f, 0f).RotatedBy(spell.RelativePos(spell.Caster.Center).ToRotation() + (float) Constants.Tau / 4f);
 
                         float angle = spell.DisplacementAngle + 0.04f * (RotTimeLeft - spell.projectile.timeLeft - rotDistance * 2 / 3);
                         spell.projectile.Center = spell.Caster.Center + new Vector2(0f, -rotDistance).RotatedBy(angle);
@@ -82,8 +82,8 @@ namespace kRPG.GameObjects.Items.Glyphs
                 {
                     ProceduralSpellProj proj = spell.CreateProjectile(player, Vector2.Zero, spread * i, origin, caster);
                     proj.projectile.timeLeft = RotTimeLeft;
-                    proj.DisplacementVelocity = velocity.RotatedBy(i * spread * API.Tau);
-                    proj.DisplacementAngle = i * spread * (float) API.Tau;
+                    proj.DisplacementVelocity = velocity.RotatedBy(i * spread * Constants.Tau);
+                    proj.DisplacementAngle = i * spread * (float) Constants.Tau;
                     switch (caster)
                     {
                         case Player _:

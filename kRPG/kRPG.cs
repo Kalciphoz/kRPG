@@ -32,16 +32,7 @@ namespace kRPG
 {
     public class kRPG : Mod
     {
-        public static Dictionary<string, Ritual> ritualByName = new Dictionary<string, Ritual>
-        {
-            {"demon_pact", Ritual.DemonPact},
-            {"warrior_oath", Ritual.WarriorOath},
-            {"elan_vital", Ritual.ElanVital},
-            {"stone_aspect", Ritual.StoneAspect},
-            {"eldritch_fury", Ritual.EldritchFury},
-            {"mind_fortress", Ritual.MindFortress},
-            {"blood_drinking", Ritual.BloodDrinking}
-        };
+       
 
         public kRPG()
         {

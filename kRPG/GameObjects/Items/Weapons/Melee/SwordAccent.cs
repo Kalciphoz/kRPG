@@ -6,6 +6,7 @@ using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.NPCs;
 using kRPG.GameObjects.Players;
 using kRPG.GameObjects.SFX;
+using kRPG.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

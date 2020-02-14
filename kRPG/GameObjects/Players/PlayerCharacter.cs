@@ -495,7 +495,7 @@ namespace kRPG.GameObjects.Players
 
                             Vector2 pos = player.Center - Main.screenPosition;
                             staff.DrawHeld(drawInfo, Lighting.GetColor((int)(player.Center.X / 16f), (int)(player.Center.Y / 16f)),
-                                player.itemRotation + (float)API.Tau * player.direction / 8, staff.item.scale, pos);
+                                player.itemRotation + (float)Constants.Tau * player.direction / 8, staff.item.scale, pos);
                         }
                         else if (player.HeldItem.type == mod.GetItem("ProceduralSword").item.type)
                         {
@@ -507,7 +507,7 @@ namespace kRPG.GameObjects.Players
 
                             Vector2 pos = player.Center - Main.screenPosition;
                             sword.DrawHeld(drawInfo, Lighting.GetColor((int)(player.Center.X / 16f), (int)(player.Center.Y / 16f)),
-                                player.itemRotation + (float)API.Tau, sword.item.scale, pos);
+                                player.itemRotation + (float)Constants.Tau, sword.item.scale, pos);
                         }
                     }));
         }
@@ -577,7 +577,7 @@ namespace kRPG.GameObjects.Players
 
             StatPage = false;
 
-            API.FindRecipes();
+            Recipe.FindRecipes();
 
             for (int i = 0; i < 50; i += 1)
 

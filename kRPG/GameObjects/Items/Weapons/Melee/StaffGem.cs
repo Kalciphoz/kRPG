@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using kRPG.Enums;
 using kRPG.GameObjects.Items.Glyphs;
 using kRPG.GameObjects.Items.Projectiles;
+using kRPG.Util;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -76,7 +77,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 {
                     Projectile projectile =
                         Main.projectile[
-                            Terraria.Projectile.NewProjectile(player.Center, velocity.RotatedBy(API.Tau * (-spread / 2f + i * spread + spread / 2f)),
+                            Terraria.Projectile.NewProjectile(player.Center, velocity.RotatedBy(Constants.Tau * (-spread / 2f + i * spread + spread / 2f)),
                                 ModContent.ProjectileType<ProceduralSpellProj>(), item.damage, item.knockBack, player.whoAmI)];
                     ProceduralSpellProj ps = (ProceduralSpellProj) projectile.modProjectile;
                     ps.Origin = projectile.position;
