@@ -94,21 +94,21 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 (int)Blade.Origin.Y + Hilt.SpearTexture.Height - (int)Hilt.SpearOrigin.Y);
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(Blade.Type);
-            writer.Write(Hilt.Type);
-            writer.Write(Accent.Type);
-        }
+        //public override void SendExtraAI(BinaryWriter writer)
+        //{
+        //    writer.Write(Blade.Type);
+        //    writer.Write(Hilt.Type);
+        //    writer.Write(Accent.Type);
+        //}
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            Blade = SwordBlade.Blades[reader.ReadInt32()];
-            Hilt = SwordHilt.Hilts[reader.ReadInt32()];
-            Accent = SwordAccent.Accents[reader.ReadInt32()];
-            if (Main.netMode == Constants.NetModes.Client) 
-                Initialize();
-        }
+        //public override void ReceiveExtraAI(BinaryReader reader)
+        //{
+        //    Blade = SwordBlade.Blades[reader.ReadInt32()];
+        //    Hilt = SwordHilt.Hilts[reader.ReadInt32()];
+        //    Accent = SwordAccent.Accents[reader.ReadInt32()];
+        //    if (Main.netMode == Constants.NetModes.Client) 
+        //        Initialize();
+        //}
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
