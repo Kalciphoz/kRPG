@@ -12,13 +12,13 @@ namespace kRPG.Packets
     {
         public static void Read( BinaryReader reader)
         {
-            if (Main.netMode == 2)
+            if (Main.netMode == Constants.NetModes.Server)
                 Main.player[reader.ReadInt32()].GetModPlayer<PlayerCharacter>().Level = reader.ReadInt32();
         }
 
         public static void Write(int whoAmI, int level, bool force = false)
         {
-            if (Main.netMode == 1)
+            if (Main.netMode == Constants.NetModes.Client)
             {
                 ModPacket packet = kRPG.Mod.GetPacket();
                 packet.Write((byte) Message.SyncLevel);

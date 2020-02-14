@@ -61,7 +61,7 @@ namespace kRPG.GameObjects.Items.Glyphs
             return this;
         }
 
-        public static void Initialize(Mod mod)
+        public static void Initialize()
         {
             Modifiers = new List<GlyphModifier>();
 

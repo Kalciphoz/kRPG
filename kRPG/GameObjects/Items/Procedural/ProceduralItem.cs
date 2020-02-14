@@ -15,7 +15,7 @@ namespace kRPG.GameObjects.Items.Procedural
 
         public override bool CanPickup(Player player)
         {
-            if (Main.netMode == 0)
+            if (Main.netMode == Constants.NetModes.SinglePlayer)
                 return true;
             return item.value > 100;
         }
@@ -48,7 +48,7 @@ namespace kRPG.GameObjects.Items.Procedural
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin,
             float scale)
         {
-            if (Main.netMode == 2 || LocalTexture == null) 
+            if (Main.netMode == Constants.NetModes.Server || LocalTexture == null) 
                 return false;
             if (Main.itemTexture[item.type] == null) 
                 Main.itemTexture[item.type] = LocalTexture;
@@ -59,7 +59,7 @@ namespace kRPG.GameObjects.Items.Procedural
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            if (Main.netMode == 2 || LocalTexture == null) 
+            if (Main.netMode == Constants.NetModes.Server || LocalTexture == null) 
                 return false;
             Draw(spriteBatch, item.position - Main.screenPosition, lightColor, rotation, scale);
             return false;

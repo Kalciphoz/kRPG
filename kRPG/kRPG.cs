@@ -48,7 +48,7 @@ namespace kRPG
 
         public static kRPG Mod { get; set; }
 
-        public static bool PlayerEnteredWorld { get; set; } = false;
+        //public static bool PlayerEnteredWorld { get; set; } = false;
 
         //  public static Mod Overhaul { get; set; }
 
@@ -59,7 +59,7 @@ namespace kRPG
             
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
-            if (Main.netMode == 2 || Main.gameMenu) return true;
+            if (Main.netMode == Constants.NetModes.Server || Main.gameMenu) return true;
             try
             {
                 for (int i = 0; i < BaseGui.GuiElements.Count; i += 1)
@@ -131,7 +131,7 @@ namespace kRPG
 
 
 
-                        if (Main.netMode == 1)
+                        if (Main.netMode == Constants.NetModes.Client)
                             if (playerWhoAmI == Main.myPlayer)
                                 return;
 
@@ -221,7 +221,7 @@ namespace kRPG
                     }
                     catch (SystemException e)
                     {
-                        kRPG.LogMessage("Error handling packet: CreateProjectilePacket on " + (Main.netMode == 2 ? "serverside" : "clientSide") +
+                        kRPG.LogMessage("Error handling packet: CreateProjectilePacket on " + (Main.netMode == Constants.NetModes.Server ? "serverside" : "clientSide") +
                                    ", full error trace: " + e);
 
                     }
@@ -255,7 +255,7 @@ namespace kRPG
             //Overhaul = ModLoader.GetMod("TerrariaOverhaul");
 
             kConfig.Initialize();
-            if (Main.netMode != 2)
+            if (Main.netMode != Constants.NetModes.Server)
             {
                 GFX.LoadGfx();
                 InvSlot[0] = Main.inventoryBackTexture;
@@ -300,7 +300,7 @@ namespace kRPG
             Staff.Initialize();
             StaffGem.Initialize();
             StaffOrnament.Initialize();
-            GlyphModifier.Initialize(this);
+            GlyphModifier.Initialize();
         }
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)

@@ -46,9 +46,9 @@ namespace kRPG.GameObjects.Items.Glyphs
         {
             return delegate(ProceduralSpellProj spell)
             {
-                if (Main.netMode != 2)
+                if (Main.netMode != Constants.NetModes.Server)
                 {
-                    if (Main.netMode == 0 || spell.projectile.owner == Main.myPlayer)
+                    if (Main.netMode == Constants.NetModes.SinglePlayer || spell.projectile.owner == Main.myPlayer)
                     {
                         PlayerCharacter character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
 

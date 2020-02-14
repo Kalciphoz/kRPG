@@ -575,7 +575,7 @@ namespace kRPG.GameObjects.GUI
                                     Main.mouseLeftRelease = false;
                                     //Main.PlaySound(12);
                                     SoundManager.PlaySound(Sounds.MenuClose);
-                                    if (Main.netMode == 1)
+                                    if (Main.netMode == Constants.NetModes.Client)
                                         NetMessage.SendData((int) PacketTypes.PlayerInfo, -1, -1, null, Main.myPlayer);
                                 }
 
@@ -835,7 +835,7 @@ namespace kRPG.GameObjects.GUI
                                 Main.player[Main.myPlayer].hideVisual[num46] = !Main.player[Main.myPlayer].hideVisual[num46];
                                 //Main.PlaySound(12);
                                 SoundManager.PlaySound(Sounds.MenuClose);
-                                if (Main.netMode == 1)
+                                if (Main.netMode == Constants.NetModes.Client)
                                     NetMessage.SendData((int) PacketTypes.PlayerInfo, -1, -1, null, Main.myPlayer);
                             }
 

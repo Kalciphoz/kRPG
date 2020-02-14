@@ -13,7 +13,7 @@ namespace kRPG.Packets
     {
         public static void Read( BinaryReader reader)
         {
-            if (Main.netMode == 1)
+            if (Main.netMode == Constants.NetModes.Client)
             {
                 ProceduralSword sword = (ProceduralSword) Main.item[reader.ReadInt32()].modItem;
                 sword.Blade = SwordBlade.Blades[reader.ReadInt32()];
@@ -28,7 +28,7 @@ namespace kRPG.Packets
 
         public static void Write(int id, int bladeType, int hiltType, int accentType, float dps, int enemyDef)
         {
-            if (Main.netMode == 2)
+            if (Main.netMode == Constants.NetModes.Server)
             {
                 ModPacket packet = kRPG.Mod.GetPacket();
                 packet.Write((byte) Message.SwordInit);

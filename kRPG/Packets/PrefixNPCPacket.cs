@@ -17,7 +17,7 @@ namespace kRPG.Packets
         {
             try
             {
-                if (Main.netMode == 1)
+                if (Main.netMode == Constants.NetModes.Client)
                 {
                     int refNum = reader.ReadInt32();
                     int npcIndex = reader.ReadInt32();
@@ -77,7 +77,7 @@ namespace kRPG.Packets
 
         public static void Write(NPC npc, int amount, List<NpcModifier> modifiers)
         {
-            if (Main.netMode == 2)
+            if (Main.netMode == Constants.NetModes.Server)
             {
                 int bytes = 0;
                 ModPacket packet = kRPG.Mod.GetPacket();

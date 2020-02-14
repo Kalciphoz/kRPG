@@ -13,7 +13,7 @@ namespace kRPG.GameObjects.Modifiers
             this.npc = npc;
             npc.GivenName = "Brutal " + npc.GivenName;
             DmgModifier = dmgModifier;
-            if (Main.netMode == 1)
+            if (Main.netMode == Constants.NetModes.Client)
                 return;
             //Apply(); Virtual calls in constructors is a no-no
             npc.damage = (int)Math.Round(npc.damage * DmgModifier);

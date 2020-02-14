@@ -13,7 +13,7 @@ namespace kRPG.Packets
     {
         public static void Read(BinaryReader reader)
         {
-            if (Main.netMode == 1)
+            if (Main.netMode == Constants.NetModes.Client)
             {
 
                 NPC npc = Main.npc[reader.ReadInt32()];

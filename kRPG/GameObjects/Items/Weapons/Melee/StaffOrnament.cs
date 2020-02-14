@@ -19,7 +19,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             float speedModifier = 1f, float knockBack = 0f, int critBonus = 0, int repetitions = 0)
         {
             Type = Ornament.Count;
-            if (Main.netMode != 2)
+            if (Main.netMode != Constants.NetModes.Server)
                 if (texture != null)
                     Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Ornaments/" + texture);
             Origin = new Vector2(originX, originY);

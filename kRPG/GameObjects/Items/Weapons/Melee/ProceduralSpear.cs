@@ -110,7 +110,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            if (LocalTexture == null && Main.netMode == 0)
+            if (LocalTexture == null && Main.netMode == Constants.NetModes.SinglePlayer)
             {
                 Initialize();
                 return;

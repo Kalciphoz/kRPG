@@ -13,7 +13,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             float manaMultiplier = 1f, int critBonus = 0, int iterations = 1, bool autoSwing = true)
         {
             Type = Staffs.Count + 1;
-            if (Main.netMode != 2)
+            if (Main.netMode != Constants.NetModes.Server)
                 Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Staves/" + texture);
             Origin = new Vector2(originX, originY);
             UseTime = useTime;

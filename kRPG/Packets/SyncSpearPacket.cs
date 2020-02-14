@@ -12,7 +12,7 @@ namespace kRPG.Packets
     {
         public static void Read( BinaryReader reader)
         {
-            if (Main.netMode == 1)
+            if (Main.netMode == Constants.NetModes.Client)
             {
                 ProceduralSpear spear = (ProceduralSpear) Main.projectile[reader.ReadInt32()].modProjectile;
                 spear.Blade = SwordBlade.Blades[reader.ReadInt32()];
@@ -24,7 +24,7 @@ namespace kRPG.Packets
 
         public static void Write(int bladeType, int hiltType, int accentType)
         {
-            if (Main.netMode == 2)
+            if (Main.netMode == Constants.NetModes.Server)
             {
                 ModPacket packet = kRPG.Mod.GetPacket();
                 packet.Write((byte) Message.SyncSpear);
