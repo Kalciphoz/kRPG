@@ -13,11 +13,17 @@ namespace kRPG.Packets
 {
     public static class PrefixNPCPacket
     {
+
+
+        
+
+
         public static void Read(BinaryReader reader)
         {
+            
             try
             {
-                if (Main.netMode == Constants.NetModes.Client)
+                if (Main.netMode != Constants.NetModes.Server)
                 {
                     int refNum = reader.ReadInt32();
                     int npcIndex = reader.ReadInt32();
@@ -77,7 +83,7 @@ namespace kRPG.Packets
 
         public static void Write(NPC npc,List<NpcModifier> modifiers)
         {
-            if (Main.netMode != Constants.NetModes.Client)
+            if (Main.netMode == Constants.NetModes.Server)
             {
                 int bytes = 0;
                 ModPacket packet = kRPG.Mod.GetPacket();
@@ -100,22 +106,20 @@ namespace kRPG.Packets
 
                 if (modifiers.Count > 0)
                 {
-                    for (int i = 0; i < modifiers.Count; i++)
+                    foreach (NpcModifier modifier in modifiers)
                     {
                         int modIndex = 0;
                         for (int ii = 0; ii < kNPC.modifierDictionary.Length; ii++)
                         {
-                            if (kNPC.modifierDictionary[ii] != modifiers[i].GetType().AssemblyQualifiedName)
+                            if (kNPC.modifierDictionary[ii] != modifier.GetType().AssemblyQualifiedName)
                                 continue;
-
                             ModIds += " " + ii;
-
                             modIndex = ii;
                             break;
                         }
                         packet.Write(modIndex);
                         bytes += 4;
-                        bytes += modifiers[i].Pack(packet);
+                        bytes += modifier.Pack(packet);
                     }
                 }
 #if DEBUG
