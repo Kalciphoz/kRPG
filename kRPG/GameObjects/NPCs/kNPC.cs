@@ -339,7 +339,6 @@ namespace kRPG.GameObjects.NPCs
             if (Initialized)
             {
                 Update(npc);
-                
                 return;
             }
 
