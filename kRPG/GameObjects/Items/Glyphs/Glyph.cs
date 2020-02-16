@@ -6,6 +6,7 @@ using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.Spells;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
@@ -212,7 +213,7 @@ namespace kRPG.GameObjects.Items.Glyphs
 
         public override void UpdateInventory(Player player)
         {
-            if (Main.netMode == Constants.NetModes.SinglePlayer) return;
+            if (Main.netMode ==NetmodeID.SinglePlayer) return;
             if (!Initialized) Randomize();
         }
     }

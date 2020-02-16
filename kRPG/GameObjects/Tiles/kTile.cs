@@ -10,7 +10,7 @@ namespace kRPG.GameObjects.Tiles
     {
         public override void RightClick(int i, int j, int type)
         {
-            if (Main.netMode == Constants.NetModes.Server)
+            if (Main.netMode == NetmodeID.Server)
                 return;
             if (type != TileID.Anvils && type != TileID.MythrilAnvil)
                 return;

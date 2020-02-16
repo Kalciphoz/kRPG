@@ -6,6 +6,7 @@ using System.Linq;
 using kRPG.Enums;
 using kRPG.GameObjects.NPCs;
 using Terraria;
+using Terraria.ID;
 
 namespace kRPG.Packets
 {
@@ -13,7 +14,7 @@ namespace kRPG.Packets
     {
         public static void Read(BinaryReader reader)
         {
-            if (Main.netMode == Constants.NetModes.Client)
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
 
                 NPC npc = Main.npc[reader.ReadInt32()];

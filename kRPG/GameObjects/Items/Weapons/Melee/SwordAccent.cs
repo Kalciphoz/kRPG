@@ -21,7 +21,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             float dpsModifier = 1f, int critBonus = 0, Action<Rectangle, Player> effect = null)
         {
             Type = Accents.Count;
-            if (Main.netMode != Constants.NetModes.Server)
+            if (Main.netMode != NetmodeID.Server)
                 if (texture != null)
                     Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Accents/" + texture);
             Suffix = suffix;

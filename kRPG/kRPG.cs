@@ -59,7 +59,7 @@ namespace kRPG
             
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
-            if (Main.netMode == Constants.NetModes.Server || Main.gameMenu) return true;
+            if (Main.netMode == NetmodeID.Server || Main.gameMenu) return true;
             try
             {
                 for (int i = 0; i < BaseGui.GuiElements.Count; i += 1)
@@ -133,7 +133,7 @@ namespace kRPG
 
 
 
-                        if (Main.netMode == Constants.NetModes.Client)
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
                             if (playerWhoAmI == Main.myPlayer)
                                 return;
 
@@ -223,7 +223,7 @@ namespace kRPG
                     }
                     catch (SystemException e)
                     {
-                        kRPG.LogMessage("Error handling packet: CreateProjectilePacket on " + (Main.netMode == Constants.NetModes.Server ? "serverside" : "clientSide") +
+                        kRPG.LogMessage("Error handling packet: CreateProjectilePacket on " + (Main.netMode == NetmodeID.Server ? "serverside" : "clientSide") +
                                    ", full error trace: " + e);
 
                     }
@@ -231,9 +231,9 @@ namespace kRPG
                 case Message.AddXp:
                     AddXPPacket.Read(reader);
                     break;
-                case Message.SyncSpear:
-                    SyncSpearPacket.Read(reader);
-                    break;
+                //case Message.SyncSpear:
+                //    SyncSpearPacket.Read(reader);
+                //    break;
                 case Message.SwordInit:
                     SwordInitPacket.Read(reader);
                     break;
@@ -257,7 +257,7 @@ namespace kRPG
             //Overhaul = ModLoader.GetMod("TerrariaOverhaul");
 
             kConfig.Initialize();
-            if (Main.netMode != Constants.NetModes.Server)
+            if (Main.netMode != NetmodeID.Server)
             {
                 GFX.LoadGfx();
                 InvSlot[0] = Main.inventoryBackTexture;
