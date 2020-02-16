@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 using kRPG.Util;
+using Terraria.ID;
 
 namespace kRPG.GameObjects.Items.Glyphs
 {
@@ -46,9 +47,9 @@ namespace kRPG.GameObjects.Items.Glyphs
         {
             return delegate(ProceduralSpellProj spell)
             {
-                if (Main.netMode != Constants.NetModes.Server)
+                if (Main.netMode != NetmodeID.Server)
                 {
-                    if (Main.netMode == Constants.NetModes.SinglePlayer || spell.projectile.owner == Main.myPlayer)
+                    if (Main.netMode ==NetmodeID.SinglePlayer || spell.projectile.owner == Main.myPlayer)
                     {
                         PlayerCharacter character = Main.player[spell.projectile.owner].GetModPlayer<PlayerCharacter>();
 

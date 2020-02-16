@@ -5,15 +5,50 @@ using kRPG.GameObjects.Items.Projectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Items.Weapons.Melee
 {
     public class ProceduralSpear : ProceduralProjectile
     {
-        public SwordAccent Accent { get; set; }
-        public SwordBlade Blade { get; set; }
-        public SwordHilt Hilt { get; set; }
+        private int Combined => (int) projectile.ai[1];
+
+        public SwordBlade Blade {
+            get {
+                return SwordBlade.Blades[(Combined & 0xFF)];
+            }
+            set {
+                projectile.ai[1] = (value.Type | (Accent.Type << 8) | (Hilt.Type << 16));
+            }
+
+        }
+
+        public SwordAccent Accent {
+            get
+            {
+                return SwordAccent.Accents[((Combined >> 8) & 0xFF)];
+            }
+
+            set
+            {
+                projectile.ai[1]= (Blade.Type | (value.Type << 8) | (Hilt.Type << 16));
+            }
+
+        }
+
+
+        public SwordHilt Hilt
+        {
+            get {
+                return SwordHilt.Hilts[((Combined >> 16) & 0xFF)];
+            }
+
+            set {
+                projectile.ai[1] = (Blade.Type | (Accent.Type << 8) | (value.Type << 16));
+            }
+        }
+
 
         public float MovementFactor // Change this value to alter how fast the spear moves
         {
@@ -26,6 +61,15 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         {
             try
             {
+                if (projectile.ai[1] == 0)
+                    return;
+
+                if (LocalTexture==null && Main.netMode!=NetmodeID.Server)
+                    Initialize();
+
+                //kRPG.LogMessage($"########################################> Blade = {Blade.Type} Accent = {Accent.Type} Hilt: {Hilt.Type}");
+
+
                 // Since we access the owner player instance so much, it's useful to create a helper local variable for this
                 // Sadly, Projectile/ModProjectile does not have its own
                 Player projOwner = Main.player[projectile.owner];
@@ -41,8 +85,19 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 projectile.spriteDirection = projectile.direction;
                 projOwner.heldProj = projectile.whoAmI;
                 projOwner.itemTime = projOwner.itemAnimation;
-                projectile.position.X = projOwner.Center.X - LocalTexture.Width / 2f /* + 2f*projOwner.direction*/;
-                projectile.position.Y = projOwner.Center.Y - LocalTexture.Height / 2f /* + 4f*/;
+
+                if (LocalTexture == null)
+                {
+                    projectile.position.X = projOwner.Center.X - 48 / 2f /* + 2f*projOwner.direction*/;
+                    projectile.position.Y = projOwner.Center.Y - 48 / 2f /* + 4f*/;
+                }
+                else
+                {
+                    projectile.position.X = projOwner.Center.X - LocalTexture.Width / 2f /* + 2f*projOwner.direction*/;
+                    projectile.position.Y = projOwner.Center.Y - LocalTexture.Height / 2f /* + 4f*/;
+                }
+
+
                 // As long as the player isn't frozen, the spear can move
                 if (!projOwner.frozen)
                 {
@@ -72,7 +127,17 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 if (projectile.spriteDirection == -1)
                     projectile.rotation += MathHelper.ToRadians(90f);
 
-                Rectangle rect = new Rectangle((int)projectile.position.X, (int)projectile.position.Y, LocalTexture.Width, LocalTexture.Height);
+                Rectangle rect;
+                if (LocalTexture == null)
+                {
+                    rect = new Rectangle((int)projectile.position.X, (int)projectile.position.Y, 48, 48);
+                }
+                else
+                {
+                    rect = new Rectangle((int)projectile.position.X, (int)projectile.position.Y, LocalTexture.Width, LocalTexture.Height);
+                }
+
+                 
                 Blade.Effect?.Invoke(rect, projOwner);
                 Accent.Effect?.Invoke(rect, projOwner);
             }
@@ -90,8 +155,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public Point CombinedTextureSize()
         {
-            return new Point(Blade.Texture.Width - (int)Blade.Origin.X + (int)Hilt.SpearOrigin.X,
-                (int)Blade.Origin.Y + Hilt.SpearTexture.Height - (int)Hilt.SpearOrigin.Y);
+            return new Point(Blade.Texture.Width - (int)Blade.Origin.X + (int)Hilt.SpearOrigin.X, (int)Blade.Origin.Y + Hilt.SpearTexture.Height - (int)Hilt.SpearOrigin.Y);
         }
 
         //public override void SendExtraAI(BinaryWriter writer)
@@ -106,37 +170,44 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         //    Blade = SwordBlade.Blades[reader.ReadInt32()];
         //    Hilt = SwordHilt.Hilts[reader.ReadInt32()];
         //    Accent = SwordAccent.Accents[reader.ReadInt32()];
-        //    if (Main.netMode == Constants.NetModes.Client) 
+        //    if (Main.netMode == NetmodeID.MultiplayerClient) 
         //        Initialize();
         //}
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
         {
-            if (LocalTexture == null && Main.netMode == Constants.NetModes.SinglePlayer)
+            if (LocalTexture == null && Main.netMode != NetmodeID.Server)
             {
                 Initialize();
                 return;
             }
-
-            if (LocalTexture == null)
-            {
-                Initialize();
-                return;
-            }
-
+            
             switch (Main.netMode)
             {
-                case 0:
-                    spriteBatch.Draw(LocalTexture, position + LocalTexture.Size() / 2f, null, Blade.Lighted ? Color.White : color, rotation,
-                        projectile.spriteDirection > 0 ? LocalTexture.Bounds.TopRight() : Vector2.Zero, scale,
-                        projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+                case NetmodeID.SinglePlayer:
+                    spriteBatch.Draw(LocalTexture,
+                        position + LocalTexture.Size() / 2f, 
+                        null,
+                        Blade.Lighted ? Color.White : color,
+                        rotation, 
+                        projectile.spriteDirection > 0 ? LocalTexture.Bounds.TopRight() : Vector2.Zero,
+                        scale, 
+                        projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
+                        0f);
                     break;
-                case 1:
+
+                case NetmodeID.MultiplayerClient:
                     {
                         Texture2D t2d = Main.projectileTexture[projectile.type];
-                        spriteBatch.Draw(t2d, position + t2d.Size() / 2f, null, color, rotation,
-                            projectile.spriteDirection > 0 ? t2d.Bounds.TopRight() : Vector2.Zero, scale,
-                            projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+                        spriteBatch.Draw(t2d,
+                            position + t2d.Size() / 2f, 
+                            null, 
+                            color, 
+                            rotation,
+                            projectile.spriteDirection > 0 ? t2d.Bounds.TopRight() : Vector2.Zero, 
+                            scale,
+                            projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
+                            0f);
                         break;
                     }
             }
@@ -144,23 +215,25 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public override void Initialize()
         {
-            if (Blade == null || Hilt == null || Accent == null)
+            if (Main.netMode != NetmodeID.Server)
             {
-                kRPG.LogMessage("Um, hilt, accent or Blade is null.");
-                return;
-
-            }
-
-            LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> { Blade.Texture, Hilt.SpearTexture, Accent.Texture },
-                new List<Point>
+                if (Blade == null || Hilt == null || Accent == null)
                 {
-                    new Point(CombinedTextureSize().X - Blade.Texture.Width, 0),
-                    new Point(0, CombinedTextureSize().Y - Hilt.SpearTexture.Height),
-                    new Point((int) Hilt.SpearOrigin.X - (int) Accent.Origin.X,
-                        CombinedTextureSize().Y - Hilt.SpearTexture.Height + (int) Hilt.SpearOrigin.Y - (int) Accent.Origin.Y)
-                }, CombinedTextureSize());
-            projectile.width = LocalTexture.Width;
-            projectile.height = LocalTexture.Height;
+                    kRPG.LogMessage("Um, hilt, accent or Blade is null.");
+                    return;
+
+                }
+
+                LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> {Blade.Texture, Hilt.SpearTexture, Accent.Texture},
+                    new List<Point>
+                    {
+                        new Point(CombinedTextureSize().X - Blade.Texture.Width, 0),
+                        new Point(0, CombinedTextureSize().Y - Hilt.SpearTexture.Height),
+                        new Point((int) Hilt.SpearOrigin.X - (int) Accent.Origin.X, CombinedTextureSize().Y - Hilt.SpearTexture.Height + (int) Hilt.SpearOrigin.Y - (int) Accent.Origin.Y)
+                    }, CombinedTextureSize());
+                projectile.width = LocalTexture.Width;
+                projectile.height = LocalTexture.Height;
+            }
         }
 
         // ReSharper disable once IdentifierTypo

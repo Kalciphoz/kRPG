@@ -86,7 +86,7 @@ namespace kRPG.GameObjects.Recipes
                     if (item3.stack > requiredAmount)
                     {
                         item3.stack -= requiredAmount;
-                        if (Main.netMode == Constants.NetModes.Client && Main.player[Main.myPlayer].chest >= 0)
+                        if (Main.netMode == NetmodeID.MultiplayerClient && Main.player[Main.myPlayer].chest >= 0)
                             NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, l);
                         requiredAmount = 0;
                     }
@@ -94,7 +94,7 @@ namespace kRPG.GameObjects.Recipes
                     {
                         requiredAmount -= item3.stack;
                         array[l] = new Item();
-                        if (Main.netMode == Constants.NetModes.Client && Main.player[Main.myPlayer].chest >= 0)
+                        if (Main.netMode == NetmodeID.MultiplayerClient && Main.player[Main.myPlayer].chest >= 0)
                             NetMessage.SendData(32, -1, -1, null, Main.player[Main.myPlayer].chest, l);
                     }
                 }
@@ -107,7 +107,7 @@ namespace kRPG.GameObjects.Recipes
         }
         public static void FindRecipes()
         {
-            if (Main.netMode == Constants.NetModes.Server) return;
+            if (Main.netMode == NetmodeID.Server) return;
             int num = Main.availableRecipe[Main.focusRecipe];
             float num2 = Main.availableRecipeY[Main.focusRecipe];
             for (int i = 0; i < Terraria.Recipe.maxRecipes; i++)

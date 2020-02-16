@@ -27,7 +27,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         //    tooltips.Add(new TooltipLine(mod, "enemyDef", "average enemy defense " + dps.ToString()));
         //}
 
-        public Dictionary<Element, float> EleDamage { get; set; } = new Dictionary<Element, float> {{Element.Fire, 0f}, {Element.Cold, 0f}, {Element.Lightning, 0f}, {Element.Shadow, 0f}};
+        public Dictionary<Element, float> EleDamage { get; set; } = new Dictionary<Element, float> { { Element.Fire, 0f }, { Element.Cold, 0f }, { Element.Lightning, 0f }, { Element.Shadow, 0f } };
 
         public SwordHilt Hilt { get; set; }
         public bool Lighted { get; set; }
@@ -38,18 +38,18 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             try
             {
                 ResetStats();
-                if (Main.netMode != Constants.NetModes.Server)
-                    LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> {Blade.Texture, Hilt.Texture, Accent.Texture},
+                if (Main.netMode != NetmodeID.Server)
+                    LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> { Blade.Texture, Hilt.Texture, Accent.Texture },
                         new List<Point>
                         {
                             new Point(CombinedTextureSize().X - Blade.Texture.Width, 0),
                             new Point(0, CombinedTextureSize().Y - Hilt.Texture.Height),
                             new Point((int) Hilt.Origin.X + Hilt.AccentOffset.X - (int) Accent.Origin.X, Hilt.AccentOffset.Y + CombinedTextureSize().Y - Hilt.Texture.Height + (int) Hilt.Origin.Y - (int) Accent.Origin.Y)
                         }, CombinedTextureSize());
-                if (Main.netMode != Constants.NetModes.Server)
+                if (Main.netMode != NetmodeID.Server)
                     item.width = LocalTexture.Width;
 
-                if (Main.netMode != Constants.NetModes.Server)
+                if (Main.netMode != NetmodeID.Server)
                     item.height = LocalTexture.Height;
 
                 if (Accent.Type == SwordAccent.GemPurple.Type)
@@ -125,16 +125,16 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             {
                 //blade and hilt are null!.
 
-                item.rare = (int) Math.Min(Math.Floor(Dps / 15.0), 9);
-                item.useAnimation = (int) (Blade.UseTime / Hilt.SpeedModifier);
-                item.damage = (int) Math.Round(Dps * Hilt.DpsModifier * (Accent?.DpsModifier ?? 1) * item.useAnimation / 60f + EnemyDef);
-                item.useAnimation = (int) Math.Round((item.damage - (float) EnemyDef) * 60f / (Dps * Hilt.DpsModifier * (Accent?.DpsModifier ?? 1)));
+                item.rare = (int)Math.Min(Math.Floor(Dps / 15.0), 9);
+                item.useAnimation = (int)(Blade.UseTime / Hilt.SpeedModifier);
+                item.damage = (int)Math.Round(Dps * Hilt.DpsModifier * (Accent?.DpsModifier ?? 1) * item.useAnimation / 60f + EnemyDef);
+                item.useAnimation = (int)Math.Round((item.damage - (float)EnemyDef) * 60f / (Dps * Hilt.DpsModifier * (Accent?.DpsModifier ?? 1)));
                 item.useTime = item.useAnimation;
                 item.knockBack = Blade.KnockBack + Hilt.KnockBack;
                 item.SetNameOverride(Hilt.Prefix + Blade.Name + (Accent?.Suffix ?? ""));
                 item.autoReuse = Hilt.AutoSwing || Blade.AutoSwing;
                 item.useTurn = item.autoReuse;
-                item.value = (int) (Dps * 315);
+                item.value = (int)(Dps * 315);
                 item.crit = Blade.CritBonus + Hilt.CritBonus + (Accent?.CritBonus ?? 0);
                 item.scale = 1f + Blade.Scale + Hilt.Scale;
                 item.mana = Hilt.Mana + (Accent?.Mana ?? 0);
@@ -150,7 +150,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public override ModItem Clone(Item tItem)
         {
-            ProceduralSword copy = (ProceduralSword) base.Clone(tItem);
+            ProceduralSword copy = (ProceduralSword)base.Clone(tItem);
             copy.Hilt = Hilt;
             copy.Blade = Blade;
             copy.Accent = Accent;
@@ -166,7 +166,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public Point CombinedTextureSize()
         {
-            return new Point(Math.Max(Blade.Texture.Width, Blade.Texture.Width - (int) Blade.Origin.X + (int) Hilt.Origin.X), Math.Max(Blade.Texture.Height, (int) Blade.Origin.Y + Hilt.Texture.Height - (int) Hilt.Origin.Y));
+            return new Point(Math.Max(Blade.Texture.Width, Blade.Texture.Width - (int)Blade.Origin.X + (int)Hilt.Origin.X), Math.Max(Blade.Texture.Height, (int)Blade.Origin.Y + Hilt.Texture.Height - (int)Hilt.Origin.Y));
         }
 
         public override void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float rotation, float scale)
@@ -217,7 +217,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public override void MeleeEffects(Player player, Rectangle hitBox)
         {
-            
+
 
             Blade.Effect?.Invoke(hitBox, player);
 
@@ -269,7 +269,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 kRPG.LogMessage("Ummm....  Why is the blade null?");
 
             int id = Item.NewItem(position, mod.GetItem("ProceduralSword").item.type);
-            ProceduralSword sword = (ProceduralSword) Main.item[id].modItem;
+            ProceduralSword sword = (ProceduralSword)Main.item[id].modItem;
             sword.Hilt = hilt;
             sword.Blade = blade;
             sword.Accent = accent;
@@ -356,39 +356,38 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public override bool UseItem(Player player)
         {
-            try
-            {
-                if (Spear /* && player.altFunctionUse != 2*/)
+
+            if (player == Main.player[Main.myPlayer])
+                try
                 {
-                    Vector2 pos = player.position;
-                    Vector2 unitVelocity = new Vector2(Main.mouseX - 12f, Main.mouseY - 24f) + Main.screenPosition - pos;
-                    unitVelocity.Normalize();
-                    Vector2 velocity = unitVelocity * 60f / item.useAnimation;
-                    Projectile projectile = Main.projectile[Projectile.NewProjectile(pos, velocity, GetInstance<ProceduralSpear>().projectile.type, item.damage, item.knockBack, player.whoAmI)];
-                    projectile.GetGlobalProjectile<kProjectile>().ElementalDamage = item.GetGlobalItem<kItem>().ElementalDamage;
-                    projectile.scale = item.scale;
-                    ProceduralSpear ps = (ProceduralSpear) projectile.modProjectile;
-                    ps.Hilt = Hilt;
-                    ps.Blade = Blade;
-                    ps.Accent = Accent;
+                    if (Spear /* && player.altFunctionUse != 2*/)
+                    {
+                        Vector2 pos = player.position;
+                        Vector2 unitVelocity = new Vector2(Main.mouseX - 12f, Main.mouseY - 24f) + Main.screenPosition - pos;
+                        unitVelocity.Normalize();
+                        Vector2 velocity = unitVelocity * 60f / item.useAnimation;
 
-                    if (Main.netMode != Constants.NetModes.Server)
-                        ps.Initialize();
+                        int psi = ProjectileType<ProceduralSpear>();
 
-                    if (Main.netMode != Constants.NetModes.Client)
+                        //This is the actual projectile index.
+                        var projectileIdx = Projectile.NewProjectile(pos, velocity, psi, item.damage, item.knockBack, player.whoAmI);
+
+                        Projectile projectile = Main.projectile[projectileIdx];
+
+                        projectile.scale = item.scale;
+                        projectile.GetGlobalProjectile<kProjectile>().ElementalDamage = item.GetGlobalItem<kItem>().ElementalDamage;
+
+                        projectile.ai[0] = 0;
+                        projectile.ai[1] = (Blade.Type | (Accent.Type << 8) | (Hilt.Type << 16));
                         return true;
-
-                    SyncSpearPacket.Write(Blade.Type, Hilt.Type, Accent.Type);
-
-                    return true;
+                    }
                 }
-            }
-            catch (SystemException e)
-            {
-                ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
-            }
+                catch (SystemException e)
+                {
+                    ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(e.ToString());
+                }
+            return true;
 
-            return false;
         }
 
         // ReSharper disable once RedundantAssignment

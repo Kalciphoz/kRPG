@@ -18,12 +18,7 @@ namespace kRPG
             {"mind_fortress", Ritual.MindFortress},
             {"blood_drinking", Ritual.BloodDrinking}
         };
-        public static class NetModes
-        {
-            public const int Server = 2;
-            public const int Client = 1;
-            public const int SinglePlayer = 0;
-        }
+       
         public static double Tau => Math.PI * 2;
     }
 }

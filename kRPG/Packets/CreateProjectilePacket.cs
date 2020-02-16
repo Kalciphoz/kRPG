@@ -2,6 +2,7 @@
 using kRPG.Enums;
 using kRPG.GameObjects.Items.Glyphs;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.Packets
@@ -10,7 +11,7 @@ namespace kRPG.Packets
     {
         public static void Write(int playerWhoAmI, int projectileWhoAmI, int starType, int crossType, int moonType, float damage, bool minion, int casterWhoAmI, List<GlyphModifier> modifiers)
         {
-            if (Main.netMode == Constants.NetModes.Client)
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
                 ModPacket packet = kRPG.Mod.GetPacket();
                 packet.Write((byte) Message.CreateProjectile);

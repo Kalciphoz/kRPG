@@ -217,7 +217,7 @@ namespace kRPG.GameObjects.Players
 
         public override void DrawEffects(PlayerDrawInfo drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)
         {
-            if (Main.netMode == Constants.NetModes.Server || Main.myPlayer != player.whoAmI) return;
+            if (Main.netMode == NetmodeID.Server || Main.myPlayer != player.whoAmI) return;
             if (player.statLife < 1) return;
             if (HasAilment[Element.Fire])
             {
@@ -267,7 +267,7 @@ namespace kRPG.GameObjects.Players
                     Main.dust[dust].noGravity = true;
                 }
 
-            if (Main.netMode == Constants.NetModes.Server) return;
+            if (Main.netMode == NetmodeID.Server) return;
             SpriteBatch spriteBatch = Main.spriteBatch;
 
             foreach (Trail trail in Trails.ToArray())
@@ -373,7 +373,7 @@ namespace kRPG.GameObjects.Players
 
             kNPC victim = target.GetGlobalNPC<kNPC>();
 
-            if (!crit && Main.netMode == Constants.NetModes.SinglePlayer)
+            if (!crit && Main.netMode ==NetmodeID.SinglePlayer)
                 crit = Main.rand.Next(500) < 50 + victim.AilmentIntensity[Element.Cold];
 
             if (crit)
@@ -451,7 +451,7 @@ namespace kRPG.GameObjects.Players
             foreach (Element element in Enum.GetValues(typeof(Element)))
             {
                 damage -= Math.Min(Resistance[element], eleDmg[element] * 3 / 5);
-                if (Main.rand.Next(player.statLifeMax2 + Resistance[element] * 20) >= 15 + eleDmg[element] * (bossFight ? 2 : 8) || Main.netMode == Constants.NetModes.Server)
+                if (Main.rand.Next(player.statLifeMax2 + Resistance[element] * 20) >= 15 + eleDmg[element] * (bossFight ? 2 : 8) || Main.netMode == NetmodeID.Server)
                     continue;
                 if (eleDmg[element] <= 0)
                     continue;
@@ -592,7 +592,7 @@ namespace kRPG.GameObjects.Players
 
         public override void PostItemCheck()
         {
-            if (Main.netMode == Constants.NetModes.Client)
+            if (Main.netMode == NetmodeID.MultiplayerClient)
                 if (player.whoAmI != Main.myPlayer)
                     return;
 
@@ -704,7 +704,7 @@ namespace kRPG.GameObjects.Players
 
             ManaRegenTimer += 1f;
 
-            if (Main.chatRelease && !Main.drawingPlayerChat && !Main.editSign && !Main.editChest && Main.netMode != Constants.NetModes.Server)
+            if (Main.chatRelease && !Main.drawingPlayerChat && !Main.editSign && !Main.editChest && Main.netMode != NetmodeID.Server)
                 for (int abilityIndex = 0; abilityIndex < Abilities.Length; abilityIndex += 1)
                     if (Abilities[abilityIndex].CompleteSkill())
                     {
@@ -718,7 +718,7 @@ namespace kRPG.GameObjects.Players
                         if (!Main.keyState.IsKeyDown(Abilities[abilityIndex].Key) || !Main.keyState.IsKeyUp(Keys.LeftShift) || Abilities[abilityIndex].Remaining != 0 || !useable ||
                             player.statMana < Abilities[abilityIndex].ManaCost(this))
                             continue;
-                        if (Main.netMode != Constants.NetModes.Server)
+                        if (Main.netMode != NetmodeID.Server)
                             Abilities[abilityIndex].UseAbility(player, Main.MouseWorld);
                         player.statMana -= Abilities[abilityIndex].ManaCost(this);
                     }
@@ -732,7 +732,7 @@ namespace kRPG.GameObjects.Players
         public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit, ref bool customDamage, ref bool playSound,
             ref bool genGore, ref PlayerDeathReason damageSource)
         {
-            bool enemyCrit = Main.rand.Next(5) == 0 && Main.netMode == Constants.NetModes.SinglePlayer;
+            bool enemyCrit = Main.rand.Next(5) == 0 && Main.netMode ==NetmodeID.SinglePlayer;
             int max = 80;
             int diff = 52;
 
@@ -810,7 +810,7 @@ namespace kRPG.GameObjects.Players
 
         public override void PreUpdate()
         {
-            if (Main.chatRelease && !Main.drawingPlayerChat && !Main.editSign && !Main.editChest && Main.netMode != Constants.NetModes.Server)
+            if (Main.chatRelease && !Main.drawingPlayerChat && !Main.editSign && !Main.editChest && Main.netMode != NetmodeID.Server)
             {
                 if (PlayerInput.Triggers.Current.QuickHeal)
                     if (!PlayerInput.Triggers.Old.QuickHeal)
@@ -1020,7 +1020,7 @@ namespace kRPG.GameObjects.Players
                 LifeDegen = AilmentIntensity[Element.Fire] / 2f;
             ManaRegen = player.statManaMax2 * 0.06f + TotalStats(PlayerStats.Wits) * 0.6f;
 
-            if (Main.netMode != Constants.NetModes.Server && Main.myPlayer == player.whoAmI)
+            if (Main.netMode != NetmodeID.Server && Main.myPlayer == player.whoAmI)
             {
                 if (Mana < 0) Mana = 0;
                 if (player.statMana < 0) player.statMana = 0;
@@ -1119,7 +1119,7 @@ namespace kRPG.GameObjects.Players
 
         public void InitializeGui()
         {
-            if (Main.netMode == Constants.NetModes.Server)
+            if (Main.netMode == NetmodeID.Server)
                 return;
             BaseGui.GuiElements.Clear();
             SpellCraftingGui = new SpellCraftingGui();

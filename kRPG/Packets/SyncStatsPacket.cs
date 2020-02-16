@@ -4,6 +4,7 @@ using System.IO;
 using kRPG.Enums;
 using kRPG.GameObjects.Players;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.Packets
@@ -12,7 +13,7 @@ namespace kRPG.Packets
     {
         public static void Read( BinaryReader reader)
         {
-            if (Main.netMode == Constants.NetModes.Server)
+            if (Main.netMode == NetmodeID.Server)
             {
                 PlayerCharacter character = Main.player[reader.ReadInt32()].GetModPlayer<PlayerCharacter>();
                 character.Level = reader.ReadInt32();
@@ -25,7 +26,7 @@ namespace kRPG.Packets
 
         public static void Write(int whoAmI, int level, int resilience, int quickness, int potency, int wits)
         {
-            if (Main.netMode == Constants.NetModes.Client)
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
                 ModPacket packet = kRPG.Mod.GetPacket();
                 packet.Write((byte) Message.SyncStats);

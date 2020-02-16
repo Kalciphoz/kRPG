@@ -4,6 +4,7 @@ using kRPG.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Items.Weapons.Melee
@@ -14,7 +15,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             int critBonus = 0, bool spear = false, bool autoSwing = false, int mana = 0, float scale = 0f)
         {
             Type = Hilts.Count + 1;
-            if (Main.netMode != Constants.NetModes.Server)
+            if (Main.netMode != NetmodeID.Server)
                 Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Swordhilts/" + texture);
             Origin = new Vector2(originX, originY);
             DpsModifier = dpsModifier;
@@ -86,7 +87,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
         public SwordHilt DefineSpear(string texture, int originX, int originY)
         {
-            if (Main.netMode != Constants.NetModes.Server)
+            if (Main.netMode != NetmodeID.Server)
                 SpearTexture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Projectiles/SpearMounts/" + texture);
             SpearOrigin = new Vector2(originX, originY);
             return this;

@@ -6,6 +6,7 @@ using kRPG.GameObjects.Items.Glyphs;
 using kRPG.GameObjects.Spells;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 
 namespace kRPG.GameObjects.Items.Projectiles
 {
@@ -25,7 +26,7 @@ namespace kRPG.GameObjects.Items.Projectiles
 
         public override void AI()
         {
-            if (Main.netMode == Constants.NetModes.Server) return;
+            if (Main.netMode == NetmodeID.Server) return;
             bool self = Source.Glyphs[(byte)GlyphType.Moon].modItem is Moon_Green;
             if ((!self || CirclingProtection.Count(spell => spell.projectile.active) <= Source.ProjCount - 3) && Cooldown <= 0)
             {

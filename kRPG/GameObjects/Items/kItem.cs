@@ -509,7 +509,7 @@ namespace kRPG.GameObjects.Items
         //Seems to work fine now
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-            if (Main.netMode == Constants.NetModes.Server) 
+            if (Main.netMode == NetmodeID.Server) 
                 return;
             if (item.defense > 0 || item.accessory)
             {
@@ -674,7 +674,7 @@ namespace kRPG.GameObjects.Items
                         SoundManager.PlaySound(Sounds.Grass, player.position);
                         //Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
                         item = new Item();
-                        if (Main.netMode == Constants.NetModes.Client)
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
                         {
                             NetMessage.SendData((int)PacketTypes.NebulaLevelUp, -1, -1, null, player.whoAmI, item.buffType, player.Center.X, player.Center.Y);
                             NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, item.whoAmI);
@@ -700,7 +700,7 @@ namespace kRPG.GameObjects.Items
                                 if (player.statLife > player.statLifeMax2)
                                     player.statLife = player.statLifeMax2;
                                 item = new Item();
-                                if (Main.netMode == Constants.NetModes.Client)
+                                if (Main.netMode == NetmodeID.MultiplayerClient)
                                     NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, item.whoAmI);
 
                                 break;
@@ -717,7 +717,7 @@ namespace kRPG.GameObjects.Items
                                 if (Main.myPlayer == player.whoAmI)
                                     player.ManaEffect(healAmount);
                                 item = new Item();
-                                if (Main.netMode == Constants.NetModes.Client)
+                                if (Main.netMode == NetmodeID.MultiplayerClient)
                                     NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, item.whoAmI);
 
                                 break;
@@ -743,7 +743,7 @@ namespace kRPG.GameObjects.Items
                                 }
 
                                 item = player.GetItem(item);
-                                if (Main.netMode == Constants.NetModes.Client)
+                                if (Main.netMode == NetmodeID.MultiplayerClient)
                                     NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, item.whoAmI);
 
                                 break;

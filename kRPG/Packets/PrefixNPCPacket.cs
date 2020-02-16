@@ -7,6 +7,7 @@ using kRPG.Enums;
 using kRPG.GameObjects.Modifiers;
 using kRPG.GameObjects.NPCs;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.Packets
@@ -23,7 +24,7 @@ namespace kRPG.Packets
             
             try
             {
-                if (Main.netMode != Constants.NetModes.Server)
+                if (Main.netMode != NetmodeID.Server)
                 {
                     int refNum = reader.ReadInt32();
                     int npcIndex = reader.ReadInt32();
@@ -83,7 +84,7 @@ namespace kRPG.Packets
 
         public static void Write(NPC npc,List<NpcModifier> modifiers)
         {
-            if (Main.netMode == Constants.NetModes.Server)
+            if (Main.netMode == NetmodeID.Server)
             {
                 int bytes = 0;
                 ModPacket packet = kRPG.Mod.GetPacket();

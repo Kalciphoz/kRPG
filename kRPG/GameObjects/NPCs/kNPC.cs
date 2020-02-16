@@ -231,7 +231,7 @@ namespace kRPG.GameObjects.NPCs
             int level = GetLevel(npc.netID);
 
             Player player = Array.Find(Main.player, p => p.active);
-            if (Main.netMode == Constants.NetModes.SinglePlayer)
+            if (Main.netMode ==NetmodeID.SinglePlayer)
             {
                 player = Main.LocalPlayer;
             }
@@ -294,7 +294,7 @@ namespace kRPG.GameObjects.NPCs
             {
                 Item item = Main.item[
                     Item.NewItem(new Rectangle((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height), mod.ItemType(Glyph.GetRandom()))];
-                if (item.modItem is Glyph && Main.netMode == Constants.NetModes.SinglePlayer)
+                if (item.modItem is Glyph && Main.netMode ==NetmodeID.SinglePlayer)
                     ((Glyph)item.modItem).Randomize();
             }
 
@@ -346,36 +346,36 @@ namespace kRPG.GameObjects.NPCs
                 return;
 
             InvincibilityTime = new Dictionary<ProceduralSpell, int>();
-            Player player = Main.netMode == Constants.NetModes.Server ? Main.player[0] : Main.player[Main.myPlayer];
-            int playerlevel = Main.netMode == Constants.NetModes.SinglePlayer ? player.GetModPlayer<PlayerCharacter>().Level : 20;
+            Player player = Main.netMode == NetmodeID.Server ? Main.player[0] : Main.player[Main.myPlayer];
+            int playerlevel = Main.netMode == NetmodeID.SinglePlayer ? player.GetModPlayer<PlayerCharacter>().Level : 20;
             npc.lifeMax = (int)Math.Round(npc.lifeMax * (GetLevel(npc.netID) / 30f + 0.4f + playerlevel * 0.025f));
             npc.life = (int)Math.Round(npc.life * (GetLevel(npc.netID) / 30f + 0.4f + playerlevel * 0.025f));
             npc.defense = (int)Math.Round(npc.defense * (GetLevel(npc.netID) / 160f + 1f));
             npc.lavaImmune = npc.lavaImmune || npc.defense > 60;
 
-            if (npc.damage > 0 && !npc.boss && Main.rand.Next(3) != 0 || Main.netMode != Constants.NetModes.SinglePlayer)
+            if (npc.damage > 0 && !npc.boss && Main.rand.Next(3) != 0 || Main.netMode != NetmodeID.SinglePlayer)
             {
                 Dictionary<Element, bool> hasElement = new Dictionary<Element, bool>
                 {
                     {
                         Element.Fire,
                         player.ZoneUnderworldHeight || player.ZoneTowerSolar || player.ZoneMeteor || player.ZoneDesert ||
-                        Main.rand.Next(10) == 0 && Main.netMode == Constants.NetModes.SinglePlayer
+                        Main.rand.Next(10) == 0 && Main.netMode == NetmodeID.SinglePlayer
                     },
                     {
                         Element.Cold,
                         player.ZoneSnow || player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneDungeon || player.ZoneRain ||
-                        Main.rand.Next(10) == 0 && Main.netMode == Constants.NetModes.SinglePlayer
+                        Main.rand.Next(10) == 0 && Main.netMode ==NetmodeID.SinglePlayer
                     },
                     {
                         Element.Lightning,
                         player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneTowerStardust || player.ZoneMeteor || player.ZoneHoly ||
-                        Main.rand.Next(10) == 0 && Main.netMode == Constants.NetModes.SinglePlayer
+                        Main.rand.Next(10) == 0 && Main.netMode ==NetmodeID.SinglePlayer
                     },
                     {
                         Element.Shadow,
                         player.ZoneCorrupt || player.ZoneCrimson || player.ZoneUnderworldHeight || player.ZoneTowerNebula ||
-                        !Main.dayTime && Main.rand.Next(10) == 0 && Main.netMode == Constants.NetModes.SinglePlayer && player.ZoneOverworldHeight
+                        !Main.dayTime && Main.rand.Next(10) == 0 && Main.netMode ==NetmodeID.SinglePlayer && player.ZoneOverworldHeight
                     }
                 };
                 int count = Enum.GetValues(typeof(Element)).Cast<Element>().Count(element => hasElement[element]);
@@ -386,8 +386,8 @@ namespace kRPG.GameObjects.NPCs
                 DealsEleDmg = count > 0;
             }
 
-            //if (Main.rand.Next(8) < 3 && !npc.boss && !npc.townNPC && !npc.friendly && Main.netMode != Constants.NetModes.Client)
-            if (!npc.boss && !npc.townNPC && !npc.friendly && Main.netMode != Constants.NetModes.Client)
+            //if (Main.rand.Next(8) < 3 && !npc.boss && !npc.townNPC && !npc.friendly && Main.netMode != NetmodeID.MultiplayerClient)
+            if (!npc.boss && !npc.townNPC && !npc.friendly && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 //So we are randomly adding modifiers...
                 InitializeModifiers(npc);

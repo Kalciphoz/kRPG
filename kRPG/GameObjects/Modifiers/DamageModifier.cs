@@ -2,6 +2,7 @@
 using System.IO;
 using kRPG.GameObjects.NPCs;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Modifiers
@@ -14,7 +15,7 @@ namespace kRPG.GameObjects.Modifiers
             this.npc = npc;
             npc.GivenName = "Brutal " + npc.GivenName;
             DmgModifier = dmgModifier;
-            if (Main.netMode == Constants.NetModes.Client)
+            if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
             //Apply(); Virtual calls in constructors is a no-no
             npc.damage = (int)Math.Round(npc.damage * DmgModifier);

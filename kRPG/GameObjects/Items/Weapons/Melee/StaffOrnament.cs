@@ -9,6 +9,7 @@ using kRPG.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Items.Weapons.Melee
@@ -19,7 +20,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
             float speedModifier = 1f, float knockBack = 0f, int critBonus = 0, int repetitions = 0)
         {
             Type = Ornament.Count;
-            if (Main.netMode != Constants.NetModes.Server)
+            if (Main.netMode != NetmodeID.Server)
                 if (texture != null)
                     Texture = ModLoader.GetMod(Constants.ModName).GetTexture("GameObjects/GFX/Items/Ornaments/" + texture);
             Origin = new Vector2(originX, originY);

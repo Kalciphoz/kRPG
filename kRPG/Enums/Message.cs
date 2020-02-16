@@ -2,7 +2,7 @@
 {
     public enum Message : byte
     {
-        AddXp = 200,
+        AddXp = 1,
         CreateProjectile,
         SwordInit,
         StaffInit,
@@ -12,7 +12,7 @@
         SyncLevel,
         InitProjEleDmg,
         SyncStats,
-        SyncSpear,
+        //SyncSpear,
         PrefixNpc,
         NpcEleDmg
     }
