@@ -671,7 +671,7 @@ namespace kRPG.GameObjects.Items
                 {
                     if (ItemID.Sets.NebulaPickup[item.type])
                     {
-                        SoundManager.PlaySound(Sounds.Grass, player.position);
+                        SoundManager.PlaySound(Sounds.Item, player.position);
                         //Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
                         item = new Item();
                         if (Main.netMode == NetmodeID.MultiplayerClient)
@@ -692,7 +692,7 @@ namespace kRPG.GameObjects.Items
                         case ItemID.CandyCane:
                             {
                                 //Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
-                                SoundManager.PlaySound(Sounds.Grass, player.position);
+                                SoundManager.PlaySound(Sounds.Grab, player.position);
                                 int healAmount = 10 + player.GetModPlayer<PlayerCharacter>().Level / 2;
                                 player.statLife += healAmount;
                                 if (Main.myPlayer == player.whoAmI)
@@ -710,7 +710,7 @@ namespace kRPG.GameObjects.Items
                         case ItemID.SugarPlum:
                             {
                                 //Main.PlaySound(7, (int) player.position.X, (int) player.position.Y);
-                                SoundManager.PlaySound(Sounds.Grass, player.position);
+                                SoundManager.PlaySound(Sounds.Grab, player.position);
                                 int healAmount = 5 + character.TotalStats(PlayerStats.Wits);
                                 character.Mana += healAmount;
                                 player.statMana += healAmount;
@@ -729,7 +729,7 @@ namespace kRPG.GameObjects.Items
                                     character.Permanence += 1;
                                     ItemText.NewText(item, item.stack);
                                     //Main.PlaySound(7, player.position);
-                                    SoundManager.PlaySound(Sounds.Grass, player.position);
+                                    SoundManager.PlaySound(Sounds.Grab, player.position);
                                     return false;
                                 }
 
@@ -738,7 +738,7 @@ namespace kRPG.GameObjects.Items
                                     character.Transcendence += 1;
                                     ItemText.NewText(item, item.stack);
                                     //Main.PlaySound(7, player.position);
-                                    SoundManager.PlaySound(Sounds.Grass, player.position);
+                                    SoundManager.PlaySound(Sounds.Grab, player.position);
                                     return false;
                                 }
 

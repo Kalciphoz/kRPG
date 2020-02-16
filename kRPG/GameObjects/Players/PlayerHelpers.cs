@@ -120,7 +120,7 @@ namespace kRPG.GameObjects.Players
                 Item x = player.inventory[num3];
                 if (x.type <= 0 || x.stack <= 0 || x.stack >= x.maxStack || !item.IsTheSameAs(x))
                     continue;
-                SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
+                SoundManager.PlaySound(flag ? Sounds.CoinPickup : Sounds.Grab, player.position);
 
                 if (item.stack + x.stack <= x.maxStack)
                 {
@@ -159,7 +159,7 @@ namespace kRPG.GameObjects.Players
                     if (x.type <= ItemID.None || x.stack >= x.maxStack || !item.IsTheSameAs(x))
                         continue;
 
-                    SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
+                    SoundManager.PlaySound(flag ? Sounds.CoinPickup : Sounds.Grab, player.position);
 
                     if (item.stack + x.stack <= x.maxStack)
                     {
@@ -187,7 +187,7 @@ namespace kRPG.GameObjects.Players
                     player.inventory[j] = item;
                     ItemText.NewText(newItem, newItem.stack);
                     player.DoCoins(j);
-                    SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
+                    SoundManager.PlaySound(flag ? Sounds.CoinPickup : Sounds.Grab, player.position);
 
                     if (plr == Main.myPlayer)
                         Recipe.FindRecipes();
@@ -204,7 +204,7 @@ namespace kRPG.GameObjects.Players
                             continue;
                         player.inventory[inventorySlotId] = item;
                         ItemText.NewText(newItem, newItem.stack);
-                        SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
+                        SoundManager.PlaySound(flag ? Sounds.CoinPickup : Sounds.Grab, player.position);
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
                     }
@@ -215,7 +215,7 @@ namespace kRPG.GameObjects.Players
                             continue;
                         character.Inventories[2][inventorySlotId] = item;
                         ItemText.NewText(newItem, newItem.stack);
-                        SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
+                        SoundManager.PlaySound(flag ? Sounds.CoinPickup : Sounds.Grab, player.position);
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
                     }
@@ -230,7 +230,7 @@ namespace kRPG.GameObjects.Players
                     player.inventory[k] = item;
                     ItemText.NewText(newItem, newItem.stack);
                     player.DoCoins(k);
-                    SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
+                    SoundManager.PlaySound(flag ? Sounds.CoinPickup : Sounds.Grab, player.position);
                     if (plr == Main.myPlayer)
                         Recipe.FindRecipes();
                     AchievementsHelper.NotifyItemPickup(player, item);
@@ -246,7 +246,7 @@ namespace kRPG.GameObjects.Players
                     player.inventory[inventorySlotId] = item;
                     ItemText.NewText(newItem, newItem.stack);
                     player.DoCoins(inventorySlotId);
-                    SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
+                    SoundManager.PlaySound(flag ? Sounds.CoinPickup : Sounds.Grab, player.position);
                     if (plr == Main.myPlayer)
                         Recipe.FindRecipes();
                     AchievementsHelper.NotifyItemPickup(player, item);
@@ -264,7 +264,7 @@ namespace kRPG.GameObjects.Players
                             continue;
                         character.Inventories[inventoryPageId][inventorySlotId] = item;
                         ItemText.NewText(newItem, newItem.stack);
-                        SoundManager.PlaySound(flag ? Sounds.Meowmere : Sounds.Grass, player.position);
+                        SoundManager.PlaySound(flag ? Sounds.CoinPickup : Sounds.Grab, player.position);
                         AchievementsHelper.NotifyItemPickup(player, item);
                         return new Item();
                     }
