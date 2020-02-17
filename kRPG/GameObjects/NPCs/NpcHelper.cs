@@ -28,32 +28,27 @@ namespace kRPG.GameObjects.NPCs
                 Main.dust[num].noGravity = true;
             }
 
-            int num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default,
-                Main.rand.Next(61, 64));
+            int num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default, Main.rand.Next(61, 64));
             Main.gore[num2].scale = 0.8f;
             Main.gore[num2].velocity.X = Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default,
-                Main.rand.Next(61, 64));
+            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default, Main.rand.Next(61, 64));
             Main.gore[num2].scale = 0.8f;
             Main.gore[num2].velocity.X = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default,
-                Main.rand.Next(61, 64));
+            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default, Main.rand.Next(61, 64));
             Main.gore[num2].scale = 0.8f;
             Main.gore[num2].velocity.X = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default,
-                Main.rand.Next(61, 64));
+            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default, Main.rand.Next(61, 64));
             Main.gore[num2].scale = 0.8f;
             Main.gore[num2].velocity.X = 1.5f + Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
-            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default,
-                Main.rand.Next(61, 64));
+            num2 = Gore.NewGore(new Vector2(dustPos.position.X + dustPos.width / 2f - 24f, dustPos.position.Y + dustPos.height / 2f - 24f), default, Main.rand.Next(61, 64));
             Main.gore[num2].scale = 0.8f;
             Main.gore[num2].velocity.X = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity.Y = -1.5f - Main.rand.Next(-50, 51) * 0.01f;

@@ -16,6 +16,9 @@ namespace kRPG.GameObjects.Modifiers
         {
         }
 
+        public abstract void Initialize();
+        
+
         public virtual void Apply()
         {
         }

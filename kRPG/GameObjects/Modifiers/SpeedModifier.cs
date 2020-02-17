@@ -1,27 +1,36 @@
 ﻿using System.IO;
 using kRPG.GameObjects.NPCs;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Modifiers
 {
     public class SpeedModifier : NpcModifier
     {
-        public SpeedModifier() { }
-        public SpeedModifier(kNPC kNpc, NPC npc, float speedModifierAdj = 1.8f) : base(kNpc, npc)
+        
+        public SpeedModifier(kNPC kNpc, NPC npc) : base(kNpc, npc)
         {
             this.npc = npc;
-            Kn = kNpc;
-            npc.GivenName = "Swift " + npc.GivenName;
-            SpeedModifierAdj = speedModifierAdj;
+            Knpc = kNpc;
+            
+            
         }
 
-        private kNPC Kn { get; }
+        private kNPC Knpc { get; }
         private float SpeedModifierAdj { get; set; }
+
+        public override void Initialize()
+        {
+            SpeedModifierAdj = 1f + Main.rand.NextFloat(.8f);
+            
+            kRPG.LogMessage("Initializing Speed Modifer: " + SpeedModifierAdj);
+        }
 
         public override void Apply()
         {
-            Kn.SpeedModifier = SpeedModifierAdj;
+            Knpc.SpeedModifier = SpeedModifierAdj;
+            npc.GivenName = "Swift " + npc.FullName;
         }
 
         public new static NpcModifier New(kNPC kNpc, NPC npc)

@@ -10,23 +10,23 @@ namespace kRPG.GameObjects.Modifiers
     public class DamageModifier : NpcModifier
     {
         public DamageModifier() { }
-        public DamageModifier(kNPC kNpc, NPC npc, float dmgModifier = 1.2f) : base(kNpc, npc)
+        public DamageModifier(kNPC kNpc, NPC npc) : base(kNpc, npc)
         {
             this.npc = npc;
-            npc.GivenName = "Brutal " + npc.GivenName;
-            DmgModifier = dmgModifier;
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-                return;
-            //Apply(); Virtual calls in constructors is a no-no
-            npc.damage = (int)Math.Round(npc.damage * DmgModifier);
-            npc.defense = 1;
-
+            
         }
 
         private float DmgModifier { get; set; }
 
+        public override void Initialize()
+        {
+            DmgModifier = Main.rand.Next(0, 200) / 100.0f;
+            kRPG.LogMessage("Initializing Damage Modifier: " + DmgModifier);
+        }
+
         public override void Apply()
         {
+            npc.GivenName = "Brutal " + npc.FullName;
             npc.damage = (int) Math.Round(npc.damage * DmgModifier);
             npc.defense = 1;
         }

@@ -5,17 +5,21 @@ using kRPG.GameObjects.Items.Projectiles;
 using kRPG.GameObjects.NPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Modifiers
 {
     public class SageModifier : NpcModifier
     {
-        public SageModifier() { }
+        private int Cross1Id { get; set; } = 0;
+        private int Cross2Id { get; set; } = 0;
+
+        
         public SageModifier(kNPC kNpc, NPC npc) : base(kNpc, npc)
         {
             this.npc = npc;
-            npc.GivenName = "Sagely " + npc.GivenName;
+
         }
 
         public ProceduralSpellProj RotMissile { get; set; }
@@ -44,13 +48,14 @@ namespace kRPG.GameObjects.Modifiers
                     else
                         RotMissile.projectile.Kill();
 
-                Projectile proj1 = Main.projectile[
-                    Projectile.NewProjectile(kNpc.Center, new Vector2(0f, -1.5f), ModContent.ProjectileType<ProceduralSpellProj>(), kNpc.damage, 3f)];
+                Projectile proj1 = Main.projectile[Projectile.NewProjectile(kNpc.Center, new Vector2(0f, -1.5f), ModContent.ProjectileType<ProceduralSpellProj>(), kNpc.damage, 3f)];
                 proj1.hostile = true;
                 proj1.friendly = false;
                 ProceduralSpellProj ps1 = (ProceduralSpellProj)proj1.modProjectile;
                 ps1.Origin = proj1.position;
-                Cross cross1 = Main.rand.Next(2) == 0 ? (Cross)new Cross_Red() : new Cross_Violet();
+
+                Cross cross1 = Cross1Id == 0 ? (Cross)new Cross_Red() : new Cross_Violet();
+
                 ps1.Ai.Add(delegate (ProceduralSpellProj spell)
                 {
                     cross1.GetAiAction()(spell);
@@ -101,7 +106,7 @@ namespace kRPG.GameObjects.Modifiers
                     return;
 
                 ps2.Origin = proj2.position;
-                Cross cross2 = Main.rand.Next(2) == 0 ? (Cross)new Cross_Blue() : new Cross_Purple();
+                Cross cross2 = Cross2Id == 0 ? (Cross)new Cross_Blue() : new Cross_Purple();
                 ps2.Ai.Add(delegate (ProceduralSpellProj spell)
                 {
                     cross2.GetAiAction()(spell);
@@ -146,11 +151,28 @@ namespace kRPG.GameObjects.Modifiers
 
         public override int Pack(ModPacket packet)
         {
+            packet.Write(Cross1Id);
+            packet.Write(Cross2Id);
             return 0;
+        }
+
+        public override void Initialize()
+        {
+            
+            Cross1Id = Main.rand.Next(2);
+            Cross2Id = Main.rand.Next(2);
+            kRPG.LogMessage($"Initializing Sage Modifier: Cross 1 = {Cross1Id} Cross 2 ={Cross2Id}");
+        }
+
+        public override void Apply()
+        {
+            npc.GivenName = "Sagely " + npc.FullName;
         }
 
         public override int Unpack(BinaryReader reader)
         {
+            Cross1Id = reader.ReadInt32();
+            Cross2Id = reader.ReadInt32();
             return 0;
         }
     }
