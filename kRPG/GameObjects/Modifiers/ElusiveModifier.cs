@@ -10,6 +10,8 @@ namespace kRPG.GameObjects.Modifiers
     {
         private kNPC kNpc { get; set; }
 
+        public ElusiveModifier() { }
+
         public ElusiveModifier(kNPC kNpc, NPC npc) : base(kNpc, npc)
         {
             this.npc = npc;

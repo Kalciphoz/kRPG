@@ -1139,7 +1139,7 @@ namespace kRPG.GameObjects.Players
 
         public override void OnEnterWorld(Player playerObj)
         {
-            //kRPG.PlayerEnteredWorld = true;
+            kRPG.PlayerEnteredWorld = true;
             InitializeGui();
 
             if (playerObj.whoAmI == Main.myPlayer)

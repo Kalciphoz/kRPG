@@ -12,6 +12,8 @@ namespace kRPG.GameObjects.Modifiers
 {
     public class SageModifier : NpcModifier
     {
+
+        public SageModifier() { }
         private int Cross1Id { get; set; } = 0;
         private int Cross2Id { get; set; } = 0;
 

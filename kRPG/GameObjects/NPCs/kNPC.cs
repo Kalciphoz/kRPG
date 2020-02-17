@@ -48,24 +48,24 @@ namespace kRPG.GameObjects.NPCs
 
         public static List<Func<kNPC, NPC, NpcModifier>> ModifierFuncs { get; set; } = new List<Func<kNPC, NPC, NpcModifier>>
         {
-            DamageModifier.New,
-            ElusiveModifier.New,
-            ExplosiveModifier.New,
+            //DamageModifier.New,
+            //ElusiveModifier.New,
+            //ExplosiveModifier.New,
             //LifeRegenModifier.New,
-            SageModifier.New,
-            //SizeModifier.New,
-            GameObjects.Modifiers.SpeedModifier.New
+            //SageModifier.New,
+            SizeModifier.New,
+            //GameObjects.Modifiers.SpeedModifier.New
         };
 
         public static string[] modifierDictionary =
         {
-            typeof(DamageModifier).AssemblyQualifiedName,
-            typeof(ElusiveModifier).AssemblyQualifiedName,
-            typeof(ExplosiveModifier).AssemblyQualifiedName, 
+            //typeof(DamageModifier).AssemblyQualifiedName,
+            //typeof(ElusiveModifier).AssemblyQualifiedName,
+            //typeof(ExplosiveModifier).AssemblyQualifiedName, 
             //typeof(LifeRegenModifier).AssemblyQualifiedName, 
-            typeof(SageModifier).AssemblyQualifiedName,
-            //typeof(SizeModifier).AssemblyQualifiedName,
-            typeof(SpeedModifier).AssemblyQualifiedName
+            //typeof(SageModifier).AssemblyQualifiedName,
+            typeof(SizeModifier).AssemblyQualifiedName,
+            //typeof(SpeedModifier).AssemblyQualifiedName
         };
 
         public Dictionary<int, NpcModifier> Modifiers { get; set; } = new Dictionary<int, NpcModifier>();
@@ -204,6 +204,7 @@ namespace kRPG.GameObjects.NPCs
         public void InitializeModifiers(NPC npc)
         {
 
+
             List<int> buffs = new List<int>();
 
             int rnd = new Random().Next(0, 100);
@@ -221,8 +222,16 @@ namespace kRPG.GameObjects.NPCs
                 modifier.Apply();
                 Modifiers.Add(t, modifier);
             }
+
+            //NpcModifier modifier = ModifierFuncs[0].Invoke(this, npc);
+            //modifier.Initialize();
+            //modifier.Apply();
+            //Modifiers.Add(0, modifier);
+
             PrefixNPCPacket.Write(npc, Modifiers);
             //MakeNotable(npc);
+
+
         }
 
         //This just makes the mobs tougher, not sure why you would always want to do this.
@@ -361,6 +370,11 @@ namespace kRPG.GameObjects.NPCs
             //    InvincibilityTime.Add(ps.Source, 30);
         }
 
+        public override void SetDefaults(NPC npc)
+        {
+
+        }
+
         public override void PostAI(NPC npc)
         {
             foreach (NpcModifier npcModifier in Modifiers.Values)
@@ -389,10 +403,7 @@ namespace kRPG.GameObjects.NPCs
                 return;
             }
 
-            if (npc.lifeMax < 10)
-                return;
-
-
+         
 
 
             //The rest of this code only gets called once... after that it's initialized and it is skipped.
@@ -400,15 +411,20 @@ namespace kRPG.GameObjects.NPCs
             //InvincibilityTime = new Dictionary<ProceduralSpell, int>();
 
             //We are going to scale the mobs either off the current player if we are in singleplayer mode or the first player slot if we are in server mode.
+
+
+
             Player player = Main.netMode == NetmodeID.Server ? Main.player[0] : Main.player[Main.myPlayer];
-
             npc.GivenName = npc.FullName;
-
             int playerLevel = Main.netMode == NetmodeID.SinglePlayer ? player.GetModPlayer<PlayerCharacter>().Level : 20;
+
+
+
+
             int npcLevel = GetLevel(npc.netID);
 
             npc.lifeMax = (int)Math.Round(npc.lifeMax * (npcLevel / 30f + 0.4f + playerLevel * 0.025f));
-            npc.life = (int)Math.Round(npc.life * (npcLevel / 30f + 0.4f + playerLevel * 0.025f));
+            npc.life = npc.lifeMax;
             npc.defense = (int)Math.Round(npc.defense * (npcLevel / 160f + 1f));
 
             //NPC is immune to lava if they are flagged as immune or their defense is greater that 60.
@@ -445,8 +461,7 @@ namespace kRPG.GameObjects.NPCs
                 DealsEleDmg = count > 0;
             }
 #endif
-
-
+            kRPG.LogMessage("Initializing Modifiers...");
             if (!npc.boss && !npc.townNPC && !npc.friendly && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 //So we are randomly adding modifiers...
@@ -455,9 +470,12 @@ namespace kRPG.GameObjects.NPCs
 
             if (!Main.expertMode)
             {
-                npc.lifeMax = (int)(npc.lifeMax * 1.3);
+                //npc.lifeMax = (int)(npc.lifeMax * 1.3);
                 npc.life = (int)(npc.life * 1.3);
             }
+
+
+
 
             Initialized = true;
         }
