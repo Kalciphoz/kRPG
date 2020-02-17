@@ -1,0 +1,9 @@
+author = tModLoader Team
+version = 0.11.6.2
+displayName = Example Mod
+homepage = https://tmodloader.net/
+hideCode = false
+hideResources = false
+includeSource = true
+buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*
+includePDB = true

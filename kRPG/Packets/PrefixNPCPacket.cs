@@ -16,12 +16,12 @@ namespace kRPG.Packets
     {
 
 
-        
+
 
 
         public static void Read(BinaryReader reader)
         {
-            
+
             try
             {
                 if (Main.netMode != NetmodeID.Server)
@@ -38,9 +38,9 @@ namespace kRPG.Packets
                         //The mob is on the server but not on the client.
                         //We need to clear out the buffer to prevent an error...
                         //The thing that bothers me is that in practice this shouldn't happen.
-                       
+
                         kRPG.LogMessage("WARNING: NPC does not exist.");
-                        
+
                         string mods = "";
                         //Well... this should clear out the network stack.
                         for (int i = 0; i < amount; i++)
@@ -48,7 +48,7 @@ namespace kRPG.Packets
                             int modIndex = reader.ReadInt32();
                             mods += " " + modIndex;
                             Type t = Type.GetType(kNPC.modifierDictionary[modIndex]);
-                            NpcModifier modifier =(NpcModifier) Activator.CreateInstance(t);
+                            NpcModifier modifier = (NpcModifier)Activator.CreateInstance(t);
                             modifier.Unpack(reader);
                         }
                         kRPG.LogMessage($"RefNum: {refNum} NpcIndex: {npcIndex} Amount: {amount} Mods: {mods}");
@@ -58,22 +58,32 @@ namespace kRPG.Packets
                     else
                     {
                         NPC npc = Main.npc[npcIndex];
-                        
+
                         kNPC kNpc = npc.GetGlobalNPC<kNPC>();
 
                         for (int i = 0; i < amount; i++)
                         {
                             int modIndex = reader.ReadInt32();
-                            // kRPG.LogMessage($"Mod Index: {modIndex}");
-                            NpcModifier modifier = kNPC.ModifierFuncs[modIndex].Invoke(kNpc, npc);
+                            NpcModifier modifier;
+
+                            if (kNpc.Modifiers.ContainsKey(modIndex))
+                            {
+                                modifier = kNpc.Modifiers[modIndex];
+                            }
+                            else
+                            {
+                                modifier = kNPC.ModifierFuncs[modIndex].Invoke(kNpc, npc);
+                            }
+
                             modifier.Unpack(reader);
                             modifier.Apply();
-                            kNpc.Modifiers.Add(modifier);
+                            kNpc.Modifiers.Add(modIndex, modifier);
                         }
 
-                        kNpc.MakeNotable(npc);
+                        //Hrm, not sure why this is here.....
+                        //kNpc.MakeNotable(npc);
                     }
-                    
+
                 }
             }
             catch (Exception err)
@@ -82,7 +92,7 @@ namespace kRPG.Packets
             }
         }
 
-        public static void Write(NPC npc,List<NpcModifier> modifiers)
+        public static void Write(NPC npc, Dictionary<int, NpcModifier> modifiers)
         {
             if (Main.netMode == NetmodeID.Server)
             {
@@ -107,20 +117,20 @@ namespace kRPG.Packets
 
                 if (modifiers.Count > 0)
                 {
-                    foreach (NpcModifier modifier in modifiers)
+                    foreach (KeyValuePair<int, NpcModifier> modifier in modifiers)
                     {
-                        int modIndex = 0;
-                        for (int ii = 0; ii < kNPC.modifierDictionary.Length; ii++)
-                        {
-                            if (kNPC.modifierDictionary[ii] != modifier.GetType().AssemblyQualifiedName)
-                                continue;
-                            ModIds += " " + ii;
-                            modIndex = ii;
-                            break;
-                        }
-                        packet.Write(modIndex);
+                        //int modIndex = 0;
+                        //for (int ii = 0; ii < kNPC.modifierDictionary.Length; ii++)
+                        //{
+                        //    if (kNPC.modifierDictionary[ii] != modifier.GetType().AssemblyQualifiedName)
+                        //        continue;
+                        //    ModIds += " " + ii;
+                        //    modIndex = ii;
+                        //    break;
+                        //}
+                        packet.Write(modifier.Key);
                         bytes += 4;
-                        bytes += modifier.Pack(packet);
+                        bytes += modifier.Value.Pack(packet);
                     }
                 }
 #if DEBUG

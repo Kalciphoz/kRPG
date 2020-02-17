@@ -12,41 +12,30 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 {
     public class ProceduralSpear : ProceduralProjectile
     {
-        private int Combined => (int) projectile.ai[1];
+        /*
+         * Little note here, I am using projectile.ai[1] to hold 3 numbers.
+         * Since each number will always be less than 255 I can use bit shifting to store 3 numbers in one float.
+         * This gets ride of extra network calls to pass these values.,
+         * Better performance, and it actually works.
+         *
+         */
+
+        private int Combined => (int)projectile.ai[1];
 
         public SwordBlade Blade {
-            get {
-                return SwordBlade.Blades[(Combined & 0xFF)];
-            }
-            set {
-                projectile.ai[1] = (value.Type | (Accent.Type << 8) | (Hilt.Type << 16));
-            }
-
+            get => SwordBlade.Blades[(Combined & 0xFF)];
+            set => projectile.ai[1] = (value.Type | (Accent.Type << 8) | (Hilt.Type << 16));
         }
 
         public SwordAccent Accent {
-            get
-            {
-                return SwordAccent.Accents[((Combined >> 8) & 0xFF)];
-            }
-
-            set
-            {
-                projectile.ai[1]= (Blade.Type | (value.Type << 8) | (Hilt.Type << 16));
-            }
-
+            get => SwordAccent.Accents[((Combined >> 8) & 0xFF)];
+            set => projectile.ai[1] = (Blade.Type | (value.Type << 8) | (Hilt.Type << 16));
         }
 
 
-        public SwordHilt Hilt
-        {
-            get {
-                return SwordHilt.Hilts[((Combined >> 16) & 0xFF)];
-            }
-
-            set {
-                projectile.ai[1] = (Blade.Type | (Accent.Type << 8) | (value.Type << 16));
-            }
+        public SwordHilt Hilt {
+            get => SwordHilt.Hilts[((Combined >> 16) & 0xFF)];
+            set => projectile.ai[1] = (Blade.Type | (Accent.Type << 8) | (value.Type << 16));
         }
 
 
@@ -61,11 +50,20 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
         {
             try
             {
-                if (projectile.ai[1] == 0)
+                //Sanity Check to make sure we have values for the hilt, blade and accent
+                if (Math.Abs(projectile.ai[1]) < .00000000001)
                     return;
 
-                if (LocalTexture==null && Main.netMode!=NetmodeID.Server)
+                int localTextureWidth = 48;
+                int localTextureHeight = 48;
+
+                //We need to load the local texture if we aren't running on the server.
+                if (LocalTexture == null && Main.netMode != NetmodeID.Server)
+                {
                     Initialize();
+                    localTextureHeight = LocalTexture.Height;
+                    localTextureWidth = LocalTexture.Width;
+                }
 
                 //kRPG.LogMessage($"########################################> Blade = {Blade.Type} Accent = {Accent.Type} Hilt: {Hilt.Type}");
 
@@ -76,28 +74,14 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 // Here we set some of the projectile's owner properties, such as held item and itemtime, along with projectile directio and playerPosition based on the player
                 //Vector2 ownerMountedCenter = projOwner.RotatedRelativePoint(projOwner.MountedCenter, true);
 
-                if (projectile.velocity.X > 0)
-                    projOwner.direction = 1;
-                else
-                    projOwner.direction = -1;
-
+                projOwner.direction = projectile.velocity.X > 0 ? 1 : -1;
                 projectile.direction = projOwner.direction;
                 projectile.spriteDirection = projectile.direction;
                 projOwner.heldProj = projectile.whoAmI;
                 projOwner.itemTime = projOwner.itemAnimation;
-
-                if (LocalTexture == null)
-                {
-                    projectile.position.X = projOwner.Center.X - 48 / 2f /* + 2f*projOwner.direction*/;
-                    projectile.position.Y = projOwner.Center.Y - 48 / 2f /* + 4f*/;
-                }
-                else
-                {
-                    projectile.position.X = projOwner.Center.X - LocalTexture.Width / 2f /* + 2f*projOwner.direction*/;
-                    projectile.position.Y = projOwner.Center.Y - LocalTexture.Height / 2f /* + 4f*/;
-                }
-
-
+                projectile.position.X = projOwner.Center.X - localTextureWidth / 2f /* + 2f*projOwner.direction*/;
+                projectile.position.Y = projOwner.Center.Y - localTextureHeight / 2f /* + 4f*/;
+                
                 // As long as the player isn't frozen, the spear can move
                 if (!projOwner.frozen)
                 {
@@ -127,17 +111,10 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 if (projectile.spriteDirection == -1)
                     projectile.rotation += MathHelper.ToRadians(90f);
 
-                Rectangle rect;
-                if (LocalTexture == null)
-                {
-                    rect = new Rectangle((int)projectile.position.X, (int)projectile.position.Y, 48, 48);
-                }
-                else
-                {
-                    rect = new Rectangle((int)projectile.position.X, (int)projectile.position.Y, LocalTexture.Width, LocalTexture.Height);
-                }
+                Rectangle rect = new Rectangle((int)projectile.position.X, (int)projectile.position.Y, localTextureWidth, localTextureHeight);
+                
 
-                 
+
                 Blade.Effect?.Invoke(rect, projOwner);
                 Accent.Effect?.Invoke(rect, projOwner);
             }
@@ -181,17 +158,17 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 Initialize();
                 return;
             }
-            
+
             switch (Main.netMode)
             {
                 case NetmodeID.SinglePlayer:
                     spriteBatch.Draw(LocalTexture,
-                        position + LocalTexture.Size() / 2f, 
+                        position + LocalTexture.Size() / 2f,
                         null,
                         Blade.Lighted ? Color.White : color,
-                        rotation, 
+                        rotation,
                         projectile.spriteDirection > 0 ? LocalTexture.Bounds.TopRight() : Vector2.Zero,
-                        scale, 
+                        scale,
                         projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
                         0f);
                     break;
@@ -200,11 +177,11 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                     {
                         Texture2D t2d = Main.projectileTexture[projectile.type];
                         spriteBatch.Draw(t2d,
-                            position + t2d.Size() / 2f, 
-                            null, 
-                            color, 
+                            position + t2d.Size() / 2f,
+                            null,
+                            color,
                             rotation,
-                            projectile.spriteDirection > 0 ? t2d.Bounds.TopRight() : Vector2.Zero, 
+                            projectile.spriteDirection > 0 ? t2d.Bounds.TopRight() : Vector2.Zero,
                             scale,
                             projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
                             0f);
@@ -224,7 +201,7 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
 
                 }
 
-                LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> {Blade.Texture, Hilt.SpearTexture, Accent.Texture},
+                LocalTexture = GFX.GFX.CombineTextures(new List<Texture2D> { Blade.Texture, Hilt.SpearTexture, Accent.Texture },
                     new List<Point>
                     {
                         new Point(CombinedTextureSize().X - Blade.Texture.Width, 0),
