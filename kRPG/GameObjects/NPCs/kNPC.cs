@@ -48,24 +48,24 @@ namespace kRPG.GameObjects.NPCs
 
         public static List<Func<kNPC, NPC, NpcModifier>> ModifierFuncs { get; set; } = new List<Func<kNPC, NPC, NpcModifier>>
         {
-            //DamageModifier.New,
-            //ElusiveModifier.New,
-            //ExplosiveModifier.New,
+            DamageModifier.New,
+            ElusiveModifier.New,
+            ExplosiveModifier.New,
             //LifeRegenModifier.New,
-            //SageModifier.New,
+            SageModifier.New,
             SizeModifier.New,
-            //GameObjects.Modifiers.SpeedModifier.New
+            GameObjects.Modifiers.SpeedModifier.New
         };
 
         public static string[] modifierDictionary =
         {
-            //typeof(DamageModifier).AssemblyQualifiedName,
-            //typeof(ElusiveModifier).AssemblyQualifiedName,
-            //typeof(ExplosiveModifier).AssemblyQualifiedName, 
+            typeof(DamageModifier).AssemblyQualifiedName,
+            typeof(ElusiveModifier).AssemblyQualifiedName,
+            typeof(ExplosiveModifier).AssemblyQualifiedName, 
             //typeof(LifeRegenModifier).AssemblyQualifiedName, 
-            //typeof(SageModifier).AssemblyQualifiedName,
+            typeof(SageModifier).AssemblyQualifiedName,
             typeof(SizeModifier).AssemblyQualifiedName,
-            //typeof(SpeedModifier).AssemblyQualifiedName
+            typeof(SpeedModifier).AssemblyQualifiedName
         };
 
         public Dictionary<int, NpcModifier> Modifiers { get; set; } = new Dictionary<int, NpcModifier>();
