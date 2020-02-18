@@ -364,22 +364,34 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                     if (Spear /* && player.altFunctionUse != 2*/)
                     {
                         Vector2 pos = player.position;
+
                         Vector2 unitVelocity = new Vector2(Main.mouseX - 12f, Main.mouseY - 24f) + Main.screenPosition - pos;
+
                         unitVelocity.Normalize();
+
                         //Velocity of the projectile.
                         Vector2 velocity = unitVelocity * 60f / item.useAnimation;
+                        
                         //The projectile Type Id
                         int psi = ProjectileType<ProceduralSpear>();
+
+                        
+                        
                         //This is the actual projectile index.
                         var projectileIdx = Projectile.NewProjectile(pos, velocity, psi, item.damage, item.knockBack, player.whoAmI);
+                        
                         //Grab the projectile data
                         Projectile projectile = Main.projectile[projectileIdx];
+                        
                         //Set the image scale
                         projectile.scale = item.scale;
+                        
                         //Set the elementalDamage
                         projectile.GetGlobalProjectile<kProjectile>().ElementalDamage = item.GetGlobalItem<kItem>().ElementalDamage;
+                        
                         //Set the Movement Speed to 0
                         projectile.ai[0] = 0;
+                        
                         //Set the Blade, Accent and Hilt.
                         projectile.ai[1] = (Blade.Type | (Accent.Type << 8) | (Hilt.Type << 16));
                         return true;

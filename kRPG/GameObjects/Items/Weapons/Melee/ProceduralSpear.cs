@@ -79,8 +79,11 @@ namespace kRPG.GameObjects.Items.Weapons.Melee
                 projectile.spriteDirection = projectile.direction;
                 projOwner.heldProj = projectile.whoAmI;
                 projOwner.itemTime = projOwner.itemAnimation;
+
                 projectile.position.X = projOwner.Center.X - localTextureWidth / 2f /* + 2f*projOwner.direction*/;
-                projectile.position.Y = projOwner.Center.Y - localTextureHeight / 2f /* + 4f*/;
+                projectile.position.Y = (projOwner.Center.Y - localTextureHeight / 2f) - 20f /* + 4f*/;
+
+                
                 
                 // As long as the player isn't frozen, the spear can move
                 if (!projOwner.frozen)
