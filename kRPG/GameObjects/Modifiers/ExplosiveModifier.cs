@@ -14,6 +14,8 @@ namespace kRPG.GameObjects.Modifiers
     {
         private kNPC kNpc { get; set; }
 
+        public ExplosiveModifier() { }
+
 
         public ExplosiveModifier(kNPC kNpc, NPC npc) : base(kNpc, npc)
         {

@@ -48,7 +48,7 @@ namespace kRPG
 
         public static kRPG Mod { get; set; }
 
-        //public static bool PlayerEnteredWorld { get; set; } = false;
+        public static bool PlayerEnteredWorld { get; set; } = false;
 
         //  public static Mod Overhaul { get; set; }
 
