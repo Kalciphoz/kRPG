@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using kRPG.Enums;
@@ -47,7 +48,8 @@ namespace kRPG.Packets
                         {
                             int modIndex = reader.ReadInt32();
                             mods += " " + modIndex;
-                            Type t = Type.GetType(kNPC.modifierDictionary[modIndex]);
+                            Type t = Type.GetType(ModiferFunctions.Instance.Modifiers[modIndex].ClassName);
+                                
                             NpcModifier modifier = (NpcModifier)Activator.CreateInstance(t);
                             modifier.Unpack(reader);
                         }
@@ -72,7 +74,7 @@ namespace kRPG.Packets
                             }
                             else
                             {
-                                modifier = kNPC.ModifierFuncs[modIndex].Invoke(kNpc, npc);
+                                modifier = ModiferFunctions.Instance.Modifiers[modIndex].Function.Invoke(kNpc, npc);
                             }
 
                             modifier.Unpack(reader);

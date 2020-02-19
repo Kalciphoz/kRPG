@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.Remoting.Messaging;
 using kRPG.GameObjects.NPCs;
 using Terraria;
 using Terraria.ID;
@@ -22,7 +23,7 @@ namespace kRPG.GameObjects.Modifiers
             npc.GivenName = "Shimmering " + npc.FullName;
         }
 
-        private float RegenTimer { get; set; }
+        //private float RegenTimer { get; set; }
 
         public new static NpcModifier New(kNPC kNpc, NPC npc)
         {
@@ -37,29 +38,29 @@ namespace kRPG.GameObjects.Modifiers
              * So we increment the counter and each time it hits 15 we apply the regen.
              */
 
-            RegenTimer += 1;
+            //RegenTimer += 1;
 
-            //Calculate what 5% of their possible max life is, that is what they will regenerate.
-            int amountToRegenerated = (int)(npc.lifeMax * .05f);
+            ////Calculate what 5% of their possible max life is, that is what they will regenerate.
+            //int amountToRegenerated = (int)(npc.lifeMax * .05f);
 
-            //If they are dead, leave them dead.
-            if (npc.life <= 0)
-                return;
+            ////If they are dead, leave them dead.
+            //if (npc.life <= 0)
+            //    return;
 
 
-            //If the amount of life we regen is less than there current life, we do nothing.
-            if (npc.life < amountToRegenerated)
-                return;
+            ////If the amount of life we regen is less than there current life, we do nothing.
+            //if (npc.life < amountToRegenerated)
+            //    return;
 
-            //ok 10 frames has passed, let's apply regeneration!
-            if (RegenTimer > 10)
-            {
-                int newHealth = kNpc.life + amountToRegenerated;
-                if (newHealth > kNpc.lifeMax)
-                    newHealth = kNpc.lifeMax;
-                npc.life = newHealth;
-                RegenTimer = 0;
-            }
+            ////ok 10 frames has passed, let's apply regeneration!
+            //if (RegenTimer > 10)
+            //{
+            //    int newHealth = kNpc.life + amountToRegenerated;
+            //    if (newHealth > kNpc.lifeMax)
+            //        newHealth = kNpc.lifeMax;
+            //    npc.life = newHealth;
+            //    RegenTimer = 0;
+            //}
 
 
             //int amount = kNpc.lifeMax / 20;//20
@@ -71,22 +72,24 @@ namespace kRPG.GameObjects.Modifiers
 
         public override int Unpack(BinaryReader reader)
         {
-            RegenTimer = reader.ReadSingle();
-#if DEBUG
-            kRPG.LogMessage("Reading RegenTimer: " + RegenTimer.ToString("F"));
-#endif
-            return 4;
+//            RegenTimer = reader.ReadSingle();
+//#if DEBUG
+//            kRPG.LogMessage("Reading RegenTimer: " + RegenTimer.ToString("F"));
+//#endif
+//            return 4;
+            return 0;
         }
 
         public override int Pack(ModPacket packet)
         {
-            packet.Write(RegenTimer);
-            return 4;
+            //packet.Write(RegenTimer);
+            //return 4;
+            return 0;
         }
 
         public override void Initialize()
         {
-            RegenTimer = 0;
+            //RegenTimer = 0;
         }
 
         public override void OnHitByProjectile(NPC oNpc, Projectile projectile, int damage, float knockBack, bool crit)
