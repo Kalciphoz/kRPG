@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kRPG.Enums;
 using kRPG.GameObjects.Items.Crowns;
 using kRPG.GameObjects.Items.Dusts;
@@ -12,6 +13,7 @@ using kRPG.GameObjects.Players;
 using kRPG.Packets;
 using kRPG.Util;
 using Microsoft.Xna.Framework;
+using Steamworks;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -45,28 +47,6 @@ namespace kRPG.GameObjects.NPCs
 
         public override bool InstancePerEntity => true;
         //public Dictionary<ProceduralSpell, int> InvincibilityTime { get; set; } = new Dictionary<ProceduralSpell, int>();
-
-        public static List<Func<kNPC, NPC, NpcModifier>> ModifierFuncs { get; set; } = new List<Func<kNPC, NPC, NpcModifier>>
-        {
-            DamageModifier.New,
-            ElusiveModifier.New,
-            ExplosiveModifier.New,
-            //LifeRegenModifier.New,
-            SageModifier.New,
-            SizeModifier.New,
-            GameObjects.Modifiers.SpeedModifier.New
-        };
-
-        public static string[] modifierDictionary =
-        {
-            typeof(DamageModifier).AssemblyQualifiedName,
-            typeof(ElusiveModifier).AssemblyQualifiedName,
-            typeof(ExplosiveModifier).AssemblyQualifiedName, 
-            //typeof(LifeRegenModifier).AssemblyQualifiedName, 
-            typeof(SageModifier).AssemblyQualifiedName,
-            typeof(SizeModifier).AssemblyQualifiedName,
-            typeof(SpeedModifier).AssemblyQualifiedName
-        };
 
         public Dictionary<int, NpcModifier> Modifiers { get; set; } = new Dictionary<int, NpcModifier>();
 
@@ -213,20 +193,15 @@ namespace kRPG.GameObjects.NPCs
                 npc.GivenName = npc.FullName;
             }
             else if (rnd < 100)
-                buffs.Add(Main.rand.Next(ModifierFuncs.Count));
+                buffs.Add(Main.rand.Next(ModiferFunctions.Instance.Modifiers.Count));
 
             foreach (int t in buffs)
             {
-                NpcModifier modifier = ModifierFuncs[t].Invoke(this, npc);
+                NpcModifier modifier = ModiferFunctions.Instance.Modifiers[t].Function.Invoke(this, npc);
                 modifier.Initialize();
                 modifier.Apply();
                 Modifiers.Add(t, modifier);
             }
-
-            //NpcModifier modifier = ModifierFuncs[0].Invoke(this, npc);
-            //modifier.Initialize();
-            //modifier.Apply();
-            //Modifiers.Add(0, modifier);
 
             PrefixNPCPacket.Write(npc, Modifiers);
             //MakeNotable(npc);
@@ -403,7 +378,7 @@ namespace kRPG.GameObjects.NPCs
                 return;
             }
 
-         
+
 
 
             //The rest of this code only gets called once... after that it's initialized and it is skipped.
@@ -588,12 +563,21 @@ namespace kRPG.GameObjects.NPCs
 
         public override void UpdateLifeRegen(NPC npc, ref int damage)
         {
+            if (Modifiers.ContainsKey(ModiferFunctions.Instance.LifeRegenModifier.Id))
+            {
+                npc.lifeRegen = 10;
+            }
+
             if (!HasAilment[Element.Fire])
                 return;
+
             if (npc.lifeRegen > 0)
                 npc.lifeRegen = 0;
+
             npc.lifeRegen -= AilmentIntensity[Element.Fire] * 2;
+
             damage = AilmentIntensity[Element.Fire] / 3;
+
         }
     }
 }
