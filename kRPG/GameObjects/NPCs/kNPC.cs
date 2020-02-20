@@ -10,6 +10,7 @@ using kRPG.GameObjects.Items.Weapons.Melee;
 using kRPG.GameObjects.Items.Weapons.Ranged;
 using kRPG.GameObjects.Modifiers;
 using kRPG.GameObjects.Players;
+using kRPG.GameObjects.Spells;
 using kRPG.Packets;
 using kRPG.Util;
 using Microsoft.Xna.Framework;
@@ -49,7 +50,7 @@ namespace kRPG.GameObjects.NPCs
         private bool Initialized { get; set; }
 
         public override bool InstancePerEntity => true;
-        //public Dictionary<ProceduralSpell, int> InvincibilityTime { get; set; } = new Dictionary<ProceduralSpell, int>();
+        public Dictionary<ProceduralSpell, int> InvincibilityTime { get; set; } = new Dictionary<ProceduralSpell, int>();
 
         public Dictionary<int, NpcModifier> Modifiers { get; set; } = new Dictionary<int, NpcModifier>();
 
@@ -81,11 +82,11 @@ namespace kRPG.GameObjects.NPCs
             if (ps?.Source == null)
                 return null;
 
-            //if (!InvincibilityTime.ContainsKey(ps.Source))
-            //    return null;
+            if (!npc.GetGlobalNPC<kNPC>().InvincibilityTime.ContainsKey(ps.Source))
+                return null;
 
-            //if (InvincibilityTime[ps.Source] > 0)
-            //    return false;
+            if (npc.GetGlobalNPC<kNPC>().InvincibilityTime[ps.Source] > 0)
+                return false;
             return null;
         }
 
@@ -340,10 +341,10 @@ namespace kRPG.GameObjects.NPCs
 
             ProceduralSpellProj ps = (ProceduralSpellProj)projectile.modProjectile;
 
-            //if (InvincibilityTime.ContainsKey(ps.Source))
-            //    InvincibilityTime[ps.Source] = 30;
-            //else
-            //    InvincibilityTime.Add(ps.Source, 30);
+            if (InvincibilityTime.ContainsKey(ps.Source))
+                InvincibilityTime[ps.Source] = 30;
+            else
+                InvincibilityTime.Add(ps.Source, 30);
         }
 
         private int GetPlayerLevel()
@@ -389,13 +390,18 @@ namespace kRPG.GameObjects.NPCs
 
             //NPC is immune to lava if they are flagged as immune or their defense is greater that 60.
             npc.lavaImmune = npc.lavaImmune || npc.defense > 60;
-            
+
+
+
+
+            InitializeElementalDamage(npc);
+
             //So we are randomly adding modifiers...
             InitializeModifiers(npc);
+            
 
-            
-            
-            
+
+
             //Try and resolve mod's name
             npc.GivenName = NPC.getNewNPCName(npc.type);
             
@@ -407,6 +413,46 @@ namespace kRPG.GameObjects.NPCs
             }
         }
 
+
+        private void InitializeElementalDamage(NPC npc)
+        {
+            if ((npc.damage <= 0 || npc.boss || Main.rand.Next(3) == 0) || Main.netMode == NetmodeID.MultiplayerClient)
+                return;
+
+            kNPC knpc = npc.GetGlobalNPC<kNPC>();
+            Player player = Main.netMode == NetmodeID.Server ? Main.player[0] : Main.player[Main.myPlayer];
+            Dictionary<Element, bool> hasElement = new Dictionary<Element, bool>
+            {
+                {
+                    Element.Fire,
+                    player.ZoneUnderworldHeight || player.ZoneTowerSolar || player.ZoneMeteor || player.ZoneDesert || Main.rand.Next(10) == 0
+                },
+                {
+                    Element.Cold,
+                    player.ZoneSnow || player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneDungeon || player.ZoneRain ||  Main.rand.Next(10) == 0
+                },
+                {
+                    Element.Lightning,
+                    player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneTowerStardust || player.ZoneMeteor || player.ZoneHoly || Main.rand.Next(10) == 0
+                },
+                {
+                    Element.Shadow,
+                    player.ZoneCorrupt || player.ZoneCrimson || player.ZoneUnderworldHeight || player.ZoneTowerNebula || !Main.dayTime && Main.rand.Next(10) == 0
+                }
+            };
+
+            int count = Enum.GetValues(typeof(Element)).Cast<Element>().Count(element => hasElement[element]);
+
+            int portionSize = (int)Math.Round(npc.damage * EleDmgModifier / 2.0 / count);
+
+            foreach (Element element in Enum.GetValues(typeof(Element)))
+                if (hasElement[element])
+                    knpc.ElementalDamage[element] = Math.Max(1, portionSize);
+
+            knpc.DealsEleDmg = count > 0;
+
+        }
+
         public override void PostAI(NPC npc)
         {
             kNPC kNPC = npc.GetGlobalNPC<kNPC>();
@@ -414,19 +460,18 @@ namespace kRPG.GameObjects.NPCs
             foreach (NpcModifier npcModifier in kNPC.Modifiers.Values)
                 npcModifier.PostAi(npc);
 
-            //List<ProceduralSpell> keys = new List<ProceduralSpell>(InvincibilityTime.Keys);
-            //foreach (ProceduralSpell spell in keys)
-            //{
-            //    if (InvincibilityTime[spell] > 0)
-            //    {
-            //        kRPG.LogMessage($"Decrementing .");
-            //        InvincibilityTime[spell] -= 1;
-            //    }
-            //    else
-            //    {
-            //        InvincibilityTime.Remove(spell);
-            //    }
-            //}
+            List<ProceduralSpell> keys = new List<ProceduralSpell>(InvincibilityTime.Keys);
+            foreach (ProceduralSpell spell in keys)
+            {
+                if (kNPC.InvincibilityTime[spell] > 0)
+                {
+                    kNPC.InvincibilityTime[spell] -= 1;
+                }
+                else
+                {
+                    kNPC.InvincibilityTime.Remove(spell);
+                }
+            }
 
             if (ImmuneTime > 0)
                 ImmuneTime -= 1;
@@ -436,37 +481,13 @@ namespace kRPG.GameObjects.NPCs
                 Update(npc);
                 return;
             }
-            //InvincibilityTime = new Dictionary<ProceduralSpell, int>();
+
+
+            kNPC.InvincibilityTime = new Dictionary<ProceduralSpell, int>();
+
             //We only run this code if in single player mode, cause we aren't replicating this information.
 #if SINGLEPLAYER
-            if ((npc.damage > 0 && !npc.boss && Main.rand.Next(3) != 0) && Main.netMode == NetmodeID.SinglePlayer)
-            {
-                Dictionary<Element, bool> hasElement = new Dictionary<Element, bool>
-                {
-                    {
-                        Element.Fire,
-                        player.ZoneUnderworldHeight || player.ZoneTowerSolar || player.ZoneMeteor || player.ZoneDesert || Main.rand.Next(10) == 0// && Main.netMode == NetmodeID.SinglePlayer
-                    },
-                    {
-                        Element.Cold,
-                        player.ZoneSnow || player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneDungeon || player.ZoneRain ||  Main.rand.Next(10) == 0// && Main.netMode ==NetmodeID.SinglePlayer
-                    },
-                    {
-                        Element.Lightning,
-                        player.ZoneSkyHeight || player.ZoneTowerVortex || player.ZoneTowerStardust || player.ZoneMeteor || player.ZoneHoly || Main.rand.Next(10) == 0// && Main.netMode ==NetmodeID.SinglePlayer
-                    },
-                    {
-                        Element.Shadow,
-                        player.ZoneCorrupt || player.ZoneCrimson || player.ZoneUnderworldHeight || player.ZoneTowerNebula || !Main.dayTime && Main.rand.Next(10) == 0// && Main.netMode ==NetmodeID.SinglePlayer && player.ZoneOverworldHeight
-                    }
-                };
-                int count = Enum.GetValues(typeof(Element)).Cast<Element>().Count(element => hasElement[element]);
-                int portionSize = (int)Math.Round(npc.damage * EleDmgModifier / 2.0 / count);
-                foreach (Element element in Enum.GetValues(typeof(Element)))
-                    if (hasElement[element])
-                        ElementalDamage[element] = Math.Max(1, portionSize);
-                DealsEleDmg = count > 0;
-            }
+
 #endif
             //kRPG.LogMessage($"Applying Modifiers {kNPC.Modifiers.Count}");
 
@@ -495,37 +516,37 @@ namespace kRPG.GameObjects.NPCs
             }
         }
 
-        public void RollDrops(NPC npc, int[] odds, int[][] dropTables)
-        {
-            int sum = 0;
-            for (int i = 0; i < odds.Length; i += 1)
-            {
-                if (Main.rand.Next(1000 - sum) < odds[i])
-                    Item.NewItem(npc.position, dropTables[i].Random());
+        //public void RollDrops(NPC npc, int[] odds, int[][] dropTables)
+        //{
+        //    int sum = 0;
+        //    for (int i = 0; i < odds.Length; i += 1)
+        //    {
+        //        if (Main.rand.Next(1000 - sum) < odds[i])
+        //            Item.NewItem(npc.position, dropTables[i].Random());
 
-                sum += odds[i];
-            }
-        }
+        //        sum += odds[i];
+        //    }
+        //}
 
-        public void RollDrops(NPC npc, int[] odds, int[][] dropTables, int[] odds2, Action<NPC>[] drops2)
-        {
-            int sum = 0;
-            for (int i = 0; i < odds.Length; i += 1)
-            {
-                if (Main.rand.Next(1000 - sum) < odds[i])
-                    Item.NewItem(npc.position, dropTables[i].Random());
+        //public void RollDrops(NPC npc, int[] odds, int[][] dropTables, int[] odds2, Action<NPC>[] drops2)
+        //{
+        //    int sum = 0;
+        //    for (int i = 0; i < odds.Length; i += 1)
+        //    {
+        //        if (Main.rand.Next(1000 - sum) < odds[i])
+        //            Item.NewItem(npc.position, dropTables[i].Random());
 
-                sum += odds[i];
-            }
+        //        sum += odds[i];
+        //    }
 
-            for (int i = 0; i < odds2.Length; i += 1)
-            {
-                if (Main.rand.Next(1000 - sum) < odds2[i])
-                    drops2[i](npc);
+        //    for (int i = 0; i < odds2.Length; i += 1)
+        //    {
+        //        if (Main.rand.Next(1000 - sum) < odds2[i])
+        //            drops2[i](npc);
 
-                sum += odds[i];
-            }
-        }
+        //        sum += odds[i];
+        //    }
+        //}
 
         public override bool StrikeNPC(NPC npc, ref double damage, int defense, ref float knockBack, int hitDirection, ref bool crit)
         {
@@ -538,7 +559,7 @@ namespace kRPG.GameObjects.NPCs
             foreach (NpcModifier npcModifier in Modifiers.Values)
                 dodgeChanceModifier *= npcModifier.StrikeNpc(npc, damage, defense, knockBack, hitDirection, crit);
 
-#if StopCode
+
             if (character.AccuracyCounter < 1 * dodgeChanceModifier && !character.Rituals[Ritual.WarriorOath])
             {
                 npc.NinjaDodge(npc, 10);
@@ -555,7 +576,6 @@ namespace kRPG.GameObjects.NPCs
                 SyncCounters(npc.target, character, false);
                 return false;
             }
-#endif
 
             character.AccuracyCounter -= 1 * dodgeChanceModifier;
             SyncCounters(npc.target, character, false);
