@@ -266,14 +266,14 @@ namespace kRPG.GameObjects.Items.Glyphs
                                 {
                                     kNPC kn = npc.GetGlobalNPC<kNPC>();
                                     bool canHit = !(kn.ImmuneTime > 0);
-                                    //if (kn.InvincibilityTime.ContainsKey(spell.Source))
-                                    //    if (kn.InvincibilityTime[spell.Source] > 0)
-                                    //        canHit = false;
+                                    if (kn.InvincibilityTime.ContainsKey(spell.Source))
+                                        if (kn.InvincibilityTime[spell.Source] > 0)
+                                            canHit = false;
                                     if (!canHit)
                                         continue;
                                     player.ApplyDamageToNPC(npc, proj.damage, 0f, 0, false);
                                     npc.AddBuff(BuffID.Poisoned, proj.damage + 60);
-                                    //kn.InvincibilityTime[spell.Source] = 30;
+                                    kn.InvincibilityTime[spell.Source] = 30;
                                 }
 
                         spriteBatch.Draw(GFX.GFX.ThornChain, chainpos - Main.screenPosition, null, spell.Lighted ? Color.White : color,
