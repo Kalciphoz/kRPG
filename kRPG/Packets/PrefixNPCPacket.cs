@@ -62,6 +62,7 @@ namespace kRPG.Packets
                         NPC npc = Main.npc[npcIndex];
 
                         kNPC kNpc = npc.GetGlobalNPC<kNPC>();
+                        kNpc.Modifiers.Clear();
 
                         for (int i = 0; i < amount; i++)
                         {

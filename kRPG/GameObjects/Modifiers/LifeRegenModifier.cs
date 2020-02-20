@@ -21,6 +21,7 @@ namespace kRPG.GameObjects.Modifiers
         public override void Apply()
         {
             npc.GivenName = "Shimmering " + npc.FullName;
+
         }
 
         //private float RegenTimer { get; set; }
@@ -90,6 +91,9 @@ namespace kRPG.GameObjects.Modifiers
         public override void Initialize()
         {
             //RegenTimer = 0;
+            npc.life *= 2;
+            npc.lifeMax *= 2;
+            npc.lifeRegen = 20;
         }
 
         public override void OnHitByProjectile(NPC oNpc, Projectile projectile, int damage, float knockBack, bool crit)

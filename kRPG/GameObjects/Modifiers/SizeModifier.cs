@@ -16,22 +16,24 @@ namespace kRPG.GameObjects.Modifiers
         }
 
         //   private float LifeModifier { get; set; }
-        private float ScaleModifier { get; set; }
+        public float ScaleModifier { get; private set; }
 
 
 
 
         public override void Initialize()
         {
-            ScaleModifier = Main.rand.NextFloat(.5f, 2.0f);
+            ScaleModifier = Main.rand.NextFloat(.75f, 2.0f);
             npc.life = npc.lifeMax = (int)(npc.life * (ScaleModifier));
             npc.GetGlobalNPC<kNPC>().SpeedModifier *= (float)Math.Pow(ScaleModifier, 0.9);
+            npc.netUpdate = true;
+            npc.scale *= ScaleModifier;
             kRPG.LogMessage($"Initializing Size Modifier, Scale: {ScaleModifier} ");
         }
 
         public override void Apply()
         {
-            npc.scale *= ScaleModifier;
+            
             if (ScaleModifier > 1.5)
                 npc.GivenName = "Giant " + npc.FullName;
             else if (ScaleModifier < 1)
