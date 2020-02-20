@@ -237,11 +237,9 @@ namespace kRPG.GameObjects.NPCs
         /// <param name="npc"></param>
         public override void NPCLoot(NPC npc)
         {
-            if (Main.netMode == NetmodeID.Server)
-                NetMessage.BroadcastChatMessage(Terraria.Localization.NetworkText.FromLiteral(npc.GivenName + " has died!"), new Color(50, 125, 255));
+            kNPC kNPC = npc.GetGlobalNPC<kNPC>();
 
-
-            foreach (NpcModifier npcModifier in Modifiers.Values)
+            foreach (NpcModifier npcModifier in kNPC.Modifiers.Values)
                 npcModifier.NpcLoot(npc);
 
             if (npc.lifeMax < 10) return;

@@ -27,13 +27,13 @@ namespace kRPG.GameObjects.Modifiers
             npc.life = npc.lifeMax = (int)(npc.life * (ScaleModifier));
             npc.GetGlobalNPC<kNPC>().SpeedModifier *= (float)Math.Pow(ScaleModifier, 0.9);
             npc.netUpdate = true;
-            npc.scale *= ScaleModifier;
+            
             kRPG.LogMessage($"Initializing Size Modifier, Scale: {ScaleModifier} ");
         }
 
         public override void Apply()
         {
-            
+            npc.scale *= ScaleModifier;
             if (ScaleModifier > 1.5)
                 npc.GivenName = "Giant " + npc.FullName;
             else if (ScaleModifier < 1)
