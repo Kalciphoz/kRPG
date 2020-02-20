@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -41,6 +42,7 @@ namespace kRPG
         }
         public static void LogMessage(string msg)
         {
+            Debug.WriteLine("MESSAGE: " + msg);
             ModLoader.GetMod(Constants.ModName).Logger.InfoFormat(msg);
         }
 
@@ -117,6 +119,8 @@ namespace kRPG
                     break;
                 case Message.SyncLevel:
                     SyncLevelPacket.Read(reader);
+                    kRPG.LogMessage("PLAYER ENTERED WORLD!!!!!!!!!");
+                    kRPG.PlayerEnteredWorld = true;
                     break;
                 case Message.CreateProjectile:
                     try

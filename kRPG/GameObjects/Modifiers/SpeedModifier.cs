@@ -25,6 +25,8 @@ namespace kRPG.GameObjects.Modifiers
             SpeedModifierAdj = 1f + Main.rand.NextFloat(.8f);
             
             kRPG.LogMessage("Initializing Speed Modifer: " + SpeedModifierAdj);
+
+            
         }
 
         public override void Apply()

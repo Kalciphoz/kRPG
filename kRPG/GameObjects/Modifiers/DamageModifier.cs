@@ -18,17 +18,23 @@ namespace kRPG.GameObjects.Modifiers
 
         private float DmgModifier { get; set; }
 
+        public override void PostAi(NPC oNpc)
+        {
+            
+        }
+
         public override void Initialize()
         {
             DmgModifier = Main.rand.Next(0, 200) / 100.0f;
             kRPG.LogMessage("Initializing Damage Modifier: " + DmgModifier);
+            npc.damage = (int)Math.Round(npc.damage * DmgModifier);
+            npc.defense = 1;
         }
 
         public override void Apply()
         {
             npc.GivenName = "Brutal " + npc.FullName;
-            npc.damage = (int) Math.Round(npc.damage * DmgModifier);
-            npc.defense = 1;
+
         }
 
         public new static NpcModifier New(kNPC kNpc, NPC npc)

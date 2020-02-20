@@ -23,6 +23,9 @@ namespace kRPG.GameObjects.NPCs
 {
     public class kNPC : GlobalNPC
     {
+
+
+
         public const double EleDmgModifier = 1.2;
 
         public Dictionary<Element, int> AilmentIntensity { get; set; } = new Dictionary<Element, int>
@@ -183,7 +186,7 @@ namespace kRPG.GameObjects.NPCs
         /// <param name="npc"></param>
         public void InitializeModifiers(NPC npc)
         {
-
+            kNPC kn = npc.GetGlobalNPC<kNPC>();
 
             List<int> buffs = new List<int>();
 
@@ -195,15 +198,17 @@ namespace kRPG.GameObjects.NPCs
             else if (rnd < 100)
                 buffs.Add(Main.rand.Next(ModiferFunctions.Instance.Modifiers.Count));
 
+            //buffs.Add(ModiferFunctions.Instance.SizeModifier.Id);
+
             foreach (int t in buffs)
             {
                 NpcModifier modifier = ModiferFunctions.Instance.Modifiers[t].Function.Invoke(this, npc);
                 modifier.Initialize();
                 modifier.Apply();
-                Modifiers.Add(t, modifier);
+                kn.Modifiers.Add(t, modifier);
             }
 
-            PrefixNPCPacket.Write(npc, Modifiers);
+
             //MakeNotable(npc);
 
 
@@ -232,8 +237,8 @@ namespace kRPG.GameObjects.NPCs
         /// <param name="npc"></param>
         public override void NPCLoot(NPC npc)
         {
-
-            NetMessage.BroadcastChatMessage(Terraria.Localization.NetworkText.FromLiteral(npc.GivenName + " has died!"), new Color(50, 125, 255));
+            if (Main.netMode == NetmodeID.Server)
+                NetMessage.BroadcastChatMessage(Terraria.Localization.NetworkText.FromLiteral(npc.GivenName + " has died!"), new Color(50, 125, 255));
 
 
             foreach (NpcModifier npcModifier in Modifiers.Values)
@@ -243,10 +248,11 @@ namespace kRPG.GameObjects.NPCs
             if (npc.friendly) return;
             if (npc.townNPC) return;
 
-            if (Main.rand.Next(2500) < GetLevel(npc.type))
+            if (Main.rand.Next(2500) < Math.Min(Main.expertMode ? (npc.damage + npc.defense * 4) / 3 : (npc.damage * 2 + npc.defense * 4) / 3, npc.boss ? 120 : 110))  //GetLevel(npc.type))
                 Item.NewItem(npc.position, Main.rand.Next(8) == 0 ? ModContent.ItemType<BlacksmithCrown>() : ModContent.ItemType<PermanenceCrown>());
 
-            int level = GetLevel(npc.netID);
+            int level = Math.Min(Main.expertMode ? (npc.damage + npc.defense * 4) / 3 : (npc.damage * 2 + npc.defense * 4) / 3, npc.boss ? 120 : 110);
+            //GetLevel(npc.netID);
 
             Player player = Array.Find(Main.player, p => p.active);
             if (Main.netMode == NetmodeID.SinglePlayer)
@@ -345,14 +351,50 @@ namespace kRPG.GameObjects.NPCs
             //    InvincibilityTime.Add(ps.Source, 30);
         }
 
+        private int GetPlayerLevel()
+        {
+            try
+            {
+                Player player = Main.netMode == NetmodeID.Server ? Main.player[0] : Main.player[Main.myPlayer];
+                return player.GetModPlayer<PlayerCharacter>().Level;
+            }
+            catch (Exception e)
+            {
+                return 20;
+            }
+
+        }
+
         public override void SetDefaults(NPC npc)
         {
+            if (Main.netMode == NetmodeID.SinglePlayer && !kRPG.PlayerEnteredWorld)
+                return;
 
+            if (npc.boss || npc.townNPC || npc.friendly || Main.netMode == NetmodeID.MultiplayerClient)
+                return;
+
+            int playerLevel = Main.netMode == NetmodeID.SinglePlayer ? GetPlayerLevel() : 20;
+            int npcLevel = Math.Min(Main.expertMode ? (npc.damage + npc.defense * 4) / 3 : (npc.damage * 2 + npc.defense * 4) / 3, npc.boss ? 120 : 110);// GetLevel(npc.type);
+            npc.lifeMax = (int)Math.Round(npc.lifeMax * (npcLevel / 30f + 0.4f + playerLevel * 0.025f));
+            npc.life = npc.lifeMax;
+            npc.defense = (int)Math.Round(npc.defense * (npcLevel / 160f + 1f));
+            //NPC is immune to lava if they are flagged as immune or their defense is greater that 60.
+            npc.lavaImmune = npc.lavaImmune || npc.defense > 60;
+            //So we are randomly adding modifiers...
+            InitializeModifiers(npc);
+            npc.GivenName = NPC.getNewNPCName(npc.type);
+            if (!Main.expertMode)
+            {
+                //npc.lifeMax = (int)(npc.lifeMax * 1.3);
+                npc.life = (int)(npc.life * 1.3);
+            }
         }
 
         public override void PostAI(NPC npc)
         {
-            foreach (NpcModifier npcModifier in Modifiers.Values)
+            kNPC kNPC = npc.GetGlobalNPC<kNPC>();
+
+            foreach (NpcModifier npcModifier in kNPC.Modifiers.Values)
                 npcModifier.PostAi(npc);
 
             //List<ProceduralSpell> keys = new List<ProceduralSpell>(InvincibilityTime.Keys);
@@ -377,34 +419,7 @@ namespace kRPG.GameObjects.NPCs
                 Update(npc);
                 return;
             }
-
-
-
-
-            //The rest of this code only gets called once... after that it's initialized and it is skipped.
-
             //InvincibilityTime = new Dictionary<ProceduralSpell, int>();
-
-            //We are going to scale the mobs either off the current player if we are in singleplayer mode or the first player slot if we are in server mode.
-
-
-
-            Player player = Main.netMode == NetmodeID.Server ? Main.player[0] : Main.player[Main.myPlayer];
-            npc.GivenName = npc.FullName;
-            int playerLevel = Main.netMode == NetmodeID.SinglePlayer ? player.GetModPlayer<PlayerCharacter>().Level : 20;
-
-
-
-
-            int npcLevel = GetLevel(npc.netID);
-
-            npc.lifeMax = (int)Math.Round(npc.lifeMax * (npcLevel / 30f + 0.4f + playerLevel * 0.025f));
-            npc.life = npc.lifeMax;
-            npc.defense = (int)Math.Round(npc.defense * (npcLevel / 160f + 1f));
-
-            //NPC is immune to lava if they are flagged as immune or their defense is greater that 60.
-            npc.lavaImmune = npc.lavaImmune || npc.defense > 60;
-
             //We only run this code if in single player mode, cause we aren't replicating this information.
 #if SINGLEPLAYER
             if ((npc.damage > 0 && !npc.boss && Main.rand.Next(3) != 0) && Main.netMode == NetmodeID.SinglePlayer)
@@ -436,22 +451,19 @@ namespace kRPG.GameObjects.NPCs
                 DealsEleDmg = count > 0;
             }
 #endif
-            kRPG.LogMessage("Initializing Modifiers...");
-            if (!npc.boss && !npc.townNPC && !npc.friendly && Main.netMode != NetmodeID.MultiplayerClient)
+            //kRPG.LogMessage($"Applying Modifiers {kNPC.Modifiers.Count}");
+
+            foreach (NpcModifier npcModifier in kNPC.Modifiers.Values)
             {
-                //So we are randomly adding modifiers...
-                InitializeModifiers(npc);
+                //kRPG.LogMessage($"{npc.GivenName} --->  {npcModifier.ToString()}  is being applied.");
+                npcModifier.Apply();
+                //kRPG.LogMessage($"{npc.GivenName} --->  {npcModifier.ToString()}  is applied.");
             }
 
-            if (!Main.expertMode)
-            {
-                //npc.lifeMax = (int)(npc.lifeMax * 1.3);
-                npc.life = (int)(npc.life * 1.3);
-            }
+            npc.netUpdate = true;
 
 
-
-
+            PrefixNPCPacket.Write(npc, Modifiers);
             Initialized = true;
         }
 
@@ -565,19 +577,26 @@ namespace kRPG.GameObjects.NPCs
         {
             if (Modifiers.ContainsKey(ModiferFunctions.Instance.LifeRegenModifier.Id))
             {
-                npc.lifeRegen = 10;
+                npc.lifeRegen = 20;
             }
 
-            if (!HasAilment[Element.Fire])
-                return;
+            if (HasAilment[Element.Fire])
+            {
 
-            if (npc.lifeRegen > 0)
-                npc.lifeRegen = 0;
+                if (npc.lifeRegen > 0)
+                    npc.lifeRegen = 0;
 
-            npc.lifeRegen -= AilmentIntensity[Element.Fire] * 2;
+                npc.lifeRegen -= AilmentIntensity[Element.Fire] * 2;
 
-            damage = AilmentIntensity[Element.Fire] / 3;
+                damage = AilmentIntensity[Element.Fire] / 3;
+            }
+
+            npc.netUpdate = true;
+            npc.netUpdate2 = true;
 
         }
+
+
+
     }
 }

@@ -18,6 +18,11 @@ namespace kRPG.GameObjects.Modifiers
             this.kNpc = kNpc;
         }
 
+        public override void PostAi(NPC oNpc)
+        {
+            
+        }
+
         private float DodgeModifier { get; set; }
 
         public override void Initialize()
