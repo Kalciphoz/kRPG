@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using kRPG.GameObjects.NPCs;
 using Terraria;
 using Terraria.ID;
@@ -20,18 +21,20 @@ namespace kRPG.GameObjects.Modifiers
         private kNPC Knpc { get; }
         private float SpeedModifierAdj { get; set; }
 
+       
+
         public override void Initialize()
         {
             SpeedModifierAdj = 1f + Main.rand.NextFloat(.8f);
-            
             kRPG.LogMessage("Initializing Speed Modifer: " + SpeedModifierAdj);
-
-            
+            npc.netUpdate = true;
         }
 
         public override void Apply()
         {
-            Knpc.SpeedModifier = SpeedModifierAdj;
+            
+            npc.GetGlobalNPC<kNPC>().SpeedModifier *= (float)Math.Pow(SpeedModifierAdj, 0.9);
+
             npc.GivenName = "Swift " + npc.FullName;
         }
 
