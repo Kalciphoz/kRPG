@@ -143,15 +143,7 @@ namespace kRPG.GameObjects.NPCs
             Dictionary<Element, int> ele = new Dictionary<Element, int>();
             return ElementalDamage[Element.Fire] + ElementalDamage[Element.Cold] + ElementalDamage[Element.Lightning] + ElementalDamage[Element.Shadow];
         }
-
-        public static int GetLevel(int type)
-        {
-            NPC npc = new NPC();
-            npc.SetDefaults(type);
-            npc.active = false;
-            return Math.Min(Main.expertMode ? (npc.damage + npc.defense * 4) / 3 : (npc.damage * 2 + npc.defense * 4) / 3, npc.boss ? 120 : 110);
-        }
-
+        
         public StaffTheme GetStaffTheme(Player player)
         {
             if (player.ZoneDungeon)
@@ -198,7 +190,7 @@ namespace kRPG.GameObjects.NPCs
             else if (rnd < 100)
                 buffs.Add(Main.rand.Next(ModiferFunctions.Instance.Modifiers.Count));
 
-            //buffs.Add(ModiferFunctions.Instance.SizeModifier.Id);
+            //buffs.Add(ModiferFunctions.Instance.SpeedModifier.Id);
 
             foreach (int t in buffs)
             {
@@ -212,6 +204,11 @@ namespace kRPG.GameObjects.NPCs
             //MakeNotable(npc);
 
 
+        }
+
+        public static int GetLevel(NPC npc)
+        {
+            return Math.Min(Main.expertMode ? (npc.damage + npc.defense * 4) / 3 : (npc.damage * 2 + npc.defense * 4) / 3, npc.boss ? 120 : 110);
         }
 
         //This just makes the mobs tougher, not sure why you would always want to do this.
@@ -246,10 +243,10 @@ namespace kRPG.GameObjects.NPCs
             if (npc.friendly) return;
             if (npc.townNPC) return;
 
-            if (Main.rand.Next(2500) < Math.Min(Main.expertMode ? (npc.damage + npc.defense * 4) / 3 : (npc.damage * 2 + npc.defense * 4) / 3, npc.boss ? 120 : 110))  //GetLevel(npc.type))
+            if (Main.rand.Next(2500) < GetLevel(npc))  //GetLevel(npc.type))
                 Item.NewItem(npc.position, Main.rand.Next(8) == 0 ? ModContent.ItemType<BlacksmithCrown>() : ModContent.ItemType<PermanenceCrown>());
 
-            int level = Math.Min(Main.expertMode ? (npc.damage + npc.defense * 4) / 3 : (npc.damage * 2 + npc.defense * 4) / 3, npc.boss ? 120 : 110);
+            int level = GetLevel(npc);
             //GetLevel(npc.netID);
 
             Player player = Array.Find(Main.player, p => p.active);
@@ -363,25 +360,47 @@ namespace kRPG.GameObjects.NPCs
 
         }
 
+
+        /// <summary>
+        /// This function is called after a new npc is created but before it is spawned in the world
+        /// </summary>
+        /// <param name="npc"></param>
         public override void SetDefaults(NPC npc)
         {
+            //If we are in single player mode, and the player hasn't entered the world, exit out.
             if (Main.netMode == NetmodeID.SinglePlayer && !kRPG.PlayerEnteredWorld)
                 return;
 
+            //If the mob is a boss, townnpc, friendly and the client is mulitplayer client... exit out
             if (npc.boss || npc.townNPC || npc.friendly || Main.netMode == NetmodeID.MultiplayerClient)
                 return;
 
+
             int playerLevel = Main.netMode == NetmodeID.SinglePlayer ? GetPlayerLevel() : 20;
-            int npcLevel = Math.Min(Main.expertMode ? (npc.damage + npc.defense * 4) / 3 : (npc.damage * 2 + npc.defense * 4) / 3, npc.boss ? 120 : 110);// GetLevel(npc.type);
+
+            int npcLevel = GetLevel(npc);
+
+            //Calculate new npc max life
             npc.lifeMax = (int)Math.Round(npc.lifeMax * (npcLevel / 30f + 0.4f + playerLevel * 0.025f));
             npc.life = npc.lifeMax;
+
+            //Calculate npc defense
             npc.defense = (int)Math.Round(npc.defense * (npcLevel / 160f + 1f));
+
             //NPC is immune to lava if they are flagged as immune or their defense is greater that 60.
             npc.lavaImmune = npc.lavaImmune || npc.defense > 60;
+            
             //So we are randomly adding modifiers...
             InitializeModifiers(npc);
+
+            
+            
+            
+            //Try and resolve mod's name
             npc.GivenName = NPC.getNewNPCName(npc.type);
-            if (!Main.expertMode)
+            
+            //Adjust life in expert mode.
+            if (Main.expertMode)
             {
                 //npc.lifeMax = (int)(npc.lifeMax * 1.3);
                 npc.life = (int)(npc.life * 1.3);
@@ -563,10 +582,10 @@ namespace kRPG.GameObjects.NPCs
 
         public void Update(NPC npc)
         {
-#if disablecode
+
             if (npc.aiStyle ==NpcAiStyles.SimpleFighter && Math.Abs(npc.velocity.Y) < .01)
                 npc.velocity.X = MathHelper.Lerp(npc.velocity.X, npc.direction * Math.Max(Math.Abs(npc.velocity.X), 8f), 1f * SpeedModifier / 20f);
-#endif
+
             foreach (NpcModifier t in Modifiers.Values)
                 t.Update(npc);
         }

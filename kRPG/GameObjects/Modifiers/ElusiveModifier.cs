@@ -29,6 +29,7 @@ namespace kRPG.GameObjects.Modifiers
         {
             kNpc.SpeedModifier *= 1.25f;
             DodgeModifier = 1f + Main.rand.NextFloat(.3f);
+            
             kRPG.LogMessage("Initializing Dodge Modifier: " + DodgeModifier);
         }
 

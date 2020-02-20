@@ -19,14 +19,14 @@ namespace kRPG.GameObjects.Modifiers
         public float ScaleModifier { get; private set; }
 
 
-
+        
 
         public override void Initialize()
         {
             ScaleModifier = Main.rand.NextFloat(.75f, 2.0f);
             npc.life = npc.lifeMax = (int)(npc.life * (ScaleModifier));
             npc.GetGlobalNPC<kNPC>().SpeedModifier *= (float)Math.Pow(ScaleModifier, 0.9);
-            npc.netUpdate = true;
+            
             
             kRPG.LogMessage($"Initializing Size Modifier, Scale: {ScaleModifier} ");
         }

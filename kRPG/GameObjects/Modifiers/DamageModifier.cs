@@ -27,7 +27,7 @@ namespace kRPG.GameObjects.Modifiers
         {
             DmgModifier = Main.rand.Next(0, 200) / 100.0f;
             kRPG.LogMessage("Initializing Damage Modifier: " + DmgModifier);
-            npc.damage = (int)Math.Round(npc.damage * DmgModifier);
+            npc.damage = npc.damage + (int)Math.Round(npc.damage * DmgModifier);
             npc.defense = 1;
         }
 
