@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using kRPG.Content.NPCs;
 using kRPG.Enums;
-using kRPG.GameObjects.NPCs;
 using Terraria;
 using Terraria.ID;
 

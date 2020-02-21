@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-
+using kRPG.Content.Modifiers;
+using kRPG.Content.NPCs;
 using kRPG.Enums;
-using kRPG.GameObjects.Modifiers;
-using kRPG.GameObjects.NPCs;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
