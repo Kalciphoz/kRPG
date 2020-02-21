@@ -495,13 +495,9 @@ namespace kRPG.GameObjects.NPCs
 #if SINGLEPLAYER
 
 #endif
-            //kRPG.LogMessage($"Applying Modifiers {kNPC.Modifiers.Count}");
-
             foreach (NpcModifier npcModifier in kNpc.Modifiers.Values)
             {
-                //kRPG.LogMessage($"{npc.GivenName} --->  {npcModifier.ToString()}  is being applied.");
                 npcModifier.Apply();
-                //kRPG.LogMessage($"{npc.GivenName} --->  {npcModifier.ToString()}  is applied.");
             }
 
             npc.netUpdate = true;
@@ -560,11 +556,13 @@ namespace kRPG.GameObjects.NPCs
             PlayerCharacter character = player.GetModPlayer<PlayerCharacter>();
             character.AccuracyCounter += character.HitChance;
 
+
+
             float dodgeChanceModifier = 1f;
 
             foreach (NpcModifier npcModifier in Modifiers.Values)
                 dodgeChanceModifier *= npcModifier.StrikeNpc(npc, damage, defense, knockBack, hitDirection, crit);
-
+#if DODGE
 
             if (character.AccuracyCounter < .5 * dodgeChanceModifier && !character.Rituals[Ritual.WarriorOath])
             {
@@ -582,6 +580,7 @@ namespace kRPG.GameObjects.NPCs
                 SyncCounters(npc.target, character, false);
                 return false;
             }
+#endif
 
             character.AccuracyCounter -= 1 * dodgeChanceModifier;
             SyncCounters(npc.target, character, false);

@@ -10,6 +10,8 @@ namespace kRPG.GameObjects.NPCs
 {
  public static   class NpcHelper
     {
+#if DODGE
+
         public static void NinjaDodge(this NPC npc, Entity dustPos, int time, bool factorLongImmune = true)
         {
             npc.GetGlobalNPC<kNPC>().ImmuneTime = time;
@@ -54,5 +56,7 @@ namespace kRPG.GameObjects.NPCs
             Main.gore[num2].velocity.Y = -1.5f - Main.rand.Next(-50, 51) * 0.01f;
             Main.gore[num2].velocity *= 0.4f;
         }
+#endif
     }
+
 }
