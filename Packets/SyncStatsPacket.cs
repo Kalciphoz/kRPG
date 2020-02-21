@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-
+using kRPG.Content.Players;
 using kRPG.Enums;
-using kRPG.GameObjects.Players;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

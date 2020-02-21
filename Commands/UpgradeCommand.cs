@@ -1,4 +1,4 @@
-﻿using kRPG.GameObjects.Items;
+﻿using kRPG.Content.Items;
 using Terraria;
 using Terraria.ModLoader;
 

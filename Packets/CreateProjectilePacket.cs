@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using kRPG.Content.Items.Glyphs;
+using kRPG.Content.Items.Projectiles;
+using kRPG.Content.Spells;
 using kRPG.Enums;
-using kRPG.GameObjects.Items.Glyphs;
-using kRPG.GameObjects.Items.Projectiles;
-using kRPG.GameObjects.Spells;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

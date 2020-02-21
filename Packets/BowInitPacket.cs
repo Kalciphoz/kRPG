@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-
+using kRPG.Content.Items.Weapons.Ranged;
 using kRPG.Enums;
-using kRPG.GameObjects.Items.Weapons.Ranged;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-
+using kRPG.Content.Items.Weapons.Melee;
 using kRPG.Enums;
-using kRPG.GameObjects.Items.Weapons.Melee;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
