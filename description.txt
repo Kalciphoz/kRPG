@@ -7,3 +7,6 @@ This mod aims to overhaul Terraria by adding RPG elements, and includes a leveli
 Features The mod features a leveling system with XP and level display, and rewards you with stat points when leveling up. In order to compensate for gradually increasing player strength, enemies have seen a drastic power increase, especially later in the game.
 
 To further emphasize these changes, I have added prefixes to armour and overhauled accessory prefixes to provide these new stats, including accuracy, leech, critical strike damage multiplier, evasion, and more.
+
+
+Thanks!
