@@ -193,8 +193,14 @@ namespace kRPG.GameObjects.NPCs
 
             //buffs.Add(ModiferFunctions.Instance.SpeedModifier.Id);
 
+            //This shouldn't be happening
+            if (kn.Modifiers.Values.Count > 0)
+                return;
+
             foreach (int t in buffs)
             {
+
+
                 NpcModifier modifier = ModiferFunctions.Instance.Modifiers[t].Function.Invoke(this, npc);
                 modifier.Initialize();
                 modifier.Apply();
@@ -230,14 +236,14 @@ namespace kRPG.GameObjects.NPCs
         }
 
         /// <summary>
-        /// Bug not here
+        /// 
         /// </summary>
         /// <param name="npc"></param>
         public override void NPCLoot(NPC npc)
         {
-            kNPC kNPC = npc.GetGlobalNPC<kNPC>();
+            kNPC kNpc = npc.GetGlobalNPC<kNPC>();
 
-            foreach (NpcModifier npcModifier in kNPC.Modifiers.Values)
+            foreach (NpcModifier npcModifier in kNpc.Modifiers.Values)
                 npcModifier.NpcLoot(npc);
 
             if (npc.lifeMax < 10) return;
@@ -354,7 +360,7 @@ namespace kRPG.GameObjects.NPCs
                 Player player = Main.netMode == NetmodeID.Server ? Main.player[0] : Main.player[Main.myPlayer];
                 return player.GetModPlayer<PlayerCharacter>().Level;
             }
-            catch (Exception e)
+            catch (Exception )
             {
                 return 20;
             }
@@ -455,21 +461,21 @@ namespace kRPG.GameObjects.NPCs
 
         public override void PostAI(NPC npc)
         {
-            kNPC kNPC = npc.GetGlobalNPC<kNPC>();
+            kNPC kNpc = npc.GetGlobalNPC<kNPC>();
 
-            foreach (NpcModifier npcModifier in kNPC.Modifiers.Values)
+            foreach (NpcModifier npcModifier in kNpc.Modifiers.Values)
                 npcModifier.PostAi(npc);
 
             List<ProceduralSpell> keys = new List<ProceduralSpell>(InvincibilityTime.Keys);
             foreach (ProceduralSpell spell in keys)
             {
-                if (kNPC.InvincibilityTime[spell] > 0)
+                if (kNpc.InvincibilityTime[spell] > 0)
                 {
-                    kNPC.InvincibilityTime[spell] -= 1;
+                    kNpc.InvincibilityTime[spell] -= 1;
                 }
                 else
                 {
-                    kNPC.InvincibilityTime.Remove(spell);
+                    kNpc.InvincibilityTime.Remove(spell);
                 }
             }
 
@@ -483,7 +489,7 @@ namespace kRPG.GameObjects.NPCs
             }
 
 
-            kNPC.InvincibilityTime = new Dictionary<ProceduralSpell, int>();
+            kNpc.InvincibilityTime = new Dictionary<ProceduralSpell, int>();
 
             //We only run this code if in single player mode, cause we aren't replicating this information.
 #if SINGLEPLAYER
@@ -491,7 +497,7 @@ namespace kRPG.GameObjects.NPCs
 #endif
             //kRPG.LogMessage($"Applying Modifiers {kNPC.Modifiers.Count}");
 
-            foreach (NpcModifier npcModifier in kNPC.Modifiers.Values)
+            foreach (NpcModifier npcModifier in kNpc.Modifiers.Values)
             {
                 //kRPG.LogMessage($"{npc.GivenName} --->  {npcModifier.ToString()}  is being applied.");
                 npcModifier.Apply();
@@ -560,14 +566,14 @@ namespace kRPG.GameObjects.NPCs
                 dodgeChanceModifier *= npcModifier.StrikeNpc(npc, damage, defense, knockBack, hitDirection, crit);
 
 
-            if (character.AccuracyCounter < 1 * dodgeChanceModifier && !character.Rituals[Ritual.WarriorOath])
+            if (character.AccuracyCounter < .5 * dodgeChanceModifier && !character.Rituals[Ritual.WarriorOath])
             {
                 npc.NinjaDodge(npc, 10);
-                if (Vector2.Distance(player.Center, npc.Center) < 192)
-                {
-                    player.immune = true;
-                    player.immuneTime = 30;
-                }
+                //if (Vector2.Distance(player.Center, npc.Center) < 192)
+                //{
+                //    player.immune = true;
+                //    player.immuneTime = 30;
+                //}
 
                 damage = 0;
                 crit = false;

@@ -27,15 +27,16 @@ namespace kRPG.GameObjects.Modifiers
         {
             SpeedModifierAdj = 1f + Main.rand.NextFloat(.8f);
             kRPG.LogMessage("Initializing Speed Modifer: " + SpeedModifierAdj);
+            
             npc.netUpdate = true;
         }
 
         public override void Apply()
         {
-            
+            AddNamePrefix("Swift");
             npc.GetGlobalNPC<kNPC>().SpeedModifier *= (float)Math.Pow(SpeedModifierAdj, 0.9);
 
-            npc.GivenName = "Swift " + npc.FullName;
+            
         }
 
         public new static NpcModifier New(kNPC kNpc, NPC npc)

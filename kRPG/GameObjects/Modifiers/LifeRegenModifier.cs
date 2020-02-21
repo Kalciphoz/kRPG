@@ -20,7 +20,7 @@ namespace kRPG.GameObjects.Modifiers
 
         public override void Apply()
         {
-            npc.GivenName = "Shimmering " + npc.FullName;
+            AddNamePrefix("Shimmering");
 
         }
 

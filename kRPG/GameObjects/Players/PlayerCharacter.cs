@@ -724,7 +724,7 @@ namespace kRPG.GameObjects.Players
                     }
 
             for (int spellEffectIndex = 0; spellEffectIndex < SpellEffects.Count; spellEffectIndex += 1)
-                SpellEffects[spellEffectIndex].Update(this);
+                SpellEffects[spellEffectIndex].UpdatePlayerCharacter(this);
 
             if (Main.mapStyle == 0 && kConfig.ConfigLocal.ClientSide.ArpgMiniMap) Main.mapStyle += 1;
         }

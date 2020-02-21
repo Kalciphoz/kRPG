@@ -36,7 +36,8 @@ namespace kRPG.GameObjects.Modifiers
 
         public override void Apply()
         {
-            npc.GivenName = "Explosive " + npc.FullName;
+            AddNamePrefix("Explosive");
+            
 
         }
 

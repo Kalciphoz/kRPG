@@ -33,7 +33,8 @@ namespace kRPG.GameObjects.Modifiers
 
         public override void Apply()
         {
-            npc.GivenName = "Brutal " + npc.FullName;
+            AddNamePrefix("Brutal");
+            
 
         }
 

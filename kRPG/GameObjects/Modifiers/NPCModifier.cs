@@ -2,6 +2,7 @@
 using kRPG.GameObjects.NPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace kRPG.GameObjects.Modifiers
@@ -11,6 +12,21 @@ namespace kRPG.GameObjects.Modifiers
         public NPC npc;
 
         protected NpcModifier() { }
+
+        public bool AppliedNameChange { get; set; } = false;
+
+        public void AddNamePrefix(string prefix)
+        {
+            if (string.IsNullOrEmpty(npc.FullName))
+                return;
+
+            if (!AppliedNameChange)
+            {
+                npc.GivenName = prefix + " " + npc.FullName;
+                AppliedNameChange = true;
+            }
+            
+        }
 
         protected NpcModifier(kNPC kNpc, NPC oNpc)
         {
