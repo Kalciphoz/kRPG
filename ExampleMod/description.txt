@@ -1,1 +1,0 @@
-Learn how to mod with tModLoader by exploring the source code for this mod.
