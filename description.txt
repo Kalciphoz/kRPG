@@ -9,4 +9,4 @@ Features The mod features a leveling system with XP and level display, and rewar
 To further emphasize these changes, I have added prefixes to armour and overhauled accessory prefixes to provide these new stats, including accuracy, leech, critical strike damage multiplier, evasion, and more.
 
 
-Thanks!
+Thanks Again!
