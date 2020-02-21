@@ -35,7 +35,8 @@ namespace kRPG.GameObjects.Modifiers
 
         public override void Apply()
         {
-            npc.GivenName = "Elusive " + npc.FullName;
+            AddNamePrefix("Elusive");
+            
         }
 
         public new static NpcModifier New(kNPC kNpc, NPC npc)

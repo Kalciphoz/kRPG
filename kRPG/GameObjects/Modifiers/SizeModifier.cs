@@ -35,11 +35,11 @@ namespace kRPG.GameObjects.Modifiers
         {
             npc.scale *= ScaleModifier;
             if (ScaleModifier > 1.5)
-                npc.GivenName = "Giant " + npc.FullName;
+                AddNamePrefix("Giant");
             else if (ScaleModifier < 1)
-                npc.GivenName = "Small " + npc.FullName;
+                AddNamePrefix("Small");
             else
-                npc.GivenName = "Massive " + npc.FullName;
+                AddNamePrefix("Massive");
         }
 
         public new static NpcModifier New(kNPC kNpc, NPC npc)

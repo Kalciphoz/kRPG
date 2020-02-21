@@ -12,18 +12,18 @@ namespace kRPG.GameObjects.Spells
             Ability = ability;
             Target = target;
             TimeLeft = timeLeft;
-            this.update = update;
+            this.Update = update;
             Main.player[Main.myPlayer].GetModPlayer<PlayerCharacter>().SpellEffects.Add(this);
         }
 
         private ProceduralSpell Ability { get; }
         private Vector2 Target { get; }
         private int TimeLeft { get; set; }
-        private Action<ProceduralSpell, int> update { get; }
+        private Action<ProceduralSpell, int> Update { get; }
 
-        public void Update(PlayerCharacter character)
+        public void UpdatePlayerCharacter(PlayerCharacter character)
         {
-            update(Ability, TimeLeft);
+            Update(Ability, TimeLeft);
             TimeLeft -= 1;
             if (TimeLeft <= 0)
                 character.SpellEffects.Remove(this);

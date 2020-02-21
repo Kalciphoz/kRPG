@@ -27,7 +27,7 @@ namespace kRPG.GameObjects.Buffs
         }
 
         /// <summary>
-        ///     Update NPC
+        ///     UpdatePlayerCharacter NPC
         /// </summary>
         /// <param name="npc"></param>
         /// <param name="buffIndex"></param>
@@ -37,7 +37,7 @@ namespace kRPG.GameObjects.Buffs
         }
 
         /// <summary>
-        ///     Update Player
+        ///     UpdatePlayerCharacter Player
         /// </summary>
         /// <param name="player"></param>
         /// <param name="buffIndex"></param>

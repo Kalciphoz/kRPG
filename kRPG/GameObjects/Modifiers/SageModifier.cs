@@ -168,7 +168,8 @@ namespace kRPG.GameObjects.Modifiers
 
         public override void Apply()
         {
-            npc.GivenName = "Sagely " + npc.FullName;
+            AddNamePrefix("Sagely");
+            
         }
 
         public override int Unpack(BinaryReader reader)
